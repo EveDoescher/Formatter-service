@@ -11,14 +11,16 @@ public record CoverLayoutRuleRequest(
         @NotNull @Positive BigDecimal topToAuthorWeight,
         @NotNull @Positive BigDecimal authorToTitleWeight,
         @NotNull @Positive BigDecimal titleToBottomWeight,
-        @NotNull @PositiveOrZero Integer safetyBlankLines
+        @NotNull @PositiveOrZero Integer bottomPaddingLineSlots,
+        @NotNull @Positive Integer maxCharactersPerLine
 ) {
     public CoverLayoutRule toDomain() {
         return new CoverLayoutRule(
                 topToAuthorWeight,
                 authorToTitleWeight,
                 titleToBottomWeight,
-                safetyBlankLines
+                bottomPaddingLineSlots,
+                maxCharactersPerLine
         );
     }
 }

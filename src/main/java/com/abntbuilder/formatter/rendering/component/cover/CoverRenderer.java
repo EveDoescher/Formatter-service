@@ -11,6 +11,7 @@ import com.abntbuilder.formatter.profile.resolution.StyleResolver;
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutDocxMapper;
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutGroup;
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutTextLine;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageTextLineBreaker;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -27,13 +28,18 @@ public final class CoverRenderer {
     private static final String BOTTOM_GROUP_ID = "cover.bottom";
 
     private final SinglePageLayoutDocxMapper docxMapper;
+    private final SinglePageTextLineBreaker lineBreaker;
 
     public CoverRenderer() {
-        this(new SinglePageLayoutDocxMapper());
+        this(new SinglePageLayoutDocxMapper(), new SinglePageTextLineBreaker());
     }
 
-    public CoverRenderer(SinglePageLayoutDocxMapper docxMapper) {
+    public CoverRenderer(
+            SinglePageLayoutDocxMapper docxMapper,
+            SinglePageTextLineBreaker lineBreaker
+    ) {
         this.docxMapper = Objects.requireNonNull(docxMapper, "docxMapper must not be null");
+        this.lineBreaker = Objects.requireNonNull(lineBreaker, "lineBreaker must not be null");
     }
 
     public List<DocxBlock> render(CoverComponent cover, DocumentProfile profile) {
@@ -48,26 +54,32 @@ public final class CoverRenderer {
                 CoverComponentRule.class
         );
 
+        CoverLayoutRule layoutRule = coverRule.layoutRule();
+
         List<SinglePageLayoutGroup> groups = createLayoutGroups(
                 cover,
                 coverRule,
-                styleResolver
+                styleResolver,
+                layoutRule.maxCharactersPerLine()
         );
 
-        List<BigDecimal> gapWeights = createGapWeights(groups, coverRule.layoutRule());
+        validateAnchoredBottomGroup(groups);
+
+        List<BigDecimal> gapWeights = createGapWeights(groups, layoutRule);
 
         return docxMapper.mapToDocxBlocksAnchoringLastGroup(
                 profile.pageRule(),
                 groups,
                 gapWeights,
-                coverRule.layoutRule().safetyBlankLines()
+                layoutRule.bottomPaddingLineSlots()
         );
     }
 
-    private static List<SinglePageLayoutGroup> createLayoutGroups(
+    private List<SinglePageLayoutGroup> createLayoutGroups(
             CoverComponent cover,
             CoverComponentRule coverRule,
-            StyleResolver styleResolver
+            StyleResolver styleResolver,
+            int maxCharactersPerLine
     ) {
         List<SinglePageLayoutGroup> groups = new ArrayList<>();
 
@@ -75,67 +87,93 @@ public final class CoverRenderer {
                 groups,
                 TOP_GROUP_ID,
                 cover.topLines(),
-                styleResolver.resolve(coverRule.styleMapping().topLinesStyleId())
+                styleResolver.resolve(coverRule.styleMapping().topLinesStyleId()),
+                maxCharactersPerLine
         );
 
         addGroupIfNotEmpty(
                 groups,
                 AUTHORS_GROUP_ID,
                 cover.authorLines(),
-                styleResolver.resolve(coverRule.styleMapping().authorLinesStyleId())
+                styleResolver.resolve(coverRule.styleMapping().authorLinesStyleId()),
+                maxCharactersPerLine
         );
 
         groups.add(createTitleGroup(
                 cover,
                 styleResolver.resolve(coverRule.styleMapping().titleStyleId()),
-                styleResolver.resolve(coverRule.styleMapping().subtitleStyleId())
+                styleResolver.resolve(coverRule.styleMapping().subtitleStyleId()),
+                maxCharactersPerLine
         ));
 
         addGroupIfNotEmpty(
                 groups,
                 BOTTOM_GROUP_ID,
                 cover.bottomLines(),
-                styleResolver.resolve(coverRule.styleMapping().bottomLinesStyleId())
+                styleResolver.resolve(coverRule.styleMapping().bottomLinesStyleId()),
+                maxCharactersPerLine
         );
-
-        if (groups.size() < 2) {
-            throw new IllegalArgumentException("cover must contain at least two layout groups.");
-        }
 
         return List.copyOf(groups);
     }
 
-    private static void addGroupIfNotEmpty(
+    private void addGroupIfNotEmpty(
             List<SinglePageLayoutGroup> groups,
             String groupId,
             List<String> lines,
-            StyleRule styleRule
+            StyleRule styleRule,
+            int maxCharactersPerLine
     ) {
         if (lines.isEmpty()) {
             return;
         }
 
-        List<SinglePageLayoutTextLine> textLines = lines.stream()
-                .map(line -> new SinglePageLayoutTextLine(line, styleRule))
-                .toList();
+        List<SinglePageLayoutTextLine> textLines = new ArrayList<>();
+
+        for (String line : lines) {
+            for (String brokenLine : lineBreaker.breakText(line, maxCharactersPerLine)) {
+                textLines.add(new SinglePageLayoutTextLine(brokenLine, styleRule));
+            }
+        }
 
         groups.add(new SinglePageLayoutGroup(groupId, textLines));
     }
 
-    private static SinglePageLayoutGroup createTitleGroup(
+    private SinglePageLayoutGroup createTitleGroup(
             CoverComponent cover,
             StyleRule titleStyle,
-            StyleRule subtitleStyle
+            StyleRule subtitleStyle,
+            int maxCharactersPerLine
     ) {
         List<SinglePageLayoutTextLine> titleLines = new ArrayList<>();
 
-        titleLines.add(new SinglePageLayoutTextLine(cover.title(), titleStyle));
+        for (String line : lineBreaker.breakText(cover.title(), maxCharactersPerLine)) {
+            titleLines.add(new SinglePageLayoutTextLine(line, titleStyle));
+        }
 
-        cover.subtitle().ifPresent(subtitle ->
-                titleLines.add(new SinglePageLayoutTextLine(subtitle, subtitleStyle))
-        );
+        cover.subtitle().ifPresent(subtitle -> {
+            for (String line : lineBreaker.breakText(subtitle, maxCharactersPerLine)) {
+                titleLines.add(new SinglePageLayoutTextLine(line, subtitleStyle));
+            }
+        });
 
         return new SinglePageLayoutGroup(TITLE_GROUP_ID, titleLines);
+    }
+
+    private static void validateAnchoredBottomGroup(List<SinglePageLayoutGroup> groups) {
+        if (groups.isEmpty()) {
+            throw new IllegalArgumentException("cover must contain layout groups.");
+        }
+
+        SinglePageLayoutGroup lastGroup = groups.getLast();
+
+        if (!BOTTOM_GROUP_ID.equals(lastGroup.id())) {
+            throw new IllegalArgumentException("cover must contain bottomLines for anchored bottom layout.");
+        }
+
+        if (lastGroup.lines().size() != 2) {
+            throw new IllegalArgumentException("cover bottomLines must contain exactly city and year.");
+        }
     }
 
     private static List<BigDecimal> createGapWeights(

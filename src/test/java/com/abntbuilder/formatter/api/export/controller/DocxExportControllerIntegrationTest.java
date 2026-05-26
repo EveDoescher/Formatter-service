@@ -423,11 +423,12 @@ class DocxExportControllerIntegrationTest {
                           "bottomLinesStyleId": "cover.bottom"
                         },
                         "layoutRule": {
-                          "topToAuthorWeight": 45,
-                          "authorToTitleWeight": 15,
-                          "titleToBottomWeight": 40,
-                          "safetyBlankLines": 0
-                        }
+                           "topToAuthorWeight": 30,
+                           "authorToTitleWeight": 10,
+                           "titleToBottomWeight": 60,
+                           "bottomPaddingLineSlots": 1,
+                           "maxCharactersPerLine": 52
+                         }
                       }
                     }
                   },

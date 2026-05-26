@@ -38,7 +38,12 @@ class ComponentRuleResolverTest {
 
         assertEquals("cover", rule.componentId());
         assertEquals("cover.title", rule.styleMapping().titleStyleId());
-        assertEquals(0, BigDecimal.valueOf(45).compareTo(rule.layoutRule().topToAuthorWeight()));
+
+        assertEquals(0, BigDecimal.valueOf(30).compareTo(rule.layoutRule().topToAuthorWeight()));
+        assertEquals(0, BigDecimal.valueOf(10).compareTo(rule.layoutRule().authorToTitleWeight()));
+        assertEquals(0, BigDecimal.valueOf(60).compareTo(rule.layoutRule().titleToBottomWeight()));
+        assertEquals(1, rule.layoutRule().bottomPaddingLineSlots());
+        assertEquals(52, rule.layoutRule().maxCharactersPerLine());
     }
 
     @Test
@@ -144,10 +149,11 @@ class ComponentRuleResolverTest {
                         "cover.bottom"
                 ),
                 new CoverLayoutRule(
-                        BigDecimal.valueOf(45),
-                        BigDecimal.valueOf(15),
-                        BigDecimal.valueOf(40),
-                        0
+                        BigDecimal.valueOf(30),
+                        BigDecimal.valueOf(10),
+                        BigDecimal.valueOf(60),
+                        1,
+                        52
                 )
         );
     }

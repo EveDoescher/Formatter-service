@@ -1,8 +1,5 @@
 package com.abntbuilder.formatter.rendering.layout.singlepage;
 
-import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
-import com.abntbuilder.formatter.output.docx.api.DocxBlock;
-import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
 import com.abntbuilder.formatter.profile.model.PageOrientation;
 import com.abntbuilder.formatter.profile.model.PageRule;
 import com.abntbuilder.formatter.profile.model.StyleRule;
@@ -16,100 +13,66 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class SinglePageLayoutDocxMapperTest {
+class SinglePageLayoutEngineTest {
 
-    private final SinglePageLayoutDocxMapper mapper = new SinglePageLayoutDocxMapper();
+    private final SinglePageLayoutEngine engine = new SinglePageLayoutEngine();
 
     @Test
-    void shouldMapGroupsToDocxBlocksUsingWeightedGaps() {
-        List<DocxBlock> blocks = mapper.mapToDocxBlocks(
+    void shouldLayoutGroupsDistributingAvailableSpace() {
+        SinglePageLayoutResult result = engine.layout(
                 validPageRule(),
                 List.of(
-                        group("cover.top", "UNIVERSIDADE PAULISTA"),
-                        group("cover.authors", "NOME DO ALUNO"),
-                        group("cover.title", "TÍTULO DO TRABALHO", "Subtítulo do trabalho"),
-                        group("cover.bottom", "Limeira", "2026")
+                        group("top", "UNIVERSIDADE PAULISTA"),
+                        group("middle", "TÍTULO DO TRABALHO"),
+                        group("bottom", "Limeira")
                 ),
-                List.of(
-                        BigDecimal.valueOf(45),
-                        BigDecimal.valueOf(15),
-                        BigDecimal.valueOf(40)
-                ),
-                0
+                BigDecimal.valueOf(0.2)
         );
 
-        List<DocxParagraph> paragraphs = blocks.stream()
-                .filter(DocxParagraph.class::isInstance)
-                .map(DocxParagraph.class::cast)
-                .toList();
+        assertEquals(3, result.groups().size());
+        assertEquals(0, BigDecimal.ZERO.compareTo(result.groups().getFirst().yStartCm()));
 
-        assertEquals(6, paragraphs.size());
-        assertEquals("UNIVERSIDADE PAULISTA", paragraphs.get(0).text());
-        assertEquals("NOME DO ALUNO", paragraphs.get(1).text());
-        assertEquals("TÍTULO DO TRABALHO", paragraphs.get(2).text());
-        assertEquals("Subtítulo do trabalho", paragraphs.get(3).text());
-        assertEquals("Limeira", paragraphs.get(4).text());
-        assertEquals("2026", paragraphs.get(5).text());
+        PositionedLayoutGroup bottomGroup = result.groups().getLast();
 
-        assertTrue(blocks.stream().anyMatch(DocxBlankLine.class::isInstance));
-        assertTrue(paragraphs.stream().allMatch(paragraph -> paragraph.exactLineHeightPt().isPresent()));
+        assertEquals(0, result.usableHeightCm().compareTo(bottomGroup.yEndCm()));
+        assertTrue(result.gapBetweenGroupsCm().compareTo(BigDecimal.valueOf(0.2)) >= 0);
     }
 
     @Test
-    void shouldRejectGapWeightsSizeDifferentFromGroupGapCount() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> mapper.mapToDocxBlocks(
-                        validPageRule(),
-                        List.of(
-                                group("cover.top", "UNIVERSIDADE PAULISTA"),
-                                group("cover.bottom", "Limeira", "2026")
-                        ),
-                        List.of(
-                                BigDecimal.valueOf(45),
-                                BigDecimal.valueOf(40)
-                        ),
-                        0
-                )
+    void shouldLayoutSingleGroupAtTop() {
+        SinglePageLayoutResult result = engine.layout(
+                validPageRule(),
+                List.of(group("only", "TEXTO ÚNICO")),
+                BigDecimal.ZERO
         );
 
-        assertEquals("gapWeights size must be equal to groups size minus one.", exception.getMessage());
+        assertEquals(1, result.groups().size());
+        assertEquals(0, BigDecimal.ZERO.compareTo(result.groups().getFirst().yStartCm()));
+        assertEquals(0, BigDecimal.ZERO.compareTo(result.gapBetweenGroupsCm()));
     }
 
     @Test
-    void shouldRejectNonPositiveGapWeight() {
+    void shouldRejectEmptyGroups() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> mapper.mapToDocxBlocks(
-                        validPageRule(),
-                        List.of(
-                                group("cover.top", "UNIVERSIDADE PAULISTA"),
-                                group("cover.bottom", "Limeira", "2026")
-                        ),
-                        List.of(BigDecimal.ZERO),
-                        0
-                )
+                () -> engine.layout(validPageRule(), List.of(), BigDecimal.ZERO)
         );
 
-        assertEquals("gapWeights must contain only positive values.", exception.getMessage());
+        assertEquals("groups must not be empty.", exception.getMessage());
     }
 
     @Test
-    void shouldRejectNegativeSafetyBlankLines() {
+    void shouldRejectNegativeMinimumGap() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> mapper.mapToDocxBlocks(
+                () -> engine.layout(
                         validPageRule(),
-                        List.of(
-                                group("cover.top", "UNIVERSIDADE PAULISTA"),
-                                group("cover.bottom", "Limeira", "2026")
-                        ),
-                        List.of(BigDecimal.ONE),
-                        -1
+                        List.of(group("top", "Texto")),
+                        BigDecimal.valueOf(-1)
                 )
         );
 
-        assertEquals("safetyBlankLines must not be negative.", exception.getMessage());
+        assertEquals("minimumGapBetweenGroupsCm must not be negative.", exception.getMessage());
     }
 
     @Test
@@ -126,31 +89,45 @@ class SinglePageLayoutDocxMapperTest {
 
         assertThrows(
                 SinglePageLayoutOverflowException.class,
-                () -> mapper.mapToDocxBlocks(
+                () -> engine.layout(
                         tinyPage,
-                        List.of(
-                                group("cover.top", "UNIVERSIDADE PAULISTA"),
-                                group("cover.authors", "NOME DO ALUNO"),
-                                group("cover.title", "TÍTULO DO TRABALHO", "Subtítulo do trabalho"),
-                                group("cover.bottom", "Limeira", "2026")
-                        ),
-                        List.of(
-                                BigDecimal.valueOf(45),
-                                BigDecimal.valueOf(15),
-                                BigDecimal.valueOf(40)
-                        ),
-                        0
+                        List.of(group("huge", "TEXTO GRANDE", hugeStyle())),
+                        BigDecimal.ZERO
                 )
         );
     }
 
-    private static SinglePageLayoutGroup group(String id, String... texts) {
+    @Test
+    void shouldRejectBlankGroupId() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new SinglePageLayoutGroup(
+                        " ",
+                        List.of(new SinglePageLayoutTextLine("Texto", validStyle()))
+                )
+        );
+
+        assertEquals("id must not be blank.", exception.getMessage());
+    }
+
+    @Test
+    void shouldRejectBlankTextLine() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new SinglePageLayoutTextLine(" ", validStyle())
+        );
+
+        assertEquals("text must not be blank.", exception.getMessage());
+    }
+
+    private static SinglePageLayoutGroup group(String id, String text) {
+        return group(id, text, validStyle());
+    }
+
+    private static SinglePageLayoutGroup group(String id, String text, StyleRule styleRule) {
         return new SinglePageLayoutGroup(
                 id,
-                List.of(texts)
-                        .stream()
-                        .map(text -> new SinglePageLayoutTextLine(text, validStyle()))
-                        .toList()
+                List.of(new SinglePageLayoutTextLine(text, styleRule))
         );
     }
 
@@ -172,6 +149,25 @@ class SinglePageLayoutDocxMapperTest {
                 StyleType.PARAGRAPH,
                 "Times New Roman",
                 BigDecimal.valueOf(12),
+                TextAlignment.CENTER,
+                BigDecimal.valueOf(1.5),
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                false,
+                false,
+                false
+        );
+    }
+
+    private static StyleRule hugeStyle() {
+        return new StyleRule(
+                "huge",
+                StyleType.PARAGRAPH,
+                "Times New Roman",
+                BigDecimal.valueOf(72),
                 TextAlignment.CENTER,
                 BigDecimal.valueOf(1.5),
                 BigDecimal.ZERO,

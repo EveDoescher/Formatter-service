@@ -23,10 +23,11 @@ class CoverComponentRuleTest {
         assertEquals("cover.subtitle", rule.styleMapping().subtitleStyleId());
         assertEquals("cover.bottom", rule.styleMapping().bottomLinesStyleId());
 
-        assertEquals(0, BigDecimal.valueOf(45).compareTo(rule.layoutRule().topToAuthorWeight()));
-        assertEquals(0, BigDecimal.valueOf(15).compareTo(rule.layoutRule().authorToTitleWeight()));
-        assertEquals(0, BigDecimal.valueOf(40).compareTo(rule.layoutRule().titleToBottomWeight()));
-        assertEquals(0, rule.layoutRule().safetyBlankLines());
+        assertEquals(0, BigDecimal.valueOf(30).compareTo(rule.layoutRule().topToAuthorWeight()));
+        assertEquals(0, BigDecimal.valueOf(10).compareTo(rule.layoutRule().authorToTitleWeight()));
+        assertEquals(0, BigDecimal.valueOf(60).compareTo(rule.layoutRule().titleToBottomWeight()));
+        assertEquals(1, rule.layoutRule().bottomPaddingLineSlots());
+        assertEquals(52, rule.layoutRule().maxCharactersPerLine());
     }
 
     @Test
@@ -75,9 +76,10 @@ class CoverComponentRuleTest {
     void shouldRejectZeroTopToAuthorWeight() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new CoverLayoutRule(
                 BigDecimal.ZERO,
-                BigDecimal.valueOf(15),
-                BigDecimal.valueOf(40),
-                0
+                BigDecimal.valueOf(10),
+                BigDecimal.valueOf(60),
+                1,
+                52
         ));
 
         assertEquals("topToAuthorWeight must be greater than zero.", exception.getMessage());
@@ -86,10 +88,11 @@ class CoverComponentRuleTest {
     @Test
     void shouldRejectZeroAuthorToTitleWeight() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new CoverLayoutRule(
-                BigDecimal.valueOf(45),
+                BigDecimal.valueOf(30),
                 BigDecimal.ZERO,
-                BigDecimal.valueOf(40),
-                0
+                BigDecimal.valueOf(60),
+                1,
+                52
         ));
 
         assertEquals("authorToTitleWeight must be greater than zero.", exception.getMessage());
@@ -98,25 +101,40 @@ class CoverComponentRuleTest {
     @Test
     void shouldRejectZeroTitleToBottomWeight() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new CoverLayoutRule(
-                BigDecimal.valueOf(45),
-                BigDecimal.valueOf(15),
+                BigDecimal.valueOf(30),
+                BigDecimal.valueOf(10),
                 BigDecimal.ZERO,
-                0
+                1,
+                52
         ));
 
         assertEquals("titleToBottomWeight must be greater than zero.", exception.getMessage());
     }
 
     @Test
-    void shouldRejectNegativeSafetyBlankLines() {
+    void shouldRejectNegativeBottomPaddingLineSlots() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new CoverLayoutRule(
-                BigDecimal.valueOf(45),
-                BigDecimal.valueOf(15),
-                BigDecimal.valueOf(40),
-                -1
+                BigDecimal.valueOf(30),
+                BigDecimal.valueOf(10),
+                BigDecimal.valueOf(60),
+                -1,
+                52
         ));
 
-        assertEquals("safetyBlankLines must not be negative.", exception.getMessage());
+        assertEquals("bottomPaddingLineSlots must not be negative.", exception.getMessage());
+    }
+
+    @Test
+    void shouldRejectZeroMaxCharactersPerLine() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new CoverLayoutRule(
+                BigDecimal.valueOf(30),
+                BigDecimal.valueOf(10),
+                BigDecimal.valueOf(60),
+                1,
+                0
+        ));
+
+        assertEquals("maxCharactersPerLine must be greater than zero.", exception.getMessage());
     }
 
     private static CoverStyleMapping validStyleMapping() {
@@ -131,10 +149,11 @@ class CoverComponentRuleTest {
 
     private static CoverLayoutRule validLayoutRule() {
         return new CoverLayoutRule(
-                BigDecimal.valueOf(45),
-                BigDecimal.valueOf(15),
-                BigDecimal.valueOf(40),
-                0
+                BigDecimal.valueOf(30),
+                BigDecimal.valueOf(10),
+                BigDecimal.valueOf(60),
+                1,
+                52
         );
     }
 }

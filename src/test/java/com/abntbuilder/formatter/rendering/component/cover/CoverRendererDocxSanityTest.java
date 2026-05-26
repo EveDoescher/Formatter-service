@@ -121,10 +121,11 @@ class CoverRendererDocxSanityTest {
                         "cover.bottom"
                 ),
                 new CoverLayoutRule(
-                        BigDecimal.valueOf(45),
-                        BigDecimal.valueOf(15),
-                        BigDecimal.valueOf(40),
-                        0
+                        BigDecimal.valueOf(30),
+                        BigDecimal.valueOf(10),
+                        BigDecimal.valueOf(60),
+                        1,
+                        52
                 )
         );
     }

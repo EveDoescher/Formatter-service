@@ -12,6 +12,23 @@ public class SinglePageLayoutOverflowException extends RuntimeException {
                 + " cm.");
     }
 
+    private SinglePageLayoutOverflowException(String message) {
+        super(message);
+    }
+
+    public static SinglePageLayoutOverflowException forLineSlots(
+            int requiredLineSlots,
+            int usableLineSlots
+    ) {
+        return new SinglePageLayoutOverflowException(
+                "Single-page layout overflow. Required line slots: "
+                        + requiredLineSlots
+                        + "; usable line slots: "
+                        + usableLineSlots
+                        + "."
+        );
+    }
+
     private static String format(BigDecimal value) {
         return value.stripTrailingZeros().toPlainString();
     }
