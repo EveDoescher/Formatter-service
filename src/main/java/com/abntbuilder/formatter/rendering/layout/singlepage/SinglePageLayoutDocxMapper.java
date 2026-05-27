@@ -30,8 +30,7 @@ public final class SinglePageLayoutDocxMapper {
     public List<DocxBlock> mapToDocxBlocksAnchoringLastGroup(
             PageRule pageRule,
             List<SinglePageLayoutGroup> groups,
-            List<BigDecimal> gapWeights,
-            int bottomPaddingLineSlots
+            List<BigDecimal> gapWeights
     ) {
         Objects.requireNonNull(pageRule, "pageRule must not be null");
         Objects.requireNonNull(groups, "groups must not be null");
@@ -41,10 +40,6 @@ public final class SinglePageLayoutDocxMapper {
             throw new IllegalArgumentException("groups must not be empty.");
         }
 
-        if (bottomPaddingLineSlots < 0) {
-            throw new IllegalArgumentException("bottomPaddingLineSlots must not be negative.");
-        }
-
         groups = List.copyOf(groups);
         gapWeights = List.copyOf(gapWeights);
 
@@ -52,8 +47,7 @@ public final class SinglePageLayoutDocxMapper {
         validateSinglePageSpacing(groups);
 
         int layoutLineHeightTwips = lineMetrics.layoutLineHeightTwips(groups);
-        int usableHeightTwips = MeasurementConverter.centimetersToTwips(pageRule.usableHeightCm());
-        int usableLineSlots = usableHeightTwips / layoutLineHeightTwips;
+        int usableLineSlots = calculateRenderablePageCapacityLines(pageRule, layoutLineHeightTwips);
 
         if (usableLineSlots <= 0) {
             throw SinglePageLayoutOverflowException.forLineSlots(1, usableLineSlots);
@@ -62,11 +56,11 @@ public final class SinglePageLayoutDocxMapper {
         SinglePageLayoutGroup lastGroup = groups.getLast();
         int lastGroupLineSlots = lastGroup.lines().size();
 
-        int lastGroupStartSlot = usableLineSlots - bottomPaddingLineSlots - lastGroupLineSlots;
+        int lastGroupStartSlot = usableLineSlots - lastGroupLineSlots;
 
         if (lastGroupStartSlot < 0) {
             throw SinglePageLayoutOverflowException.forLineSlots(
-                    lastGroupLineSlots + bottomPaddingLineSlots,
+                    lastGroupLineSlots,
                     usableLineSlots
             );
         }
@@ -76,7 +70,7 @@ public final class SinglePageLayoutDocxMapper {
 
         if (availableGapLineSlots < 0) {
             throw SinglePageLayoutOverflowException.forLineSlots(
-                    preLastContentLineSlots + lastGroupLineSlots + bottomPaddingLineSlots,
+                    preLastContentLineSlots + lastGroupLineSlots,
                     usableLineSlots
             );
         }
@@ -104,6 +98,16 @@ public final class SinglePageLayoutDocxMapper {
         }
 
         return List.copyOf(blocks);
+    }
+
+    private static int calculateRenderablePageCapacityLines(PageRule pageRule, int lineHeightTwips) {
+        int usableHeightTwips = MeasurementConverter.centimetersToTwips(pageRule.usableHeightCm());
+        int pageEdgeGuardTwips = MeasurementConverter.centimetersToTwips(
+                pageRule.marginTopCm().add(pageRule.marginBottomCm())
+        );
+        int renderableHeightTwips = usableHeightTwips - pageEdgeGuardTwips;
+
+        return renderableHeightTwips / lineHeightTwips;
     }
 
     private static void validateGapWeights(

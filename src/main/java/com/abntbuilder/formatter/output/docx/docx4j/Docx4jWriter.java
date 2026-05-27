@@ -45,6 +45,7 @@ public class Docx4jWriter implements DocxWriter {
         try {
             WordprocessingMLPackage wordPackage = WordprocessingMLPackage.createPackage();
 
+            clearDefaultBodyContent(wordPackage);
             applyPageRule(wordPackage, document.pageRule());
 
             for (DocxBlock block : document.blocks()) {
@@ -60,6 +61,15 @@ public class Docx4jWriter implements DocxWriter {
         }
     }
 
+    private void clearDefaultBodyContent(WordprocessingMLPackage wordPackage) {
+        wordPackage
+                .getMainDocumentPart()
+                .getJaxbElement()
+                .getBody()
+                .getContent()
+                .clear();
+    }
+
     private void applyPageRule(WordprocessingMLPackage wordPackage, PageRule pageRule) {
         SectPr sectionProperties = objectFactory.createSectPr();
 
@@ -73,6 +83,9 @@ public class Docx4jWriter implements DocxWriter {
         pageMargins.setRight(BigInteger.valueOf(MeasurementConverter.centimetersToTwips(pageRule.marginRightCm())));
         pageMargins.setBottom(BigInteger.valueOf(MeasurementConverter.centimetersToTwips(pageRule.marginBottomCm())));
         pageMargins.setLeft(BigInteger.valueOf(MeasurementConverter.centimetersToTwips(pageRule.marginLeftCm())));
+        pageMargins.setHeader(BigInteger.ZERO);
+        pageMargins.setFooter(BigInteger.ZERO);
+        pageMargins.setGutter(BigInteger.ZERO);
 
         sectionProperties.setPgSz(pageSize);
         sectionProperties.setPgMar(pageMargins);
@@ -89,6 +102,7 @@ public class Docx4jWriter implements DocxWriter {
             case DocxParagraph paragraph -> writeParagraph(wordPackage, paragraph);
             case DocxPageBreak ignored -> writePageBreak(wordPackage);
             case DocxBlankLine blankLine -> writeBlankLine(wordPackage, blankLine);
+            case DocxMultilineParagraph paragraph -> writeMultilineParagraph(wordPackage, paragraph);
         }
     }
 
@@ -225,6 +239,47 @@ public class Docx4jWriter implements DocxWriter {
                 blankLine.exactLineHeightPt()
         ));
 
+        R run = objectFactory.createR();
+        run.setRPr(createRunProperties(blankLine.styleRule()));
+
+        Text text = objectFactory.createText();
+        text.setSpace("preserve");
+        text.setValue(" ");
+
+        run.getContent().add(text);
+        paragraph.getContent().add(run);
+
         wordPackage.getMainDocumentPart().addObject(paragraph);
+    }
+
+    private void writeMultilineParagraph(
+            WordprocessingMLPackage wordPackage,
+            DocxMultilineParagraph paragraph
+    ) {
+        P docxParagraph = objectFactory.createP();
+
+        docxParagraph.setPPr(createParagraphProperties(
+                paragraph.styleRule(),
+                Optional.empty(),
+                paragraph.exactLineHeightPt()
+        ));
+
+        R run = objectFactory.createR();
+        run.setRPr(createRunProperties(paragraph.styleRule()));
+
+        for (int index = 0; index < paragraph.lines().size(); index++) {
+            if (index > 0) {
+                Br lineBreak = objectFactory.createBr();
+                run.getContent().add(lineBreak);
+            }
+
+            Text text = objectFactory.createText();
+            text.setValue(resolveText(paragraph.lines().get(index), paragraph.styleRule()));
+            run.getContent().add(text);
+        }
+
+        docxParagraph.getContent().add(run);
+
+        wordPackage.getMainDocumentPart().addObject(docxParagraph);
     }
 }

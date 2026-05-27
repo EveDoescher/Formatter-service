@@ -7,17 +7,12 @@ public record CoverLayoutRule(
         BigDecimal topToAuthorWeight,
         BigDecimal authorToTitleWeight,
         BigDecimal titleToBottomWeight,
-        int bottomPaddingLineSlots,
         int maxCharactersPerLine
 ) {
     public CoverLayoutRule {
         requirePositive(topToAuthorWeight, "topToAuthorWeight");
         requirePositive(authorToTitleWeight, "authorToTitleWeight");
         requirePositive(titleToBottomWeight, "titleToBottomWeight");
-
-        if (bottomPaddingLineSlots < 0) {
-            throw new IllegalArgumentException("bottomPaddingLineSlots must not be negative.");
-        }
 
         if (maxCharactersPerLine <= 0) {
             throw new IllegalArgumentException("maxCharactersPerLine must be greater than zero.");

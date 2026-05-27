@@ -426,7 +426,6 @@ class DocxExportControllerIntegrationTest {
                            "topToAuthorWeight": 30,
                            "authorToTitleWeight": 10,
                            "titleToBottomWeight": 60,
-                           "bottomPaddingLineSlots": 1,
                            "maxCharactersPerLine": 52
                          }
                       }

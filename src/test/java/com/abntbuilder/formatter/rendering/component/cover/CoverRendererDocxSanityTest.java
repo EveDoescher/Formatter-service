@@ -124,7 +124,6 @@ class CoverRendererDocxSanityTest {
                         BigDecimal.valueOf(30),
                         BigDecimal.valueOf(10),
                         BigDecimal.valueOf(60),
-                        1,
                         52
                 )
         );

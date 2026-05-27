@@ -1,0 +1,336 @@
+package com.abntbuilder.formatter.rendering.component.cover.layout;
+
+import com.abntbuilder.formatter.document.component.cover.CoverComponent;
+import com.abntbuilder.formatter.profile.model.DocumentProfile;
+import com.abntbuilder.formatter.profile.model.PageRule;
+import com.abntbuilder.formatter.profile.model.StyleRule;
+import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
+import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
+import com.abntbuilder.formatter.profile.resolution.ComponentRuleResolver;
+import com.abntbuilder.formatter.profile.resolution.StyleResolver;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageTextLineBreaker;
+import com.abntbuilder.formatter.shared.exception.SinglePageLayoutOverflowException;
+import com.abntbuilder.formatter.shared.measurement.MeasurementConverter;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+public final class CoverLayoutCalculator {
+
+    private static final String COVER_COMPONENT_ID = "cover";
+    private static final String TOP_BLOCK_ID = "cover.top";
+    private static final String AUTHORS_BLOCK_ID = "cover.authors";
+    private static final String TITLE_BLOCK_ID = "cover.title";
+    private static final String SUBTITLE_BLOCK_ID = "cover.subtitle";
+    private static final String BOTTOM_BLOCK_ID = "cover.bottom";
+
+    private final SinglePageTextLineBreaker lineBreaker;
+    private final CoverGapDistributor gapDistributor;
+
+    public CoverLayoutCalculator() {
+        this(new SinglePageTextLineBreaker(), new CoverGapDistributor());
+    }
+
+    public CoverLayoutCalculator(
+            SinglePageTextLineBreaker lineBreaker,
+            CoverGapDistributor gapDistributor
+    ) {
+        this.lineBreaker = Objects.requireNonNull(lineBreaker, "lineBreaker must not be null");
+        this.gapDistributor = Objects.requireNonNull(gapDistributor, "gapDistributor must not be null");
+    }
+
+    public CoverLayoutPlan calculate(CoverComponent cover, DocumentProfile profile) {
+        Objects.requireNonNull(cover, "cover must not be null");
+        Objects.requireNonNull(profile, "profile must not be null");
+
+        StyleResolver styleResolver = new StyleResolver(profile);
+        CoverComponentRule coverRule = new ComponentRuleResolver(profile).resolve(
+                COVER_COMPONENT_ID,
+                CoverComponentRule.class
+        );
+        CoverLayoutRule layoutRule = coverRule.layoutRule();
+        PageRule pageRule = profile.pageRule();
+
+        StyleRule topStyle = styleResolver.resolve(coverRule.styleMapping().topLinesStyleId());
+        StyleRule authorStyle = styleResolver.resolve(coverRule.styleMapping().authorLinesStyleId());
+        StyleRule titleStyle = styleResolver.resolve(coverRule.styleMapping().titleStyleId());
+        StyleRule subtitleStyle = styleResolver.resolve(coverRule.styleMapping().subtitleStyleId());
+        StyleRule bottomStyle = styleResolver.resolve(coverRule.styleMapping().bottomLinesStyleId());
+
+        List<LayoutGroup> groups = new ArrayList<>();
+
+        measureOptionalBlock(
+                TOP_BLOCK_ID,
+                cover.topLines(),
+                topStyle,
+                pageRule,
+                layoutRule.maxCharactersPerLine()
+        ).ifPresent(block -> groups.add(LayoutGroup.of(TOP_BLOCK_ID, List.of(block.toTextElement()))));
+
+        measureOptionalBlock(
+                AUTHORS_BLOCK_ID,
+                cover.authorLines(),
+                authorStyle,
+                pageRule,
+                layoutRule.maxCharactersPerLine()
+        ).ifPresent(block -> groups.add(LayoutGroup.of(AUTHORS_BLOCK_ID, List.of(block.toTextElement()))));
+
+        List<CoverLayoutElement> titleElements = new ArrayList<>();
+        titleElements.add(measureRequiredText(
+                TITLE_BLOCK_ID,
+                cover.title(),
+                titleStyle,
+                pageRule,
+                layoutRule.maxCharactersPerLine()
+        ).toTextElement());
+
+        cover.subtitle()
+                .map(subtitle -> measureRequiredText(
+                        SUBTITLE_BLOCK_ID,
+                        subtitle,
+                        subtitleStyle,
+                        pageRule,
+                        layoutRule.maxCharactersPerLine()
+                ))
+                .map(MeasuredCoverBlock::toTextElement)
+                .ifPresent(titleElements::add);
+
+        groups.add(LayoutGroup.of(TITLE_BLOCK_ID, titleElements));
+
+        MeasuredCoverBlock bottomBlock = measureOptionalBlock(
+                BOTTOM_BLOCK_ID,
+                cover.bottomLines(),
+                bottomStyle,
+                pageRule,
+                layoutRule.maxCharactersPerLine()
+        ).orElseThrow(() -> new IllegalArgumentException("cover must contain bottomLines for anchored bottom layout."));
+
+        if (bottomBlock.occupiedLines() != 2) {
+            throw new IllegalArgumentException("cover bottomLines must contain exactly city and year.");
+        }
+
+        groups.add(LayoutGroup.of(BOTTOM_BLOCK_ID, List.of(bottomBlock.toTextElement())));
+
+        int lineHeightTwips = calculateLayoutLineHeightTwips(groups);
+        int pageCapacityLines = calculateRenderablePageCapacityLines(pageRule, lineHeightTwips);
+
+        if (pageCapacityLines <= 0) {
+            throw SinglePageLayoutOverflowException.forLineSlots(1, pageCapacityLines);
+        }
+
+        int contentLines = groups.stream()
+                .mapToInt(LayoutGroup::lineCount)
+                .sum();
+
+        if (contentLines > pageCapacityLines) {
+            throw SinglePageLayoutOverflowException.forLineSlots(contentLines, pageCapacityLines);
+        }
+
+        int availableGapLines = pageCapacityLines - contentLines;
+        List<BigDecimal> gapWeights = createGapWeights(groups, layoutRule);
+        int[] gapLineCounts = gapDistributor.distribute(availableGapLines, gapWeights);
+        BigDecimal exactLineHeightPt = MeasurementConverter.twipsToPoints(lineHeightTwips);
+
+        List<CoverLayoutElement> elements = assembleElements(groups, gapLineCounts);
+
+        return new CoverLayoutPlan(
+                elements,
+                pageCapacityLines,
+                pageCapacityLines,
+                exactLineHeightPt
+        );
+    }
+
+    private Optional<MeasuredCoverBlock> measureOptionalBlock(
+            String blockId,
+            List<String> sourceLines,
+            StyleRule styleRule,
+            PageRule pageRule,
+            int maxCharactersPerLine
+    ) {
+        if (sourceLines.isEmpty()) {
+            return Optional.empty();
+        }
+
+        List<String> measuredLines = new ArrayList<>();
+
+        for (String sourceLine : sourceLines) {
+            measuredLines.addAll(lineBreaker.breakText(
+                    sourceLine,
+                    maxCharactersPerLine,
+                    pageRule,
+                    styleRule
+            ));
+        }
+
+        return Optional.of(new MeasuredCoverBlock(blockId, styleRule, measuredLines));
+    }
+
+    private MeasuredCoverBlock measureRequiredText(
+            String blockId,
+            String text,
+            StyleRule styleRule,
+            PageRule pageRule,
+            int maxCharactersPerLine
+    ) {
+        return new MeasuredCoverBlock(
+                blockId,
+                styleRule,
+                lineBreaker.breakText(text, maxCharactersPerLine, pageRule, styleRule)
+        );
+    }
+
+    private static int calculateLayoutLineHeightTwips(List<LayoutGroup> groups) {
+        int maxLineHeightTwips = 0;
+
+        for (LayoutGroup group : groups) {
+            for (CoverLayoutElement element : group.elements()) {
+                if (element instanceof CoverTextLines textLines) {
+                    validateSinglePageSpacing(textLines.styleRule());
+                    maxLineHeightTwips = Math.max(
+                            maxLineHeightTwips,
+                            exactLineHeightTwips(textLines.styleRule())
+                    );
+                }
+            }
+        }
+
+        if (maxLineHeightTwips <= 0) {
+            throw new IllegalArgumentException("layout line height must be greater than zero.");
+        }
+
+        return maxLineHeightTwips;
+    }
+
+    private static int calculateRenderablePageCapacityLines(PageRule pageRule, int lineHeightTwips) {
+        int usableHeightTwips = MeasurementConverter.centimetersToTwips(pageRule.usableHeightCm());
+        int pageEdgeGuardTwips = MeasurementConverter.centimetersToTwips(
+                pageRule.marginTopCm().add(pageRule.marginBottomCm())
+        );
+        int renderableHeightTwips = usableHeightTwips - pageEdgeGuardTwips;
+
+        return renderableHeightTwips / lineHeightTwips;
+    }
+
+    private static int exactLineHeightTwips(StyleRule styleRule) {
+        return MeasurementConverter.pointsToTwips(styleRule.fontSizePt().multiply(styleRule.lineSpacing()));
+    }
+
+    private static void validateSinglePageSpacing(StyleRule styleRule) {
+        if (styleRule.spacingBeforePt().compareTo(BigDecimal.ZERO) != 0) {
+            throw new IllegalArgumentException(
+                    "single-page layout styles must have spacingBeforePt equal to zero."
+            );
+        }
+
+        if (styleRule.spacingAfterPt().compareTo(BigDecimal.ZERO) != 0) {
+            throw new IllegalArgumentException(
+                    "single-page layout styles must have spacingAfterPt equal to zero."
+            );
+        }
+    }
+
+    private static List<BigDecimal> createGapWeights(
+            List<LayoutGroup> groups,
+            CoverLayoutRule layoutRule
+    ) {
+        List<BigDecimal> weights = new ArrayList<>();
+
+        for (int index = 0; index < groups.size() - 1; index++) {
+            weights.add(resolveGapWeight(groups.get(index).id(), groups.get(index + 1).id(), layoutRule));
+        }
+
+        return List.copyOf(weights);
+    }
+
+    private static BigDecimal resolveGapWeight(
+            String currentGroupId,
+            String nextGroupId,
+            CoverLayoutRule layoutRule
+    ) {
+        if (TOP_BLOCK_ID.equals(currentGroupId) && AUTHORS_BLOCK_ID.equals(nextGroupId)) {
+            return layoutRule.topToAuthorWeight();
+        }
+
+        if (AUTHORS_BLOCK_ID.equals(currentGroupId) && TITLE_BLOCK_ID.equals(nextGroupId)) {
+            return layoutRule.authorToTitleWeight();
+        }
+
+        if (TITLE_BLOCK_ID.equals(currentGroupId) && BOTTOM_BLOCK_ID.equals(nextGroupId)) {
+            return layoutRule.titleToBottomWeight();
+        }
+
+        return BigDecimal.ONE;
+    }
+
+    private static List<CoverLayoutElement> assembleElements(
+            List<LayoutGroup> groups,
+            int[] gapLineCounts
+    ) {
+        List<CoverLayoutElement> elements = new ArrayList<>();
+
+        for (int groupIndex = 0; groupIndex < groups.size(); groupIndex++) {
+            LayoutGroup group = groups.get(groupIndex);
+
+            if (groupIndex > 0) {
+                int gapLineCount = gapLineCounts[groupIndex - 1];
+
+                if (gapLineCount > 0) {
+                    elements.add(new CoverSpacerLines(
+                            groups.get(groupIndex - 1).id() + "-to-" + group.id(),
+                            gapLineCount,
+                            group.firstStyleRule()
+                    ));
+                }
+            }
+
+            elements.addAll(group.elements());
+        }
+
+        return List.copyOf(elements);
+    }
+
+    private record LayoutGroup(
+            String id,
+            List<CoverLayoutElement> elements,
+            int lineCount,
+            StyleRule firstStyleRule
+    ) {
+
+        private LayoutGroup {
+            if (id == null || id.isBlank()) {
+                throw new IllegalArgumentException("id must not be blank.");
+            }
+
+            Objects.requireNonNull(elements, "elements must not be null");
+            Objects.requireNonNull(firstStyleRule, "firstStyleRule must not be null");
+            elements = List.copyOf(elements);
+
+            if (elements.isEmpty()) {
+                throw new IllegalArgumentException("elements must not be empty.");
+            }
+        }
+
+        static LayoutGroup of(String id, List<CoverLayoutElement> elements) {
+            StyleRule firstStyleRule = null;
+            int lineCount = 0;
+
+            for (CoverLayoutElement element : elements) {
+                lineCount += element.lineCount();
+
+                if (firstStyleRule == null && element instanceof CoverTextLines textLines) {
+                    firstStyleRule = textLines.styleRule();
+                }
+            }
+
+            if (firstStyleRule == null) {
+                throw new IllegalArgumentException("layout group must contain text lines.");
+            }
+
+            return new LayoutGroup(id, elements, lineCount, firstStyleRule);
+        }
+    }
+}

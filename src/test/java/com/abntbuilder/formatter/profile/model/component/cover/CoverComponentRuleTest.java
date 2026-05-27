@@ -26,7 +26,6 @@ class CoverComponentRuleTest {
         assertEquals(0, BigDecimal.valueOf(30).compareTo(rule.layoutRule().topToAuthorWeight()));
         assertEquals(0, BigDecimal.valueOf(10).compareTo(rule.layoutRule().authorToTitleWeight()));
         assertEquals(0, BigDecimal.valueOf(60).compareTo(rule.layoutRule().titleToBottomWeight()));
-        assertEquals(1, rule.layoutRule().bottomPaddingLineSlots());
         assertEquals(52, rule.layoutRule().maxCharactersPerLine());
     }
 
@@ -78,7 +77,6 @@ class CoverComponentRuleTest {
                 BigDecimal.ZERO,
                 BigDecimal.valueOf(10),
                 BigDecimal.valueOf(60),
-                1,
                 52
         ));
 
@@ -91,7 +89,6 @@ class CoverComponentRuleTest {
                 BigDecimal.valueOf(30),
                 BigDecimal.ZERO,
                 BigDecimal.valueOf(60),
-                1,
                 52
         ));
 
@@ -104,24 +101,10 @@ class CoverComponentRuleTest {
                 BigDecimal.valueOf(30),
                 BigDecimal.valueOf(10),
                 BigDecimal.ZERO,
-                1,
                 52
         ));
 
         assertEquals("titleToBottomWeight must be greater than zero.", exception.getMessage());
-    }
-
-    @Test
-    void shouldRejectNegativeBottomPaddingLineSlots() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new CoverLayoutRule(
-                BigDecimal.valueOf(30),
-                BigDecimal.valueOf(10),
-                BigDecimal.valueOf(60),
-                -1,
-                52
-        ));
-
-        assertEquals("bottomPaddingLineSlots must not be negative.", exception.getMessage());
     }
 
     @Test
@@ -130,7 +113,6 @@ class CoverComponentRuleTest {
                 BigDecimal.valueOf(30),
                 BigDecimal.valueOf(10),
                 BigDecimal.valueOf(60),
-                1,
                 0
         ));
 
@@ -152,7 +134,6 @@ class CoverComponentRuleTest {
                 BigDecimal.valueOf(30),
                 BigDecimal.valueOf(10),
                 BigDecimal.valueOf(60),
-                1,
                 52
         );
     }
