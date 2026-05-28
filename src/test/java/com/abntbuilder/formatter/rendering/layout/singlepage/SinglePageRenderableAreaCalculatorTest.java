@@ -14,21 +14,25 @@ class SinglePageRenderableAreaCalculatorTest {
     private final SinglePageRenderableAreaCalculator calculator = new SinglePageRenderableAreaCalculator();
 
     @Test
-    void shouldCalculateSafeLineCapacityFromPageRuleAndLineHeight() {
-        PageRule pageRule = new PageRule(
-                BigDecimal.valueOf(21),
-                BigDecimal.valueOf(29.7),
-                BigDecimal.valueOf(3),
-                BigDecimal.valueOf(2),
-                BigDecimal.valueOf(2),
-                BigDecimal.valueOf(3),
-                PageOrientation.PORTRAIT
-        );
+    void shouldCalculateSafeLineCapacityFromPhysicalCapacityAndBoundarySafetyLines() {
         int lineHeightTwips = MeasurementConverter.pointsToTwips(BigDecimal.valueOf(18));
 
-        int capacity = calculator.calculateSafeLineCapacity(pageRule, lineHeightTwips);
+        int physicalCapacity = calculator.calculatePhysicalLineCapacity(validPageRule(), lineHeightTwips);
+        int safetyLines = calculator.calculateBoundarySafetyLineCount(validPageRule(), lineHeightTwips);
+        int safeCapacity = calculator.calculateSafeLineCapacity(validPageRule(), lineHeightTwips);
 
-        assertTrue(capacity > 0);
+        assertTrue(physicalCapacity > 0);
+        assertTrue(safetyLines > 0);
+        assertEquals(physicalCapacity - safetyLines, safeCapacity);
+    }
+
+    @Test
+    void shouldCalculateExpectedSafeCapacityForAbntA4WithTwelvePointOneAndHalfSpacing() {
+        int lineHeightTwips = MeasurementConverter.pointsToTwips(BigDecimal.valueOf(18));
+
+        assertEquals(38, calculator.calculatePhysicalLineCapacity(validPageRule(), lineHeightTwips));
+        assertEquals(7, calculator.calculateBoundarySafetyLineCount(validPageRule(), lineHeightTwips));
+        assertEquals(31, calculator.calculateSafeLineCapacity(validPageRule(), lineHeightTwips));
     }
 
     @Test
@@ -50,7 +54,7 @@ class SinglePageRenderableAreaCalculatorTest {
     }
 
     @Test
-    void shouldReturnZeroWhenSafeHeightIsNotPositive() {
+    void shouldReturnZeroWhenBoundarySafetyConsumesPhysicalCapacity() {
         PageRule pageRule = new PageRule(
                 BigDecimal.valueOf(21),
                 BigDecimal.valueOf(10),

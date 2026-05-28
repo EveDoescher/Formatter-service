@@ -64,7 +64,10 @@ class CoverLayoutCalculatorTest {
                 List.of("NOME COMPLETO DO ALUNO"),
                 "TITULO DO TRABALHO",
                 Optional.empty(),
-                List.of("Cidade Com Nome Muito Grande Que Nao Deve Caber Em Uma Linha", "2026")
+                List.of(
+                        "Cidade Brasileira Com Nome Propositalmente Extenso Para Forcar Quebra Em Mais De Uma Linha",
+                        "2026"
+                )
         );
 
         IllegalArgumentException exception = assertThrows(

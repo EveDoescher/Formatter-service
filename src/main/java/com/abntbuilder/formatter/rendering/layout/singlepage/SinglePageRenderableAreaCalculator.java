@@ -14,19 +14,35 @@ public final class SinglePageRenderableAreaCalculator {
             throw new IllegalArgumentException("lineHeightTwips must be greater than zero.");
         }
 
-        int usableHeightTwips = MeasurementConverter.centimetersToTwips(pageRule.usableHeightCm());
-        int safeRenderableHeightTwips = usableHeightTwips - calculateSafetyGuardTwips(pageRule);
+        int physicalLineCapacity = calculatePhysicalLineCapacity(pageRule, lineHeightTwips);
+        int boundarySafetyLineCount = calculateBoundarySafetyLineCount(pageRule, lineHeightTwips);
 
-        if (safeRenderableHeightTwips <= 0) {
-            return 0;
-        }
-
-        return safeRenderableHeightTwips / lineHeightTwips;
+        return Math.max(physicalLineCapacity - boundarySafetyLineCount, 0);
     }
 
-    private static int calculateSafetyGuardTwips(PageRule pageRule) {
-        return MeasurementConverter.centimetersToTwips(
+    int calculatePhysicalLineCapacity(PageRule pageRule, int lineHeightTwips) {
+        Objects.requireNonNull(pageRule, "pageRule must not be null");
+
+        if (lineHeightTwips <= 0) {
+            throw new IllegalArgumentException("lineHeightTwips must be greater than zero.");
+        }
+
+        int usableHeightTwips = MeasurementConverter.centimetersToTwips(pageRule.usableHeightCm());
+
+        return usableHeightTwips / lineHeightTwips;
+    }
+
+    int calculateBoundarySafetyLineCount(PageRule pageRule, int lineHeightTwips) {
+        Objects.requireNonNull(pageRule, "pageRule must not be null");
+
+        if (lineHeightTwips <= 0) {
+            throw new IllegalArgumentException("lineHeightTwips must be greater than zero.");
+        }
+
+        int boundarySafetyHeightTwips = MeasurementConverter.centimetersToTwips(
                 pageRule.marginTopCm().add(pageRule.marginBottomCm())
         );
+
+        return boundarySafetyHeightTwips / lineHeightTwips;
     }
 }
