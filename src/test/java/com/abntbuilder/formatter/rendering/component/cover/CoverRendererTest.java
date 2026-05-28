@@ -109,8 +109,7 @@ class CoverRendererTest {
                 new CoverLayoutRule(
                         BigDecimal.valueOf(30),
                         BigDecimal.valueOf(10),
-                        BigDecimal.valueOf(60),
-                        52
+                        BigDecimal.valueOf(60)
                 )
         );
     }

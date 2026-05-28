@@ -8,7 +8,9 @@ import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRul
 import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
 import com.abntbuilder.formatter.profile.resolution.ComponentRuleResolver;
 import com.abntbuilder.formatter.profile.resolution.StyleResolver;
-import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageTextLineBreaker;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageRenderableAreaCalculator;
+import com.abntbuilder.formatter.rendering.layout.text.ConservativeTextMeasurer;
+import com.abntbuilder.formatter.rendering.layout.text.TextMeasurer;
 import com.abntbuilder.formatter.shared.exception.SinglePageLayoutOverflowException;
 import com.abntbuilder.formatter.shared.measurement.MeasurementConverter;
 
@@ -27,18 +29,28 @@ public final class CoverLayoutCalculator {
     private static final String SUBTITLE_BLOCK_ID = "cover.subtitle";
     private static final String BOTTOM_BLOCK_ID = "cover.bottom";
 
-    private final SinglePageTextLineBreaker lineBreaker;
+    private final TextMeasurer textMeasurer;
+    private final SinglePageRenderableAreaCalculator renderableAreaCalculator;
     private final CoverGapDistributor gapDistributor;
 
     public CoverLayoutCalculator() {
-        this(new SinglePageTextLineBreaker(), new CoverGapDistributor());
+        this(
+                new ConservativeTextMeasurer(),
+                new SinglePageRenderableAreaCalculator(),
+                new CoverGapDistributor()
+        );
     }
 
     public CoverLayoutCalculator(
-            SinglePageTextLineBreaker lineBreaker,
+            TextMeasurer textMeasurer,
+            SinglePageRenderableAreaCalculator renderableAreaCalculator,
             CoverGapDistributor gapDistributor
     ) {
-        this.lineBreaker = Objects.requireNonNull(lineBreaker, "lineBreaker must not be null");
+        this.textMeasurer = Objects.requireNonNull(textMeasurer, "textMeasurer must not be null");
+        this.renderableAreaCalculator = Objects.requireNonNull(
+                renderableAreaCalculator,
+                "renderableAreaCalculator must not be null"
+        );
         this.gapDistributor = Objects.requireNonNull(gapDistributor, "gapDistributor must not be null");
     }
 
@@ -66,16 +78,14 @@ public final class CoverLayoutCalculator {
                 TOP_BLOCK_ID,
                 cover.topLines(),
                 topStyle,
-                pageRule,
-                layoutRule.maxCharactersPerLine()
+                pageRule
         ).ifPresent(block -> groups.add(LayoutGroup.of(TOP_BLOCK_ID, List.of(block.toTextElement()))));
 
         measureOptionalBlock(
                 AUTHORS_BLOCK_ID,
                 cover.authorLines(),
                 authorStyle,
-                pageRule,
-                layoutRule.maxCharactersPerLine()
+                pageRule
         ).ifPresent(block -> groups.add(LayoutGroup.of(AUTHORS_BLOCK_ID, List.of(block.toTextElement()))));
 
         List<CoverLayoutElement> titleElements = new ArrayList<>();
@@ -83,8 +93,7 @@ public final class CoverLayoutCalculator {
                 TITLE_BLOCK_ID,
                 cover.title(),
                 titleStyle,
-                pageRule,
-                layoutRule.maxCharactersPerLine()
+                pageRule
         ).toTextElement());
 
         cover.subtitle()
@@ -92,8 +101,7 @@ public final class CoverLayoutCalculator {
                         SUBTITLE_BLOCK_ID,
                         subtitle,
                         subtitleStyle,
-                        pageRule,
-                        layoutRule.maxCharactersPerLine()
+                        pageRule
                 ))
                 .map(MeasuredCoverBlock::toTextElement)
                 .ifPresent(titleElements::add);
@@ -104,8 +112,7 @@ public final class CoverLayoutCalculator {
                 BOTTOM_BLOCK_ID,
                 cover.bottomLines(),
                 bottomStyle,
-                pageRule,
-                layoutRule.maxCharactersPerLine()
+                pageRule
         ).orElseThrow(() -> new IllegalArgumentException("cover must contain bottomLines for anchored bottom layout."));
 
         if (bottomBlock.occupiedLines() != 2) {
@@ -115,7 +122,7 @@ public final class CoverLayoutCalculator {
         groups.add(LayoutGroup.of(BOTTOM_BLOCK_ID, List.of(bottomBlock.toTextElement())));
 
         int lineHeightTwips = calculateLayoutLineHeightTwips(groups);
-        int pageCapacityLines = calculateRenderablePageCapacityLines(pageRule, lineHeightTwips);
+        int pageCapacityLines = renderableAreaCalculator.calculateSafeLineCapacity(pageRule, lineHeightTwips);
 
         if (pageCapacityLines <= 0) {
             throw SinglePageLayoutOverflowException.forLineSlots(1, pageCapacityLines);
@@ -148,8 +155,7 @@ public final class CoverLayoutCalculator {
             String blockId,
             List<String> sourceLines,
             StyleRule styleRule,
-            PageRule pageRule,
-            int maxCharactersPerLine
+            PageRule pageRule
     ) {
         if (sourceLines.isEmpty()) {
             return Optional.empty();
@@ -158,12 +164,11 @@ public final class CoverLayoutCalculator {
         List<String> measuredLines = new ArrayList<>();
 
         for (String sourceLine : sourceLines) {
-            measuredLines.addAll(lineBreaker.breakText(
+            measuredLines.addAll(textMeasurer.measure(
                     sourceLine,
-                    maxCharactersPerLine,
                     pageRule,
                     styleRule
-            ));
+            ).visualLines());
         }
 
         return Optional.of(new MeasuredCoverBlock(blockId, styleRule, measuredLines));
@@ -173,13 +178,12 @@ public final class CoverLayoutCalculator {
             String blockId,
             String text,
             StyleRule styleRule,
-            PageRule pageRule,
-            int maxCharactersPerLine
+            PageRule pageRule
     ) {
         return new MeasuredCoverBlock(
                 blockId,
                 styleRule,
-                lineBreaker.breakText(text, maxCharactersPerLine, pageRule, styleRule)
+                textMeasurer.measure(text, pageRule, styleRule).visualLines()
         );
     }
 
@@ -203,16 +207,6 @@ public final class CoverLayoutCalculator {
         }
 
         return maxLineHeightTwips;
-    }
-
-    private static int calculateRenderablePageCapacityLines(PageRule pageRule, int lineHeightTwips) {
-        int usableHeightTwips = MeasurementConverter.centimetersToTwips(pageRule.usableHeightCm());
-        int pageEdgeGuardTwips = MeasurementConverter.centimetersToTwips(
-                pageRule.marginTopCm().add(pageRule.marginBottomCm())
-        );
-        int renderableHeightTwips = usableHeightTwips - pageEdgeGuardTwips;
-
-        return renderableHeightTwips / lineHeightTwips;
     }
 
     private static int exactLineHeightTwips(StyleRule styleRule) {

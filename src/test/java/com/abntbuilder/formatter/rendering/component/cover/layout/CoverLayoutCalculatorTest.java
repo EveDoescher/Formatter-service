@@ -69,7 +69,7 @@ class CoverLayoutCalculatorTest {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> calculator.calculate(cover, profileWithMaxCharactersPerLine(20))
+                () -> calculator.calculate(cover, validProfile())
         );
 
         assertEquals("cover bottomLines must contain exactly city and year.", exception.getMessage());
@@ -86,10 +86,6 @@ class CoverLayoutCalculatorTest {
     }
 
     private static DocumentProfile validProfile() {
-        return profileWithMaxCharactersPerLine(52);
-    }
-
-    private static DocumentProfile profileWithMaxCharactersPerLine(int maxCharactersPerLine) {
         return new DocumentProfile(
                 "abnt-unip-profile",
                 "ABNT UNIP Profile",
@@ -113,8 +109,7 @@ class CoverLayoutCalculatorTest {
                         new CoverLayoutRule(
                                 BigDecimal.valueOf(30),
                                 BigDecimal.valueOf(10),
-                                BigDecimal.valueOf(60),
-                                maxCharactersPerLine
+                                BigDecimal.valueOf(60)
                         )
                 ))
         );

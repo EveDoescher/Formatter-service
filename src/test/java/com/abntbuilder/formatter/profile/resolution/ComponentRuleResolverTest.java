@@ -42,7 +42,6 @@ class ComponentRuleResolverTest {
         assertEquals(0, BigDecimal.valueOf(30).compareTo(rule.layoutRule().topToAuthorWeight()));
         assertEquals(0, BigDecimal.valueOf(10).compareTo(rule.layoutRule().authorToTitleWeight()));
         assertEquals(0, BigDecimal.valueOf(60).compareTo(rule.layoutRule().titleToBottomWeight()));
-        assertEquals(52, rule.layoutRule().maxCharactersPerLine());
     }
 
     @Test
@@ -150,8 +149,7 @@ class ComponentRuleResolverTest {
                 new CoverLayoutRule(
                         BigDecimal.valueOf(30),
                         BigDecimal.valueOf(10),
-                        BigDecimal.valueOf(60),
-                        52
+                        BigDecimal.valueOf(60)
                 )
         );
     }

@@ -38,22 +38,37 @@ public final class CoverGapDistributor {
             return gaps;
         }
 
+        int minimumLinesPerGap = availableGapLines >= gapWeights.size()
+                ? 1
+                : 0;
+        int remainingGapLines = availableGapLines - (minimumLinesPerGap * gapWeights.size());
+
+        if (minimumLinesPerGap > 0) {
+            for (int index = 0; index < gaps.length; index++) {
+                gaps[index] = minimumLinesPerGap;
+            }
+        }
+
+        if (remainingGapLines == 0) {
+            return gaps;
+        }
+
         BigDecimal totalWeight = gapWeights.stream()
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         int assignedLines = 0;
 
         for (int index = 0; index < gapWeights.size() - 1; index++) {
-            int gapLines = BigDecimal.valueOf(availableGapLines)
+            int gapLines = BigDecimal.valueOf(remainingGapLines)
                     .multiply(gapWeights.get(index))
                     .divide(totalWeight, 0, RoundingMode.FLOOR)
                     .intValueExact();
 
-            gaps[index] = gapLines;
+            gaps[index] += gapLines;
             assignedLines += gapLines;
         }
 
-        gaps[gapWeights.size() - 1] = availableGapLines - assignedLines;
+        gaps[gapWeights.size() - 1] += remainingGapLines - assignedLines;
 
         return gaps;
     }

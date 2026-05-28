@@ -26,7 +26,6 @@ class CoverComponentRuleTest {
         assertEquals(0, BigDecimal.valueOf(30).compareTo(rule.layoutRule().topToAuthorWeight()));
         assertEquals(0, BigDecimal.valueOf(10).compareTo(rule.layoutRule().authorToTitleWeight()));
         assertEquals(0, BigDecimal.valueOf(60).compareTo(rule.layoutRule().titleToBottomWeight()));
-        assertEquals(52, rule.layoutRule().maxCharactersPerLine());
     }
 
     @Test
@@ -76,8 +75,7 @@ class CoverComponentRuleTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new CoverLayoutRule(
                 BigDecimal.ZERO,
                 BigDecimal.valueOf(10),
-                BigDecimal.valueOf(60),
-                52
+                BigDecimal.valueOf(60)
         ));
 
         assertEquals("topToAuthorWeight must be greater than zero.", exception.getMessage());
@@ -88,8 +86,7 @@ class CoverComponentRuleTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new CoverLayoutRule(
                 BigDecimal.valueOf(30),
                 BigDecimal.ZERO,
-                BigDecimal.valueOf(60),
-                52
+                BigDecimal.valueOf(60)
         ));
 
         assertEquals("authorToTitleWeight must be greater than zero.", exception.getMessage());
@@ -100,23 +97,10 @@ class CoverComponentRuleTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new CoverLayoutRule(
                 BigDecimal.valueOf(30),
                 BigDecimal.valueOf(10),
-                BigDecimal.ZERO,
-                52
+                BigDecimal.ZERO
         ));
 
         assertEquals("titleToBottomWeight must be greater than zero.", exception.getMessage());
-    }
-
-    @Test
-    void shouldRejectZeroMaxCharactersPerLine() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new CoverLayoutRule(
-                BigDecimal.valueOf(30),
-                BigDecimal.valueOf(10),
-                BigDecimal.valueOf(60),
-                0
-        ));
-
-        assertEquals("maxCharactersPerLine must be greater than zero.", exception.getMessage());
     }
 
     private static CoverStyleMapping validStyleMapping() {
@@ -133,8 +117,7 @@ class CoverComponentRuleTest {
         return new CoverLayoutRule(
                 BigDecimal.valueOf(30),
                 BigDecimal.valueOf(10),
-                BigDecimal.valueOf(60),
-                52
+                BigDecimal.valueOf(60)
         );
     }
 }

@@ -9,15 +9,13 @@ import java.math.BigDecimal;
 public record CoverLayoutRuleRequest(
         @NotNull @Positive BigDecimal topToAuthorWeight,
         @NotNull @Positive BigDecimal authorToTitleWeight,
-        @NotNull @Positive BigDecimal titleToBottomWeight,
-        @NotNull @Positive Integer maxCharactersPerLine
+        @NotNull @Positive BigDecimal titleToBottomWeight
 ) {
     public CoverLayoutRule toDomain() {
         return new CoverLayoutRule(
                 topToAuthorWeight,
                 authorToTitleWeight,
-                titleToBottomWeight,
-                maxCharactersPerLine
+                titleToBottomWeight
         );
     }
 }

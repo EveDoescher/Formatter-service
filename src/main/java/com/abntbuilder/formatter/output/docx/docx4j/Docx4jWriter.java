@@ -102,7 +102,6 @@ public class Docx4jWriter implements DocxWriter {
             case DocxParagraph paragraph -> writeParagraph(wordPackage, paragraph);
             case DocxPageBreak ignored -> writePageBreak(wordPackage);
             case DocxBlankLine blankLine -> writeBlankLine(wordPackage, blankLine);
-            case DocxMultilineParagraph paragraph -> writeMultilineParagraph(wordPackage, paragraph);
         }
     }
 
@@ -252,34 +251,4 @@ public class Docx4jWriter implements DocxWriter {
         wordPackage.getMainDocumentPart().addObject(paragraph);
     }
 
-    private void writeMultilineParagraph(
-            WordprocessingMLPackage wordPackage,
-            DocxMultilineParagraph paragraph
-    ) {
-        P docxParagraph = objectFactory.createP();
-
-        docxParagraph.setPPr(createParagraphProperties(
-                paragraph.styleRule(),
-                Optional.empty(),
-                paragraph.exactLineHeightPt()
-        ));
-
-        R run = objectFactory.createR();
-        run.setRPr(createRunProperties(paragraph.styleRule()));
-
-        for (int index = 0; index < paragraph.lines().size(); index++) {
-            if (index > 0) {
-                Br lineBreak = objectFactory.createBr();
-                run.getContent().add(lineBreak);
-            }
-
-            Text text = objectFactory.createText();
-            text.setValue(resolveText(paragraph.lines().get(index), paragraph.styleRule()));
-            run.getContent().add(text);
-        }
-
-        docxParagraph.getContent().add(run);
-
-        wordPackage.getMainDocumentPart().addObject(docxParagraph);
-    }
 }

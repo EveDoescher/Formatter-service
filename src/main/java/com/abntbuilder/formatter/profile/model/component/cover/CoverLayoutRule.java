@@ -6,17 +6,12 @@ import java.util.Objects;
 public record CoverLayoutRule(
         BigDecimal topToAuthorWeight,
         BigDecimal authorToTitleWeight,
-        BigDecimal titleToBottomWeight,
-        int maxCharactersPerLine
+        BigDecimal titleToBottomWeight
 ) {
     public CoverLayoutRule {
         requirePositive(topToAuthorWeight, "topToAuthorWeight");
         requirePositive(authorToTitleWeight, "authorToTitleWeight");
         requirePositive(titleToBottomWeight, "titleToBottomWeight");
-
-        if (maxCharactersPerLine <= 0) {
-            throw new IllegalArgumentException("maxCharactersPerLine must be greater than zero.");
-        }
     }
 
     public BigDecimal totalWeight() {
