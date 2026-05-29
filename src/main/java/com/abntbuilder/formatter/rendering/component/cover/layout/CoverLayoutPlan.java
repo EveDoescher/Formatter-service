@@ -8,12 +8,14 @@ public record CoverLayoutPlan(
         List<CoverLayoutElement> elements,
         int totalLines,
         int pageCapacityLines,
-        BigDecimal exactLineHeightPt
+        BigDecimal exactLineHeightPt,
+        CoverLayoutDiagnostic diagnostic
 ) {
 
     public CoverLayoutPlan {
         Objects.requireNonNull(elements, "elements must not be null");
         Objects.requireNonNull(exactLineHeightPt, "exactLineHeightPt must not be null");
+        Objects.requireNonNull(diagnostic, "diagnostic must not be null");
 
         if (elements.isEmpty()) {
             throw new IllegalArgumentException("elements must not be empty.");
@@ -46,6 +48,16 @@ public record CoverLayoutPlan(
 
         if (totalLines > pageCapacityLines) {
             throw new IllegalArgumentException("totalLines must not exceed pageCapacityLines.");
+        }
+
+        if (diagnostic.renderableArea().safeLineCapacity() != pageCapacityLines) {
+            throw new IllegalArgumentException("diagnostic safeLineCapacity must match pageCapacityLines.");
+        }
+
+        if (diagnostic.contentLineCount() + diagnostic.availableGapLines() != totalLines) {
+            throw new IllegalArgumentException(
+                    "diagnostic contentLineCount plus availableGapLines must match totalLines."
+            );
         }
     }
 }

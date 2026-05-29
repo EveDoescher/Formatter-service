@@ -17,21 +17,24 @@ class SinglePageRenderableAreaCalculatorTest {
     void shouldCalculateSafeLineCapacityFromPhysicalCapacityAndBoundarySafetyLines() {
         int lineHeightTwips = MeasurementConverter.pointsToTwips(BigDecimal.valueOf(18));
 
-        int physicalCapacity = calculator.calculatePhysicalLineCapacity(validPageRule(), lineHeightTwips);
-        int safetyLines = calculator.calculateBoundarySafetyLineCount(validPageRule(), lineHeightTwips);
-        int safeCapacity = calculator.calculateSafeLineCapacity(validPageRule(), lineHeightTwips);
+        SinglePageRenderableArea area = calculator.calculate(validPageRule(), lineHeightTwips);
 
-        assertTrue(physicalCapacity > 0);
-        assertTrue(safetyLines > 0);
-        assertEquals(physicalCapacity - safetyLines, safeCapacity);
+        assertTrue(area.physicalLineCapacity() > 0);
+        assertTrue(area.boundarySafetyLineCount() > 0);
+        assertEquals(
+                area.physicalLineCapacity() - area.boundarySafetyLineCount(),
+                area.safeLineCapacity()
+        );
     }
 
     @Test
     void shouldCalculateExpectedSafeCapacityForAbntA4WithTwelvePointOneAndHalfSpacing() {
         int lineHeightTwips = MeasurementConverter.pointsToTwips(BigDecimal.valueOf(18));
+        SinglePageRenderableArea area = calculator.calculate(validPageRule(), lineHeightTwips);
 
-        assertEquals(38, calculator.calculatePhysicalLineCapacity(validPageRule(), lineHeightTwips));
-        assertEquals(7, calculator.calculateBoundarySafetyLineCount(validPageRule(), lineHeightTwips));
+        assertEquals(38, area.physicalLineCapacity());
+        assertEquals(7, area.boundarySafetyLineCount());
+        assertEquals(31, area.safeLineCapacity());
         assertEquals(31, calculator.calculateSafeLineCapacity(validPageRule(), lineHeightTwips));
     }
 
@@ -65,7 +68,33 @@ class SinglePageRenderableAreaCalculatorTest {
                 PageOrientation.PORTRAIT
         );
 
+        SinglePageRenderableArea area = calculator.calculate(pageRule, 360);
+
+        assertEquals(0, area.safeLineCapacity());
         assertEquals(0, calculator.calculateSafeLineCapacity(pageRule, 360));
+    }
+
+    @Test
+    void shouldRejectRenderableAreaWithInvalidCounts() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new SinglePageRenderableArea(-1, 0, 0)
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new SinglePageRenderableArea(1, -1, 0)
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new SinglePageRenderableArea(1, 0, -1)
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new SinglePageRenderableArea(1, 0, 2)
+        );
     }
 
     private static PageRule validPageRule() {

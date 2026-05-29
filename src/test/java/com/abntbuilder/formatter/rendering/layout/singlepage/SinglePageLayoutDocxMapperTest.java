@@ -1,5 +1,8 @@
 package com.abntbuilder.formatter.rendering.layout.singlepage;
 
+import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
+import com.abntbuilder.formatter.output.docx.api.DocxBlock;
+import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
 import com.abntbuilder.formatter.profile.model.PageOrientation;
 import com.abntbuilder.formatter.profile.model.PageRule;
 import com.abntbuilder.formatter.profile.model.StyleRule;
@@ -11,11 +14,43 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SinglePageLayoutDocxMapperTest {
 
     private final SinglePageLayoutDocxMapper mapper = new SinglePageLayoutDocxMapper();
+
+    @Test
+    void shouldMapGroupsUsingSharedSafeLineCapacity() {
+        List<DocxBlock> blocks = mapper.mapToDocxBlocksAnchoringLastGroup(
+                validPageRule(),
+                List.of(
+                        new SinglePageLayoutGroup(
+                                "cover.title",
+                                List.of(new SinglePageLayoutTextLine("Titulo", validStyle()))
+                        ),
+                        new SinglePageLayoutGroup(
+                                "cover.bottom",
+                                List.of(new SinglePageLayoutTextLine("2026", validStyle()))
+                        )
+                ),
+                List.of(BigDecimal.ONE)
+        );
+
+        assertEquals(31, blocks.size());
+        assertEquals(29, blocks.stream().filter(DocxBlankLine.class::isInstance).count());
+        assertEquals(2, blocks.stream().filter(DocxParagraph.class::isInstance).count());
+        assertTrue(blocks.stream()
+                .filter(DocxParagraph.class::isInstance)
+                .map(DocxParagraph.class::cast)
+                .allMatch(paragraph -> paragraph.exactLineHeightPt().orElseThrow().compareTo(BigDecimal.valueOf(18)) == 0));
+        assertTrue(blocks.stream()
+                .filter(DocxBlankLine.class::isInstance)
+                .map(DocxBlankLine.class::cast)
+                .allMatch(blankLine -> blankLine.exactLineHeightPt().orElseThrow().compareTo(BigDecimal.valueOf(18)) == 0));
+    }
 
     @Test
     void shouldFailWhenContentDoesNotFitRenderablePageArea() {
@@ -34,6 +69,18 @@ class SinglePageLayoutDocxMapperTest {
                         List.of(group),
                         List.of()
                 )
+        );
+    }
+
+    private static PageRule validPageRule() {
+        return new PageRule(
+                BigDecimal.valueOf(21),
+                BigDecimal.valueOf(29.7),
+                BigDecimal.valueOf(3),
+                BigDecimal.valueOf(2),
+                BigDecimal.valueOf(2),
+                BigDecimal.valueOf(3),
+                PageOrientation.PORTRAIT
         );
     }
 

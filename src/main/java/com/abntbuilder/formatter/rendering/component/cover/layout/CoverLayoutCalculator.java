@@ -8,15 +8,21 @@ import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRul
 import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
 import com.abntbuilder.formatter.profile.resolution.ComponentRuleResolver;
 import com.abntbuilder.formatter.profile.resolution.StyleResolver;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageGapDistributor;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageRenderableArea;
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageRenderableAreaCalculator;
-import com.abntbuilder.formatter.rendering.layout.text.ConservativeTextMeasurer;
+import com.abntbuilder.formatter.rendering.layout.text.FontMetricsTextMeasurer;
 import com.abntbuilder.formatter.rendering.layout.text.TextMeasurer;
+import com.abntbuilder.formatter.shared.exception.InvalidCoverContentException;
+import com.abntbuilder.formatter.shared.exception.InvalidSinglePageStyleException;
 import com.abntbuilder.formatter.shared.exception.SinglePageLayoutOverflowException;
 import com.abntbuilder.formatter.shared.measurement.MeasurementConverter;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -35,9 +41,9 @@ public final class CoverLayoutCalculator {
 
     public CoverLayoutCalculator() {
         this(
-                new ConservativeTextMeasurer(),
+                new FontMetricsTextMeasurer(),
                 new SinglePageRenderableAreaCalculator(),
-                new CoverGapDistributor()
+                new CoverGapDistributor(new SinglePageGapDistributor())
         );
     }
 
@@ -113,16 +119,17 @@ public final class CoverLayoutCalculator {
                 cover.bottomLines(),
                 bottomStyle,
                 pageRule
-        ).orElseThrow(() -> new IllegalArgumentException("cover must contain bottomLines for anchored bottom layout."));
+        ).orElseThrow(InvalidCoverContentException::missingBottomLines);
 
         if (bottomBlock.occupiedLines() != 2) {
-            throw new IllegalArgumentException("cover bottomLines must contain exactly city and year.");
+            throw InvalidCoverContentException.invalidBottomLines();
         }
 
         groups.add(LayoutGroup.of(BOTTOM_BLOCK_ID, List.of(bottomBlock.toTextElement())));
 
         int lineHeightTwips = calculateLayoutLineHeightTwips(groups);
-        int pageCapacityLines = renderableAreaCalculator.calculateSafeLineCapacity(pageRule, lineHeightTwips);
+        SinglePageRenderableArea renderableArea = renderableAreaCalculator.calculate(pageRule, lineHeightTwips);
+        int pageCapacityLines = renderableArea.safeLineCapacity();
 
         if (pageCapacityLines <= 0) {
             throw SinglePageLayoutOverflowException.forLineSlots(1, pageCapacityLines);
@@ -142,12 +149,21 @@ public final class CoverLayoutCalculator {
         BigDecimal exactLineHeightPt = MeasurementConverter.twipsToPoints(lineHeightTwips);
 
         List<CoverLayoutElement> elements = assembleElements(groups, gapLineCounts);
+        CoverLayoutDiagnostic diagnostic = new CoverLayoutDiagnostic(
+                renderableArea,
+                contentLines,
+                availableGapLines,
+                createBlockLineCounts(groups),
+                createGapLineCounts(groups, gapLineCounts),
+                exactLineHeightPt
+        );
 
         return new CoverLayoutPlan(
                 elements,
                 pageCapacityLines,
                 pageCapacityLines,
-                exactLineHeightPt
+                exactLineHeightPt,
+                diagnostic
         );
     }
 
@@ -215,15 +231,11 @@ public final class CoverLayoutCalculator {
 
     private static void validateSinglePageSpacing(StyleRule styleRule) {
         if (styleRule.spacingBeforePt().compareTo(BigDecimal.ZERO) != 0) {
-            throw new IllegalArgumentException(
-                    "single-page layout styles must have spacingBeforePt equal to zero."
-            );
+            throw InvalidSinglePageStyleException.spacingBeforeMustBeZero();
         }
 
         if (styleRule.spacingAfterPt().compareTo(BigDecimal.ZERO) != 0) {
-            throw new IllegalArgumentException(
-                    "single-page layout styles must have spacingAfterPt equal to zero."
-            );
+            throw InvalidSinglePageStyleException.spacingAfterMustBeZero();
         }
     }
 
@@ -287,6 +299,29 @@ public final class CoverLayoutCalculator {
         return List.copyOf(elements);
     }
 
+    private static Map<String, Integer> createBlockLineCounts(List<LayoutGroup> groups) {
+        Map<String, Integer> lineCounts = new LinkedHashMap<>();
+
+        for (LayoutGroup group : groups) {
+            lineCounts.put(group.id(), group.lineCount());
+        }
+
+        return lineCounts;
+    }
+
+    private static Map<String, Integer> createGapLineCounts(List<LayoutGroup> groups, int[] gapLineCounts) {
+        Map<String, Integer> lineCounts = new LinkedHashMap<>();
+
+        for (int index = 0; index < gapLineCounts.length; index++) {
+            lineCounts.put(
+                    groups.get(index).id() + "-to-" + groups.get(index + 1).id(),
+                    gapLineCounts[index]
+            );
+        }
+
+        return lineCounts;
+    }
+
     private record LayoutGroup(
             String id,
             List<CoverLayoutElement> elements,
@@ -327,4 +362,5 @@ public final class CoverLayoutCalculator {
             return new LayoutGroup(id, elements, lineCount, firstStyleRule);
         }
     }
+
 }

@@ -10,6 +10,7 @@ import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverStyleMapping;
+import com.abntbuilder.formatter.shared.exception.InvalidCoverContentException;
 import com.abntbuilder.formatter.shared.exception.SinglePageLayoutOverflowException;
 import org.junit.jupiter.api.Test;
 
@@ -27,12 +28,31 @@ class CoverLayoutCalculatorTest {
     @Test
     void shouldCreateValidatedPlanThatFillsEffectiveSinglePageCapacity() {
         CoverLayoutPlan plan = calculator.calculate(validCover(), validProfile());
+        CoverLayoutDiagnostic diagnostic = plan.diagnostic();
 
         assertFalse(plan.elements().isEmpty());
         assertEquals(plan.pageCapacityLines(), plan.totalLines());
         assertTrue(plan.elements().stream().anyMatch(CoverSpacerLines.class::isInstance));
         assertTrue(plan.elements().stream().anyMatch(CoverTextLines.class::isInstance));
         assertTrue(plan.exactLineHeightPt().compareTo(BigDecimal.ZERO) > 0);
+
+        int elementLineCount = plan.elements().stream()
+                .mapToInt(CoverLayoutElement::lineCount)
+                .sum();
+        int blockLineCount = diagnostic.blockLineCounts().values().stream()
+                .mapToInt(Integer::intValue)
+                .sum();
+        int gapLineCount = diagnostic.gapLineCounts().values().stream()
+                .mapToInt(Integer::intValue)
+                .sum();
+
+        assertEquals(plan.totalLines(), elementLineCount);
+        assertEquals(plan.pageCapacityLines(), diagnostic.renderableArea().safeLineCapacity());
+        assertEquals(diagnostic.contentLineCount(), blockLineCount);
+        assertEquals(diagnostic.availableGapLines(), gapLineCount);
+        assertEquals(plan.totalLines(), diagnostic.contentLineCount() + diagnostic.availableGapLines());
+        assertEquals(plan.exactLineHeightPt(), diagnostic.exactLineHeightPt());
+        assertEquals(2, diagnostic.blockLineCounts().get("cover.bottom"));
     }
 
     @Test
@@ -70,8 +90,8 @@ class CoverLayoutCalculatorTest {
                 )
         );
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        InvalidCoverContentException exception = assertThrows(
+                InvalidCoverContentException.class,
                 () -> calculator.calculate(cover, validProfile())
         );
 

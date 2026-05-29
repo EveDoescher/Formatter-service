@@ -1,6 +1,7 @@
 package com.abntbuilder.formatter.rendering.component.cover;
 
 import com.abntbuilder.formatter.document.component.cover.CoverComponent;
+import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxDocument;
 import com.abntbuilder.formatter.output.docx.docx4j.Docx4jWriter;
@@ -52,8 +53,16 @@ class CoverRendererDocxSanityTest {
         assertTrue(documentXml.contains("Limeira"));
         assertTrue(documentXml.contains("2026"));
 
-        assertTrue(documentXml.contains("lineRule=\"exact\"") || documentXml.contains("w:lineRule=\"exact\""));
+        assertEquals(blocks.size(), countParagraphs(documentXml));
+        assertEquals(blocks.size(), countOccurrences(documentXml, "w:lineRule=\"exact\""));
+        assertEquals(blocks.size(), countOccurrences(documentXml, "w:line=\"360\""));
+        assertEquals(
+                countBlocks(blocks, DocxBlankLine.class),
+                countOccurrences(documentXml, "<w:t xml:space=\"preserve\"> </w:t>")
+        );
+
         assertFalse(documentXml.contains("w:type=\"page\""));
+        assertFalse(documentXml.contains("<w:br"));
     }
 
     private static boolean zipContains(byte[] zipBytes, String entryName) throws IOException {
@@ -82,6 +91,29 @@ class CoverRendererDocxSanityTest {
 
             throw new IllegalArgumentException("ZIP entry not found: " + entryName);
         }
+    }
+
+    private static long countBlocks(List<DocxBlock> blocks, Class<? extends DocxBlock> blockType) {
+        return blocks.stream()
+                .filter(blockType::isInstance)
+                .count();
+    }
+
+    private static int countOccurrences(String text, String pattern) {
+        int count = 0;
+        int index = 0;
+
+        while ((index = text.indexOf(pattern, index)) >= 0) {
+            count++;
+            index += pattern.length();
+        }
+
+        return count;
+    }
+
+    private static int countParagraphs(String documentXml) {
+        return countOccurrences(documentXml, "<w:p>")
+                + countOccurrences(documentXml, "<w:p ");
     }
 
     private static CoverComponent validCover() {
