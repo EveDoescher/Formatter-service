@@ -78,6 +78,34 @@ class FontMetricsTextMeasurerTest {
         );
     }
 
+    @Test
+    void shouldRejectUnavailableFontFamilyWhenPolicyFails() {
+        TextMeasurementException exception = assertThrows(
+                TextMeasurementException.class,
+                () -> new FontMetricsTextMeasurer(MissingFontPolicy.FAIL).measure(
+                        "Texto",
+                        validPageRule(),
+                        styleWithFontFamily("Fonte Inexistente Formatter Teste")
+                )
+        );
+
+        assertEquals(
+                "font family is not available: Fonte Inexistente Formatter Teste.",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void shouldAllowUnavailableFontFamilyWhenFallbackPolicyAllowsIt() {
+        MeasuredText measuredText = new FontMetricsTextMeasurer(MissingFontPolicy.ALLOW_FALLBACK).measure(
+                "Texto",
+                validPageRule(),
+                styleWithFontFamily("Fonte Inexistente Formatter Teste")
+        );
+
+        assertEquals(1, measuredText.lineCount());
+    }
+
     private static PageRule validPageRule() {
         return new PageRule(
                 BigDecimal.valueOf(21),
@@ -136,10 +164,30 @@ class FontMetricsTextMeasurerTest {
             BigDecimal leftIndentCm,
             BigDecimal rightIndentCm
     ) {
+        return style(
+                bold,
+                uppercase,
+                leftIndentCm,
+                rightIndentCm,
+                "Times New Roman"
+        );
+    }
+
+    private static StyleRule styleWithFontFamily(String fontFamily) {
+        return style(false, false, BigDecimal.ZERO, BigDecimal.ZERO, fontFamily);
+    }
+
+    private static StyleRule style(
+            boolean bold,
+            boolean uppercase,
+            BigDecimal leftIndentCm,
+            BigDecimal rightIndentCm,
+            String fontFamily
+    ) {
         return new StyleRule(
                 "cover.title",
                 StyleType.PARAGRAPH,
-                "Times New Roman",
+                fontFamily,
                 BigDecimal.valueOf(12),
                 TextAlignment.CENTER,
                 BigDecimal.valueOf(1.5),

@@ -23,14 +23,15 @@ public class DocxExportService {
 
     public DocxExportService(
             DocxWriter docxWriter,
-            GeneratedDocxExportStore generatedDocxExportStore
+            GeneratedDocxExportStore generatedDocxExportStore,
+            CoverRenderer coverRenderer
     ) {
         this.docxWriter = Objects.requireNonNull(docxWriter, "docxWriter must not be null");
         this.generatedDocxExportStore = Objects.requireNonNull(
                 generatedDocxExportStore,
                 "generatedDocxExportStore must not be null"
         );
-        this.coverRenderer = new CoverRenderer();
+        this.coverRenderer = Objects.requireNonNull(coverRenderer, "coverRenderer must not be null");
     }
 
     public byte[] export(ExportDocxCommand command) {

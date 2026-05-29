@@ -17,4 +17,8 @@ public class TextMeasurementException extends IllegalArgumentException {
     public static TextMeasurementException unavailableTextWidth() {
         return new TextMeasurementException("available text width must be greater than zero.");
     }
+
+    public static TextMeasurementException unavailableFontFamily(String fontFamily) {
+        return new TextMeasurementException("font family is not available: " + fontFamily + ".");
+    }
 }

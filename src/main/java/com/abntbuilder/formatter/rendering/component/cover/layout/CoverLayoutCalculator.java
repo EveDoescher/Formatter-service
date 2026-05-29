@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
 public final class CoverLayoutCalculator {
 
@@ -34,6 +35,16 @@ public final class CoverLayoutCalculator {
     private static final String SUBTITLE_BLOCK_ID = "cover.subtitle";
     private static final String BOTTOM_BLOCK_ID = "cover.bottom";
     private static final int REQUIRED_BOTTOM_LINE_COUNT = 2;
+    private static final List<GapDefinition> GAP_DEFINITIONS = List.of(
+            new GapDefinition(TOP_BLOCK_ID, AUTHORS_BLOCK_ID, CoverLayoutRule::topToAuthorWeight),
+            new GapDefinition(AUTHORS_BLOCK_ID, TITLE_BLOCK_ID, CoverLayoutRule::authorToTitleWeight),
+            new GapDefinition(
+                    TOP_BLOCK_ID,
+                    TITLE_BLOCK_ID,
+                    layoutRule -> layoutRule.topToAuthorWeight().add(layoutRule.authorToTitleWeight())
+            ),
+            new GapDefinition(TITLE_BLOCK_ID, BOTTOM_BLOCK_ID, CoverLayoutRule::titleToBottomWeight)
+    );
 
     private final TextMeasurer textMeasurer;
     private final SinglePageRenderableAreaCalculator renderableAreaCalculator;
@@ -286,20 +297,10 @@ public final class CoverLayoutCalculator {
             String nextGroupId,
             CoverLayoutRule layoutRule
     ) {
-        if (TOP_BLOCK_ID.equals(currentGroupId) && AUTHORS_BLOCK_ID.equals(nextGroupId)) {
-            return layoutRule.topToAuthorWeight();
-        }
-
-        if (AUTHORS_BLOCK_ID.equals(currentGroupId) && TITLE_BLOCK_ID.equals(nextGroupId)) {
-            return layoutRule.authorToTitleWeight();
-        }
-
-        if (TOP_BLOCK_ID.equals(currentGroupId) && TITLE_BLOCK_ID.equals(nextGroupId)) {
-            return layoutRule.topToAuthorWeight().add(layoutRule.authorToTitleWeight());
-        }
-
-        if (TITLE_BLOCK_ID.equals(currentGroupId) && BOTTOM_BLOCK_ID.equals(nextGroupId)) {
-            return layoutRule.titleToBottomWeight();
+        for (GapDefinition gapDefinition : GAP_DEFINITIONS) {
+            if (gapDefinition.matches(currentGroupId, nextGroupId)) {
+                return gapDefinition.resolve(layoutRule);
+            }
         }
 
         throw new IllegalArgumentException(
@@ -395,6 +396,34 @@ public final class CoverLayoutCalculator {
             }
 
             return new LayoutGroup(id, elements, lineCount, firstStyleRule);
+        }
+    }
+
+    private record GapDefinition(
+            String currentGroupId,
+            String nextGroupId,
+            Function<CoverLayoutRule, BigDecimal> weightResolver
+    ) {
+
+        private GapDefinition {
+            if (currentGroupId == null || currentGroupId.isBlank()) {
+                throw new IllegalArgumentException("currentGroupId must not be blank.");
+            }
+
+            if (nextGroupId == null || nextGroupId.isBlank()) {
+                throw new IllegalArgumentException("nextGroupId must not be blank.");
+            }
+
+            Objects.requireNonNull(weightResolver, "weightResolver must not be null");
+        }
+
+        private boolean matches(String currentGroupId, String nextGroupId) {
+            return this.currentGroupId.equals(currentGroupId)
+                    && this.nextGroupId.equals(nextGroupId);
+        }
+
+        private BigDecimal resolve(CoverLayoutRule layoutRule) {
+            return weightResolver.apply(layoutRule);
         }
     }
 

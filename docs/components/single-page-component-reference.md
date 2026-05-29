@@ -188,6 +188,11 @@ Fallback disponivel:
 ConservativeTextMeasurer
 ```
 
+Fonte ausente nao deve ser mascarada por padrao. Se o perfil pedir uma familia de
+fonte indisponivel no ambiente, o medidor preferido deve falhar claramente.
+Fallback de fonte so deve ser usado quando injetado de forma explicita para teste,
+migracao ou ambiente controlado.
+
 O componente deve depender da interface, nao de uma implementacao concreta. Isso
 permite trocar o medidor sem mudar a semantica do componente.
 
@@ -308,6 +313,26 @@ criterios de aceite visual
 
 Nao versionar DOCX gerado por padrao. Versionar JSON e expectativa.
 
+Os testes automatizados devem usar os JSONs oficiais como entrada real da API ou
+do fluxo publico equivalente. Montar objetos manualmente no teste nao valida o
+contrato dos samples.
+
+## Componentes com rodape semantico
+
+Quando um componente de pagina unica tiver um rodape semantico, como a capa atual:
+
+```text
+bottomLines[0] = cidade
+bottomLines[1] = ano
+```
+
+essa estrutura pertence ao contrato do componente, nao ao perfil. O perfil decide
+como renderizar cidade e ano. O componente valida que a estrutura recebida e
+semanticamente compativel com o layout que promete entregar.
+
+Nao transformar quantidade de linhas obrigatorias em parametro tecnico do perfil
+sem um caso real que mude o dominio do componente.
+
 ## Anti-padroes proibidos
 
 Nao usar:
@@ -362,3 +387,8 @@ docs/samples/cover
 O antigo motor baseado em medidas fisicas em centimetros foi removido da base de
 referencia. Novos componentes de pagina unica devem usar apenas o fluxo por linhas
 renderizaveis.
+
+`SinglePageLayoutDocxMapper` deve ser tratado como helper compartilhado para
+componentes simples que ja possuem grupos posicionaveis e precisam distribuir gaps
+por linhas. Componentes com semantica mais rica podem ter renderer proprio, desde
+que usem as mesmas primitivas de calculo e nao dupliquem a distribuicao de gaps.

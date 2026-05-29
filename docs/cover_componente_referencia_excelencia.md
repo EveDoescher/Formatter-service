@@ -115,6 +115,22 @@ vier a suportar isso no futuro.
 
 O usuario nao deve fornecer valores tecnicos de layout fisico.
 
+Contrato semantico atual do `CoverComponent`:
+
+```text
+bottomLines[0] = cidade
+bottomLines[1] = ano
+```
+
+Essa regra nao e uma decisao visual e nao deve virar configuracao tecnica do
+perfil. Ela descreve a estrutura do componente de capa atual. O perfil continua
+decidindo como essas linhas aparecem, por exemplo caixa alta, fonte, alinhamento e
+negrito.
+
+Se uma nova instituicao exigir outro rodape de capa, a solucao correta e evoluir o
+contrato semantico do componente ou criar outro componente de capa, nao esconder
+quantidades arbitrarias de linhas no perfil.
+
 ### 3.3 O codigo calcula
 
 O codigo deve calcular tudo que deriva do perfil e do conteudo.
@@ -626,7 +642,22 @@ SinglePageGapDistributor criado e usado pelo cover.
 CoverGapDistributor permanece apenas como adaptador de compatibilidade.
 SinglePageLayoutDocxMapper usa SinglePageGapDistributor.
 Motor legado baseado em centimetros removido da base single-page.
+Pesos de gaps do cover definidos por tabela de transicoes sem fallback visual
+arbitrario.
 ```
+
+Decisao final sobre `SinglePageLayoutDocxMapper`:
+
+```text
+Ele permanece como helper compartilhado para componentes simples de pagina unica
+que ja chegam como grupos posicionaveis e precisam ancorar o ultimo grupo no fim
+da area segura.
+```
+
+O cover nao precisa delegar a ele porque possui contrato semantico proprio,
+diagnostico especifico e validacoes de conteudo como `bottomLines = cidade + ano`.
+Mesmo assim, o mapper deve continuar seguindo a mesma infraestrutura: area
+renderizavel, linhas exatas e `SinglePageGapDistributor`.
 
 ### Etapa 4.1: diagnostico de overflow do cover
 
@@ -662,6 +693,17 @@ Testes e cenarios especiais podem injetar outro TextMeasurer.
 Mesmo com metricas de fonte, a validacao visual no Microsoft Word continua sendo
 necessaria, porque o motor de layout do Word nao e identico ao motor Java.
 
+Politica de fonte:
+
+```text
+FontMetricsTextMeasurer deve falhar quando a fonte solicitada pelo perfil nao
+estiver disponivel no ambiente, salvo quando um fallback for explicitamente
+injetado para teste, migracao ou ambiente controlado.
+```
+
+Isso evita que uma capa seja calculada com uma fonte e renderizada visualmente com
+outra sem que o sistema perceba.
+
 ### Etapa 6: fortalecer testes
 
 Adicionar testes de:
@@ -685,7 +727,7 @@ CoverLayoutFailureDiagnosticTest valida invariantes e imutabilidade do diagnosti
 CoverLayoutPlanTest valida invariantes e imutabilidade do plano.
 CoverRendererDocxSanityTest valida XML DOCX, lineRule exact, linhas vazias reais
 e ausencia de quebra de pagina interna.
-CoverSampleValidationTest valida os samples oficiais.
+CoverSampleValidationTest envia os JSONs oficiais pela API publica de exportacao.
 SinglePageLayoutDocxMapperTest valida uso do distribuidor compartilhado de gaps.
 ```
 

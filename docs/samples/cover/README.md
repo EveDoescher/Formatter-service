@@ -135,6 +135,9 @@ bottomLines continua semanticamente valido;
 a falha deve ocorrer por excesso de conteudo vertical.
 ```
 
+O teste automatizado deve enviar este JSON pela API de exportacao e validar que a
+falha acontece antes do DOCX ser retornado.
+
 ### cover-bottom-wrap-invalid.json
 
 Valida bottom invalido porque a cidade quebra em mais de uma linha visual.
@@ -146,6 +149,10 @@ falha antes de gerar DOCX;
 motivo esperado: InvalidCoverContentException;
 mensagem esperada: cover bottomLines must contain exactly city and year.
 ```
+
+O teste automatizado deve enviar este JSON pela API de exportacao. Assim o sample
+valida contrato publico, desserializacao, perfil, calculo e renderer no mesmo
+fluxo.
 
 ## Criterios de aceite visual
 
@@ -167,4 +174,3 @@ mandou, nao porque o componente decidiu.
 
 Se outro perfil usar `uppercase: false`, o mesmo componente deve respeitar esse
 perfil.
-

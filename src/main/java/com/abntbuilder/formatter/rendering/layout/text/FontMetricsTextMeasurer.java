@@ -6,13 +6,17 @@ import com.abntbuilder.formatter.shared.exception.TextMeasurementException;
 import com.abntbuilder.formatter.shared.measurement.MeasurementConverter;
 
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class FontMetricsTextMeasurer implements TextMeasurer {
 
@@ -21,6 +25,26 @@ public final class FontMetricsTextMeasurer implements TextMeasurer {
             true,
             true
     );
+    private static final Set<String> AVAILABLE_FONT_FAMILIES = Arrays.stream(
+                    GraphicsEnvironment
+                            .getLocalGraphicsEnvironment()
+                            .getAvailableFontFamilyNames(Locale.ROOT)
+            )
+            .map(fontFamily -> fontFamily.toLowerCase(Locale.ROOT))
+            .collect(Collectors.toUnmodifiableSet());
+
+    private final MissingFontPolicy missingFontPolicy;
+
+    public FontMetricsTextMeasurer() {
+        this(MissingFontPolicy.FAIL);
+    }
+
+    public FontMetricsTextMeasurer(MissingFontPolicy missingFontPolicy) {
+        this.missingFontPolicy = Objects.requireNonNull(
+                missingFontPolicy,
+                "missingFontPolicy must not be null"
+        );
+    }
 
     @Override
     public MeasuredText measure(
@@ -36,7 +60,7 @@ public final class FontMetricsTextMeasurer implements TextMeasurer {
         Objects.requireNonNull(styleRule, "styleRule must not be null");
 
         double availableTextWidthPt = calculateAvailableTextWidthPt(pageRule, styleRule);
-        Font font = createFont(styleRule);
+        Font font = createFont(styleRule, missingFontPolicy);
         List<String> visualLines = new ArrayList<>();
 
         String resolvedText = resolveLayoutText(text, styleRule);
@@ -105,7 +129,14 @@ public final class FontMetricsTextMeasurer implements TextMeasurer {
         return availableWidthPt.doubleValue();
     }
 
-    private static Font createFont(StyleRule styleRule) {
+    private static Font createFont(
+            StyleRule styleRule,
+            MissingFontPolicy missingFontPolicy
+    ) {
+        if (missingFontPolicy == MissingFontPolicy.FAIL && !isFontAvailable(styleRule.fontFamily())) {
+            throw TextMeasurementException.unavailableFontFamily(styleRule.fontFamily());
+        }
+
         int style = Font.PLAIN;
 
         if (styleRule.bold()) {
@@ -118,6 +149,11 @@ public final class FontMetricsTextMeasurer implements TextMeasurer {
 
         return new Font(styleRule.fontFamily(), style, 1)
                 .deriveFont(styleRule.fontSizePt().floatValue());
+    }
+
+    private static boolean isFontAvailable(String fontFamily) {
+        return fontFamily != null
+                && AVAILABLE_FONT_FAMILIES.contains(fontFamily.toLowerCase(Locale.ROOT));
     }
 
     private static double measureTextWidthPt(String text, Font font) {
