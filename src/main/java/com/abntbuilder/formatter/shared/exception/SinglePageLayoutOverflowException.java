@@ -12,7 +12,7 @@ public class SinglePageLayoutOverflowException extends RuntimeException {
                 + " cm.");
     }
 
-    private SinglePageLayoutOverflowException(String message) {
+    protected SinglePageLayoutOverflowException(String message) {
         super(message);
     }
 
@@ -20,13 +20,18 @@ public class SinglePageLayoutOverflowException extends RuntimeException {
             int requiredLineSlots,
             int usableLineSlots
     ) {
-        return new SinglePageLayoutOverflowException(
-                "Single-page layout overflow. Required line slots: "
-                        + requiredLineSlots
-                        + "; usable line slots: "
-                        + usableLineSlots
-                        + "."
-        );
+        return new SinglePageLayoutOverflowException(lineSlotsMessage(requiredLineSlots, usableLineSlots));
+    }
+
+    protected static String lineSlotsMessage(
+            int requiredLineSlots,
+            int usableLineSlots
+    ) {
+        return "Single-page layout overflow. Required line slots: "
+                + requiredLineSlots
+                + "; usable line slots: "
+                + usableLineSlots
+                + ".";
     }
 
     private static String format(BigDecimal value) {

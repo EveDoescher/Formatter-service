@@ -354,6 +354,11 @@ CoverLayoutPlan
 CoverLayoutDiagnostic
 CoverRenderer
 SinglePageRenderableAreaCalculator
+SinglePageGapDistributor
 SinglePageLayoutDocxMapper
 docs/samples/cover
 ```
+
+O antigo motor baseado em medidas fisicas em centimetros foi removido da base de
+referencia. Novos componentes de pagina unica devem usar apenas o fluxo por linhas
+renderizaveis.

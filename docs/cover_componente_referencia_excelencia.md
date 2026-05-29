@@ -624,6 +624,22 @@ Status atual:
 SinglePageRenderableAreaCalculator criado e usado pelo cover.
 SinglePageGapDistributor criado e usado pelo cover.
 CoverGapDistributor permanece apenas como adaptador de compatibilidade.
+SinglePageLayoutDocxMapper usa SinglePageGapDistributor.
+Motor legado baseado em centimetros removido da base single-page.
+```
+
+### Etapa 4.1: diagnostico de overflow do cover
+
+Quando a capa nao couber, a falha deve carregar diagnostico parcial suficiente
+para explicar o motivo sem gerar DOCX.
+
+Status atual:
+
+```text
+CoverLayoutFailureDiagnostic criado.
+CoverLayoutOverflowException criada como subtipo de SinglePageLayoutOverflowException.
+Overflow vertical do cover informa area segura, linhas de conteudo, linhas excedentes,
+contagem por bloco e altura exata de linha.
 ```
 
 ### Etapa 5: medidor de texto preferido
@@ -657,6 +673,20 @@ XML DOCX
 overflow real
 bottom quebrado
 word width overflow
+```
+
+Status atual:
+
+```text
+CoverLayoutCalculatorTest valida plano, overflow com diagnostico, bottom invalido,
+spacing invalido e palavra maior que a largura disponivel.
+CoverLayoutDiagnosticTest valida invariantes e imutabilidade do diagnostico de sucesso.
+CoverLayoutFailureDiagnosticTest valida invariantes e imutabilidade do diagnostico de falha.
+CoverLayoutPlanTest valida invariantes e imutabilidade do plano.
+CoverRendererDocxSanityTest valida XML DOCX, lineRule exact, linhas vazias reais
+e ausencia de quebra de pagina interna.
+CoverSampleValidationTest valida os samples oficiais.
+SinglePageLayoutDocxMapperTest valida uso do distribuidor compartilhado de gaps.
 ```
 
 ### Etapa 7: documentar como criar o proximo componente
@@ -722,3 +752,43 @@ ou falha com explicacao antes de gerar um documento errado.
 ```
 
 Esse e o padrao que os proximos componentes devem seguir.
+
+---
+
+## 14. Status de conclusao
+
+O cover esta concluido como componente de referencia quando este documento estiver
+sincronizado com a implementacao atual.
+
+Artefatos finais de referencia:
+
+```text
+CoverLayoutCalculator
+CoverLayoutPlan
+CoverLayoutDiagnostic
+CoverLayoutFailureDiagnostic
+CoverLayoutOverflowException
+CoverRenderer
+SinglePageRenderableAreaCalculator
+SinglePageRenderableArea
+SinglePageGapDistributor
+SinglePageLayoutDocxMapper
+FontMetricsTextMeasurer
+docs/components/single-page-component-reference.md
+docs/samples/cover
+```
+
+Garantias atendidas:
+
+```text
+Perfil define decisoes visuais.
+Request fornece conteudo.
+Codigo calcula area, linhas, gaps e overflow.
+Sucesso gera plano auditavel.
+Falha vertical gera diagnostico parcial.
+Renderer apenas transforma plano em blocos DOCX.
+Writer nao conhece a semantica da capa.
+Samples oficiais cobrem cenarios de sucesso e falha.
+Testes protegem invariantes, XML DOCX e erros semanticos.
+Nao ha motor concorrente em centimetros na base single-page.
+```

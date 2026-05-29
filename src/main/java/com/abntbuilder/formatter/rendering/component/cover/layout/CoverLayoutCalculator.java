@@ -15,7 +15,6 @@ import com.abntbuilder.formatter.rendering.layout.text.FontMetricsTextMeasurer;
 import com.abntbuilder.formatter.rendering.layout.text.TextMeasurer;
 import com.abntbuilder.formatter.shared.exception.InvalidCoverContentException;
 import com.abntbuilder.formatter.shared.exception.InvalidSinglePageStyleException;
-import com.abntbuilder.formatter.shared.exception.SinglePageLayoutOverflowException;
 import com.abntbuilder.formatter.shared.measurement.MeasurementConverter;
 
 import java.math.BigDecimal;
@@ -34,6 +33,7 @@ public final class CoverLayoutCalculator {
     private static final String TITLE_BLOCK_ID = "cover.title";
     private static final String SUBTITLE_BLOCK_ID = "cover.subtitle";
     private static final String BOTTOM_BLOCK_ID = "cover.bottom";
+    private static final int REQUIRED_BOTTOM_LINE_COUNT = 2;
 
     private final TextMeasurer textMeasurer;
     private final SinglePageRenderableAreaCalculator renderableAreaCalculator;
@@ -114,16 +114,11 @@ public final class CoverLayoutCalculator {
 
         groups.add(LayoutGroup.of(TITLE_BLOCK_ID, titleElements));
 
-        MeasuredCoverBlock bottomBlock = measureOptionalBlock(
-                BOTTOM_BLOCK_ID,
+        MeasuredCoverBlock bottomBlock = measureBottomBlock(
                 cover.bottomLines(),
                 bottomStyle,
                 pageRule
-        ).orElseThrow(InvalidCoverContentException::missingBottomLines);
-
-        if (bottomBlock.occupiedLines() != 2) {
-            throw InvalidCoverContentException.invalidBottomLines();
-        }
+        );
 
         groups.add(LayoutGroup.of(BOTTOM_BLOCK_ID, List.of(bottomBlock.toTextElement())));
 
@@ -131,16 +126,18 @@ public final class CoverLayoutCalculator {
         SinglePageRenderableArea renderableArea = renderableAreaCalculator.calculate(pageRule, lineHeightTwips);
         int pageCapacityLines = renderableArea.safeLineCapacity();
 
-        if (pageCapacityLines <= 0) {
-            throw SinglePageLayoutOverflowException.forLineSlots(1, pageCapacityLines);
-        }
-
         int contentLines = groups.stream()
                 .mapToInt(LayoutGroup::lineCount)
                 .sum();
 
         if (contentLines > pageCapacityLines) {
-            throw SinglePageLayoutOverflowException.forLineSlots(contentLines, pageCapacityLines);
+            throw new CoverLayoutOverflowException(new CoverLayoutFailureDiagnostic(
+                    renderableArea,
+                    contentLines,
+                    contentLines - pageCapacityLines,
+                    createBlockLineCounts(groups),
+                    MeasurementConverter.twipsToPoints(lineHeightTwips)
+            ));
         }
 
         int availableGapLines = pageCapacityLines - contentLines;
@@ -188,6 +185,38 @@ public final class CoverLayoutCalculator {
         }
 
         return Optional.of(new MeasuredCoverBlock(blockId, styleRule, measuredLines));
+    }
+
+    private MeasuredCoverBlock measureBottomBlock(
+            List<String> sourceLines,
+            StyleRule styleRule,
+            PageRule pageRule
+    ) {
+        if (sourceLines.isEmpty()) {
+            throw InvalidCoverContentException.missingBottomLines();
+        }
+
+        if (sourceLines.size() != REQUIRED_BOTTOM_LINE_COUNT) {
+            throw InvalidCoverContentException.invalidBottomLines();
+        }
+
+        List<String> measuredLines = new ArrayList<>();
+
+        for (String sourceLine : sourceLines) {
+            List<String> visualLines = textMeasurer.measure(
+                    sourceLine,
+                    pageRule,
+                    styleRule
+            ).visualLines();
+
+            if (visualLines.size() != 1) {
+                throw InvalidCoverContentException.invalidBottomLines();
+            }
+
+            measuredLines.add(visualLines.getFirst());
+        }
+
+        return new MeasuredCoverBlock(BOTTOM_BLOCK_ID, styleRule, measuredLines);
     }
 
     private MeasuredCoverBlock measureRequiredText(
@@ -265,11 +294,17 @@ public final class CoverLayoutCalculator {
             return layoutRule.authorToTitleWeight();
         }
 
+        if (TOP_BLOCK_ID.equals(currentGroupId) && TITLE_BLOCK_ID.equals(nextGroupId)) {
+            return layoutRule.topToAuthorWeight().add(layoutRule.authorToTitleWeight());
+        }
+
         if (TITLE_BLOCK_ID.equals(currentGroupId) && BOTTOM_BLOCK_ID.equals(nextGroupId)) {
             return layoutRule.titleToBottomWeight();
         }
 
-        return BigDecimal.ONE;
+        throw new IllegalArgumentException(
+                "Unsupported cover gap between groups: " + currentGroupId + " and " + nextGroupId + "."
+        );
     }
 
     private static List<CoverLayoutElement> assembleElements(

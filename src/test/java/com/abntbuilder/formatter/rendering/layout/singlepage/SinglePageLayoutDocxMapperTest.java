@@ -72,6 +72,31 @@ class SinglePageLayoutDocxMapperTest {
         );
     }
 
+    @Test
+    void shouldUseSharedGapDistributorRules() {
+        List<DocxBlock> blocks = mapper.mapToDocxBlocksAnchoringLastGroup(
+                validPageRule(),
+                List.of(
+                        new SinglePageLayoutGroup(
+                                "cover.top",
+                                List.of(new SinglePageLayoutTextLine("Universidade", validStyle()))
+                        ),
+                        new SinglePageLayoutGroup(
+                                "cover.title",
+                                List.of(new SinglePageLayoutTextLine("Titulo", validStyle()))
+                        ),
+                        new SinglePageLayoutGroup(
+                                "cover.bottom",
+                                List.of(new SinglePageLayoutTextLine("2026", validStyle()))
+                        )
+                ),
+                List.of(BigDecimal.valueOf(1), BigDecimal.valueOf(100))
+        );
+
+        assertEquals(DocxBlankLine.class, blocks.get(1).getClass());
+        assertEquals(28, blocks.stream().filter(DocxBlankLine.class::isInstance).count());
+    }
+
     private static PageRule validPageRule() {
         return new PageRule(
                 BigDecimal.valueOf(21),

@@ -22,7 +22,7 @@ public final class ConservativeTextMeasurer implements TextMeasurer {
     public MeasuredText measure(
             String text,
             PageRule pageRule,
-        StyleRule styleRule
+            StyleRule styleRule
     ) {
         if (text == null || text.isBlank()) {
             throw TextMeasurementException.blankText();
