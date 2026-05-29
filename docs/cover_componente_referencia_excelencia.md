@@ -118,14 +118,22 @@ O usuario nao deve fornecer valores tecnicos de layout fisico.
 Contrato semantico atual do `CoverComponent`:
 
 ```text
-bottomLines[0] = cidade
-bottomLines[1] = ano
+institutionalLines
+authors
+title
+subtitle
+city
+year
 ```
 
 Essa regra nao e uma decisao visual e nao deve virar configuracao tecnica do
 perfil. Ela descreve a estrutura do componente de capa atual. O perfil continua
 decidindo como essas linhas aparecem, por exemplo caixa alta, fonte, alinhamento e
 negrito.
+
+Os aliases legados `topLines`, `authorLines` e `bottomLines` existem somente para
+compatibilidade de API e testes antigos. O fluxo de referencia deve usar
+`profileId + document.cover` com os campos semanticos acima.
 
 Se uma nova instituicao exigir outro rodape de capa, a solucao correta e evoluir o
 contrato semantico do componente ou criar outro componente de capa, nao esconder
@@ -531,7 +539,7 @@ layout/
   singlepage/
     SinglePageRenderableAreaCalculator
     SinglePageRenderableArea
-    SinglePageLineMetrics
+    SinglePageLayoutLineMetrics
     SinglePageGapDistributor
     SinglePageLayoutPlan
     SinglePageLayoutDiagnostic
@@ -541,12 +549,12 @@ layout/
 O cover deve ser especifico no que e semantica da capa:
 
 ```text
-topLines
+institutionalLines
 authors
 title
 subtitle
-bottomLines
-bottom deve conter cidade e ano
+city
+year
 ```
 
 A base generica deve cuidar do que e comum a pagina unica:
@@ -629,7 +637,7 @@ Atualizar classes genericas antigas para usar:
 ```text
 SinglePageRenderableAreaCalculator
 SinglePageGapDistributor
-SinglePageLineMetrics
+SinglePageLayoutLineMetrics
 ```
 
 Evitar que cada classe recalcule area segura de um jeito.
@@ -637,10 +645,12 @@ Evitar que cada classe recalcule area segura de um jeito.
 Status atual:
 
 ```text
-SinglePageRenderableAreaCalculator criado e usado pelo cover.
+SinglePageRenderableAreaCalculator consolidado na base single-page.
 SinglePageGapDistributor criado e usado pelo cover.
-CoverGapDistributor permanece apenas como adaptador de compatibilidade.
-SinglePageLayoutDocxMapper usa SinglePageGapDistributor.
+SinglePageLayoutLineMetrics criado e usado pelo cover para altura exata de linha.
+SinglePageLayoutEngine concentra calculo, overflow e diagnostico.
+SinglePageLayoutRenderer transforma plano generico em blocos DOCX.
+SinglePageLayoutDocxMapper permanece apenas como adaptador legado.
 Motor legado baseado em centimetros removido da base single-page.
 Pesos de gaps do cover definidos por tabela de transicoes sem fallback visual
 arbitrario.
@@ -649,15 +659,15 @@ arbitrario.
 Decisao final sobre `SinglePageLayoutDocxMapper`:
 
 ```text
-Ele permanece como helper compartilhado para componentes simples de pagina unica
-que ja chegam como grupos posicionaveis e precisam ancorar o ultimo grupo no fim
-da area segura.
+Ele nao e mais o caminho de referencia para novos componentes.
+Ele permanece como adaptador de compatibilidade sobre SinglePageLayoutEngine e
+SinglePageLayoutRenderer.
 ```
 
-O cover nao precisa delegar a ele porque possui contrato semantico proprio,
-diagnostico especifico e validacoes de conteudo como `bottomLines = cidade + ano`.
-Mesmo assim, o mapper deve continuar seguindo a mesma infraestrutura: area
-renderizavel, linhas exatas e `SinglePageGapDistributor`.
+O cover delega o calculo ao `SinglePageLayoutEngine`, mas mantem sua camada
+semantica propria em `CoverLayoutAssembler` e `CoverProfileContentValidator`.
+Assim, validacoes de dominio como `city` e `year` em uma linha visual ficam no
+componente, enquanto area segura, gaps e overflow ficam na base generica.
 
 ### Etapa 4.1: diagnostico de overflow do cover
 
@@ -728,7 +738,11 @@ CoverLayoutPlanTest valida invariantes e imutabilidade do plano.
 CoverRendererDocxSanityTest valida XML DOCX, lineRule exact, linhas vazias reais
 e ausencia de quebra de pagina interna.
 CoverSampleValidationTest envia os JSONs oficiais pela API publica de exportacao.
-SinglePageLayoutDocxMapperTest valida uso do distribuidor compartilhado de gaps.
+OrderedLayoutGapResolverTest valida gaps diretos, gaps somados e falhas de ordem.
+SinglePageLayoutEngineTest valida diagnostico, overflow, politicas e invariantes.
+SinglePageLayoutRendererTest valida a renderizacao generica para DocxBlock.
+SinglePageLayoutDocxMapperTest valida o adaptador legado sobre a base compartilhada.
+CoverProfileContentValidatorTest valida compatibilidade profile x content.
 ```
 
 ### Etapa 7: documentar como criar o proximo componente
@@ -805,16 +819,27 @@ sincronizado com a implementacao atual.
 Artefatos finais de referencia:
 
 ```text
+CoverComponent
+CoverLayoutAssembler
 CoverLayoutCalculator
+CoverProfileContentValidator
 CoverLayoutPlan
 CoverLayoutDiagnostic
 CoverLayoutFailureDiagnostic
 CoverLayoutOverflowException
 CoverRenderer
+ProfileProvider
+InMemoryProfileProvider
+LayoutGapRule
+SinglePageGroupRule
+SinglePageItemRule
+SinglePageLayoutPolicy
 SinglePageRenderableAreaCalculator
 SinglePageRenderableArea
 SinglePageGapDistributor
-SinglePageLayoutDocxMapper
+OrderedLayoutGapResolver
+SinglePageLayoutEngine
+SinglePageLayoutRenderer
 FontMetricsTextMeasurer
 docs/components/single-page-component-reference.md
 docs/samples/cover

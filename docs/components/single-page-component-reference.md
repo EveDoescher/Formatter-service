@@ -322,8 +322,8 @@ contrato dos samples.
 Quando um componente de pagina unica tiver um rodape semantico, como a capa atual:
 
 ```text
-bottomLines[0] = cidade
-bottomLines[1] = ano
+city
+year
 ```
 
 essa estrutura pertence ao contrato do componente, nao ao perfil. O perfil decide
@@ -380,7 +380,9 @@ CoverLayoutDiagnostic
 CoverRenderer
 SinglePageRenderableAreaCalculator
 SinglePageGapDistributor
-SinglePageLayoutDocxMapper
+SinglePageLayoutEngine
+SinglePageLayoutRenderer
+OrderedLayoutGapResolver
 docs/samples/cover
 ```
 
@@ -388,7 +390,8 @@ O antigo motor baseado em medidas fisicas em centimetros foi removido da base de
 referencia. Novos componentes de pagina unica devem usar apenas o fluxo por linhas
 renderizaveis.
 
-`SinglePageLayoutDocxMapper` deve ser tratado como helper compartilhado para
-componentes simples que ja possuem grupos posicionaveis e precisam distribuir gaps
-por linhas. Componentes com semantica mais rica podem ter renderer proprio, desde
-que usem as mesmas primitivas de calculo e nao dupliquem a distribuicao de gaps.
+`SinglePageLayoutDocxMapper` deve ser tratado apenas como adaptador legado sobre
+`SinglePageLayoutEngine` e `SinglePageLayoutRenderer`. Novos componentes de
+pagina unica devem montar entrada generica, calcular com o engine e renderizar o
+plano com o renderer compartilhado, preservando validacoes semanticas na camada
+do proprio componente.

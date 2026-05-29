@@ -70,7 +70,9 @@ class CoverSampleValidationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(readSample("cover-bottom-wrap-invalid.json")))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("cover bottomLines must contain exactly city and year."));
+                .andExpect(jsonPath("$.message").value(
+                        "cover city and year must each fit in exactly one visual line."
+                ));
     }
 
     private static String readSample(String sampleName) throws Exception {

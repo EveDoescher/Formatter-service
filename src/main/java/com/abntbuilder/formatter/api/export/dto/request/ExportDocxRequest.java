@@ -3,9 +3,9 @@ package com.abntbuilder.formatter.api.export.dto.request;
 import com.abntbuilder.formatter.application.export.ExportDocxCommand;
 import com.abntbuilder.formatter.document.component.cover.CoverComponent;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
+import com.abntbuilder.formatter.profile.resolution.ProfileProvider;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,9 +13,16 @@ import java.util.Optional;
 public record ExportDocxRequest(
         @NotBlank String fileName,
 
+        String profileId,
+
         @Valid
-        @NotNull
         ProfileRequest profile,
+
+        @Valid
+        ExportOptionsRequest options,
+
+        @Valid
+        DocumentContentRequest document,
 
         @Valid
         CoverRequest cover,
@@ -24,11 +31,29 @@ public record ExportDocxRequest(
         List<ParagraphRequest> paragraphs
 ) {
     public ExportDocxCommand toCommand() {
-        DocumentProfile documentProfile = profile.toDomain();
+        if (profile == null) {
+            throw new IllegalArgumentException("profile must be provided for inline export.");
+        }
 
-        Optional<CoverComponent> coverComponent = cover == null
+        return toCommand(profile.toDomain());
+    }
+
+    public ExportDocxCommand toCommand(ProfileProvider profileProvider) {
+        DocumentProfile documentProfile = profile == null
+                ? resolveProfile(profileProvider)
+                : profile.toDomain();
+
+        return toCommand(documentProfile);
+    }
+
+    private ExportDocxCommand toCommand(DocumentProfile documentProfile) {
+        CoverRequest resolvedCover = document != null && document.cover() != null
+                ? document.cover()
+                : cover;
+
+        Optional<CoverComponent> coverComponent = resolvedCover == null
                 ? Optional.empty()
-                : Optional.of(cover.toDomain());
+                : Optional.of(resolvedCover.toDomain());
 
         List<ExportDocxCommand.ParagraphCommand> paragraphCommands = paragraphs == null
                 ? List.of()
@@ -42,5 +67,13 @@ public record ExportDocxRequest(
                 coverComponent,
                 paragraphCommands
         );
+    }
+
+    private DocumentProfile resolveProfile(ProfileProvider profileProvider) {
+        if (profileId == null || profileId.isBlank()) {
+            throw new IllegalArgumentException("profileId must be provided when profile is not inline.");
+        }
+
+        return profileProvider.findById(profileId);
     }
 }

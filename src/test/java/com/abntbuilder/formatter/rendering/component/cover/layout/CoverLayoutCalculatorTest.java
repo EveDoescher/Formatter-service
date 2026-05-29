@@ -10,6 +10,9 @@ import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverStyleMapping;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutElement;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageSpacerLines;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageTextLines;
 import com.abntbuilder.formatter.shared.exception.InvalidCoverContentException;
 import com.abntbuilder.formatter.shared.exception.InvalidSinglePageStyleException;
 import com.abntbuilder.formatter.shared.exception.SinglePageLayoutOverflowException;
@@ -34,12 +37,12 @@ class CoverLayoutCalculatorTest {
 
         assertFalse(plan.elements().isEmpty());
         assertEquals(plan.pageCapacityLines(), plan.totalLines());
-        assertTrue(plan.elements().stream().anyMatch(CoverSpacerLines.class::isInstance));
-        assertTrue(plan.elements().stream().anyMatch(CoverTextLines.class::isInstance));
+        assertTrue(plan.elements().stream().anyMatch(SinglePageSpacerLines.class::isInstance));
+        assertTrue(plan.elements().stream().anyMatch(SinglePageTextLines.class::isInstance));
         assertTrue(plan.exactLineHeightPt().compareTo(BigDecimal.ZERO) > 0);
 
         int elementLineCount = plan.elements().stream()
-                .mapToInt(CoverLayoutElement::lineCount)
+                .mapToInt(SinglePageLayoutElement::lineCount)
                 .sum();
         int blockLineCount = diagnostic.blockLineCounts().values().stream()
                 .mapToInt(Integer::intValue)
@@ -108,25 +111,23 @@ class CoverLayoutCalculatorTest {
                 () -> calculator.calculate(cover, validProfile())
         );
 
-        assertEquals("cover bottomLines must contain exactly city and year.", exception.getMessage());
+        assertEquals("cover city and year must each fit in exactly one visual line.", exception.getMessage());
     }
 
     @Test
     void shouldFailWhenBottomLinesDoesNotContainExactlyCityAndYearItems() {
-        CoverComponent cover = new CoverComponent(
-                List.of("UNIVERSIDADE PAULISTA"),
-                List.of("NOME COMPLETO DO ALUNO"),
-                "TITULO DO TRABALHO",
-                Optional.empty(),
-                List.of("Limeira")
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new CoverComponent(
+                        List.of("UNIVERSIDADE PAULISTA"),
+                        List.of("NOME COMPLETO DO ALUNO"),
+                        "TITULO DO TRABALHO",
+                        Optional.empty(),
+                        List.of("Limeira")
+                )
         );
 
-        InvalidCoverContentException exception = assertThrows(
-                InvalidCoverContentException.class,
-                () -> calculator.calculate(cover, validProfile())
-        );
-
-        assertEquals("cover bottomLines must contain exactly city and year.", exception.getMessage());
+        assertEquals("bottomLines must contain exactly city and year.", exception.getMessage());
     }
 
     @Test
@@ -144,7 +145,7 @@ class CoverLayoutCalculatorTest {
                 () -> calculator.calculate(cover, validProfile())
         );
 
-        assertEquals("cover bottomLines must contain exactly city and year.", exception.getMessage());
+        assertEquals("cover city and year must each fit in exactly one visual line.", exception.getMessage());
     }
 
     @Test
@@ -159,8 +160,8 @@ class CoverLayoutCalculatorTest {
 
         CoverLayoutPlan plan = calculator.calculate(cover, validProfile());
 
-        assertTrue(plan.diagnostic().gapLineCounts().get("cover.top-to-cover.title") > 1);
-        assertTrue(plan.diagnostic().gapLineCounts().containsKey("cover.title-to-cover.bottom"));
+        assertTrue(plan.diagnostic().gapLineCounts().get("cover.institution->cover.titleBlock") > 1);
+        assertTrue(plan.diagnostic().gapLineCounts().containsKey("cover.titleBlock->cover.bottom"));
     }
 
     @Test

@@ -1,131 +1,27 @@
-{
-  "fileName": "cover-long-title.docx",
-  "profile": {
-    "id": "abnt-unip-profile",
-    "displayName": "ABNT UNIP Profile",
-    "pageRule": {
-      "widthCm": 21,
-      "heightCm": 29.7,
-      "marginTopCm": 3,
-      "marginRightCm": 2,
-      "marginBottomCm": 2,
-      "marginLeftCm": 3,
-      "orientation": "PORTRAIT"
-    },
-    "styleRules": [
-      {
-        "id": "cover.top",
-        "type": "PARAGRAPH",
-        "fontFamily": "Times New Roman",
-        "fontSizePt": 12,
-        "alignment": "CENTER",
-        "lineSpacing": 1.5,
-        "firstLineIndentCm": 0,
-        "leftIndentCm": 0,
-        "rightIndentCm": 0,
-        "spacingBeforePt": 0,
-        "spacingAfterPt": 0,
-        "bold": true,
-        "italic": false,
-        "uppercase": true
-      },
-      {
-        "id": "cover.author",
-        "type": "PARAGRAPH",
-        "fontFamily": "Times New Roman",
-        "fontSizePt": 12,
-        "alignment": "CENTER",
-        "lineSpacing": 1.5,
-        "firstLineIndentCm": 0,
-        "leftIndentCm": 0,
-        "rightIndentCm": 0,
-        "spacingBeforePt": 0,
-        "spacingAfterPt": 0,
-        "bold": false,
-        "italic": false,
-        "uppercase": true
-      },
-      {
-        "id": "cover.title",
-        "type": "PARAGRAPH",
-        "fontFamily": "Times New Roman",
-        "fontSizePt": 12,
-        "alignment": "CENTER",
-        "lineSpacing": 1.5,
-        "firstLineIndentCm": 0,
-        "leftIndentCm": 0,
-        "rightIndentCm": 0,
-        "spacingBeforePt": 0,
-        "spacingAfterPt": 0,
-        "bold": true,
-        "italic": false,
-        "uppercase": true
-      },
-      {
-        "id": "cover.subtitle",
-        "type": "PARAGRAPH",
-        "fontFamily": "Times New Roman",
-        "fontSizePt": 12,
-        "alignment": "CENTER",
-        "lineSpacing": 1.5,
-        "firstLineIndentCm": 0,
-        "leftIndentCm": 0,
-        "rightIndentCm": 0,
-        "spacingBeforePt": 0,
-        "spacingAfterPt": 0,
-        "bold": false,
-        "italic": false,
-        "uppercase": false
-      },
-      {
-        "id": "cover.bottom",
-        "type": "PARAGRAPH",
-        "fontFamily": "Times New Roman",
-        "fontSizePt": 12,
-        "alignment": "CENTER",
-        "lineSpacing": 1.5,
-        "firstLineIndentCm": 0,
-        "leftIndentCm": 0,
-        "rightIndentCm": 0,
-        "spacingBeforePt": 0,
-        "spacingAfterPt": 0,
-        "bold": false,
-        "italic": false,
-        "uppercase": true
-      }
-    ],
-    "componentRules": {
-      "cover": {
-        "componentId": "cover",
-        "styleMapping": {
-          "topLinesStyleId": "cover.top",
-          "authorLinesStyleId": "cover.author",
-          "titleStyleId": "cover.title",
-          "subtitleStyleId": "cover.subtitle",
-          "bottomLinesStyleId": "cover.bottom"
-        },
-        "layoutRule": {
-          "topToAuthorWeight": 30,
-          "authorToTitleWeight": 10,
-          "titleToBottomWeight": 60
-        }
-      }
-    }
-  },
-  "cover": {
-    "topLines": [
-      "Universidade da Integracao Internacional da Lusofonia Afro-Brasileira",
-      "Curso de Engenharia Ambiental Sanitaria e Ocupacional"
-    ],
-    "authorLines": [
-      "Ana Clara de Albuquerque Vasconcelos"
-    ],
-    "title": "Pneumoultramicroscopicossilicovulcanoconiotico: uma analise epidemiologica e socioambiental da exposicao ocupacional prolongada a particulas silicovulcanicas",
-    "subtitle": "Estudo interdisciplinar sobre saude coletiva, responsabilidade empresarial e prevencao em ambientes industriais",
-    "bottomLines": [
-      "Sao Jose do Vale do Rio Preto",
-      "2026"
-    ]
-  },
-  "paragraphs": []
+﻿{
+    "fileName":  "cover-long-title.docx",
+    "profileId":  "abnt-unip-profile",
+    "options":  {
+                    "selectedComponents":  [
+                                               "cover"
+                                           ]
+                },
+    "document":  {
+                     "cover":  {
+                                   "institutionalLines":  [
+                                                              "Universidade da Integracao Internacional da Lusofonia Afro-Brasileira",
+                                                              "Curso de Engenharia Ambiental Sanitaria e Ocupacional"
+                                                          ],
+                                   "authors":  [
+                                                   "Ana Clara de Albuquerque Vasconcelos"
+                                               ],
+                                   "title":  "Pneumoultramicroscopicossilicovulcanoconiotico: uma analise epidemiologica e socioambiental da exposicao ocupacional prolongada a particulas silicovulcanicas",
+                                   "subtitle":  "Estudo interdisciplinar sobre saude coletiva, responsabilidade empresarial e prevencao em ambientes industriais",
+                                   "city":  "Sao Jose do Vale do Rio Preto",
+                                   "year":  "2026"
+                               }
+                 },
+    "paragraphs":  [
+
+                   ]
 }

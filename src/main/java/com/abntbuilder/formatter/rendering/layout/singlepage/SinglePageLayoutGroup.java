@@ -5,21 +5,32 @@ import java.util.Objects;
 
 public record SinglePageLayoutGroup(
         String id,
-        List<SinglePageLayoutTextLine> lines
+        List<SinglePageLayoutItem> items
 ) {
+
     public SinglePageLayoutGroup {
         requireNonBlank(id, "id");
-        Objects.requireNonNull(lines, "lines must not be null");
+        Objects.requireNonNull(items, "items must not be null");
 
-        if (lines.isEmpty()) {
-            throw new IllegalArgumentException("lines must not be empty.");
+        if (items.isEmpty()) {
+            throw new IllegalArgumentException("items must not be empty.");
         }
 
-        lines = List.copyOf(lines);
+        items = List.copyOf(items);
 
-        for (SinglePageLayoutTextLine line : lines) {
-            Objects.requireNonNull(line, "lines must not contain null values.");
+        for (SinglePageLayoutItem item : items) {
+            Objects.requireNonNull(item, "items must not contain null values.");
         }
+    }
+
+    public int lineCount() {
+        return items.stream()
+                .mapToInt(SinglePageLayoutItem::lineCount)
+                .sum();
+    }
+
+    public SinglePageLayoutItem firstItem() {
+        return items.getFirst();
     }
 
     private static void requireNonBlank(String value, String fieldName) {

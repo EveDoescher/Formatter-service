@@ -1,8 +1,13 @@
 package com.abntbuilder.formatter.shared.exception;
 
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutFailureDiagnostic;
+
 import java.math.BigDecimal;
+import java.util.Optional;
 
 public class SinglePageLayoutOverflowException extends RuntimeException {
+
+    private final SinglePageLayoutFailureDiagnostic diagnostic;
 
     public SinglePageLayoutOverflowException(BigDecimal requiredHeightCm, BigDecimal usableHeightCm) {
         super("Single-page layout overflow. Required height: "
@@ -10,10 +15,20 @@ public class SinglePageLayoutOverflowException extends RuntimeException {
                 + " cm; usable height: "
                 + format(usableHeightCm)
                 + " cm.");
+        this.diagnostic = null;
     }
 
     protected SinglePageLayoutOverflowException(String message) {
         super(message);
+        this.diagnostic = null;
+    }
+
+    public SinglePageLayoutOverflowException(SinglePageLayoutFailureDiagnostic diagnostic) {
+        super(lineSlotsMessage(
+                diagnostic.contentLineCount(),
+                diagnostic.renderableArea().safeLineCapacity()
+        ));
+        this.diagnostic = diagnostic;
     }
 
     public static SinglePageLayoutOverflowException forLineSlots(
@@ -32,6 +47,10 @@ public class SinglePageLayoutOverflowException extends RuntimeException {
                 + "; usable line slots: "
                 + usableLineSlots
                 + ".";
+    }
+
+    public Optional<SinglePageLayoutFailureDiagnostic> singlePageDiagnostic() {
+        return Optional.ofNullable(diagnostic);
     }
 
     private static String format(BigDecimal value) {

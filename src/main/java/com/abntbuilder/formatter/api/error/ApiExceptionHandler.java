@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.abntbuilder.formatter.shared.exception.ComponentRuleTypeMismatchException;
 import com.abntbuilder.formatter.shared.exception.MissingComponentRuleException;
 import com.abntbuilder.formatter.shared.exception.MissingGeneratedDocxExportException;
+import com.abntbuilder.formatter.shared.exception.MissingProfileException;
 
 import java.util.List;
 
@@ -43,7 +44,8 @@ public class ApiExceptionHandler {
             MissingStyleRuleException.class,
             MissingComponentRuleException.class,
             ComponentRuleTypeMismatchException.class,
-            SinglePageLayoutOverflowException.class
+            SinglePageLayoutOverflowException.class,
+            MissingProfileException.class
     })
     public ResponseEntity<ApiErrorResponse> handleBadRequest(RuntimeException exception) {
         return ResponseEntity

@@ -1,159 +1,55 @@
-{
-  "fileName": "cover-overflow.docx",
-  "profile": {
-    "id": "abnt-unip-profile",
-    "displayName": "ABNT UNIP Profile",
-    "pageRule": {
-      "widthCm": 21,
-      "heightCm": 29.7,
-      "marginTopCm": 3,
-      "marginRightCm": 2,
-      "marginBottomCm": 2,
-      "marginLeftCm": 3,
-      "orientation": "PORTRAIT"
-    },
-    "styleRules": [
-      {
-        "id": "cover.top",
-        "type": "PARAGRAPH",
-        "fontFamily": "Times New Roman",
-        "fontSizePt": 12,
-        "alignment": "CENTER",
-        "lineSpacing": 1.5,
-        "firstLineIndentCm": 0,
-        "leftIndentCm": 0,
-        "rightIndentCm": 0,
-        "spacingBeforePt": 0,
-        "spacingAfterPt": 0,
-        "bold": true,
-        "italic": false,
-        "uppercase": true
-      },
-      {
-        "id": "cover.author",
-        "type": "PARAGRAPH",
-        "fontFamily": "Times New Roman",
-        "fontSizePt": 12,
-        "alignment": "CENTER",
-        "lineSpacing": 1.5,
-        "firstLineIndentCm": 0,
-        "leftIndentCm": 0,
-        "rightIndentCm": 0,
-        "spacingBeforePt": 0,
-        "spacingAfterPt": 0,
-        "bold": false,
-        "italic": false,
-        "uppercase": true
-      },
-      {
-        "id": "cover.title",
-        "type": "PARAGRAPH",
-        "fontFamily": "Times New Roman",
-        "fontSizePt": 12,
-        "alignment": "CENTER",
-        "lineSpacing": 1.5,
-        "firstLineIndentCm": 0,
-        "leftIndentCm": 0,
-        "rightIndentCm": 0,
-        "spacingBeforePt": 0,
-        "spacingAfterPt": 0,
-        "bold": true,
-        "italic": false,
-        "uppercase": true
-      },
-      {
-        "id": "cover.subtitle",
-        "type": "PARAGRAPH",
-        "fontFamily": "Times New Roman",
-        "fontSizePt": 12,
-        "alignment": "CENTER",
-        "lineSpacing": 1.5,
-        "firstLineIndentCm": 0,
-        "leftIndentCm": 0,
-        "rightIndentCm": 0,
-        "spacingBeforePt": 0,
-        "spacingAfterPt": 0,
-        "bold": false,
-        "italic": false,
-        "uppercase": false
-      },
-      {
-        "id": "cover.bottom",
-        "type": "PARAGRAPH",
-        "fontFamily": "Times New Roman",
-        "fontSizePt": 12,
-        "alignment": "CENTER",
-        "lineSpacing": 1.5,
-        "firstLineIndentCm": 0,
-        "leftIndentCm": 0,
-        "rightIndentCm": 0,
-        "spacingBeforePt": 0,
-        "spacingAfterPt": 0,
-        "bold": false,
-        "italic": false,
-        "uppercase": true
-      }
-    ],
-    "componentRules": {
-      "cover": {
-        "componentId": "cover",
-        "styleMapping": {
-          "topLinesStyleId": "cover.top",
-          "authorLinesStyleId": "cover.author",
-          "titleStyleId": "cover.title",
-          "subtitleStyleId": "cover.subtitle",
-          "bottomLinesStyleId": "cover.bottom"
-        },
-        "layoutRule": {
-          "topToAuthorWeight": 30,
-          "authorToTitleWeight": 10,
-          "titleToBottomWeight": 60
-        }
-      }
-    }
-  },
-  "cover": {
-    "topLines": [
-      "Universidade Paulista",
-      "Instituto de Ciencias Exatas Humanas Tecnologicas e Sociais",
-      "Curso de Engenharia Gestao Educacao e Tecnologias Aplicadas"
-    ],
-    "authorLines": [
-      "Autor Teste Overflow Vertical Linha 01",
-      "Autor Teste Overflow Vertical Linha 02",
-      "Autor Teste Overflow Vertical Linha 03",
-      "Autor Teste Overflow Vertical Linha 04",
-      "Autor Teste Overflow Vertical Linha 05",
-      "Autor Teste Overflow Vertical Linha 06",
-      "Autor Teste Overflow Vertical Linha 07",
-      "Autor Teste Overflow Vertical Linha 08",
-      "Autor Teste Overflow Vertical Linha 09",
-      "Autor Teste Overflow Vertical Linha 10",
-      "Autor Teste Overflow Vertical Linha 11",
-      "Autor Teste Overflow Vertical Linha 12",
-      "Autor Teste Overflow Vertical Linha 13",
-      "Autor Teste Overflow Vertical Linha 14",
-      "Autor Teste Overflow Vertical Linha 15",
-      "Autor Teste Overflow Vertical Linha 16",
-      "Autor Teste Overflow Vertical Linha 17",
-      "Autor Teste Overflow Vertical Linha 18",
-      "Autor Teste Overflow Vertical Linha 19",
-      "Autor Teste Overflow Vertical Linha 20",
-      "Autor Teste Overflow Vertical Linha 21",
-      "Autor Teste Overflow Vertical Linha 22",
-      "Autor Teste Overflow Vertical Linha 23",
-      "Autor Teste Overflow Vertical Linha 24",
-      "Autor Teste Overflow Vertical Linha 25",
-      "Autor Teste Overflow Vertical Linha 26",
-      "Autor Teste Overflow Vertical Linha 27",
-      "Autor Teste Overflow Vertical Linha 28"
-    ],
-    "title": "Pneumoultramicroscopicossilicovulcanoconiotico: uma analise epidemiologica e socioambiental",
-    "subtitle": "Estudo sobre exposicao ocupacional prolongada a particulas silicovulcanicas em ambientes industriais de alta complexidade",
-    "bottomLines": [
-      "Sao Jose do Vale do Rio Preto",
-      "2026"
-    ]
-  },
-  "paragraphs": []
+﻿{
+    "fileName":  "cover-overflow.docx",
+    "profileId":  "abnt-unip-profile",
+    "options":  {
+                    "selectedComponents":  [
+                                               "cover"
+                                           ]
+                },
+    "document":  {
+                     "cover":  {
+                                   "institutionalLines":  [
+                                                              "Universidade Paulista",
+                                                              "Instituto de Ciencias Exatas Humanas Tecnologicas e Sociais",
+                                                              "Curso de Engenharia Gestao Educacao e Tecnologias Aplicadas"
+                                                          ],
+                                   "authors":  [
+                                                   "Autor Teste Overflow Vertical Linha 01",
+                                                   "Autor Teste Overflow Vertical Linha 02",
+                                                   "Autor Teste Overflow Vertical Linha 03",
+                                                   "Autor Teste Overflow Vertical Linha 04",
+                                                   "Autor Teste Overflow Vertical Linha 05",
+                                                   "Autor Teste Overflow Vertical Linha 06",
+                                                   "Autor Teste Overflow Vertical Linha 07",
+                                                   "Autor Teste Overflow Vertical Linha 08",
+                                                   "Autor Teste Overflow Vertical Linha 09",
+                                                   "Autor Teste Overflow Vertical Linha 10",
+                                                   "Autor Teste Overflow Vertical Linha 11",
+                                                   "Autor Teste Overflow Vertical Linha 12",
+                                                   "Autor Teste Overflow Vertical Linha 13",
+                                                   "Autor Teste Overflow Vertical Linha 14",
+                                                   "Autor Teste Overflow Vertical Linha 15",
+                                                   "Autor Teste Overflow Vertical Linha 16",
+                                                   "Autor Teste Overflow Vertical Linha 17",
+                                                   "Autor Teste Overflow Vertical Linha 18",
+                                                   "Autor Teste Overflow Vertical Linha 19",
+                                                   "Autor Teste Overflow Vertical Linha 20",
+                                                   "Autor Teste Overflow Vertical Linha 21",
+                                                   "Autor Teste Overflow Vertical Linha 22",
+                                                   "Autor Teste Overflow Vertical Linha 23",
+                                                   "Autor Teste Overflow Vertical Linha 24",
+                                                   "Autor Teste Overflow Vertical Linha 25",
+                                                   "Autor Teste Overflow Vertical Linha 26",
+                                                   "Autor Teste Overflow Vertical Linha 27",
+                                                   "Autor Teste Overflow Vertical Linha 28"
+                                               ],
+                                   "title":  "Pneumoultramicroscopicossilicovulcanoconiotico: uma analise epidemiologica e socioambiental",
+                                   "subtitle":  "Estudo sobre exposicao ocupacional prolongada a particulas silicovulcanicas em ambientes industriais de alta complexidade",
+                                   "city":  "Sao Jose do Vale do Rio Preto",
+                                   "year":  "2026"
+                               }
+                 },
+    "paragraphs":  [
+
+                   ]
 }

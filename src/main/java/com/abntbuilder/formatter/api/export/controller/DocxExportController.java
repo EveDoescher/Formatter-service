@@ -4,6 +4,7 @@ import com.abntbuilder.formatter.api.export.dto.request.ExportDocxRequest;
 import com.abntbuilder.formatter.api.export.dto.response.GenerateDocxResponse;
 import com.abntbuilder.formatter.application.export.DocxExportService;
 import com.abntbuilder.formatter.application.export.GeneratedDocxExport;
+import com.abntbuilder.formatter.profile.resolution.ProfileProvider;
 import jakarta.validation.Valid;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -27,9 +28,14 @@ public class DocxExportController {
     private static final MediaType DOCX_MEDIA_TYPE = MediaType.parseMediaType(DOCX_MEDIA_TYPE_VALUE);
 
     private final DocxExportService docxExportService;
+    private final ProfileProvider profileProvider;
 
-    public DocxExportController(DocxExportService docxExportService) {
+    public DocxExportController(
+            DocxExportService docxExportService,
+            ProfileProvider profileProvider
+    ) {
         this.docxExportService = docxExportService;
+        this.profileProvider = profileProvider;
     }
 
     @PostMapping(
@@ -38,7 +44,7 @@ public class DocxExportController {
             produces = DOCX_MEDIA_TYPE_VALUE
     )
     public ResponseEntity<byte[]> exportDocx(@Valid @RequestBody ExportDocxRequest request) {
-        byte[] docxBytes = docxExportService.export(request.toCommand());
+        byte[] docxBytes = docxExportService.export(request.toCommand(profileProvider));
 
         return ResponseEntity.ok()
                 .contentType(DOCX_MEDIA_TYPE)
@@ -53,7 +59,7 @@ public class DocxExportController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<GenerateDocxResponse> generateDocx(@Valid @RequestBody ExportDocxRequest request) {
-        GeneratedDocxExport generatedExport = docxExportService.generate(request.toCommand());
+        GeneratedDocxExport generatedExport = docxExportService.generate(request.toCommand(profileProvider));
 
         GenerateDocxResponse response = new GenerateDocxResponse(
                 generatedExport.id(),

@@ -1,85 +1,73 @@
 package com.abntbuilder.formatter.rendering.component.cover.layout;
 
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutDiagnostic;
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageRenderableArea;
 
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public record CoverLayoutDiagnostic(
         SinglePageRenderableArea renderableArea,
         int contentLineCount,
         int availableGapLines,
         Map<String, Integer> blockLineCounts,
+        Map<String, Integer> itemLineCounts,
         Map<String, Integer> gapLineCounts,
         BigDecimal exactLineHeightPt
 ) {
 
-    public CoverLayoutDiagnostic {
-        Objects.requireNonNull(renderableArea, "renderableArea must not be null");
-        Objects.requireNonNull(blockLineCounts, "blockLineCounts must not be null");
-        Objects.requireNonNull(gapLineCounts, "gapLineCounts must not be null");
-        Objects.requireNonNull(exactLineHeightPt, "exactLineHeightPt must not be null");
-
-        if (contentLineCount < 0) {
-            throw new IllegalArgumentException("contentLineCount must not be negative.");
-        }
-
-        if (availableGapLines < 0) {
-            throw new IllegalArgumentException("availableGapLines must not be negative.");
-        }
-
-        if (exactLineHeightPt.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("exactLineHeightPt must be greater than zero.");
-        }
-
-        blockLineCounts = copyLineCounts(blockLineCounts, "blockLineCounts");
-        gapLineCounts = copyLineCounts(gapLineCounts, "gapLineCounts");
-
-        int blockLineSum = blockLineCounts.values().stream()
-                .mapToInt(Integer::intValue)
-                .sum();
-        int gapLineSum = gapLineCounts.values().stream()
-                .mapToInt(Integer::intValue)
-                .sum();
-
-        if (blockLineSum != contentLineCount) {
-            throw new IllegalArgumentException("blockLineCounts must sum to contentLineCount.");
-        }
-
-        if (gapLineSum != availableGapLines) {
-            throw new IllegalArgumentException("gapLineCounts must sum to availableGapLines.");
-        }
-
-        if (contentLineCount + availableGapLines != renderableArea.safeLineCapacity()) {
-            throw new IllegalArgumentException(
-                    "contentLineCount plus availableGapLines must match safeLineCapacity."
-            );
-        }
+    public CoverLayoutDiagnostic(
+            SinglePageRenderableArea renderableArea,
+            int contentLineCount,
+            int availableGapLines,
+            Map<String, Integer> blockLineCounts,
+            Map<String, Integer> gapLineCounts,
+            BigDecimal exactLineHeightPt
+    ) {
+        this(
+                renderableArea,
+                contentLineCount,
+                availableGapLines,
+                blockLineCounts,
+                blockLineCounts,
+                gapLineCounts,
+                exactLineHeightPt
+        );
     }
 
-    private static Map<String, Integer> copyLineCounts(Map<String, Integer> lineCounts, String fieldName) {
-        Map<String, Integer> copy = new LinkedHashMap<>();
+    public CoverLayoutDiagnostic {
+        SinglePageLayoutDiagnostic diagnostic = new SinglePageLayoutDiagnostic(
+                renderableArea,
+                contentLineCount,
+                availableGapLines,
+                blockLineCounts,
+                itemLineCounts,
+                gapLineCounts,
+                exactLineHeightPt
+        );
 
-        for (Map.Entry<String, Integer> entry : lineCounts.entrySet()) {
-            String key = entry.getKey();
-            Integer value = entry.getValue();
+        renderableArea = diagnostic.renderableArea();
+        contentLineCount = diagnostic.contentLineCount();
+        availableGapLines = diagnostic.availableGapLines();
+        blockLineCounts = diagnostic.groupLineCounts();
+        itemLineCounts = diagnostic.itemLineCounts();
+        gapLineCounts = diagnostic.gapLineCounts();
+        exactLineHeightPt = diagnostic.exactLineHeightPt();
+    }
 
-            if (key == null || key.isBlank()) {
-                throw new IllegalArgumentException(fieldName + " keys must not be blank.");
-            }
+    public static CoverLayoutDiagnostic from(SinglePageLayoutDiagnostic diagnostic) {
+        return new CoverLayoutDiagnostic(
+                diagnostic.renderableArea(),
+                diagnostic.contentLineCount(),
+                diagnostic.availableGapLines(),
+                diagnostic.groupLineCounts(),
+                diagnostic.itemLineCounts(),
+                diagnostic.gapLineCounts(),
+                diagnostic.exactLineHeightPt()
+        );
+    }
 
-            Objects.requireNonNull(value, fieldName + " values must not be null.");
-
-            if (value < 0) {
-                throw new IllegalArgumentException(fieldName + " values must not be negative.");
-            }
-
-            copy.put(key, value);
-        }
-
-        return Collections.unmodifiableMap(copy);
+    public Map<String, Integer> groupLineCounts() {
+        return blockLineCounts;
     }
 }

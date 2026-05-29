@@ -3,7 +3,11 @@ package com.abntbuilder.formatter.rendering.component.cover.layout;
 import com.abntbuilder.formatter.profile.model.StyleRule;
 import com.abntbuilder.formatter.profile.model.StyleType;
 import com.abntbuilder.formatter.profile.model.TextAlignment;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutDiagnostic;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutPlan;
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageRenderableArea;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageSpacerLines;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageTextLines;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -16,78 +20,60 @@ import static org.junit.jupiter.api.Assertions.*;
 class CoverLayoutPlanTest {
 
     @Test
-    void shouldCreateImmutableValidatedPlan() {
-        CoverLayoutPlan plan = new CoverLayoutPlan(
-                List.of(
-                        new CoverTextLines("cover.title", style(), List.of("Titulo", "Subtitulo")),
-                        new CoverSpacerLines("cover.title-to-cover.bottom", 3, style())
-                ),
-                5,
-                5,
-                BigDecimal.valueOf(18),
-                diagnostic()
-        );
+    void shouldWrapImmutableValidatedSinglePagePlan() {
+        CoverLayoutPlan plan = new CoverLayoutPlan(singlePagePlan());
 
         assertEquals(5, plan.totalLines());
         assertEquals(5, plan.pageCapacityLines());
         assertThrows(
                 UnsupportedOperationException.class,
-                () -> plan.elements().add(new CoverSpacerLines("cover.extra", 1, style()))
+                () -> plan.elements().add(new SinglePageSpacerLines(
+                        "cover.extra",
+                        "cover.titleBlock",
+                        "cover.bottom",
+                        1,
+                        style()
+                ))
         );
     }
 
     @Test
-    void shouldRejectPlanWhenElementLineCountDoesNotMatchTotalLines() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new CoverLayoutPlan(
-                        List.of(new CoverTextLines("cover.title", style(), List.of("Titulo"))),
-                        2,
-                        5,
-                        BigDecimal.valueOf(18),
-                        diagnostic()
-                )
-        );
+    void shouldExposeCoverDiagnosticFromSinglePagePlan() {
+        CoverLayoutDiagnostic diagnostic = new CoverLayoutPlan(singlePagePlan()).diagnostic();
 
-        assertEquals("totalLines must match the sum of element line counts.", exception.getMessage());
+        assertEquals(2, diagnostic.blockLineCounts().get("cover.titleBlock"));
+        assertEquals(3, diagnostic.gapLineCounts().get("cover.titleBlock->cover.bottom"));
     }
 
-    @Test
-    void shouldRejectPlanWhenDiagnosticCapacityDoesNotMatchPageCapacity() {
-        CoverLayoutDiagnostic diagnostic = new CoverLayoutDiagnostic(
-                new SinglePageRenderableArea(8, 2, 6),
-                2,
-                4,
-                lineCounts("cover.title", 2),
-                lineCounts("cover.title-to-cover.bottom", 4),
-                BigDecimal.valueOf(18)
-        );
-
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new CoverLayoutPlan(
-                        List.of(
-                                new CoverTextLines("cover.title", style(), List.of("Titulo", "Subtitulo")),
-                                new CoverSpacerLines("cover.title-to-cover.bottom", 3, style())
+    private static SinglePageLayoutPlan singlePagePlan() {
+        return new SinglePageLayoutPlan(
+                List.of(
+                        new SinglePageTextLines(
+                                "cover.titleBlock",
+                                "title",
+                                style(),
+                                List.of("Titulo", "Subtitulo")
                         ),
-                        5,
-                        5,
-                        BigDecimal.valueOf(18),
-                        diagnostic
+                        new SinglePageSpacerLines(
+                                "cover.titleBlock->cover.bottom",
+                                "cover.titleBlock",
+                                "cover.bottom",
+                                3,
+                                style()
+                        )
+                ),
+                5,
+                5,
+                BigDecimal.valueOf(18),
+                new SinglePageLayoutDiagnostic(
+                        new SinglePageRenderableArea(7, 2, 5),
+                        2,
+                        3,
+                        lineCounts("cover.titleBlock", 2),
+                        lineCounts("cover.titleBlock.title", 2),
+                        lineCounts("cover.titleBlock->cover.bottom", 3),
+                        BigDecimal.valueOf(18)
                 )
-        );
-
-        assertEquals("diagnostic safeLineCapacity must match pageCapacityLines.", exception.getMessage());
-    }
-
-    private static CoverLayoutDiagnostic diagnostic() {
-        return new CoverLayoutDiagnostic(
-                new SinglePageRenderableArea(7, 2, 5),
-                2,
-                3,
-                lineCounts("cover.title", 2),
-                lineCounts("cover.title-to-cover.bottom", 3),
-                BigDecimal.valueOf(18)
         );
     }
 

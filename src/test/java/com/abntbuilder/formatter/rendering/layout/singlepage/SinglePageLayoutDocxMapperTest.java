@@ -29,11 +29,11 @@ class SinglePageLayoutDocxMapperTest {
                 List.of(
                         new SinglePageLayoutGroup(
                                 "cover.title",
-                                List.of(new SinglePageLayoutTextLine("Titulo", validStyle()))
+                                List.of(item("title", "Titulo"))
                         ),
                         new SinglePageLayoutGroup(
                                 "cover.bottom",
-                                List.of(new SinglePageLayoutTextLine("2026", validStyle()))
+                                List.of(item("year", "2026"))
                         )
                 ),
                 List.of(BigDecimal.ONE)
@@ -57,8 +57,8 @@ class SinglePageLayoutDocxMapperTest {
         SinglePageLayoutGroup group = new SinglePageLayoutGroup(
                 "cover.title",
                 List.of(
-                        new SinglePageLayoutTextLine("Linha um", validStyle()),
-                        new SinglePageLayoutTextLine("Linha dois", validStyle())
+                        item("title.1", "Linha um"),
+                        item("title.2", "Linha dois")
                 )
         );
 
@@ -79,15 +79,15 @@ class SinglePageLayoutDocxMapperTest {
                 List.of(
                         new SinglePageLayoutGroup(
                                 "cover.top",
-                                List.of(new SinglePageLayoutTextLine("Universidade", validStyle()))
+                                List.of(item("institution", "Universidade"))
                         ),
                         new SinglePageLayoutGroup(
                                 "cover.title",
-                                List.of(new SinglePageLayoutTextLine("Titulo", validStyle()))
+                                List.of(item("title", "Titulo"))
                         ),
                         new SinglePageLayoutGroup(
                                 "cover.bottom",
-                                List.of(new SinglePageLayoutTextLine("2026", validStyle()))
+                                List.of(item("year", "2026"))
                         )
                 ),
                 List.of(BigDecimal.valueOf(1), BigDecimal.valueOf(100))
@@ -138,5 +138,9 @@ class SinglePageLayoutDocxMapperTest {
                 false,
                 true
         );
+    }
+
+    private static SinglePageLayoutItem item(String id, String text) {
+        return new SinglePageLayoutItem(id, validStyle(), List.of(text));
     }
 }

@@ -3,9 +3,15 @@
 Estes arquivos servem como cenarios fixos de validacao visual e regressao manual
 do componente `cover`.
 
-Cada JSON e uma requisicao completa para geracao de DOCX. Eles nao devem conter
-valores tecnicos de encaixe fisico, como `maxCharactersPerLine`,
-`safeLineCapacity`, `pageFitGuardLines` ou `bottomPaddingLineSlots`.
+Cada JSON usa o fluxo principal do produto:
+
+```text
+profileId + options + document.cover
+```
+
+Eles nao devem conter o perfil inline nem valores tecnicos de encaixe fisico,
+como `maxCharactersPerLine`, `safeLineCapacity`, `pageFitGuardLines` ou
+`bottomPaddingLineSlots`.
 
 ## Regra central
 
@@ -93,7 +99,8 @@ bottom permanece na primeira pagina.
 
 ### cover-long-title-many-authors.json
 
-Valida combinacao de topLines extensas, varios autores, titulo e subtitulo longos.
+Valida combinacao de institutionalLines extensas, varios autores, titulo e
+subtitulo longos.
 
 Esperado:
 
@@ -131,7 +138,7 @@ Esperado:
 ```text
 falha antes de gerar DOCX;
 motivo esperado: SinglePageLayoutOverflowException;
-bottomLines continua semanticamente valido;
+city/year continuam semanticamente validos;
 a falha deve ocorrer por excesso de conteudo vertical.
 ```
 
@@ -147,7 +154,7 @@ Esperado:
 ```text
 falha antes de gerar DOCX;
 motivo esperado: InvalidCoverContentException;
-mensagem esperada: cover bottomLines must contain exactly city and year.
+mensagem esperada: cover city and year must each fit in exactly one visual line.
 ```
 
 O teste automatizado deve enviar este JSON pela API de exportacao. Assim o sample

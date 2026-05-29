@@ -1,18 +1,20 @@
-package com.abntbuilder.formatter.rendering.component.cover.layout;
+package com.abntbuilder.formatter.rendering.layout.singlepage;
 
 import com.abntbuilder.formatter.profile.model.StyleRule;
 
 import java.util.List;
 import java.util.Objects;
 
-public record CoverTextLines(
-        String blockId,
+public record SinglePageTextLines(
+        String groupId,
+        String itemId,
         StyleRule styleRule,
         List<String> lines
-) implements CoverLayoutElement {
+) implements SinglePageLayoutElement {
 
-    public CoverTextLines {
-        requireNonBlank(blockId, "blockId");
+    public SinglePageTextLines {
+        requireNonBlank(groupId, "groupId");
+        requireNonBlank(itemId, "itemId");
         Objects.requireNonNull(styleRule, "styleRule must not be null");
         Objects.requireNonNull(lines, "lines must not be null");
 

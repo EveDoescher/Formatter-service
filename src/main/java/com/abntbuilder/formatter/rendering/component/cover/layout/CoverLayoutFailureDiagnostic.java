@@ -1,77 +1,67 @@
 package com.abntbuilder.formatter.rendering.component.cover.layout;
 
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutFailureDiagnostic;
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageRenderableArea;
 
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public record CoverLayoutFailureDiagnostic(
         SinglePageRenderableArea renderableArea,
         int contentLineCount,
         int overflowLineCount,
         Map<String, Integer> blockLineCounts,
+        Map<String, Integer> itemLineCounts,
         BigDecimal exactLineHeightPt
 ) {
 
-    public CoverLayoutFailureDiagnostic {
-        Objects.requireNonNull(renderableArea, "renderableArea must not be null");
-        Objects.requireNonNull(blockLineCounts, "blockLineCounts must not be null");
-        Objects.requireNonNull(exactLineHeightPt, "exactLineHeightPt must not be null");
-
-        if (contentLineCount < 0) {
-            throw new IllegalArgumentException("contentLineCount must not be negative.");
-        }
-
-        if (overflowLineCount <= 0) {
-            throw new IllegalArgumentException("overflowLineCount must be greater than zero.");
-        }
-
-        if (exactLineHeightPt.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("exactLineHeightPt must be greater than zero.");
-        }
-
-        blockLineCounts = copyLineCounts(blockLineCounts);
-
-        int blockLineSum = blockLineCounts.values().stream()
-                .mapToInt(Integer::intValue)
-                .sum();
-
-        if (blockLineSum != contentLineCount) {
-            throw new IllegalArgumentException("blockLineCounts must sum to contentLineCount.");
-        }
-
-        int expectedOverflowLineCount = contentLineCount - renderableArea.safeLineCapacity();
-
-        if (expectedOverflowLineCount != overflowLineCount) {
-            throw new IllegalArgumentException(
-                    "overflowLineCount must match contentLineCount minus safeLineCapacity."
-            );
-        }
+    public CoverLayoutFailureDiagnostic(
+            SinglePageRenderableArea renderableArea,
+            int contentLineCount,
+            int overflowLineCount,
+            Map<String, Integer> blockLineCounts,
+            BigDecimal exactLineHeightPt
+    ) {
+        this(
+                renderableArea,
+                contentLineCount,
+                overflowLineCount,
+                blockLineCounts,
+                blockLineCounts,
+                exactLineHeightPt
+        );
     }
 
-    private static Map<String, Integer> copyLineCounts(Map<String, Integer> lineCounts) {
-        Map<String, Integer> copy = new LinkedHashMap<>();
+    public CoverLayoutFailureDiagnostic {
+        SinglePageLayoutFailureDiagnostic diagnostic = new SinglePageLayoutFailureDiagnostic(
+                renderableArea,
+                contentLineCount,
+                overflowLineCount,
+                blockLineCounts,
+                itemLineCounts,
+                exactLineHeightPt
+        );
 
-        for (Map.Entry<String, Integer> entry : lineCounts.entrySet()) {
-            String key = entry.getKey();
-            Integer value = entry.getValue();
+        renderableArea = diagnostic.renderableArea();
+        contentLineCount = diagnostic.contentLineCount();
+        overflowLineCount = diagnostic.overflowLineCount();
+        blockLineCounts = diagnostic.groupLineCounts();
+        itemLineCounts = diagnostic.itemLineCounts();
+        exactLineHeightPt = diagnostic.exactLineHeightPt();
+    }
 
-            if (key == null || key.isBlank()) {
-                throw new IllegalArgumentException("blockLineCounts keys must not be blank.");
-            }
+    public static CoverLayoutFailureDiagnostic from(SinglePageLayoutFailureDiagnostic diagnostic) {
+        return new CoverLayoutFailureDiagnostic(
+                diagnostic.renderableArea(),
+                diagnostic.contentLineCount(),
+                diagnostic.overflowLineCount(),
+                diagnostic.groupLineCounts(),
+                diagnostic.itemLineCounts(),
+                diagnostic.exactLineHeightPt()
+        );
+    }
 
-            Objects.requireNonNull(value, "blockLineCounts values must not be null.");
-
-            if (value < 0) {
-                throw new IllegalArgumentException("blockLineCounts values must not be negative.");
-            }
-
-            copy.put(key, value);
-        }
-
-        return Collections.unmodifiableMap(copy);
+    public Map<String, Integer> groupLineCounts() {
+        return blockLineCounts;
     }
 }

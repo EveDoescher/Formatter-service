@@ -21,10 +21,10 @@ public final class SinglePageLayoutLineMetrics {
         for (SinglePageLayoutGroup group : groups) {
             Objects.requireNonNull(group, "groups must not contain null values.");
 
-            for (SinglePageLayoutTextLine line : group.lines()) {
+            for (SinglePageLayoutItem item : group.items()) {
                 maxLineHeightTwips = Math.max(
                         maxLineHeightTwips,
-                        exactLineHeightTwips(line.styleRule())
+                        exactLineHeightTwips(item.styleRule())
                 );
             }
         }
@@ -43,7 +43,7 @@ public final class SinglePageLayoutLineMetrics {
 
         for (SinglePageLayoutGroup group : groups) {
             Objects.requireNonNull(group, "groups must not contain null values.");
-            count += group.lines().size();
+            count += group.lineCount();
         }
 
         return count;
