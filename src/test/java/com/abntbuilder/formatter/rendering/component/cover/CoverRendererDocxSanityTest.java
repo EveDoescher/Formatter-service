@@ -1,6 +1,7 @@
 package com.abntbuilder.formatter.rendering.component.cover;
 
 import com.abntbuilder.formatter.document.component.cover.CoverComponent;
+import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxDocument;
 import com.abntbuilder.formatter.output.docx.docx4j.Docx4jWriter;
@@ -13,6 +14,8 @@ import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverStyleMapping;
+import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutCalculator;
+import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutPlan;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -31,8 +34,10 @@ class CoverRendererDocxSanityTest {
     @Test
     void shouldGenerateCoverDocxXmlWithExpectedContentAndExactLineSpacing() throws IOException {
         DocumentProfile profile = validProfile();
+        CoverComponent cover = validCover();
+        CoverLayoutPlan plan = new CoverLayoutCalculator().calculate(cover, profile);
 
-        List<DocxBlock> blocks = new CoverRenderer().render(validCover(), profile);
+        List<DocxBlock> blocks = new CoverRenderer().render(cover, profile);
 
         byte[] bytes = new Docx4jWriter().write(new DocxDocument(
                 profile.pageRule(),
@@ -45,15 +50,29 @@ class CoverRendererDocxSanityTest {
 
         String documentXml = readZipEntry(bytes, "word/document.xml");
 
-        assertTrue(documentXml.contains("UNIVERSIDADE PAULISTA"));
-        assertTrue(documentXml.contains("NOME COMPLETO DO ALUNO"));
-        assertTrue(documentXml.contains("TÍTULO DO TRABALHO"));
-        assertTrue(documentXml.contains("Subtítulo do trabalho"));
-        assertTrue(documentXml.contains("Limeira"));
-        assertTrue(documentXml.contains("2026"));
+        assertTrue(documentXml.contains(cover.topLines().getFirst()));
+        assertTrue(documentXml.contains(cover.authorLines().getFirst()));
+        assertTrue(documentXml.contains(cover.title()));
+        assertTrue(documentXml.contains(cover.subtitle().orElseThrow()));
+        assertTrue(documentXml.contains(cover.bottomLines().getFirst()));
+        assertTrue(documentXml.contains(cover.bottomLines().get(1)));
 
-        assertTrue(documentXml.contains("lineRule=\"exact\"") || documentXml.contains("w:lineRule=\"exact\""));
+        assertEquals(plan.totalLines(), blocks.size());
+        assertEquals(blocks.size(), countParagraphs(documentXml));
+        assertEquals(blocks.size(), countOccurrences(documentXml, "w:lineRule=\"exact\""));
+        assertEquals(blocks.size(), countOccurrences(documentXml, "w:line=\"360\""));
+        assertEquals(
+                countBlocks(blocks, DocxBlankLine.class),
+                countOccurrences(documentXml, "<w:t xml:space=\"preserve\"> </w:t>")
+        );
+
+        assertAppearsBefore(documentXml, cover.topLines().getFirst(), cover.authorLines().getFirst());
+        assertAppearsBefore(documentXml, cover.authorLines().getFirst(), cover.title());
+        assertAppearsBefore(documentXml, cover.title(), cover.bottomLines().getFirst());
+        assertAppearsBefore(documentXml, cover.bottomLines().getFirst(), cover.bottomLines().get(1));
+
         assertFalse(documentXml.contains("w:type=\"page\""));
+        assertFalse(documentXml.contains("<w:br"));
     }
 
     private static boolean zipContains(byte[] zipBytes, String entryName) throws IOException {
@@ -84,12 +103,44 @@ class CoverRendererDocxSanityTest {
         }
     }
 
+    private static long countBlocks(List<DocxBlock> blocks, Class<? extends DocxBlock> blockType) {
+        return blocks.stream()
+                .filter(blockType::isInstance)
+                .count();
+    }
+
+    private static int countOccurrences(String text, String pattern) {
+        int count = 0;
+        int index = 0;
+
+        while ((index = text.indexOf(pattern, index)) >= 0) {
+            count++;
+            index += pattern.length();
+        }
+
+        return count;
+    }
+
+    private static int countParagraphs(String documentXml) {
+        return countOccurrences(documentXml, "<w:p>")
+                + countOccurrences(documentXml, "<w:p ");
+    }
+
+    private static void assertAppearsBefore(String documentXml, String firstText, String secondText) {
+        int firstIndex = documentXml.indexOf(firstText);
+        int secondIndex = documentXml.indexOf(secondText);
+
+        assertTrue(firstIndex >= 0, "Missing expected text in document XML: " + firstText);
+        assertTrue(secondIndex >= 0, "Missing expected text in document XML: " + secondText);
+        assertTrue(firstIndex < secondIndex, firstText + " should appear before " + secondText);
+    }
+
     private static CoverComponent validCover() {
         return new CoverComponent(
                 List.of("UNIVERSIDADE PAULISTA"),
                 List.of("NOME COMPLETO DO ALUNO"),
-                "TÍTULO DO TRABALHO",
-                Optional.of("Subtítulo do trabalho"),
+                "TITULO DO TRABALHO",
+                Optional.of("Subtitulo do trabalho"),
                 List.of("Limeira", "2026")
         );
     }

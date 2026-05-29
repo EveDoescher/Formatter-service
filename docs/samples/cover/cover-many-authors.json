@@ -1,0 +1,138 @@
+{
+  "fileName": "cover-many-authors.docx",
+  "profile": {
+    "id": "abnt-unip-profile",
+    "displayName": "ABNT UNIP Profile",
+    "pageRule": {
+      "widthCm": 21,
+      "heightCm": 29.7,
+      "marginTopCm": 3,
+      "marginRightCm": 2,
+      "marginBottomCm": 2,
+      "marginLeftCm": 3,
+      "orientation": "PORTRAIT"
+    },
+    "styleRules": [
+      {
+        "id": "cover.top",
+        "type": "PARAGRAPH",
+        "fontFamily": "Times New Roman",
+        "fontSizePt": 12,
+        "alignment": "CENTER",
+        "lineSpacing": 1.5,
+        "firstLineIndentCm": 0,
+        "leftIndentCm": 0,
+        "rightIndentCm": 0,
+        "spacingBeforePt": 0,
+        "spacingAfterPt": 0,
+        "bold": true,
+        "italic": false,
+        "uppercase": true
+      },
+      {
+        "id": "cover.author",
+        "type": "PARAGRAPH",
+        "fontFamily": "Times New Roman",
+        "fontSizePt": 12,
+        "alignment": "CENTER",
+        "lineSpacing": 1.5,
+        "firstLineIndentCm": 0,
+        "leftIndentCm": 0,
+        "rightIndentCm": 0,
+        "spacingBeforePt": 0,
+        "spacingAfterPt": 0,
+        "bold": false,
+        "italic": false,
+        "uppercase": true
+      },
+      {
+        "id": "cover.title",
+        "type": "PARAGRAPH",
+        "fontFamily": "Times New Roman",
+        "fontSizePt": 12,
+        "alignment": "CENTER",
+        "lineSpacing": 1.5,
+        "firstLineIndentCm": 0,
+        "leftIndentCm": 0,
+        "rightIndentCm": 0,
+        "spacingBeforePt": 0,
+        "spacingAfterPt": 0,
+        "bold": true,
+        "italic": false,
+        "uppercase": true
+      },
+      {
+        "id": "cover.subtitle",
+        "type": "PARAGRAPH",
+        "fontFamily": "Times New Roman",
+        "fontSizePt": 12,
+        "alignment": "CENTER",
+        "lineSpacing": 1.5,
+        "firstLineIndentCm": 0,
+        "leftIndentCm": 0,
+        "rightIndentCm": 0,
+        "spacingBeforePt": 0,
+        "spacingAfterPt": 0,
+        "bold": false,
+        "italic": false,
+        "uppercase": false
+      },
+      {
+        "id": "cover.bottom",
+        "type": "PARAGRAPH",
+        "fontFamily": "Times New Roman",
+        "fontSizePt": 12,
+        "alignment": "CENTER",
+        "lineSpacing": 1.5,
+        "firstLineIndentCm": 0,
+        "leftIndentCm": 0,
+        "rightIndentCm": 0,
+        "spacingBeforePt": 0,
+        "spacingAfterPt": 0,
+        "bold": false,
+        "italic": false,
+        "uppercase": true
+      }
+    ],
+    "componentRules": {
+      "cover": {
+        "componentId": "cover",
+        "styleMapping": {
+          "topLinesStyleId": "cover.top",
+          "authorLinesStyleId": "cover.author",
+          "titleStyleId": "cover.title",
+          "subtitleStyleId": "cover.subtitle",
+          "bottomLinesStyleId": "cover.bottom"
+        },
+        "layoutRule": {
+          "topToAuthorWeight": 30,
+          "authorToTitleWeight": 10,
+          "titleToBottomWeight": 60
+        }
+      }
+    }
+  },
+  "cover": {
+    "topLines": [
+      "Universidade Paulista",
+      "Curso de Sistemas de Informacao"
+    ],
+    "authorLines": [
+      "Ana Clara de Albuquerque",
+      "Bruno Henrique Cavalcanti",
+      "Camila Aparecida Rodrigues",
+      "Diego Fernando Nascimento",
+      "Eduarda Cristina Menezes",
+      "Felipe Augusto Pereira",
+      "Gabriela Martins de Souza",
+      "Henrique Rafael Oliveira"
+    ],
+    "title": "Titulo do Trabalho em Grupo",
+    "subtitle": "Relatorio academico desenvolvido por multiplos autores",
+    "bottomLines": [
+      "Limeira",
+      "2026"
+    ]
+  },
+  "paragraphs": []
+}

@@ -12,9 +12,9 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ConservativeTextMeasurerTest {
+class FontMetricsTextMeasurerTest {
 
-    private final ConservativeTextMeasurer measurer = new ConservativeTextMeasurer();
+    private final FontMetricsTextMeasurer measurer = new FontMetricsTextMeasurer();
 
     @Test
     void shouldKeepShortTextInSingleLine() {
@@ -24,10 +24,10 @@ class ConservativeTextMeasurerTest {
     }
 
     @Test
-    void shouldBreakLongTextByAvailableWidth() {
+    void shouldBreakLongTextByMeasuredFontWidth() {
         MeasuredText measuredText = measurer.measure(
-                "Este titulo academico possui texto suficiente para exigir quebra conservadora",
-                validPageRule(),
+                "Este titulo academico possui texto suficiente para exigir quebra baseada em metrica de fonte",
+                narrowPageRule(),
                 regularStyle()
         );
 
@@ -39,6 +39,8 @@ class ConservativeTextMeasurerTest {
         MeasuredText measuredText = measurer.measure("Linha um\nLinha dois", validPageRule(), regularStyle());
 
         assertEquals(2, measuredText.lineCount());
+        assertEquals("Linha um", measuredText.visualLines().get(0));
+        assertEquals("Linha dois", measuredText.visualLines().get(1));
     }
 
     @Test
@@ -46,16 +48,6 @@ class ConservativeTextMeasurerTest {
         MeasuredText measuredText = measurer.measure("titulo curto", validPageRule(), uppercaseStyle());
 
         assertEquals("TITULO CURTO", measuredText.visualLines().getFirst());
-    }
-
-    @Test
-    void shouldUseMoreConservativeWidthForBoldUppercase() {
-        String text = "Titulo academico com quantidade suficiente de palavras para comparar";
-
-        MeasuredText regular = measurer.measure(text, validPageRule(), regularStyle());
-        MeasuredText boldUppercase = measurer.measure(text, validPageRule(), boldUppercaseStyle());
-
-        assertTrue(boldUppercase.lineCount() >= regular.lineCount());
     }
 
     @Test
@@ -76,6 +68,42 @@ class ConservativeTextMeasurerTest {
                 TextMeasurementException.class,
                 () -> measurer.measure(" ", validPageRule(), regularStyle())
         );
+    }
+
+    @Test
+    void shouldRejectUnavailableTextWidth() {
+        assertThrows(
+                TextMeasurementException.class,
+                () -> measurer.measure("Texto", invalidWidthByIndentPageRule(), indentedStyle())
+        );
+    }
+
+    @Test
+    void shouldRejectUnavailableFontFamilyWhenPolicyFails() {
+        TextMeasurementException exception = assertThrows(
+                TextMeasurementException.class,
+                () -> new FontMetricsTextMeasurer(MissingFontPolicy.FAIL).measure(
+                        "Texto",
+                        validPageRule(),
+                        styleWithFontFamily("Fonte Inexistente Formatter Teste")
+                )
+        );
+
+        assertEquals(
+                "font family is not available: Fonte Inexistente Formatter Teste.",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void shouldAllowUnavailableFontFamilyWhenFallbackPolicyAllowsIt() {
+        MeasuredText measuredText = new FontMetricsTextMeasurer(MissingFontPolicy.ALLOW_FALLBACK).measure(
+                "Texto",
+                validPageRule(),
+                styleWithFontFamily("Fonte Inexistente Formatter Teste")
+        );
+
+        assertEquals(1, measuredText.lineCount());
     }
 
     private static PageRule validPageRule() {
@@ -102,29 +130,70 @@ class ConservativeTextMeasurerTest {
         );
     }
 
+    private static PageRule invalidWidthByIndentPageRule() {
+        return new PageRule(
+                BigDecimal.valueOf(12),
+                BigDecimal.valueOf(29.7),
+                BigDecimal.valueOf(3),
+                BigDecimal.valueOf(2),
+                BigDecimal.valueOf(2),
+                BigDecimal.valueOf(3),
+                PageOrientation.PORTRAIT
+        );
+    }
+
     private static StyleRule regularStyle() {
-        return style(false, false);
+        return style(false, false, BigDecimal.ZERO, BigDecimal.ZERO);
     }
 
     private static StyleRule uppercaseStyle() {
-        return style(false, true);
+        return style(false, true, BigDecimal.ZERO, BigDecimal.ZERO);
     }
 
     private static StyleRule boldUppercaseStyle() {
-        return style(true, true);
+        return style(true, true, BigDecimal.ZERO, BigDecimal.ZERO);
     }
 
-    private static StyleRule style(boolean bold, boolean uppercase) {
+    private static StyleRule indentedStyle() {
+        return style(false, false, BigDecimal.valueOf(4), BigDecimal.valueOf(4));
+    }
+
+    private static StyleRule style(
+            boolean bold,
+            boolean uppercase,
+            BigDecimal leftIndentCm,
+            BigDecimal rightIndentCm
+    ) {
+        return style(
+                bold,
+                uppercase,
+                leftIndentCm,
+                rightIndentCm,
+                "Times New Roman"
+        );
+    }
+
+    private static StyleRule styleWithFontFamily(String fontFamily) {
+        return style(false, false, BigDecimal.ZERO, BigDecimal.ZERO, fontFamily);
+    }
+
+    private static StyleRule style(
+            boolean bold,
+            boolean uppercase,
+            BigDecimal leftIndentCm,
+            BigDecimal rightIndentCm,
+            String fontFamily
+    ) {
         return new StyleRule(
                 "cover.title",
                 StyleType.PARAGRAPH,
-                "Times New Roman",
+                fontFamily,
                 BigDecimal.valueOf(12),
                 TextAlignment.CENTER,
                 BigDecimal.valueOf(1.5),
                 BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
+                leftIndentCm,
+                rightIndentCm,
                 BigDecimal.ZERO,
                 BigDecimal.ZERO,
                 bold,

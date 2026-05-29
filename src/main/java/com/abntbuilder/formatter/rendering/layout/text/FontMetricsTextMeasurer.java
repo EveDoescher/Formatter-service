@@ -5,18 +5,46 @@ import com.abntbuilder.formatter.profile.model.StyleRule;
 import com.abntbuilder.formatter.shared.exception.TextMeasurementException;
 import com.abntbuilder.formatter.shared.measurement.MeasurementConverter;
 
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-public final class ConservativeTextMeasurer implements TextMeasurer {
+public final class FontMetricsTextMeasurer implements TextMeasurer {
 
-    private static final BigDecimal REGULAR_CHARACTER_WIDTH_FACTOR = BigDecimal.valueOf(0.62);
-    private static final BigDecimal BOLD_CHARACTER_WIDTH_FACTOR = BigDecimal.valueOf(0.64);
-    private static final BigDecimal UPPERCASE_CHARACTER_WIDTH_FACTOR = BigDecimal.valueOf(0.66);
-    private static final BigDecimal BOLD_UPPERCASE_CHARACTER_WIDTH_FACTOR = BigDecimal.valueOf(0.68);
+    private static final FontRenderContext FONT_RENDER_CONTEXT = new FontRenderContext(
+            new AffineTransform(),
+            true,
+            true
+    );
+    private static final Set<String> AVAILABLE_FONT_FAMILIES = Arrays.stream(
+                    GraphicsEnvironment
+                            .getLocalGraphicsEnvironment()
+                            .getAvailableFontFamilyNames(Locale.ROOT)
+            )
+            .map(fontFamily -> fontFamily.toLowerCase(Locale.ROOT))
+            .collect(Collectors.toUnmodifiableSet());
+
+    private final MissingFontPolicy missingFontPolicy;
+
+    public FontMetricsTextMeasurer() {
+        this(MissingFontPolicy.FAIL);
+    }
+
+    public FontMetricsTextMeasurer(MissingFontPolicy missingFontPolicy) {
+        this.missingFontPolicy = Objects.requireNonNull(
+                missingFontPolicy,
+                "missingFontPolicy must not be null"
+        );
+    }
 
     @Override
     public MeasuredText measure(
@@ -31,14 +59,15 @@ public final class ConservativeTextMeasurer implements TextMeasurer {
         Objects.requireNonNull(pageRule, "pageRule must not be null");
         Objects.requireNonNull(styleRule, "styleRule must not be null");
 
-        BigDecimal availableTextWidthPt = calculateAvailableTextWidthPt(pageRule, styleRule);
+        double availableTextWidthPt = calculateAvailableTextWidthPt(pageRule, styleRule);
+        Font font = createFont(styleRule, missingFontPolicy);
         List<String> visualLines = new ArrayList<>();
 
         String resolvedText = resolveLayoutText(text, styleRule);
         String[] explicitLines = resolvedText.strip().split("\\R");
 
         for (String explicitLine : explicitLines) {
-            visualLines.addAll(breakSingleLine(explicitLine, availableTextWidthPt, styleRule));
+            visualLines.addAll(breakSingleLine(explicitLine, availableTextWidthPt, font));
         }
 
         return new MeasuredText(visualLines);
@@ -46,8 +75,8 @@ public final class ConservativeTextMeasurer implements TextMeasurer {
 
     private static List<String> breakSingleLine(
             String text,
-            BigDecimal availableTextWidthPt,
-            StyleRule styleRule
+            double availableTextWidthPt,
+            Font font
     ) {
         String normalized = text.trim().replaceAll("\\s+", " ");
 
@@ -61,7 +90,7 @@ public final class ConservativeTextMeasurer implements TextMeasurer {
         String[] words = normalized.split(" ");
 
         for (String word : words) {
-            if (estimatedTextWidthPt(word, styleRule).compareTo(availableTextWidthPt) > 0) {
+            if (measureTextWidthPt(word, font) > availableTextWidthPt) {
                 throw TextMeasurementException.wordExceedsAvailableWidth();
             }
 
@@ -69,7 +98,7 @@ public final class ConservativeTextMeasurer implements TextMeasurer {
                     ? word
                     : currentLine + " " + word;
 
-            if (estimatedTextWidthPt(candidate, styleRule).compareTo(availableTextWidthPt) <= 0) {
+            if (measureTextWidthPt(candidate, font) <= availableTextWidthPt) {
                 currentLine = new StringBuilder(candidate);
             } else {
                 lines.add(currentLine.toString());
@@ -84,10 +113,7 @@ public final class ConservativeTextMeasurer implements TextMeasurer {
         return List.copyOf(lines);
     }
 
-    private static BigDecimal calculateAvailableTextWidthPt(
-            PageRule pageRule,
-            StyleRule styleRule
-    ) {
+    private static double calculateAvailableTextWidthPt(PageRule pageRule, StyleRule styleRule) {
         BigDecimal usableWidthPt = MeasurementConverter.centimetersToPoints(pageRule.usableWidthCm());
         BigDecimal leftIndentPt = MeasurementConverter.centimetersToPoints(styleRule.leftIndentCm());
         BigDecimal rightIndentPt = MeasurementConverter.centimetersToPoints(styleRule.rightIndentCm());
@@ -100,29 +126,38 @@ public final class ConservativeTextMeasurer implements TextMeasurer {
             throw TextMeasurementException.unavailableTextWidth();
         }
 
-        return availableWidthPt;
+        return availableWidthPt.doubleValue();
     }
 
-    private static BigDecimal estimatedTextWidthPt(String text, StyleRule styleRule) {
-        return BigDecimal.valueOf(text.length())
-                .multiply(styleRule.fontSizePt())
-                .multiply(averageCharacterWidthFactor(styleRule));
-    }
-
-    private static BigDecimal averageCharacterWidthFactor(StyleRule styleRule) {
-        if (styleRule.bold() && styleRule.uppercase()) {
-            return BOLD_UPPERCASE_CHARACTER_WIDTH_FACTOR;
+    private static Font createFont(
+            StyleRule styleRule,
+            MissingFontPolicy missingFontPolicy
+    ) {
+        if (missingFontPolicy == MissingFontPolicy.FAIL && !isFontAvailable(styleRule.fontFamily())) {
+            throw TextMeasurementException.unavailableFontFamily(styleRule.fontFamily());
         }
 
-        if (styleRule.uppercase()) {
-            return UPPERCASE_CHARACTER_WIDTH_FACTOR;
-        }
+        int style = Font.PLAIN;
 
         if (styleRule.bold()) {
-            return BOLD_CHARACTER_WIDTH_FACTOR;
+            style |= Font.BOLD;
         }
 
-        return REGULAR_CHARACTER_WIDTH_FACTOR;
+        if (styleRule.italic()) {
+            style |= Font.ITALIC;
+        }
+
+        return new Font(styleRule.fontFamily(), style, 1)
+                .deriveFont(styleRule.fontSizePt().floatValue());
+    }
+
+    private static boolean isFontAvailable(String fontFamily) {
+        return fontFamily != null
+                && AVAILABLE_FONT_FAMILIES.contains(fontFamily.toLowerCase(Locale.ROOT));
+    }
+
+    private static double measureTextWidthPt(String text, Font font) {
+        return font.getStringBounds(text, FONT_RENDER_CONTEXT).getWidth();
     }
 
     private static String resolveLayoutText(String text, StyleRule styleRule) {

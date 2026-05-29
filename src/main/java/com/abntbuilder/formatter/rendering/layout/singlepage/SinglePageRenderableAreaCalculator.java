@@ -8,6 +8,10 @@ import java.util.Objects;
 public final class SinglePageRenderableAreaCalculator {
 
     public int calculateSafeLineCapacity(PageRule pageRule, int lineHeightTwips) {
+        return calculate(pageRule, lineHeightTwips).safeLineCapacity();
+    }
+
+    public SinglePageRenderableArea calculate(PageRule pageRule, int lineHeightTwips) {
         Objects.requireNonNull(pageRule, "pageRule must not be null");
 
         if (lineHeightTwips <= 0) {
@@ -16,8 +20,13 @@ public final class SinglePageRenderableAreaCalculator {
 
         int physicalLineCapacity = calculatePhysicalLineCapacity(pageRule, lineHeightTwips);
         int boundarySafetyLineCount = calculateBoundarySafetyLineCount(pageRule, lineHeightTwips);
+        int safeLineCapacity = Math.max(physicalLineCapacity - boundarySafetyLineCount, 0);
 
-        return Math.max(physicalLineCapacity - boundarySafetyLineCount, 0);
+        return new SinglePageRenderableArea(
+                physicalLineCapacity,
+                boundarySafetyLineCount,
+                safeLineCapacity
+        );
     }
 
     int calculatePhysicalLineCapacity(PageRule pageRule, int lineHeightTwips) {

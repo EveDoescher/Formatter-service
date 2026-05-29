@@ -1,4 +1,4 @@
-package com.abntbuilder.formatter.rendering.component.cover.layout;
+package com.abntbuilder.formatter.rendering.layout.singlepage;
 
 import org.junit.jupiter.api.Test;
 
@@ -7,9 +7,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CoverGapDistributorTest {
+class SinglePageGapDistributorTest {
 
-    private final CoverGapDistributor distributor = new CoverGapDistributor();
+    private final SinglePageGapDistributor distributor = new SinglePageGapDistributor();
 
     @Test
     void shouldReserveOneLineForEachGapWhenThereIsEnoughSpace() {
@@ -54,12 +54,22 @@ class CoverGapDistributorTest {
     }
 
     @Test
-    void shouldDelegateGenericSinglePageGapRules() {
+    void shouldRejectAvailableLinesWithoutGaps() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> distributor.distribute(1, List.of())
         );
 
         assertEquals("Cannot distribute gap lines without gaps.", exception.getMessage());
+    }
+
+    @Test
+    void shouldRejectNonPositiveWeights() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> distributor.distribute(1, List.of(BigDecimal.ZERO))
+        );
+
+        assertEquals("gapWeights must contain only positive values.", exception.getMessage());
     }
 }

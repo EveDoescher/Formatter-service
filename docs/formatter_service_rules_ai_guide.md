@@ -873,7 +873,9 @@ Prefer:
 - `DocxWriter`;
 - `ExportRequest`;
 - `CoverRenderer`;
-- `SinglePageLayoutEngine`.
+- `SinglePageRenderableAreaCalculator`;
+- `SinglePageGapDistributor`;
+- `SinglePageLayoutDocxMapper`.
 
 Avoid making core names ABNT-specific unless the class truly represents an ABNT-specific profile or rule.
 

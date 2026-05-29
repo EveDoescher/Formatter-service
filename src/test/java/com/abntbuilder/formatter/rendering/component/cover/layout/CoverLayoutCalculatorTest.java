@@ -10,7 +10,10 @@ import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverStyleMapping;
+import com.abntbuilder.formatter.shared.exception.InvalidCoverContentException;
+import com.abntbuilder.formatter.shared.exception.InvalidSinglePageStyleException;
 import com.abntbuilder.formatter.shared.exception.SinglePageLayoutOverflowException;
+import com.abntbuilder.formatter.shared.exception.TextMeasurementException;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -27,12 +30,31 @@ class CoverLayoutCalculatorTest {
     @Test
     void shouldCreateValidatedPlanThatFillsEffectiveSinglePageCapacity() {
         CoverLayoutPlan plan = calculator.calculate(validCover(), validProfile());
+        CoverLayoutDiagnostic diagnostic = plan.diagnostic();
 
         assertFalse(plan.elements().isEmpty());
         assertEquals(plan.pageCapacityLines(), plan.totalLines());
         assertTrue(plan.elements().stream().anyMatch(CoverSpacerLines.class::isInstance));
         assertTrue(plan.elements().stream().anyMatch(CoverTextLines.class::isInstance));
         assertTrue(plan.exactLineHeightPt().compareTo(BigDecimal.ZERO) > 0);
+
+        int elementLineCount = plan.elements().stream()
+                .mapToInt(CoverLayoutElement::lineCount)
+                .sum();
+        int blockLineCount = diagnostic.blockLineCounts().values().stream()
+                .mapToInt(Integer::intValue)
+                .sum();
+        int gapLineCount = diagnostic.gapLineCounts().values().stream()
+                .mapToInt(Integer::intValue)
+                .sum();
+
+        assertEquals(plan.totalLines(), elementLineCount);
+        assertEquals(plan.pageCapacityLines(), diagnostic.renderableArea().safeLineCapacity());
+        assertEquals(diagnostic.contentLineCount(), blockLineCount);
+        assertEquals(diagnostic.availableGapLines(), gapLineCount);
+        assertEquals(plan.totalLines(), diagnostic.contentLineCount() + diagnostic.availableGapLines());
+        assertEquals(plan.exactLineHeightPt(), diagnostic.exactLineHeightPt());
+        assertEquals(2, diagnostic.blockLineCounts().get("cover.bottom"));
     }
 
     @Test
@@ -51,10 +73,21 @@ class CoverLayoutCalculatorTest {
                 List.of("Limeira", "2026")
         );
 
-        assertThrows(
-                SinglePageLayoutOverflowException.class,
+        CoverLayoutOverflowException exception = assertThrows(
+                CoverLayoutOverflowException.class,
                 () -> calculator.calculate(cover, validProfile())
         );
+
+        CoverLayoutFailureDiagnostic diagnostic = exception.diagnostic();
+
+        assertInstanceOf(SinglePageLayoutOverflowException.class, exception);
+        assertTrue(diagnostic.contentLineCount() > diagnostic.renderableArea().safeLineCapacity());
+        assertEquals(
+                diagnostic.contentLineCount() - diagnostic.renderableArea().safeLineCapacity(),
+                diagnostic.overflowLineCount()
+        );
+        assertTrue(diagnostic.blockLineCounts().containsKey("cover.authors"));
+        assertTrue(diagnostic.exactLineHeightPt().compareTo(BigDecimal.ZERO) > 0);
     }
 
     @Test
@@ -70,12 +103,120 @@ class CoverLayoutCalculatorTest {
                 )
         );
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        InvalidCoverContentException exception = assertThrows(
+                InvalidCoverContentException.class,
                 () -> calculator.calculate(cover, validProfile())
         );
 
         assertEquals("cover bottomLines must contain exactly city and year.", exception.getMessage());
+    }
+
+    @Test
+    void shouldFailWhenBottomLinesDoesNotContainExactlyCityAndYearItems() {
+        CoverComponent cover = new CoverComponent(
+                List.of("UNIVERSIDADE PAULISTA"),
+                List.of("NOME COMPLETO DO ALUNO"),
+                "TITULO DO TRABALHO",
+                Optional.empty(),
+                List.of("Limeira")
+        );
+
+        InvalidCoverContentException exception = assertThrows(
+                InvalidCoverContentException.class,
+                () -> calculator.calculate(cover, validProfile())
+        );
+
+        assertEquals("cover bottomLines must contain exactly city and year.", exception.getMessage());
+    }
+
+    @Test
+    void shouldFailWhenBottomItemContainsExplicitLineBreak() {
+        CoverComponent cover = new CoverComponent(
+                List.of("UNIVERSIDADE PAULISTA"),
+                List.of("NOME COMPLETO DO ALUNO"),
+                "TITULO DO TRABALHO",
+                Optional.empty(),
+                List.of("Limeira\n2026", "2026")
+        );
+
+        InvalidCoverContentException exception = assertThrows(
+                InvalidCoverContentException.class,
+                () -> calculator.calculate(cover, validProfile())
+        );
+
+        assertEquals("cover bottomLines must contain exactly city and year.", exception.getMessage());
+    }
+
+    @Test
+    void shouldDeriveTopToTitleGapWeightWhenAuthorsAreAbsent() {
+        CoverComponent cover = new CoverComponent(
+                List.of("UNIVERSIDADE PAULISTA"),
+                List.of(),
+                "TITULO DO TRABALHO",
+                Optional.empty(),
+                List.of("Limeira", "2026")
+        );
+
+        CoverLayoutPlan plan = calculator.calculate(cover, validProfile());
+
+        assertTrue(plan.diagnostic().gapLineCounts().get("cover.top-to-cover.title") > 1);
+        assertTrue(plan.diagnostic().gapLineCounts().containsKey("cover.title-to-cover.bottom"));
+    }
+
+    @Test
+    void shouldFailWhenSinglePageStyleHasSpacingBefore() {
+        InvalidSinglePageStyleException exception = assertThrows(
+                InvalidSinglePageStyleException.class,
+                () -> calculator.calculate(
+                        validCover(),
+                        profileWithTitleStyle(style(
+                                "cover.title",
+                                true,
+                                true,
+                                BigDecimal.ONE,
+                                BigDecimal.ZERO
+                        ))
+                )
+        );
+
+        assertEquals("single-page layout styles must have spacingBeforePt equal to zero.", exception.getMessage());
+    }
+
+    @Test
+    void shouldFailWhenSinglePageStyleHasSpacingAfter() {
+        InvalidSinglePageStyleException exception = assertThrows(
+                InvalidSinglePageStyleException.class,
+                () -> calculator.calculate(
+                        validCover(),
+                        profileWithTitleStyle(style(
+                                "cover.title",
+                                true,
+                                true,
+                                BigDecimal.ZERO,
+                                BigDecimal.ONE
+                        ))
+                )
+        );
+
+        assertEquals("single-page layout styles must have spacingAfterPt equal to zero.", exception.getMessage());
+    }
+
+    @Test
+    void shouldFailBeforeRenderingWhenWordExceedsAvailableWidth() {
+        CoverComponent cover = new CoverComponent(
+                List.of("UNIVERSIDADE PAULISTA"),
+                List.of("NOME COMPLETO DO ALUNO"),
+                "PALAVRAEXTREMAMENTELONGAQUEULTRAPASSAALARGURADISPONIVELSEMESPACOS",
+                Optional.empty(),
+                List.of("Limeira", "2026")
+        );
+
+        TextMeasurementException exception = assertThrows(
+                TextMeasurementException.class,
+                () -> calculator.calculate(cover, validProfile())
+        );
+
+        assertEquals("word width exceeds available text width.", exception.getMessage());
     }
 
     private static CoverComponent validCover() {
@@ -89,6 +230,10 @@ class CoverLayoutCalculatorTest {
     }
 
     private static DocumentProfile validProfile() {
+        return profileWithTitleStyle(style("cover.title", true, true));
+    }
+
+    private static DocumentProfile profileWithTitleStyle(StyleRule titleStyle) {
         return new DocumentProfile(
                 "abnt-unip-profile",
                 "ABNT UNIP Profile",
@@ -96,7 +241,7 @@ class CoverLayoutCalculatorTest {
                 List.of(
                         style("cover.top", true, true),
                         style("cover.author", false, true),
-                        style("cover.title", true, true),
+                        titleStyle,
                         style("cover.subtitle", false, false),
                         style("cover.bottom", false, false)
                 ),
@@ -131,6 +276,16 @@ class CoverLayoutCalculatorTest {
     }
 
     private static StyleRule style(String id, boolean bold, boolean uppercase) {
+        return style(id, bold, uppercase, BigDecimal.ZERO, BigDecimal.ZERO);
+    }
+
+    private static StyleRule style(
+            String id,
+            boolean bold,
+            boolean uppercase,
+            BigDecimal spacingBeforePt,
+            BigDecimal spacingAfterPt
+    ) {
         return new StyleRule(
                 id,
                 StyleType.PARAGRAPH,
@@ -141,8 +296,8 @@ class CoverLayoutCalculatorTest {
                 BigDecimal.ZERO,
                 BigDecimal.ZERO,
                 BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
+                spacingBeforePt,
+                spacingAfterPt,
                 bold,
                 false,
                 uppercase
