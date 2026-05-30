@@ -15,10 +15,6 @@ public final class CoverRenderer {
     private final CoverLayoutCalculator layoutCalculator;
     private final SinglePageLayoutRenderer singlePageRenderer;
 
-    public CoverRenderer() {
-        this(new CoverLayoutCalculator(), new SinglePageLayoutRenderer());
-    }
-
     public CoverRenderer(
             CoverLayoutCalculator layoutCalculator,
             SinglePageLayoutRenderer singlePageRenderer

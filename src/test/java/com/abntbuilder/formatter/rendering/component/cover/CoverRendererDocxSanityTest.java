@@ -14,8 +14,17 @@ import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverStyleMapping;
+import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutAssembler;
 import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutCalculator;
 import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutPlan;
+import com.abntbuilder.formatter.rendering.component.cover.layout.CoverProfileContentValidator;
+import com.abntbuilder.formatter.rendering.layout.singlepage.MarginBasedSinglePageSafetyPolicy;
+import com.abntbuilder.formatter.rendering.layout.singlepage.OrderedLayoutGapResolver;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageGapDistributor;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutEngine;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutLineMetrics;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutRenderer;
+import com.abntbuilder.formatter.rendering.layout.text.FontMetricsTextMeasurer;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -35,9 +44,11 @@ class CoverRendererDocxSanityTest {
     void shouldGenerateCoverDocxXmlWithExpectedContentAndExactLineSpacing() throws IOException {
         DocumentProfile profile = validProfile();
         CoverComponent cover = validCover();
-        CoverLayoutPlan plan = new CoverLayoutCalculator().calculate(cover, profile);
+        CoverLayoutCalculator calculator = coverLayoutCalculator();
+        CoverRenderer renderer = new CoverRenderer(calculator, new SinglePageLayoutRenderer());
+        CoverLayoutPlan plan = calculator.calculate(cover, profile);
 
-        List<DocxBlock> blocks = new CoverRenderer().render(cover, profile);
+        List<DocxBlock> blocks = renderer.render(cover, profile);
 
         byte[] bytes = new Docx4jWriter().write(new DocxDocument(
                 profile.pageRule(),
@@ -50,12 +61,12 @@ class CoverRendererDocxSanityTest {
 
         String documentXml = readZipEntry(bytes, "word/document.xml");
 
-        assertTrue(documentXml.contains(cover.topLines().getFirst()));
-        assertTrue(documentXml.contains(cover.authorLines().getFirst()));
+        assertTrue(documentXml.contains(cover.institutionalLines().getFirst()));
+        assertTrue(documentXml.contains(cover.authors().getFirst()));
         assertTrue(documentXml.contains(cover.title()));
         assertTrue(documentXml.contains(cover.subtitle().orElseThrow()));
-        assertTrue(documentXml.contains(cover.bottomLines().getFirst()));
-        assertTrue(documentXml.contains(cover.bottomLines().get(1)));
+        assertTrue(documentXml.contains(cover.city()));
+        assertTrue(documentXml.contains(cover.year()));
 
         assertEquals(plan.totalLines(), blocks.size());
         assertEquals(blocks.size(), countParagraphs(documentXml));
@@ -66,10 +77,10 @@ class CoverRendererDocxSanityTest {
                 countOccurrences(documentXml, "<w:t xml:space=\"preserve\"> </w:t>")
         );
 
-        assertAppearsBefore(documentXml, cover.topLines().getFirst(), cover.authorLines().getFirst());
-        assertAppearsBefore(documentXml, cover.authorLines().getFirst(), cover.title());
-        assertAppearsBefore(documentXml, cover.title(), cover.bottomLines().getFirst());
-        assertAppearsBefore(documentXml, cover.bottomLines().getFirst(), cover.bottomLines().get(1));
+        assertAppearsBefore(documentXml, cover.institutionalLines().getFirst(), cover.authors().getFirst());
+        assertAppearsBefore(documentXml, cover.authors().getFirst(), cover.title());
+        assertAppearsBefore(documentXml, cover.title(), cover.city());
+        assertAppearsBefore(documentXml, cover.city(), cover.year());
 
         assertFalse(documentXml.contains("w:type=\"page\""));
         assertFalse(documentXml.contains("<w:br"));
@@ -141,7 +152,8 @@ class CoverRendererDocxSanityTest {
                 List.of("NOME COMPLETO DO ALUNO"),
                 "TITULO DO TRABALHO",
                 Optional.of("Subtitulo do trabalho"),
-                List.of("Limeira", "2026")
+                "Limeira",
+                "2026"
         );
     }
 
@@ -207,6 +219,21 @@ class CoverRendererDocxSanityTest {
                 bold,
                 false,
                 uppercase
+        );
+    }
+
+    private static CoverLayoutCalculator coverLayoutCalculator() {
+        return new CoverLayoutCalculator(
+                new CoverLayoutAssembler(
+                        new FontMetricsTextMeasurer(),
+                        new OrderedLayoutGapResolver(),
+                        new CoverProfileContentValidator()
+                ),
+                new SinglePageLayoutEngine(
+                        new SinglePageLayoutLineMetrics(),
+                        new MarginBasedSinglePageSafetyPolicy(),
+                        new SinglePageGapDistributor()
+                )
         );
     }
 }

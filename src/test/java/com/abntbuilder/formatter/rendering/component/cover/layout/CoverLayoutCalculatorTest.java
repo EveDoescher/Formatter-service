@@ -10,9 +10,15 @@ import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverStyleMapping;
+import com.abntbuilder.formatter.rendering.layout.singlepage.MarginBasedSinglePageSafetyPolicy;
+import com.abntbuilder.formatter.rendering.layout.singlepage.OrderedLayoutGapResolver;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageGapDistributor;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutEngine;
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutElement;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutLineMetrics;
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageSpacerLines;
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageTextLines;
+import com.abntbuilder.formatter.rendering.layout.text.FontMetricsTextMeasurer;
 import com.abntbuilder.formatter.shared.exception.InvalidCoverContentException;
 import com.abntbuilder.formatter.shared.exception.InvalidSinglePageStyleException;
 import com.abntbuilder.formatter.shared.exception.SinglePageLayoutOverflowException;
@@ -28,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CoverLayoutCalculatorTest {
 
-    private final CoverLayoutCalculator calculator = new CoverLayoutCalculator();
+    private final CoverLayoutCalculator calculator = coverLayoutCalculator();
 
     @Test
     void shouldCreateValidatedPlanThatFillsEffectiveSinglePageCapacity() {
@@ -73,7 +79,8 @@ class CoverLayoutCalculatorTest {
                 authors,
                 "TITULO DO TRABALHO",
                 Optional.empty(),
-                List.of("Limeira", "2026")
+                "Limeira",
+                "2026"
         );
 
         CoverLayoutOverflowException exception = assertThrows(
@@ -100,10 +107,8 @@ class CoverLayoutCalculatorTest {
                 List.of("NOME COMPLETO DO ALUNO"),
                 "TITULO DO TRABALHO",
                 Optional.empty(),
-                List.of(
-                        "Cidade Brasileira Com Nome Propositalmente Extenso Para Forcar Quebra Em Mais De Uma Linha",
-                        "2026"
-                )
+                "Cidade Brasileira Com Nome Propositalmente Extenso Para Forcar Quebra Em Mais De Uma Linha",
+                "2026"
         );
 
         InvalidCoverContentException exception = assertThrows(
@@ -137,7 +142,8 @@ class CoverLayoutCalculatorTest {
                 List.of("NOME COMPLETO DO ALUNO"),
                 "TITULO DO TRABALHO",
                 Optional.empty(),
-                List.of("Limeira\n2026", "2026")
+                "Limeira\n2026",
+                "2026"
         );
 
         InvalidCoverContentException exception = assertThrows(
@@ -155,7 +161,8 @@ class CoverLayoutCalculatorTest {
                 List.of(),
                 "TITULO DO TRABALHO",
                 Optional.empty(),
-                List.of("Limeira", "2026")
+                "Limeira",
+                "2026"
         );
 
         CoverLayoutPlan plan = calculator.calculate(cover, validProfile());
@@ -209,7 +216,8 @@ class CoverLayoutCalculatorTest {
                 List.of("NOME COMPLETO DO ALUNO"),
                 "PALAVRAEXTREMAMENTELONGAQUEULTRAPASSAALARGURADISPONIVELSEMESPACOS",
                 Optional.empty(),
-                List.of("Limeira", "2026")
+                "Limeira",
+                "2026"
         );
 
         TextMeasurementException exception = assertThrows(
@@ -226,7 +234,8 @@ class CoverLayoutCalculatorTest {
                 List.of("NOME COMPLETO DO ALUNO"),
                 "TITULO DO TRABALHO",
                 Optional.of("Subtitulo do trabalho"),
-                List.of("Limeira", "2026")
+                "Limeira",
+                "2026"
         );
     }
 
@@ -302,6 +311,21 @@ class CoverLayoutCalculatorTest {
                 bold,
                 false,
                 uppercase
+        );
+    }
+
+    private static CoverLayoutCalculator coverLayoutCalculator() {
+        return new CoverLayoutCalculator(
+                new CoverLayoutAssembler(
+                        new FontMetricsTextMeasurer(),
+                        new OrderedLayoutGapResolver(),
+                        new CoverProfileContentValidator()
+                ),
+                new SinglePageLayoutEngine(
+                        new SinglePageLayoutLineMetrics(),
+                        new MarginBasedSinglePageSafetyPolicy(),
+                        new SinglePageGapDistributor()
+                )
         );
     }
 }

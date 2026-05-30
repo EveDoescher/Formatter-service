@@ -1,6 +1,7 @@
 package com.abntbuilder.formatter.rendering.layout.singlepage;
 
 import com.abntbuilder.formatter.profile.model.layout.singlepage.LayoutGapRule;
+import com.abntbuilder.formatter.shared.exception.InvalidProfileStructureException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -23,11 +24,11 @@ public final class OrderedLayoutGapResolver {
         Objects.requireNonNull(declaredGapRules, "declaredGapRules must not be null");
 
         if (declaredGroupOrder.isEmpty()) {
-            throw new IllegalArgumentException("declaredGroupOrder must not be empty.");
+            throw new InvalidProfileStructureException("declaredGroupOrder must not be empty.");
         }
 
         if (presentGroupOrder.isEmpty()) {
-            throw new IllegalArgumentException("presentGroupOrder must not be empty.");
+            throw new InvalidProfileStructureException("presentGroupOrder must not be empty.");
         }
 
         declaredGroupOrder = List.copyOf(declaredGroupOrder);
@@ -54,7 +55,7 @@ public final class OrderedLayoutGapResolver {
                 LayoutGapRule gapRule = gapRulesById.get(gapId(fromGroupId, toGroupId));
 
                 if (gapRule == null) {
-                    throw new IllegalArgumentException(
+                    throw new InvalidProfileStructureException(
                             "Missing declared gap rule between groups: " + fromGroupId + " and " + toGroupId + "."
                     );
                 }
@@ -82,7 +83,7 @@ public final class OrderedLayoutGapResolver {
             requireNonBlank(groupId, "declaredGroupOrder item");
 
             if (indexes.put(groupId, index) != null) {
-                throw new IllegalArgumentException("Duplicate declared group id: " + groupId);
+                throw new InvalidProfileStructureException("Duplicate declared group id: " + groupId);
             }
         }
 
@@ -100,17 +101,17 @@ public final class OrderedLayoutGapResolver {
             requireNonBlank(presentGroupId, "presentGroupOrder item");
 
             if (!presentGroupIds.add(presentGroupId)) {
-                throw new IllegalArgumentException("Duplicate present group id: " + presentGroupId);
+                throw new InvalidProfileStructureException("Duplicate present group id: " + presentGroupId);
             }
 
             Integer declaredIndex = declaredIndexes.get(presentGroupId);
 
             if (declaredIndex == null) {
-                throw new IllegalArgumentException("Present group is not declared: " + presentGroupId);
+                throw new InvalidProfileStructureException("Present group is not declared: " + presentGroupId);
             }
 
             if (declaredIndex <= previousDeclaredIndex) {
-                throw new IllegalArgumentException("presentGroupOrder must follow declaredGroupOrder.");
+                throw new InvalidProfileStructureException("presentGroupOrder must follow declaredGroupOrder.");
             }
 
             previousDeclaredIndex = declaredIndex;
@@ -128,15 +129,19 @@ public final class OrderedLayoutGapResolver {
             Objects.requireNonNull(gapRule, "declaredGapRules must not contain null values.");
 
             if (!declaredGroupIds.contains(gapRule.fromGroupId())) {
-                throw new IllegalArgumentException("Gap rule has unknown fromGroupId: " + gapRule.fromGroupId());
+                throw new InvalidProfileStructureException(
+                        "Gap rule has unknown fromGroupId: " + gapRule.fromGroupId()
+                );
             }
 
             if (!declaredGroupIds.contains(gapRule.toGroupId())) {
-                throw new IllegalArgumentException("Gap rule has unknown toGroupId: " + gapRule.toGroupId());
+                throw new InvalidProfileStructureException(
+                        "Gap rule has unknown toGroupId: " + gapRule.toGroupId()
+                );
             }
 
             if (gapRulesById.put(gapRule.id(), gapRule) != null) {
-                throw new IllegalArgumentException("Duplicate gap rule: " + gapRule.id());
+                throw new InvalidProfileStructureException("Duplicate gap rule: " + gapRule.id());
             }
         }
 
@@ -149,7 +154,7 @@ public final class OrderedLayoutGapResolver {
 
     private static void requireNonBlank(String value, String fieldName) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException(fieldName + " must not be blank.");
+            throw new InvalidProfileStructureException(fieldName + " must not be blank.");
         }
     }
 }

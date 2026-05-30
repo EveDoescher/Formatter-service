@@ -131,9 +131,9 @@ perfil. Ela descreve a estrutura do componente de capa atual. O perfil continua
 decidindo como essas linhas aparecem, por exemplo caixa alta, fonte, alinhamento e
 negrito.
 
-Os aliases legados `topLines`, `authorLines` e `bottomLines` existem somente para
-compatibilidade de API e testes antigos. O fluxo de referencia deve usar
-`profileId + document.cover` com os campos semanticos acima.
+Os aliases legados `topLines`, `authorLines` e `bottomLines` existem somente no
+contrato antigo e no `LegacyCoverRequest` da raiz do request. O fluxo de
+referencia deve usar `profileId + document.cover` com os campos semanticos acima.
 
 Se uma nova instituicao exigir outro rodape de capa, a solucao correta e evoluir o
 contrato semantico do componente ou criar outro componente de capa, nao esconder
@@ -849,7 +849,8 @@ Garantias atendidas:
 
 ```text
 Perfil define decisoes visuais.
-Request fornece conteudo.
+Request principal fornece conteudo semantico em document.cover.
+Request legado de raiz fica isolado em LegacyCoverRequest.
 Codigo calcula area, linhas, gaps e overflow.
 Sucesso gera plano auditavel.
 Falha vertical gera diagnostico parcial.

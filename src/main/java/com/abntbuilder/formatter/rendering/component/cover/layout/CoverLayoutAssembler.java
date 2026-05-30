@@ -16,6 +16,7 @@ import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutIte
 import com.abntbuilder.formatter.rendering.layout.text.MeasuredText;
 import com.abntbuilder.formatter.rendering.layout.text.TextMeasurer;
 import com.abntbuilder.formatter.shared.exception.InvalidCoverContentException;
+import com.abntbuilder.formatter.shared.exception.InvalidProfileStructureException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,7 +126,7 @@ public final class CoverLayoutAssembler {
             case "subtitle" -> cover.subtitle().map(List::of).orElseGet(List::of);
             case "city" -> List.of(cover.city());
             case "year" -> List.of(cover.year());
-            default -> throw new IllegalArgumentException("Unknown cover item id: " + itemId);
+            default -> throw new InvalidProfileStructureException("Unknown cover item id: " + itemId);
         };
     }
 

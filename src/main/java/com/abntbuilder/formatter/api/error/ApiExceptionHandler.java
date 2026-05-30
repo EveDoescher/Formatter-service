@@ -3,6 +3,8 @@ package com.abntbuilder.formatter.api.error;
 import com.abntbuilder.formatter.output.docx.api.DocxWriterException;
 import com.abntbuilder.formatter.shared.exception.MissingStyleRuleException;
 import com.abntbuilder.formatter.shared.exception.SinglePageLayoutOverflowException;
+import com.abntbuilder.formatter.shared.exception.InvalidProfileStructureException;
+import com.abntbuilder.formatter.shared.exception.UnsupportedLayoutPolicyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -45,6 +47,8 @@ public class ApiExceptionHandler {
             MissingComponentRuleException.class,
             ComponentRuleTypeMismatchException.class,
             SinglePageLayoutOverflowException.class,
+            InvalidProfileStructureException.class,
+            UnsupportedLayoutPolicyException.class,
             MissingProfileException.class
     })
     public ResponseEntity<ApiErrorResponse> handleBadRequest(RuntimeException exception) {

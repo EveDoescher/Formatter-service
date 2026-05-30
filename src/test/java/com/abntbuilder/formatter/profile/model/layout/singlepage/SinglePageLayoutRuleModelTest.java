@@ -1,5 +1,6 @@
 package com.abntbuilder.formatter.profile.model.layout.singlepage;
 
+import com.abntbuilder.formatter.shared.exception.InvalidProfileStructureException;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -16,7 +17,7 @@ class SinglePageLayoutRuleModelTest {
         assertEquals(
                 "fromGroupId must not be blank.",
                 assertThrows(
-                        IllegalArgumentException.class,
+                        InvalidProfileStructureException.class,
                         () -> new LayoutGapRule(" ", "b", BigDecimal.ONE)
                 ).getMessage()
         );
@@ -24,7 +25,7 @@ class SinglePageLayoutRuleModelTest {
         assertEquals(
                 "weight must be greater than zero.",
                 assertThrows(
-                        IllegalArgumentException.class,
+                        InvalidProfileStructureException.class,
                         () -> new LayoutGapRule("a", "b", BigDecimal.ZERO)
                 ).getMessage()
         );
@@ -35,7 +36,7 @@ class SinglePageLayoutRuleModelTest {
         assertEquals(
                 "id must not be blank.",
                 assertThrows(
-                        IllegalArgumentException.class,
+                        InvalidProfileStructureException.class,
                         () -> new SinglePageItemRule(" ", true, Optional.empty())
                 ).getMessage()
         );
@@ -43,7 +44,7 @@ class SinglePageLayoutRuleModelTest {
         assertEquals(
                 "maxVisualLinesPerValue must be greater than zero.",
                 assertThrows(
-                        IllegalArgumentException.class,
+                        InvalidProfileStructureException.class,
                         () -> new SinglePageItemRule("city", true, Optional.of(0))
                 ).getMessage()
         );
@@ -56,7 +57,7 @@ class SinglePageLayoutRuleModelTest {
         assertEquals(
                 "items must not be empty.",
                 assertThrows(
-                        IllegalArgumentException.class,
+                        InvalidProfileStructureException.class,
                         () -> new SinglePageGroupRule("cover.title", true, List.of())
                 ).getMessage()
         );
@@ -64,7 +65,7 @@ class SinglePageLayoutRuleModelTest {
         assertEquals(
                 "Duplicate single-page item id: title",
                 assertThrows(
-                        IllegalArgumentException.class,
+                        InvalidProfileStructureException.class,
                         () -> new SinglePageGroupRule("cover.title", true, List.of(item, item))
                 ).getMessage()
         );

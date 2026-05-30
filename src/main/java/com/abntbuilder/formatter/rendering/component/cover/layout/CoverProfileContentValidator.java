@@ -5,6 +5,7 @@ import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRul
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageGroupRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageItemRule;
 import com.abntbuilder.formatter.shared.exception.InvalidCoverContentException;
+import com.abntbuilder.formatter.shared.exception.InvalidProfileStructureException;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -20,7 +21,7 @@ public final class CoverProfileContentValidator {
 
         for (SinglePageGroupRule groupRule : rule.layoutRule().groups()) {
             if (!groupIds.add(groupRule.id())) {
-                throw new IllegalArgumentException("Duplicate cover group id: " + groupRule.id());
+                throw new InvalidProfileStructureException("Duplicate cover group id: " + groupRule.id());
             }
 
             boolean groupHasContent = false;
@@ -28,7 +29,7 @@ public final class CoverProfileContentValidator {
 
             for (SinglePageItemRule itemRule : groupRule.items()) {
                 if (!itemIds.add(itemRule.id())) {
-                    throw new IllegalArgumentException(
+                    throw new InvalidProfileStructureException(
                             "Duplicate cover item id in group " + groupRule.id() + ": " + itemRule.id()
                     );
                 }
@@ -57,7 +58,7 @@ public final class CoverProfileContentValidator {
             case "subtitle" -> cover.subtitle().isPresent();
             case "city" -> !cover.city().isBlank();
             case "year" -> !cover.year().isBlank();
-            default -> throw new IllegalArgumentException("Unknown cover item id: " + itemId);
+            default -> throw new InvalidProfileStructureException("Unknown cover item id: " + itemId);
         };
     }
 }

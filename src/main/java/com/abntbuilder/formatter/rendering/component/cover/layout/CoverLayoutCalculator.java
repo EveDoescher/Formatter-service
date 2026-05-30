@@ -4,13 +4,8 @@ import com.abntbuilder.formatter.document.component.cover.CoverComponent;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.resolution.ComponentRuleResolver;
-import com.abntbuilder.formatter.rendering.layout.singlepage.MarginBasedSinglePageSafetyPolicy;
-import com.abntbuilder.formatter.rendering.layout.singlepage.OrderedLayoutGapResolver;
-import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageGapDistributor;
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutEngine;
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutInput;
-import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutLineMetrics;
-import com.abntbuilder.formatter.rendering.layout.text.FontMetricsTextMeasurer;
 import com.abntbuilder.formatter.shared.exception.SinglePageLayoutOverflowException;
 
 import java.util.Objects;
@@ -21,21 +16,6 @@ public final class CoverLayoutCalculator {
 
     private final CoverLayoutAssembler assembler;
     private final SinglePageLayoutEngine layoutEngine;
-
-    public CoverLayoutCalculator() {
-        this(
-                new CoverLayoutAssembler(
-                        new FontMetricsTextMeasurer(),
-                        new OrderedLayoutGapResolver(),
-                        new CoverProfileContentValidator()
-                ),
-                new SinglePageLayoutEngine(
-                        new SinglePageLayoutLineMetrics(),
-                        new MarginBasedSinglePageSafetyPolicy(),
-                        new SinglePageGapDistributor()
-                )
-        );
-    }
 
     public CoverLayoutCalculator(
             CoverLayoutAssembler assembler,

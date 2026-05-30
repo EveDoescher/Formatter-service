@@ -7,6 +7,7 @@ import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageSafet
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SpacerStylePolicy;
 import com.abntbuilder.formatter.shared.exception.InvalidSinglePageStyleException;
 import com.abntbuilder.formatter.shared.exception.SinglePageLayoutOverflowException;
+import com.abntbuilder.formatter.shared.exception.UnsupportedLayoutPolicyException;
 import com.abntbuilder.formatter.shared.measurement.MeasurementConverter;
 
 import java.math.BigDecimal;
@@ -21,14 +22,6 @@ public final class SinglePageLayoutEngine {
     private final SinglePageLayoutLineMetrics lineMetrics;
     private final SinglePageSafetyPolicy safetyPolicy;
     private final SinglePageGapDistributor gapDistributor;
-
-    public SinglePageLayoutEngine() {
-        this(
-                new SinglePageLayoutLineMetrics(),
-                new MarginBasedSinglePageSafetyPolicy(),
-                new SinglePageGapDistributor()
-        );
-    }
 
     public SinglePageLayoutEngine(
             SinglePageLayoutLineMetrics lineMetrics,
@@ -94,17 +87,17 @@ public final class SinglePageLayoutEngine {
 
     private static void validatePolicy(SinglePageLayoutInput input) {
         if (input.policy().anchorStrategy() != SinglePageAnchorStrategy.LAST_GROUP_AT_SAFE_AREA_END) {
-            throw new IllegalArgumentException("Unsupported single-page anchor strategy: "
+            throw new UnsupportedLayoutPolicyException("Unsupported single-page anchor strategy: "
                     + input.policy().anchorStrategy());
         }
 
         if (input.policy().lineHeightStrategy() != SinglePageLineHeightStrategy.MAX_EXACT_LINE_HEIGHT) {
-            throw new IllegalArgumentException("Unsupported single-page line height strategy: "
+            throw new UnsupportedLayoutPolicyException("Unsupported single-page line height strategy: "
                     + input.policy().lineHeightStrategy());
         }
 
         if (input.policy().safetyPolicy() != SinglePageSafetyPolicyId.MARGIN_BASED) {
-            throw new IllegalArgumentException("Unsupported single-page safety policy: "
+            throw new UnsupportedLayoutPolicyException("Unsupported single-page safety policy: "
                     + input.policy().safetyPolicy());
         }
     }

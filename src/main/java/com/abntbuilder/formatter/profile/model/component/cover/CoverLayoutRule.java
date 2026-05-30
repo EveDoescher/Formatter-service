@@ -4,6 +4,7 @@ import com.abntbuilder.formatter.profile.model.layout.singlepage.LayoutGapRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageGroupRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageItemRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageLayoutPolicy;
+import com.abntbuilder.formatter.shared.exception.InvalidProfileStructureException;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -29,7 +30,7 @@ public record CoverLayoutRule(
         Objects.requireNonNull(policy, "policy must not be null");
 
         if (groups.isEmpty()) {
-            throw new IllegalArgumentException("groups must not be empty.");
+            throw new InvalidProfileStructureException("groups must not be empty.");
         }
 
         groups = List.copyOf(groups);
@@ -102,7 +103,7 @@ public record CoverLayoutRule(
                 .filter(gap -> gap.fromGroupId().equals(fromGroupId) && gap.toGroupId().equals(toGroupId))
                 .map(LayoutGapRule::weight)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(
+                .orElseThrow(() -> new InvalidProfileStructureException(
                         "Missing cover gap rule between groups: " + fromGroupId + " and " + toGroupId + "."
                 ));
     }
@@ -142,7 +143,7 @@ public record CoverLayoutRule(
         Objects.requireNonNull(value, fieldName + " must not be null");
 
         if (value.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException(fieldName + " must be greater than zero.");
+            throw new InvalidProfileStructureException(fieldName + " must be greater than zero.");
         }
 
         return value;
@@ -155,7 +156,7 @@ public record CoverLayoutRule(
             Objects.requireNonNull(group, "groups must not contain null values.");
 
             if (!groupIds.add(group.id())) {
-                throw new IllegalArgumentException("Duplicate single-page group id: " + group.id());
+                throw new InvalidProfileStructureException("Duplicate single-page group id: " + group.id());
             }
         }
     }
@@ -170,22 +171,24 @@ public record CoverLayoutRule(
         Set<String> gapIds = new HashSet<>();
 
         if (groups.size() > 1 && gapRules.isEmpty()) {
-            throw new IllegalArgumentException("gapRules must not be empty when more than one group is declared.");
+            throw new InvalidProfileStructureException(
+                    "gapRules must not be empty when more than one group is declared."
+            );
         }
 
         for (LayoutGapRule gapRule : gapRules) {
             Objects.requireNonNull(gapRule, "gapRules must not contain null values.");
 
             if (!groupIds.contains(gapRule.fromGroupId())) {
-                throw new IllegalArgumentException("Unknown gap fromGroupId: " + gapRule.fromGroupId());
+                throw new InvalidProfileStructureException("Unknown gap fromGroupId: " + gapRule.fromGroupId());
             }
 
             if (!groupIds.contains(gapRule.toGroupId())) {
-                throw new IllegalArgumentException("Unknown gap toGroupId: " + gapRule.toGroupId());
+                throw new InvalidProfileStructureException("Unknown gap toGroupId: " + gapRule.toGroupId());
             }
 
             if (!gapIds.add(gapRule.id())) {
-                throw new IllegalArgumentException("Duplicate gap rule: " + gapRule.id());
+                throw new InvalidProfileStructureException("Duplicate gap rule: " + gapRule.id());
             }
         }
     }

@@ -6,18 +6,18 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class CoverRequestTest {
+class LegacyCoverRequestTest {
 
     @Test
-    void shouldConvertSemanticCoverRequestToDomain() {
-        CoverRequest request = new CoverRequest(
+    void shouldConvertLegacyRootCoverRequestToDomain() {
+        LegacyCoverRequest request = new LegacyCoverRequest(
                 List.of("Universidade"),
                 List.of("Autor"),
                 "Titulo",
-                "Subtitulo",
-                "Limeira",
-                "2026"
+                null,
+                List.of("Limeira", "2026")
         );
 
         CoverComponent cover = request.toDomain();
@@ -25,8 +25,8 @@ class CoverRequestTest {
         assertEquals(List.of("Universidade"), cover.institutionalLines());
         assertEquals(List.of("Autor"), cover.authors());
         assertEquals("Titulo", cover.title());
-        assertEquals("Subtitulo", cover.subtitle().orElseThrow());
         assertEquals("Limeira", cover.city());
         assertEquals("2026", cover.year());
+        assertTrue(cover.subtitle().isEmpty());
     }
 }

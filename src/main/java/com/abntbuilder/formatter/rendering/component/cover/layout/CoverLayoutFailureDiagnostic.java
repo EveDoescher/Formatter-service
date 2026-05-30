@@ -33,7 +33,7 @@ public record CoverLayoutFailureDiagnostic(
     }
 
     public CoverLayoutFailureDiagnostic {
-        SinglePageLayoutFailureDiagnostic diagnostic = new SinglePageLayoutFailureDiagnostic(
+        SinglePageLayoutFailureDiagnostic diagnostic = createDiagnostic(
                 renderableArea,
                 contentLineCount,
                 overflowLineCount,
@@ -63,5 +63,35 @@ public record CoverLayoutFailureDiagnostic(
 
     public Map<String, Integer> groupLineCounts() {
         return blockLineCounts;
+    }
+
+    private static SinglePageLayoutFailureDiagnostic createDiagnostic(
+            SinglePageRenderableArea renderableArea,
+            int contentLineCount,
+            int overflowLineCount,
+            Map<String, Integer> blockLineCounts,
+            Map<String, Integer> itemLineCounts,
+            BigDecimal exactLineHeightPt
+    ) {
+        try {
+            return new SinglePageLayoutFailureDiagnostic(
+                    renderableArea,
+                    contentLineCount,
+                    overflowLineCount,
+                    blockLineCounts,
+                    itemLineCounts,
+                    exactLineHeightPt
+            );
+        } catch (IllegalArgumentException exception) {
+            throw new IllegalArgumentException(toCoverMessage(exception.getMessage()), exception);
+        }
+    }
+
+    private static String toCoverMessage(String message) {
+        if ("groupLineCounts must sum to contentLineCount.".equals(message)) {
+            return "blockLineCounts must sum to contentLineCount.";
+        }
+
+        return message;
     }
 }

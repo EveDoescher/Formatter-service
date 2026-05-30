@@ -13,6 +13,16 @@ import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverStyleMapping;
+import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutAssembler;
+import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutCalculator;
+import com.abntbuilder.formatter.rendering.component.cover.layout.CoverProfileContentValidator;
+import com.abntbuilder.formatter.rendering.layout.singlepage.MarginBasedSinglePageSafetyPolicy;
+import com.abntbuilder.formatter.rendering.layout.singlepage.OrderedLayoutGapResolver;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageGapDistributor;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutEngine;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutLineMetrics;
+import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutRenderer;
+import com.abntbuilder.formatter.rendering.layout.text.FontMetricsTextMeasurer;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -23,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CoverRendererTest {
 
-    private final CoverRenderer renderer = new CoverRenderer();
+    private final CoverRenderer renderer = coverRenderer();
 
     @Test
     void shouldRenderCoverComponentAsDocxBlocks() {
@@ -55,7 +65,8 @@ class CoverRendererTest {
                 List.of("NOME DO ALUNO"),
                 "TÍTULO DO TRABALHO",
                 Optional.empty(),
-                List.of("Limeira", "2026")
+                "Limeira",
+                "2026"
         );
 
         List<DocxBlock> blocks = renderer.render(cover, validProfile());
@@ -76,7 +87,8 @@ class CoverRendererTest {
                 List.of("NOME DO ALUNO"),
                 "TÍTULO DO TRABALHO",
                 Optional.of("Subtítulo do trabalho"),
-                List.of("Limeira", "2026")
+                "Limeira",
+                "2026"
         );
     }
 
@@ -142,6 +154,24 @@ class CoverRendererTest {
                 bold,
                 false,
                 uppercase
+        );
+    }
+
+    private static CoverRenderer coverRenderer() {
+        return new CoverRenderer(
+                new CoverLayoutCalculator(
+                        new CoverLayoutAssembler(
+                                new FontMetricsTextMeasurer(),
+                                new OrderedLayoutGapResolver(),
+                                new CoverProfileContentValidator()
+                        ),
+                        new SinglePageLayoutEngine(
+                                new SinglePageLayoutLineMetrics(),
+                                new MarginBasedSinglePageSafetyPolicy(),
+                                new SinglePageGapDistributor()
+                        )
+                ),
+                new SinglePageLayoutRenderer()
         );
     }
 }

@@ -1,5 +1,7 @@
 package com.abntbuilder.formatter.profile.model.component.cover;
 
+import com.abntbuilder.formatter.shared.exception.InvalidProfileStructureException;
+
 public record CoverStyleMapping(
         String institutionalLinesStyleId,
         String authorsStyleId,
@@ -55,13 +57,13 @@ public record CoverStyleMapping(
             case "subtitle" -> subtitleStyleId;
             case "city" -> cityStyleId;
             case "year" -> yearStyleId;
-            default -> throw new IllegalArgumentException("Unknown cover style mapping item id: " + itemId);
+            default -> throw new InvalidProfileStructureException("Unknown cover style mapping item id: " + itemId);
         };
     }
 
     private static void requireNonBlank(String value, String fieldName) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException(fieldName + " must not be blank.");
+            throw new InvalidProfileStructureException(fieldName + " must not be blank.");
         }
     }
 

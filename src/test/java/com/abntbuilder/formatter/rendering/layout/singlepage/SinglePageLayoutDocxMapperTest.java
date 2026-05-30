@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SinglePageLayoutDocxMapperTest {
 
-    private final SinglePageLayoutDocxMapper mapper = new SinglePageLayoutDocxMapper();
+    private final SinglePageLayoutDocxMapper mapper = mapper();
 
     @Test
     void shouldMapGroupsUsingSharedSafeLineCapacity() {
@@ -142,5 +142,16 @@ class SinglePageLayoutDocxMapperTest {
 
     private static SinglePageLayoutItem item(String id, String text) {
         return new SinglePageLayoutItem(id, validStyle(), List.of(text));
+    }
+
+    private static SinglePageLayoutDocxMapper mapper() {
+        return new SinglePageLayoutDocxMapper(
+                new SinglePageLayoutEngine(
+                        new SinglePageLayoutLineMetrics(),
+                        new MarginBasedSinglePageSafetyPolicy(),
+                        new SinglePageGapDistributor()
+                ),
+                new SinglePageLayoutRenderer()
+        );
     }
 }

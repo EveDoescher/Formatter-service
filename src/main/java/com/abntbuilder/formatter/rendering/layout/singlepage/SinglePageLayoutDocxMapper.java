@@ -16,50 +16,6 @@ public final class SinglePageLayoutDocxMapper {
     private final SinglePageLayoutEngine layoutEngine;
     private final SinglePageLayoutRenderer layoutRenderer;
 
-    public SinglePageLayoutDocxMapper() {
-        this(new SinglePageLayoutEngine(), new SinglePageLayoutRenderer());
-    }
-
-    public SinglePageLayoutDocxMapper(SinglePageLayoutLineMetrics lineMetrics) {
-        this(
-                new SinglePageLayoutEngine(
-                        lineMetrics,
-                        new MarginBasedSinglePageSafetyPolicy(),
-                        new SinglePageGapDistributor()
-                ),
-                new SinglePageLayoutRenderer()
-        );
-    }
-
-    public SinglePageLayoutDocxMapper(
-            SinglePageLayoutLineMetrics lineMetrics,
-            SinglePageRenderableAreaCalculator renderableAreaCalculator
-    ) {
-        this(
-                new SinglePageLayoutEngine(
-                        lineMetrics,
-                        new MarginBasedSinglePageSafetyPolicy(renderableAreaCalculator),
-                        new SinglePageGapDistributor()
-                ),
-                new SinglePageLayoutRenderer()
-        );
-    }
-
-    public SinglePageLayoutDocxMapper(
-            SinglePageLayoutLineMetrics lineMetrics,
-            SinglePageRenderableAreaCalculator renderableAreaCalculator,
-            SinglePageGapDistributor gapDistributor
-    ) {
-        this(
-                new SinglePageLayoutEngine(
-                        lineMetrics,
-                        new MarginBasedSinglePageSafetyPolicy(renderableAreaCalculator),
-                        gapDistributor
-                ),
-                new SinglePageLayoutRenderer()
-        );
-    }
-
     public SinglePageLayoutDocxMapper(
             SinglePageLayoutEngine layoutEngine,
             SinglePageLayoutRenderer layoutRenderer

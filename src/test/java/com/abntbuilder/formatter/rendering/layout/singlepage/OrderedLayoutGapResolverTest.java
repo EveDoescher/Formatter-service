@@ -1,6 +1,7 @@
 package com.abntbuilder.formatter.rendering.layout.singlepage;
 
 import com.abntbuilder.formatter.profile.model.layout.singlepage.LayoutGapRule;
+import com.abntbuilder.formatter.shared.exception.InvalidProfileStructureException;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -47,8 +48,8 @@ class OrderedLayoutGapResolverTest {
 
     @Test
     void shouldFailWhenPresentGroupIsUnknown() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        InvalidProfileStructureException exception = assertThrows(
+                InvalidProfileStructureException.class,
                 () -> resolver.resolve(
                         List.of("a", "b"),
                         List.of("a", "c"),
@@ -61,8 +62,8 @@ class OrderedLayoutGapResolverTest {
 
     @Test
     void shouldFailWhenPresentGroupsAreOutOfOrder() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        InvalidProfileStructureException exception = assertThrows(
+                InvalidProfileStructureException.class,
                 () -> resolver.resolve(
                         List.of("a", "b", "c"),
                         List.of("a", "c", "b"),
@@ -75,8 +76,8 @@ class OrderedLayoutGapResolverTest {
 
     @Test
     void shouldFailWhenDeclaredAdjacentGapIsMissing() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        InvalidProfileStructureException exception = assertThrows(
+                InvalidProfileStructureException.class,
                 () -> resolver.resolve(
                         List.of("a", "b", "c"),
                         List.of("a", "c"),
@@ -89,8 +90,8 @@ class OrderedLayoutGapResolverTest {
 
     @Test
     void shouldFailWhenGapRuleIsDuplicated() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        InvalidProfileStructureException exception = assertThrows(
+                InvalidProfileStructureException.class,
                 () -> resolver.resolve(
                         List.of("a", "b"),
                         List.of("a", "b"),

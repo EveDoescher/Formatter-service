@@ -25,7 +25,7 @@ public record ExportDocxRequest(
         DocumentContentRequest document,
 
         @Valid
-        CoverRequest cover,
+        LegacyCoverRequest cover,
 
         @Valid
         List<ParagraphRequest> paragraphs
@@ -47,13 +47,7 @@ public record ExportDocxRequest(
     }
 
     private ExportDocxCommand toCommand(DocumentProfile documentProfile) {
-        CoverRequest resolvedCover = document != null && document.cover() != null
-                ? document.cover()
-                : cover;
-
-        Optional<CoverComponent> coverComponent = resolvedCover == null
-                ? Optional.empty()
-                : Optional.of(resolvedCover.toDomain());
+        Optional<CoverComponent> coverComponent = resolveCover();
 
         List<ExportDocxCommand.ParagraphCommand> paragraphCommands = paragraphs == null
                 ? List.of()
@@ -67,6 +61,18 @@ public record ExportDocxRequest(
                 coverComponent,
                 paragraphCommands
         );
+    }
+
+    private Optional<CoverComponent> resolveCover() {
+        if (document != null && document.cover() != null) {
+            return Optional.of(document.cover().toDomain());
+        }
+
+        if (cover != null) {
+            return Optional.of(cover.toDomain());
+        }
+
+        return Optional.empty();
     }
 
     private DocumentProfile resolveProfile(ProfileProvider profileProvider) {
