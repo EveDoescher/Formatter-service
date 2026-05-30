@@ -24,10 +24,6 @@ public record ExportDocxRequest(
         @Valid
         DocumentContentRequest document,
 
-        @Deprecated(since = "cover-semantic-request")
-        @Valid
-        LegacyCoverRequest cover,
-
         @Valid
         List<ParagraphRequest> paragraphs
 ) {
@@ -67,10 +63,6 @@ public record ExportDocxRequest(
     private Optional<CoverComponent> resolveCover() {
         if (document != null && document.cover() != null) {
             return Optional.of(document.cover().toDomain());
-        }
-
-        if (cover != null) {
-            return Optional.of(cover.toDomain());
         }
 
         return Optional.empty();

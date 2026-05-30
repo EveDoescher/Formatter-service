@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/api/v1/exports")
@@ -64,7 +65,7 @@ public class DocxExportController {
         GenerateDocxResponse response = new GenerateDocxResponse(
                 generatedExport.id(),
                 generatedExport.fileName(),
-                "/api/v1/exports/docx/generated/" + generatedExport.id() + "/download",
+                downloadUrl(generatedExport.id()),
                 generatedExport.sizeBytes()
         );
 
@@ -98,5 +99,12 @@ public class DocxExportController {
                 .filename(safeFileName)
                 .build()
                 .toString();
+    }
+
+    private static String downloadUrl(String exportId) {
+        return UriComponentsBuilder
+                .fromPath("/api/v1/exports/docx/generated/{exportId}/download")
+                .buildAndExpand(exportId)
+                .toUriString();
     }
 }

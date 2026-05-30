@@ -131,9 +131,9 @@ perfil. Ela descreve a estrutura do componente de capa atual. O perfil continua
 decidindo como essas linhas aparecem, por exemplo caixa alta, fonte, alinhamento e
 negrito.
 
-Os aliases legados `topLines`, `authorLines` e `bottomLines` existem somente no
-contrato antigo e no `LegacyCoverRequest` da raiz do request. O fluxo de
-referencia deve usar `profileId + document.cover` com os campos semanticos acima.
+Os aliases legados `topLines`, `authorLines` e `bottomLines` nao fazem parte do
+endpoint principal. O fluxo de referencia usa `profileId + document.cover` com
+os campos semanticos acima.
 
 Se uma nova instituicao exigir outro rodape de capa, a solucao correta e evoluir o
 contrato semantico do componente ou criar outro componente de capa, nao esconder
@@ -850,7 +850,7 @@ Garantias atendidas:
 ```text
 Perfil define decisoes visuais.
 Request principal fornece conteudo semantico em document.cover.
-Request legado de raiz fica isolado em LegacyCoverRequest.
+Request legado de raiz removido do contrato principal.
 Codigo calcula area, linhas, gaps e overflow.
 Sucesso gera plano auditavel.
 Falha vertical gera diagnostico parcial.
@@ -859,4 +859,16 @@ Writer nao conhece a semantica da capa.
 Samples oficiais cobrem cenarios de sucesso e falha.
 Testes protegem invariantes, XML DOCX e erros semanticos.
 Nao ha motor concorrente em centimetros na base single-page.
+```
+
+Observacao sobre perfis:
+
+```text
+InMemoryProfileProvider e um provider inicial para manter o perfil oficial
+disponivel em runtime e nos testes atuais.
+Ele nao deve ser tratado como destino final da infraestrutura de perfis.
+Quando o projeto introduzir carregamento externo de perfis, a evolucao esperada
+e mover o conteudo do perfil para recurso versionado, por exemplo
+resources/profiles/abnt-unip-profile.json, preservando o mesmo modelo
+DocumentProfile + groups/gapRules/policy.
 ```
