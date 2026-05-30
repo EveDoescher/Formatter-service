@@ -20,35 +20,6 @@ public record CoverStyleMapping(
         requireNonBlank(yearStyleId, "yearStyleId");
     }
 
-    public CoverStyleMapping(
-            String topLinesStyleId,
-            String authorLinesStyleId,
-            String titleStyleId,
-            String subtitleStyleId,
-            String bottomLinesStyleId
-    ) {
-        this(
-                requireLegacyNonBlank(topLinesStyleId, "topLinesStyleId"),
-                requireLegacyNonBlank(authorLinesStyleId, "authorLinesStyleId"),
-                requireLegacyNonBlank(titleStyleId, "titleStyleId"),
-                requireLegacyNonBlank(subtitleStyleId, "subtitleStyleId"),
-                requireLegacyNonBlank(bottomLinesStyleId, "bottomLinesStyleId"),
-                requireLegacyNonBlank(bottomLinesStyleId, "bottomLinesStyleId")
-        );
-    }
-
-    public String topLinesStyleId() {
-        return institutionalLinesStyleId;
-    }
-
-    public String authorLinesStyleId() {
-        return authorsStyleId;
-    }
-
-    public String bottomLinesStyleId() {
-        return cityStyleId;
-    }
-
     public String styleIdForItem(String itemId) {
         return switch (itemId) {
             case "institutionalLines" -> institutionalLinesStyleId;
@@ -65,10 +36,5 @@ public record CoverStyleMapping(
         if (value == null || value.isBlank()) {
             throw new InvalidProfileStructureException(fieldName + " must not be blank.");
         }
-    }
-
-    private static String requireLegacyNonBlank(String value, String fieldName) {
-        requireNonBlank(value, fieldName);
-        return value;
     }
 }

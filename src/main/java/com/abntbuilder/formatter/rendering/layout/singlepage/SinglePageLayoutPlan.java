@@ -46,5 +46,11 @@ public record SinglePageLayoutPlan(
         if (diagnostic.renderableArea().safeLineCapacity() != pageCapacityLines) {
             throw new IllegalArgumentException("diagnostic safeLineCapacity must match pageCapacityLines.");
         }
+
+        if (diagnostic.contentLineCount() + diagnostic.availableGapLines() != totalLines) {
+            throw new IllegalArgumentException(
+                    "diagnostic contentLineCount plus availableGapLines must match totalLines."
+            );
+        }
     }
 }

@@ -6,26 +6,23 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CoverComponentTest {
 
     @Test
     void shouldCreateValidCoverComponent() {
-        CoverComponent cover = new CoverComponent(
-                List.of("UNIVERSIDADE PAULISTA"),
-                List.of("NOME DO ALUNO"),
-                "Título do Trabalho",
-                Optional.of("Subtítulo do trabalho"),
-                List.of("Limeira", "2026")
-        );
+        CoverComponent cover = validCover();
 
         assertEquals(ComponentType.COVER, cover.type());
-        assertEquals(List.of("UNIVERSIDADE PAULISTA"), cover.topLines());
-        assertEquals(List.of("NOME DO ALUNO"), cover.authorLines());
-        assertEquals("Título do Trabalho", cover.title());
-        assertEquals(Optional.of("Subtítulo do trabalho"), cover.subtitle());
-        assertEquals(List.of("Limeira", "2026"), cover.bottomLines());
+        assertEquals(List.of("UNIVERSIDADE PAULISTA"), cover.institutionalLines());
+        assertEquals(List.of("NOME DO ALUNO"), cover.authors());
+        assertEquals("Titulo do Trabalho", cover.title());
+        assertEquals(Optional.of("Subtitulo do trabalho"), cover.subtitle());
+        assertEquals("Limeira", cover.city());
+        assertEquals("2026", cover.year());
     }
 
     @Test
@@ -33,62 +30,67 @@ class CoverComponentTest {
         CoverComponent cover = new CoverComponent(
                 List.of("UNIVERSIDADE PAULISTA"),
                 List.of("NOME DO ALUNO"),
-                "Título do Trabalho",
+                "Titulo do Trabalho",
                 Optional.empty(),
-                List.of("Limeira", "2026")
+                "Limeira",
+                "2026"
         );
 
         assertTrue(cover.subtitle().isEmpty());
     }
 
     @Test
-    void shouldAllowEmptyTopLines() {
+    void shouldAllowEmptyInstitutionalLines() {
         CoverComponent cover = new CoverComponent(
                 List.of(),
                 List.of("NOME DO ALUNO"),
-                "Título do Trabalho",
+                "Titulo do Trabalho",
                 Optional.empty(),
-                List.of("Limeira", "2026")
+                "Limeira",
+                "2026"
         );
 
-        assertTrue(cover.topLines().isEmpty());
+        assertTrue(cover.institutionalLines().isEmpty());
     }
 
     @Test
-    void shouldRejectNullTopLines() {
+    void shouldRejectNullInstitutionalLines() {
         assertThrows(NullPointerException.class, () -> new CoverComponent(
                 null,
                 List.of("NOME DO ALUNO"),
-                "Título do Trabalho",
+                "Titulo do Trabalho",
                 Optional.empty(),
-                List.of("Limeira", "2026")
+                "Limeira",
+                "2026"
         ));
     }
 
     @Test
-    void shouldRejectBlankTopLineItem() {
+    void shouldRejectBlankInstitutionalLineItem() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new CoverComponent(
                 List.of(" "),
                 List.of("NOME DO ALUNO"),
-                "Título do Trabalho",
+                "Titulo do Trabalho",
                 Optional.empty(),
-                List.of("Limeira", "2026")
+                "Limeira",
+                "2026"
         ));
 
-        assertEquals("topLines item must not be blank.", exception.getMessage());
+        assertEquals("institutionalLines item must not be blank.", exception.getMessage());
     }
 
     @Test
-    void shouldRejectBlankAuthorLineItem() {
+    void shouldRejectBlankAuthorItem() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new CoverComponent(
                 List.of("UNIVERSIDADE PAULISTA"),
                 List.of(" "),
-                "Título do Trabalho",
+                "Titulo do Trabalho",
                 Optional.empty(),
-                List.of("Limeira", "2026")
+                "Limeira",
+                "2026"
         ));
 
-        assertEquals("authorLines item must not be blank.", exception.getMessage());
+        assertEquals("authors item must not be blank.", exception.getMessage());
     }
 
     @Test
@@ -98,7 +100,8 @@ class CoverComponentTest {
                 List.of("NOME DO ALUNO"),
                 " ",
                 Optional.empty(),
-                List.of("Limeira", "2026")
+                "Limeira",
+                "2026"
         ));
 
         assertEquals("title must not be blank.", exception.getMessage());
@@ -109,9 +112,10 @@ class CoverComponentTest {
         assertThrows(NullPointerException.class, () -> new CoverComponent(
                 List.of("UNIVERSIDADE PAULISTA"),
                 List.of("NOME DO ALUNO"),
-                "Título do Trabalho",
+                "Titulo do Trabalho",
                 null,
-                List.of("Limeira", "2026")
+                "Limeira",
+                "2026"
         ));
     }
 
@@ -120,39 +124,59 @@ class CoverComponentTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new CoverComponent(
                 List.of("UNIVERSIDADE PAULISTA"),
                 List.of("NOME DO ALUNO"),
-                "Título do Trabalho",
+                "Titulo do Trabalho",
                 Optional.of(" "),
-                List.of("Limeira", "2026")
+                "Limeira",
+                "2026"
         ));
 
         assertEquals("subtitle must not be blank.", exception.getMessage());
     }
 
     @Test
-    void shouldRejectBlankBottomLineItem() {
+    void shouldRejectBlankCity() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new CoverComponent(
                 List.of("UNIVERSIDADE PAULISTA"),
                 List.of("NOME DO ALUNO"),
-                "Título do Trabalho",
+                "Titulo do Trabalho",
                 Optional.empty(),
-                List.of("Limeira", " ")
+                " ",
+                "2026"
         ));
 
-        assertEquals("bottomLines item must not be blank.", exception.getMessage());
+        assertEquals("city must not be blank.", exception.getMessage());
+    }
+
+    @Test
+    void shouldRejectBlankYear() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new CoverComponent(
+                List.of("UNIVERSIDADE PAULISTA"),
+                List.of("NOME DO ALUNO"),
+                "Titulo do Trabalho",
+                Optional.empty(),
+                "Limeira",
+                " "
+        ));
+
+        assertEquals("year must not be blank.", exception.getMessage());
     }
 
     @Test
     void shouldMakeLineListsImmutable() {
-        CoverComponent cover = new CoverComponent(
+        CoverComponent cover = validCover();
+
+        assertThrows(UnsupportedOperationException.class, () -> cover.institutionalLines().add("Outra linha"));
+        assertThrows(UnsupportedOperationException.class, () -> cover.authors().add("Outro autor"));
+    }
+
+    private static CoverComponent validCover() {
+        return new CoverComponent(
                 List.of("UNIVERSIDADE PAULISTA"),
                 List.of("NOME DO ALUNO"),
-                "Título do Trabalho",
-                Optional.empty(),
-                List.of("Limeira", "2026")
+                "Titulo do Trabalho",
+                Optional.of("Subtitulo do trabalho"),
+                "Limeira",
+                "2026"
         );
-
-        assertThrows(UnsupportedOperationException.class, () -> cover.topLines().add("Outra linha"));
-        assertThrows(UnsupportedOperationException.class, () -> cover.authorLines().add("Outro autor"));
-        assertThrows(UnsupportedOperationException.class, () -> cover.bottomLines().add("Outra linha"));
     }
 }

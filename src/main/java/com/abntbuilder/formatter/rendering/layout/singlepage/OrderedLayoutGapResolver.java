@@ -37,7 +37,11 @@ public final class OrderedLayoutGapResolver {
 
         Map<String, Integer> declaredIndexes = validateDeclaredGroupOrder(declaredGroupOrder);
         validatePresentGroupOrder(presentGroupOrder, declaredIndexes);
-        Map<String, LayoutGapRule> gapRulesById = validateGapRules(declaredGroupOrder, declaredGapRules);
+        Map<String, LayoutGapRule> gapRulesById = validateGapRules(
+                declaredGroupOrder,
+                declaredIndexes,
+                declaredGapRules
+        );
 
         List<ResolvedLayoutGap> resolvedGaps = new ArrayList<>();
 
@@ -120,6 +124,7 @@ public final class OrderedLayoutGapResolver {
 
     private static Map<String, LayoutGapRule> validateGapRules(
             List<String> declaredGroupOrder,
+            Map<String, Integer> declaredIndexes,
             List<LayoutGapRule> declaredGapRules
     ) {
         Set<String> declaredGroupIds = new HashSet<>(declaredGroupOrder);
@@ -137,6 +142,15 @@ public final class OrderedLayoutGapResolver {
             if (!declaredGroupIds.contains(gapRule.toGroupId())) {
                 throw new InvalidProfileStructureException(
                         "Gap rule has unknown toGroupId: " + gapRule.toGroupId()
+                );
+            }
+
+            int fromIndex = declaredIndexes.get(gapRule.fromGroupId());
+            int toIndex = declaredIndexes.get(gapRule.toGroupId());
+
+            if (toIndex - fromIndex != 1) {
+                throw new InvalidProfileStructureException(
+                        "Gap rule must connect adjacent declared groups: " + gapRule.id()
                 );
             }
 

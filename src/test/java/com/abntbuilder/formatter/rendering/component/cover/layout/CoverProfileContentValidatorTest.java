@@ -131,6 +131,7 @@ class CoverProfileContentValidatorTest {
                 "cover.author",
                 "cover.title",
                 "cover.subtitle",
+                "cover.bottom",
                 "cover.bottom"
         );
     }

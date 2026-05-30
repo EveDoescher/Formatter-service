@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LegacyCoverRequestTest {
@@ -28,5 +29,20 @@ class LegacyCoverRequestTest {
         assertEquals("Limeira", cover.city());
         assertEquals("2026", cover.year());
         assertTrue(cover.subtitle().isEmpty());
+    }
+
+    @Test
+    void shouldRejectLegacyBottomLinesWithoutCityAndYear() {
+        LegacyCoverRequest request = new LegacyCoverRequest(
+                List.of("Universidade"),
+                List.of("Autor"),
+                "Titulo",
+                null,
+                List.of("Limeira")
+        );
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, request::toDomain);
+
+        assertEquals("bottomLines must contain exactly city and year.", exception.getMessage());
     }
 }

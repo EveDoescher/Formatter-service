@@ -24,6 +24,7 @@ public record ExportDocxRequest(
         @Valid
         DocumentContentRequest document,
 
+        @Deprecated(since = "cover-semantic-request")
         @Valid
         LegacyCoverRequest cover,
 

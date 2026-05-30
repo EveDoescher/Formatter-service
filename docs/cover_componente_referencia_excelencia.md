@@ -650,7 +650,7 @@ SinglePageGapDistributor criado e usado pelo cover.
 SinglePageLayoutLineMetrics criado e usado pelo cover para altura exata de linha.
 SinglePageLayoutEngine concentra calculo, overflow e diagnostico.
 SinglePageLayoutRenderer transforma plano generico em blocos DOCX.
-SinglePageLayoutDocxMapper permanece apenas como adaptador legado.
+SinglePageLayoutDocxMapper removido do caminho de referencia.
 Motor legado baseado em centimetros removido da base single-page.
 Pesos de gaps do cover definidos por tabela de transicoes sem fallback visual
 arbitrario.
@@ -659,9 +659,9 @@ arbitrario.
 Decisao final sobre `SinglePageLayoutDocxMapper`:
 
 ```text
-Ele nao e mais o caminho de referencia para novos componentes.
-Ele permanece como adaptador de compatibilidade sobre SinglePageLayoutEngine e
-SinglePageLayoutRenderer.
+Ele nao existe mais como dependencia do componente de referencia.
+Novos componentes devem montar entrada generica, calcular com SinglePageLayoutEngine
+e renderizar com SinglePageLayoutRenderer.
 ```
 
 O cover delega o calculo ao `SinglePageLayoutEngine`, mas mantem sua camada
@@ -741,7 +741,7 @@ CoverSampleValidationTest envia os JSONs oficiais pela API publica de exportacao
 OrderedLayoutGapResolverTest valida gaps diretos, gaps somados e falhas de ordem.
 SinglePageLayoutEngineTest valida diagnostico, overflow, politicas e invariantes.
 SinglePageLayoutRendererTest valida a renderizacao generica para DocxBlock.
-SinglePageLayoutDocxMapperTest valida o adaptador legado sobre a base compartilhada.
+SinglePageLayoutPlanTest valida invariantes do plano final.
 CoverProfileContentValidatorTest valida compatibilidade profile x content.
 ```
 

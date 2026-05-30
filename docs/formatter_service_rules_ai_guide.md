@@ -875,7 +875,8 @@ Prefer:
 - `CoverRenderer`;
 - `SinglePageRenderableAreaCalculator`;
 - `SinglePageGapDistributor`;
-- `SinglePageLayoutDocxMapper`.
+- `SinglePageLayoutEngine`;
+- `SinglePageLayoutRenderer`.
 
 Avoid making core names ABNT-specific unless the class truly represents an ABNT-specific profile or rule.
 

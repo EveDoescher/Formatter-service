@@ -390,8 +390,7 @@ O antigo motor baseado em medidas fisicas em centimetros foi removido da base de
 referencia. Novos componentes de pagina unica devem usar apenas o fluxo por linhas
 renderizaveis.
 
-`SinglePageLayoutDocxMapper` deve ser tratado apenas como adaptador legado sobre
-`SinglePageLayoutEngine` e `SinglePageLayoutRenderer`. Novos componentes de
-pagina unica devem montar entrada generica, calcular com o engine e renderizar o
-plano com o renderer compartilhado, preservando validacoes semanticas na camada
-do proprio componente.
+`SinglePageLayoutDocxMapper` foi removido do caminho de referencia. Novos
+componentes de pagina unica devem montar entrada generica, calcular com
+`SinglePageLayoutEngine` e renderizar o plano com `SinglePageLayoutRenderer`,
+preservando validacoes semanticas na camada do proprio componente.

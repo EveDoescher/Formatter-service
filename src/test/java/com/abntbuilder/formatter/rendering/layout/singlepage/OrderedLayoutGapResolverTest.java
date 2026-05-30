@@ -102,6 +102,20 @@ class OrderedLayoutGapResolverTest {
         assertEquals("Duplicate gap rule: a->b", exception.getMessage());
     }
 
+    @Test
+    void shouldFailWhenGapRuleDoesNotConnectAdjacentDeclaredGroups() {
+        InvalidProfileStructureException exception = assertThrows(
+                InvalidProfileStructureException.class,
+                () -> resolver.resolve(
+                        List.of("a", "b", "c"),
+                        List.of("a", "c"),
+                        List.of(gap("a", "c", 1), gap("a", "b", 1), gap("b", "c", 1))
+                )
+        );
+
+        assertEquals("Gap rule must connect adjacent declared groups: a->c", exception.getMessage());
+    }
+
     private static LayoutGapRule gap(String from, String to, int weight) {
         return new LayoutGapRule(from, to, BigDecimal.valueOf(weight));
     }

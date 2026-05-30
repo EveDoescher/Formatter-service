@@ -416,33 +416,106 @@ class DocxExportControllerIntegrationTest {
                       "cover": {
                         "componentId": "cover",
                         "styleMapping": {
-                          "topLinesStyleId": "cover.top",
-                          "authorLinesStyleId": "cover.author",
+                          "institutionalLinesStyleId": "cover.top",
+                          "authorsStyleId": "cover.author",
                           "titleStyleId": "cover.title",
                           "subtitleStyleId": "cover.subtitle",
-                          "bottomLinesStyleId": "cover.bottom"
+                          "cityStyleId": "cover.bottom",
+                          "yearStyleId": "cover.bottom"
                         },
                         "layoutRule": {
-                           "topToAuthorWeight": 30,
-                           "authorToTitleWeight": 10,
-                           "titleToBottomWeight": 60
+                          "groups": [
+                            {
+                              "id": "cover.institution",
+                              "required": true,
+                              "items": [
+                                {
+                                  "id": "institutionalLines",
+                                  "required": true
+                                }
+                              ]
+                            },
+                            {
+                              "id": "cover.authors",
+                              "required": false,
+                              "items": [
+                                {
+                                  "id": "authors",
+                                  "required": false
+                                }
+                              ]
+                            },
+                            {
+                              "id": "cover.titleBlock",
+                              "required": true,
+                              "items": [
+                                {
+                                  "id": "title",
+                                  "required": true
+                                },
+                                {
+                                  "id": "subtitle",
+                                  "required": false
+                                }
+                              ]
+                            },
+                            {
+                              "id": "cover.bottom",
+                              "required": true,
+                              "items": [
+                                {
+                                  "id": "city",
+                                  "required": true,
+                                  "maxVisualLinesPerValue": 1
+                                },
+                                {
+                                  "id": "year",
+                                  "required": true,
+                                  "maxVisualLinesPerValue": 1
+                                }
+                              ]
+                            }
+                          ],
+                          "gapRules": [
+                            {
+                              "fromGroupId": "cover.institution",
+                              "toGroupId": "cover.authors",
+                              "weight": 30
+                            },
+                            {
+                              "fromGroupId": "cover.authors",
+                              "toGroupId": "cover.titleBlock",
+                              "weight": 10
+                            },
+                            {
+                              "fromGroupId": "cover.titleBlock",
+                              "toGroupId": "cover.bottom",
+                              "weight": 60
+                            }
+                          ],
+                          "policy": {
+                            "anchorStrategy": "LAST_GROUP_AT_SAFE_AREA_END",
+                            "lineHeightStrategy": "MAX_EXACT_LINE_HEIGHT",
+                            "spacerStylePolicy": "NEXT_GROUP_STYLE",
+                            "safetyPolicy": "MARGIN_BASED"
+                          }
                          }
                       }
                     }
                   },
-                  "cover": {
-                    "topLines": [
-                      "UNIVERSIDADE PAULISTA"
-                    ],
-                    "authorLines": [
-                      "NOME COMPLETO DO ALUNO"
-                    ],
+                  "document": {
+                    "cover": {
+                      "institutionalLines": [
+                        "UNIVERSIDADE PAULISTA"
+                      ],
+                      "authors": [
+                        "NOME COMPLETO DO ALUNO"
+                      ],
                     "title": "TÍTULO DO TRABALHO",
                     "subtitle": "Subtítulo do trabalho",
-                    "bottomLines": [
-                      "Limeira",
-                      "2026"
-                    ]
+                      "city": "Limeira",
+                      "year": "2026"
+                    }
                   },
                   "paragraphs": []
                 }

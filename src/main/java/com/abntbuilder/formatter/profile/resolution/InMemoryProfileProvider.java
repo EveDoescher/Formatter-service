@@ -9,11 +9,16 @@ import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverStyleMapping;
+import com.abntbuilder.formatter.profile.model.layout.singlepage.LayoutGapRule;
+import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageGroupRule;
+import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageItemRule;
+import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageLayoutPolicy;
 import com.abntbuilder.formatter.shared.exception.MissingProfileException;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public final class InMemoryProfileProvider implements ProfileProvider {
 
@@ -65,14 +70,62 @@ public final class InMemoryProfileProvider implements ProfileProvider {
                                 "cover.author",
                                 "cover.title",
                                 "cover.subtitle",
+                                "cover.bottom",
                                 "cover.bottom"
                         ),
-                        new CoverLayoutRule(
-                                BigDecimal.valueOf(30),
-                                BigDecimal.valueOf(10),
+                        defaultCoverLayoutRule()
+                ))
+        );
+    }
+
+    private static CoverLayoutRule defaultCoverLayoutRule() {
+        return new CoverLayoutRule(
+                List.of(
+                        new SinglePageGroupRule(
+                                CoverLayoutRule.INSTITUTION_GROUP_ID,
+                                true,
+                                List.of(new SinglePageItemRule("institutionalLines", true, Optional.empty()))
+                        ),
+                        new SinglePageGroupRule(
+                                CoverLayoutRule.AUTHORS_GROUP_ID,
+                                false,
+                                List.of(new SinglePageItemRule("authors", false, Optional.empty()))
+                        ),
+                        new SinglePageGroupRule(
+                                CoverLayoutRule.TITLE_GROUP_ID,
+                                true,
+                                List.of(
+                                        new SinglePageItemRule("title", true, Optional.empty()),
+                                        new SinglePageItemRule("subtitle", false, Optional.empty())
+                                )
+                        ),
+                        new SinglePageGroupRule(
+                                CoverLayoutRule.BOTTOM_GROUP_ID,
+                                true,
+                                List.of(
+                                        new SinglePageItemRule("city", true, Optional.of(1)),
+                                        new SinglePageItemRule("year", true, Optional.of(1))
+                                )
+                        )
+                ),
+                List.of(
+                        new LayoutGapRule(
+                                CoverLayoutRule.INSTITUTION_GROUP_ID,
+                                CoverLayoutRule.AUTHORS_GROUP_ID,
+                                BigDecimal.valueOf(30)
+                        ),
+                        new LayoutGapRule(
+                                CoverLayoutRule.AUTHORS_GROUP_ID,
+                                CoverLayoutRule.TITLE_GROUP_ID,
+                                BigDecimal.valueOf(10)
+                        ),
+                        new LayoutGapRule(
+                                CoverLayoutRule.TITLE_GROUP_ID,
+                                CoverLayoutRule.BOTTOM_GROUP_ID,
                                 BigDecimal.valueOf(60)
                         )
-                ))
+                ),
+                SinglePageLayoutPolicy.defaultSinglePagePolicy()
         );
     }
 

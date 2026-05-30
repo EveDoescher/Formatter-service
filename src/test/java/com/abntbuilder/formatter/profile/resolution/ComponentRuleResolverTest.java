@@ -10,12 +10,17 @@ import com.abntbuilder.formatter.profile.model.component.ComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverStyleMapping;
+import com.abntbuilder.formatter.profile.model.layout.singlepage.LayoutGapRule;
+import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageGroupRule;
+import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageItemRule;
+import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageLayoutPolicy;
 import com.abntbuilder.formatter.shared.exception.ComponentRuleTypeMismatchException;
 import com.abntbuilder.formatter.shared.exception.MissingComponentRuleException;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,9 +44,18 @@ class ComponentRuleResolverTest {
         assertEquals("cover", rule.componentId());
         assertEquals("cover.title", rule.styleMapping().titleStyleId());
 
-        assertEquals(0, BigDecimal.valueOf(30).compareTo(rule.layoutRule().topToAuthorWeight()));
-        assertEquals(0, BigDecimal.valueOf(10).compareTo(rule.layoutRule().authorToTitleWeight()));
-        assertEquals(0, BigDecimal.valueOf(60).compareTo(rule.layoutRule().titleToBottomWeight()));
+        assertEquals(
+                List.of(
+                        CoverLayoutRule.INSTITUTION_GROUP_ID,
+                        CoverLayoutRule.AUTHORS_GROUP_ID,
+                        CoverLayoutRule.TITLE_GROUP_ID,
+                        CoverLayoutRule.BOTTOM_GROUP_ID
+                ),
+                rule.layoutRule().declaredGroupOrder()
+        );
+        assertEquals(0, BigDecimal.valueOf(30).compareTo(rule.layoutRule().gapRules().get(0).weight()));
+        assertEquals(0, BigDecimal.valueOf(10).compareTo(rule.layoutRule().gapRules().get(1).weight()));
+        assertEquals(0, BigDecimal.valueOf(60).compareTo(rule.layoutRule().gapRules().get(2).weight()));
     }
 
     @Test
@@ -144,13 +158,49 @@ class ComponentRuleResolverTest {
                         "cover.author",
                         "cover.title",
                         "cover.subtitle",
+                        "cover.bottom",
                         "cover.bottom"
                 ),
-                new CoverLayoutRule(
-                        BigDecimal.valueOf(30),
-                        BigDecimal.valueOf(10),
-                        BigDecimal.valueOf(60)
-                )
+                validCoverLayoutRule()
+        );
+    }
+
+    private static CoverLayoutRule validCoverLayoutRule() {
+        return new CoverLayoutRule(
+                List.of(
+                        new SinglePageGroupRule(
+                                CoverLayoutRule.INSTITUTION_GROUP_ID,
+                                true,
+                                List.of(new SinglePageItemRule("institutionalLines", true, Optional.empty()))
+                        ),
+                        new SinglePageGroupRule(
+                                CoverLayoutRule.AUTHORS_GROUP_ID,
+                                false,
+                                List.of(new SinglePageItemRule("authors", false, Optional.empty()))
+                        ),
+                        new SinglePageGroupRule(
+                                CoverLayoutRule.TITLE_GROUP_ID,
+                                true,
+                                List.of(
+                                        new SinglePageItemRule("title", true, Optional.empty()),
+                                        new SinglePageItemRule("subtitle", false, Optional.empty())
+                                )
+                        ),
+                        new SinglePageGroupRule(
+                                CoverLayoutRule.BOTTOM_GROUP_ID,
+                                true,
+                                List.of(
+                                        new SinglePageItemRule("city", true, Optional.of(1)),
+                                        new SinglePageItemRule("year", true, Optional.of(1))
+                                )
+                        )
+                ),
+                List.of(
+                        new LayoutGapRule(CoverLayoutRule.INSTITUTION_GROUP_ID, CoverLayoutRule.AUTHORS_GROUP_ID, BigDecimal.valueOf(30)),
+                        new LayoutGapRule(CoverLayoutRule.AUTHORS_GROUP_ID, CoverLayoutRule.TITLE_GROUP_ID, BigDecimal.valueOf(10)),
+                        new LayoutGapRule(CoverLayoutRule.TITLE_GROUP_ID, CoverLayoutRule.BOTTOM_GROUP_ID, BigDecimal.valueOf(60))
+                ),
+                SinglePageLayoutPolicy.defaultSinglePagePolicy()
         );
     }
 

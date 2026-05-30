@@ -4,34 +4,25 @@ import com.abntbuilder.formatter.profile.model.component.cover.CoverStyleMapping
 import jakarta.validation.constraints.NotBlank;
 
 public record CoverStyleMappingRequest(
+        @NotBlank
         String institutionalLinesStyleId,
+        @NotBlank
         String authorsStyleId,
         @NotBlank String titleStyleId,
         @NotBlank String subtitleStyleId,
+        @NotBlank
         String cityStyleId,
-        String yearStyleId,
-        String topLinesStyleId,
-        String authorLinesStyleId,
-        String bottomLinesStyleId
+        @NotBlank
+        String yearStyleId
 ) {
     public CoverStyleMapping toDomain() {
-        if (institutionalLinesStyleId != null || authorsStyleId != null || cityStyleId != null || yearStyleId != null) {
-            return new CoverStyleMapping(
-                    institutionalLinesStyleId,
-                    authorsStyleId,
-                    titleStyleId,
-                    subtitleStyleId,
-                    cityStyleId,
-                    yearStyleId
-            );
-        }
-
         return new CoverStyleMapping(
-                topLinesStyleId,
-                authorLinesStyleId,
+                institutionalLinesStyleId,
+                authorsStyleId,
                 titleStyleId,
                 subtitleStyleId,
-                bottomLinesStyleId
+                cityStyleId,
+                yearStyleId
         );
     }
 }

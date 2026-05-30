@@ -179,11 +179,10 @@ public final class SinglePageLayoutEngine {
     }
 
     private static StyleRule resolveSpacerStyle(SinglePageLayoutInput input, int currentGroupIndex) {
-        if (input.policy().spacerStylePolicy() == SpacerStylePolicy.PREVIOUS_GROUP_STYLE) {
-            return input.groups().get(currentGroupIndex - 1).firstItem().styleRule();
-        }
-
-        return input.groups().get(currentGroupIndex).firstItem().styleRule();
+        return switch (input.policy().spacerStylePolicy()) {
+            case PREVIOUS_GROUP_STYLE -> input.groups().get(currentGroupIndex - 1).firstItem().styleRule();
+            case NEXT_GROUP_STYLE -> input.groups().get(currentGroupIndex).firstItem().styleRule();
+        };
     }
 
     private static Map<String, Integer> createGroupLineCounts(List<SinglePageLayoutGroup> groups) {
