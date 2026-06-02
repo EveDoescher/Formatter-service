@@ -51,11 +51,15 @@ class SinglePageLayoutRendererTest {
         assertTrue(blocks.stream()
                 .filter(DocxParagraph.class::isInstance)
                 .map(DocxParagraph.class::cast)
-                .allMatch(paragraph -> paragraph.exactLineHeightPt().orElseThrow().equals(exactLineHeightPt)));
+                .allMatch(paragraph -> paragraph.exactLineHeightPt()
+                        .orElseThrow()
+                        .compareTo(exactLineHeightPt) == 0));
         assertTrue(blocks.stream()
                 .filter(DocxBlankLine.class::isInstance)
                 .map(DocxBlankLine.class::cast)
-                .allMatch(blankLine -> blankLine.exactLineHeightPt().orElseThrow().equals(exactLineHeightPt)));
+                .allMatch(blankLine -> blankLine.exactLineHeightPt()
+                        .orElseThrow()
+                        .compareTo(exactLineHeightPt) == 0));
     }
 
     private static StyleRule style() {

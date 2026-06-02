@@ -10,15 +10,25 @@ public record DocxParagraph(
         String text,
         StyleRule styleRule,
         Optional<BigDecimal> spacingBeforeOverridePt,
-        Optional<BigDecimal> exactLineHeightPt
+        Optional<BigDecimal> exactLineHeightPt,
+        Optional<ParagraphLayoutOverride> layoutOverride
 ) implements DocxBlock {
 
     public DocxParagraph(String text, StyleRule styleRule) {
-        this(text, styleRule, Optional.empty(), Optional.empty());
+        this(text, styleRule, Optional.empty(), Optional.empty(), Optional.empty());
     }
 
     public DocxParagraph(String text, StyleRule styleRule, Optional<BigDecimal> spacingBeforeOverridePt) {
-        this(text, styleRule, spacingBeforeOverridePt, Optional.empty());
+        this(text, styleRule, spacingBeforeOverridePt, Optional.empty(), Optional.empty());
+    }
+
+    public DocxParagraph(
+            String text,
+            StyleRule styleRule,
+            Optional<BigDecimal> spacingBeforeOverridePt,
+            Optional<BigDecimal> exactLineHeightPt
+    ) {
+        this(text, styleRule, spacingBeforeOverridePt, exactLineHeightPt, Optional.empty());
     }
 
     public DocxParagraph {
@@ -29,6 +39,7 @@ public record DocxParagraph(
         Objects.requireNonNull(styleRule, "styleRule must not be null");
         Objects.requireNonNull(spacingBeforeOverridePt, "spacingBeforeOverridePt must not be null");
         Objects.requireNonNull(exactLineHeightPt, "exactLineHeightPt must not be null");
+        Objects.requireNonNull(layoutOverride, "layoutOverride must not be null");
 
         spacingBeforeOverridePt.ifPresent(value -> {
             if (value.compareTo(BigDecimal.ZERO) < 0) {

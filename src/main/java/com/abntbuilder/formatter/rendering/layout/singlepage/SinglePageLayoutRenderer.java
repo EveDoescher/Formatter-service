@@ -18,8 +18,8 @@ public final class SinglePageLayoutRenderer {
 
         for (SinglePageLayoutElement element : plan.elements()) {
             switch (element) {
-                case SinglePageTextLines textLines -> addTextLines(blocks, textLines, plan);
-                case SinglePageSpacerLines spacerLines -> addSpacerLines(blocks, spacerLines, plan);
+                case SinglePageTextLines textLines -> addTextLines(blocks, textLines);
+                case SinglePageSpacerLines spacerLines -> addSpacerLines(blocks, spacerLines);
             }
         }
 
@@ -28,28 +28,27 @@ public final class SinglePageLayoutRenderer {
 
     private static void addTextLines(
             List<DocxBlock> blocks,
-            SinglePageTextLines textLines,
-            SinglePageLayoutPlan plan
+            SinglePageTextLines textLines
     ) {
         for (String line : textLines.lines()) {
             blocks.add(new DocxParagraph(
                     line,
                     textLines.styleRule(),
                     Optional.empty(),
-                    Optional.of(plan.exactLineHeightPt())
+                    Optional.of(textLines.exactLineHeightPt()),
+                    Optional.of(textLines.layoutOverride())
             ));
         }
     }
 
     private static void addSpacerLines(
             List<DocxBlock> blocks,
-            SinglePageSpacerLines spacerLines,
-            SinglePageLayoutPlan plan
+            SinglePageSpacerLines spacerLines
     ) {
         for (int index = 0; index < spacerLines.lineCount(); index++) {
             blocks.add(new DocxBlankLine(
                     spacerLines.styleRule(),
-                    Optional.of(plan.exactLineHeightPt())
+                    Optional.of(spacerLines.exactLineHeightPt())
             ));
         }
     }

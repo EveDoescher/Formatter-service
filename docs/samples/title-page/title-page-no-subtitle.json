@@ -1,0 +1,29 @@
+{
+  "fileName": "title-page-no-subtitle.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "titlePage"
+    ]
+  },
+  "document": {
+    "titlePage": {
+      "authors": [
+        "Nome Completo do Aluno"
+      ],
+      "title": "Titulo do Trabalho Sem Subtitulo",
+      "subtitle": null,
+      "nature": {
+        "workType": "Trabalho academico",
+        "degreeObjective": "avaliacao parcial da disciplina",
+        "courseName": "Psicologia",
+        "institutionName": "Universidade Paulista - UNIP"
+      },
+      "advisor": null,
+      "coadvisor": null,
+      "city": "Limeira",
+      "year": "2026"
+    }
+  },
+  "paragraphs": []
+}

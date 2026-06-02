@@ -51,6 +51,21 @@ class SinglePageLayoutRuleModelTest {
     }
 
     @Test
+    void shouldUseFullContentWidthAsDefaultHorizontalPlacement() {
+        SinglePageItemRule item = new SinglePageItemRule("nature", true, Optional.empty());
+
+        assertEquals(HorizontalPlacementStrategy.FULL_CONTENT_WIDTH, item.horizontalPlacement().strategy());
+    }
+
+    @Test
+    void shouldRejectNullHorizontalPlacement() {
+        assertThrows(
+                NullPointerException.class,
+                () -> new SinglePageItemRule("nature", true, Optional.empty(), null)
+        );
+    }
+
+    @Test
     void shouldRejectInvalidGroupRule() {
         SinglePageItemRule item = new SinglePageItemRule("title", true, Optional.empty());
 

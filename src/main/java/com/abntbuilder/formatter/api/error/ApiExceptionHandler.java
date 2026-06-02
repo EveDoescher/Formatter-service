@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.abntbuilder.formatter.shared.exception.ComponentRuleTypeMismatchException;
+import com.abntbuilder.formatter.shared.exception.MissingComponentRendererException;
 import com.abntbuilder.formatter.shared.exception.MissingComponentRuleException;
 import com.abntbuilder.formatter.shared.exception.MissingGeneratedDocxExportException;
 import com.abntbuilder.formatter.shared.exception.MissingProfileException;
@@ -44,6 +45,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler({
             IllegalArgumentException.class,
             MissingStyleRuleException.class,
+            MissingComponentRendererException.class,
             MissingComponentRuleException.class,
             ComponentRuleTypeMismatchException.class,
             SinglePageLayoutOverflowException.class,

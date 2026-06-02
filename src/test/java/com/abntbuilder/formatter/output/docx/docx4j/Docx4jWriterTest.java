@@ -2,11 +2,13 @@ package com.abntbuilder.formatter.output.docx.docx4j;
 
 import com.abntbuilder.formatter.output.docx.api.DocxDocument;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
+import com.abntbuilder.formatter.output.docx.api.ParagraphLayoutOverride;
 import com.abntbuilder.formatter.profile.model.PageOrientation;
 import com.abntbuilder.formatter.profile.model.PageRule;
 import com.abntbuilder.formatter.profile.model.StyleRule;
 import com.abntbuilder.formatter.profile.model.StyleType;
 import com.abntbuilder.formatter.profile.model.TextAlignment;
+import com.abntbuilder.formatter.shared.measurement.MeasurementConverter;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -69,6 +72,34 @@ class Docx4jWriterTest {
         String documentXml = readZipEntry(bytes, "word/document.xml");
 
         assertTrue(documentXml.contains("TITLE EXAMPLE"));
+    }
+
+    @Test
+    void shouldApplyParagraphLayoutOverrideWhenWritingParagraph() throws IOException {
+        BigDecimal leftIndentCm = BigDecimal.valueOf(8);
+        DocxDocument document = new DocxDocument(
+                validPageRule(),
+                List.of(new DocxParagraph(
+                        "Nature block",
+                        validStyleRule(),
+                        Optional.empty(),
+                        Optional.empty(),
+                        Optional.of(new ParagraphLayoutOverride(
+                                Optional.of(leftIndentCm),
+                                Optional.of(BigDecimal.ZERO),
+                                Optional.of(TextAlignment.LEFT)
+                        ))
+                ))
+        );
+
+        byte[] bytes = new Docx4jWriter().write(document);
+
+        String documentXml = readZipEntry(bytes, "word/document.xml");
+
+        assertTrue(documentXml.contains("w:left=\""
+                + MeasurementConverter.centimetersToTwips(leftIndentCm)
+                + "\""));
+        assertTrue(documentXml.contains("w:val=\"left\""));
     }
 
     private static boolean zipContains(byte[] zipBytes, String entryName) throws IOException {

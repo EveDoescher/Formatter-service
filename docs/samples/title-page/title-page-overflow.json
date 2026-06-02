@@ -1,0 +1,64 @@
+{
+  "fileName": "title-page-overflow.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "titlePage"
+    ]
+  },
+  "document": {
+    "titlePage": {
+      "authors": [
+        "Autor Teste Linha 01",
+        "Autor Teste Linha 02",
+        "Autor Teste Linha 03",
+        "Autor Teste Linha 04",
+        "Autor Teste Linha 05",
+        "Autor Teste Linha 06",
+        "Autor Teste Linha 07",
+        "Autor Teste Linha 08",
+        "Autor Teste Linha 09",
+        "Autor Teste Linha 10",
+        "Autor Teste Linha 11",
+        "Autor Teste Linha 12",
+        "Autor Teste Linha 13",
+        "Autor Teste Linha 14",
+        "Autor Teste Linha 15",
+        "Autor Teste Linha 16",
+        "Autor Teste Linha 17",
+        "Autor Teste Linha 18",
+        "Autor Teste Linha 19",
+        "Autor Teste Linha 20",
+        "Autor Teste Linha 21",
+        "Autor Teste Linha 22",
+        "Autor Teste Linha 23",
+        "Autor Teste Linha 24",
+        "Autor Teste Linha 25",
+        "Autor Teste Linha 26",
+        "Autor Teste Linha 27",
+        "Autor Teste Linha 28",
+        "Autor Teste Linha 29",
+        "Autor Teste Linha 30"
+      ],
+      "title": "Titulo de Teste de Carga Vertical Para Folha de Rosto Academica",
+      "subtitle": "Subtitulo extenso criado para consumir varias linhas antes do bloco de natureza do trabalho",
+      "nature": {
+        "workType": "Trabalho de conclusao de curso desenvolvido como requisito academico institucional com texto propositalmente longo",
+        "degreeObjective": "obtencao do titulo de graduacao e avaliacao final da disciplina integradora com criterios formais adicionais",
+        "courseName": "Analise e Desenvolvimento de Sistemas com Enfase em Arquitetura de Software e Qualidade de Produto",
+        "institutionName": "Universidade Paulista - UNIP"
+      },
+      "advisor": {
+        "academicTitle": "Prof. Dr.",
+        "name": "Jose da Silva"
+      },
+      "coadvisor": {
+        "academicTitle": "Profa. Dra.",
+        "name": "Maria de Souza"
+      },
+      "city": "Limeira",
+      "year": "2026"
+    }
+  },
+  "paragraphs": []
+}

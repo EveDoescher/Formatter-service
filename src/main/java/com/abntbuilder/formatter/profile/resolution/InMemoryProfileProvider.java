@@ -9,10 +9,16 @@ import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverStyleMapping;
+import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageComponentRule;
+import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageStyleMapping;
+import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageTextTemplateRule;
+import com.abntbuilder.formatter.profile.model.layout.singlepage.HorizontalPlacementRule;
+import com.abntbuilder.formatter.profile.model.layout.singlepage.HorizontalPlacementStrategy;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.LayoutGapRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageGroupRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageItemRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageLayoutPolicy;
+import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageLayoutRule;
 import com.abntbuilder.formatter.shared.exception.MissingProfileException;
 
 import java.math.BigDecimal;
@@ -61,20 +67,48 @@ public final class InMemoryProfileProvider implements ProfileProvider {
                         style("cover.author", false, true),
                         style("cover.title", true, true),
                         style("cover.subtitle", false, false),
-                        style("cover.bottom", false, true)
+                        style("cover.bottom", false, true),
+                        style("titlePage.author", false, true),
+                        style("titlePage.title", true, true),
+                        style("titlePage.subtitle", false, false),
+                        style("titlePage.nature", TextAlignment.JUSTIFIED, BigDecimal.ONE, false, false),
+                        style("titlePage.advisor", TextAlignment.LEFT, BigDecimal.ONE, false, false),
+                        style("titlePage.coadvisor", TextAlignment.LEFT, BigDecimal.ONE, false, false),
+                        style("titlePage.bottom", false, false)
                 ),
-                List.of(new CoverComponentRule(
-                        "cover",
-                        new CoverStyleMapping(
-                                "cover.top",
-                                "cover.author",
-                                "cover.title",
-                                "cover.subtitle",
-                                "cover.bottom",
-                                "cover.bottom"
+                List.of(
+                        new CoverComponentRule(
+                                "cover",
+                                new CoverStyleMapping(
+                                        "cover.top",
+                                        "cover.author",
+                                        "cover.title",
+                                        "cover.subtitle",
+                                        "cover.bottom",
+                                        "cover.bottom"
+                                ),
+                                defaultCoverLayoutRule()
                         ),
-                        defaultCoverLayoutRule()
-                ))
+                        new TitlePageComponentRule(
+                                "titlePage",
+                                new TitlePageStyleMapping(
+                                        "titlePage.author",
+                                        "titlePage.title",
+                                        "titlePage.subtitle",
+                                        "titlePage.nature",
+                                        "titlePage.advisor",
+                                        "titlePage.coadvisor",
+                                        "titlePage.bottom",
+                                        "titlePage.bottom"
+                                ),
+                                new TitlePageTextTemplateRule(
+                                        "{workType} para {degreeObjective} em {courseName} apresentado \u00e0 {institutionName}.",
+                                        "Orientador(a): {academicTitle} {name}.",
+                                        "Coorientador(a): {academicTitle} {name}."
+                                ),
+                                defaultTitlePageLayoutRule()
+                        )
+                )
         );
     }
 
@@ -129,14 +163,84 @@ public final class InMemoryProfileProvider implements ProfileProvider {
         );
     }
 
+    private static SinglePageLayoutRule defaultTitlePageLayoutRule() {
+        HorizontalPlacementRule fullWidth = HorizontalPlacementRule.fullContentWidth();
+        HorizontalPlacementRule rightHalf = new HorizontalPlacementRule(
+                HorizontalPlacementStrategy.FROM_PAGE_CENTER_TO_RIGHT_MARGIN
+        );
+
+        return new SinglePageLayoutRule(
+                List.of(
+                        new SinglePageGroupRule(
+                                "titlePage.authors",
+                                true,
+                                List.of(new SinglePageItemRule("authors", true, Optional.empty(), fullWidth))
+                        ),
+                        new SinglePageGroupRule(
+                                "titlePage.titleBlock",
+                                true,
+                                List.of(
+                                        new SinglePageItemRule("title", true, Optional.empty(), fullWidth),
+                                        new SinglePageItemRule("subtitle", false, Optional.empty(), fullWidth)
+                                )
+                        ),
+                        new SinglePageGroupRule(
+                                "titlePage.natureBlock",
+                                true,
+                                List.of(
+                                        new SinglePageItemRule("nature", true, Optional.empty(), rightHalf),
+                                        new SinglePageItemRule("advisor", false, Optional.empty(), rightHalf),
+                                        new SinglePageItemRule("coadvisor", false, Optional.empty(), rightHalf)
+                                )
+                        ),
+                        new SinglePageGroupRule(
+                                "titlePage.bottom",
+                                true,
+                                List.of(
+                                        new SinglePageItemRule("city", true, Optional.of(1), fullWidth),
+                                        new SinglePageItemRule("year", true, Optional.of(1), fullWidth)
+                                )
+                        )
+                ),
+                List.of(
+                        new LayoutGapRule(
+                                "titlePage.authors",
+                                "titlePage.titleBlock",
+                                BigDecimal.valueOf(20)
+                        ),
+                        new LayoutGapRule(
+                                "titlePage.titleBlock",
+                                "titlePage.natureBlock",
+                                BigDecimal.valueOf(35)
+                        ),
+                        new LayoutGapRule(
+                                "titlePage.natureBlock",
+                                "titlePage.bottom",
+                                BigDecimal.valueOf(45)
+                        )
+                ),
+                SinglePageLayoutPolicy.defaultSinglePagePolicy()
+        );
+    }
+
     private static StyleRule style(String id, boolean bold, boolean uppercase) {
+        return style(id, TextAlignment.CENTER, BigDecimal.valueOf(1.5), bold, uppercase);
+    }
+
+    private static StyleRule style(
+            String id,
+            TextAlignment alignment,
+            BigDecimal lineSpacing,
+            boolean bold,
+            boolean uppercase
+    ) {
         return new StyleRule(
                 id,
                 StyleType.PARAGRAPH,
                 "Times New Roman",
                 BigDecimal.valueOf(12),
-                TextAlignment.CENTER,
-                BigDecimal.valueOf(1.5),
+                alignment,
+                lineSpacing,
                 BigDecimal.ZERO,
                 BigDecimal.ZERO,
                 BigDecimal.ZERO,

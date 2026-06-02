@@ -1,20 +1,41 @@
 package com.abntbuilder.formatter.rendering.layout.singlepage;
 
+import com.abntbuilder.formatter.output.docx.api.ParagraphLayoutOverride;
 import com.abntbuilder.formatter.profile.model.StyleRule;
+import com.abntbuilder.formatter.rendering.layout.text.TextMeasurementArea;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public record SinglePageLayoutItem(
         String id,
         StyleRule styleRule,
-        List<String> visualLines
+        List<String> visualLines,
+        Optional<TextMeasurementArea> measurementArea,
+        ParagraphLayoutOverride layoutOverride
 ) {
+
+    public SinglePageLayoutItem(
+            String id,
+            StyleRule styleRule,
+            List<String> visualLines
+    ) {
+        this(
+                id,
+                styleRule,
+                visualLines,
+                Optional.empty(),
+                ParagraphLayoutOverride.none()
+        );
+    }
 
     public SinglePageLayoutItem {
         requireNonBlank(id, "id");
         Objects.requireNonNull(styleRule, "styleRule must not be null");
         Objects.requireNonNull(visualLines, "visualLines must not be null");
+        Objects.requireNonNull(measurementArea, "measurementArea must not be null");
+        Objects.requireNonNull(layoutOverride, "layoutOverride must not be null");
 
         if (visualLines.isEmpty()) {
             throw new IllegalArgumentException("visualLines must not be empty.");

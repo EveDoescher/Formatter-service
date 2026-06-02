@@ -110,7 +110,8 @@ public class Docx4jWriter implements DocxWriter {
         docxParagraph.setPPr(createParagraphProperties(
                 paragraph.styleRule(),
                 paragraph.spacingBeforeOverridePt(),
-                paragraph.exactLineHeightPt()
+                paragraph.exactLineHeightPt(),
+                paragraph.layoutOverride()
         ));
 
         R run = objectFactory.createR();
@@ -128,18 +129,24 @@ public class Docx4jWriter implements DocxWriter {
     private PPr createParagraphProperties(
             StyleRule styleRule,
             Optional<BigDecimal> spacingBeforeOverridePt,
-            Optional<BigDecimal> exactLineHeightPt
+            Optional<BigDecimal> exactLineHeightPt,
+            Optional<ParagraphLayoutOverride> layoutOverride
     ) {
         PPr paragraphProperties = objectFactory.createPPr();
+        ParagraphLayoutOverride resolvedLayoutOverride = layoutOverride.orElseGet(ParagraphLayoutOverride::none);
 
         Jc justification = objectFactory.createJc();
-        justification.setVal(mapTextAlignment(styleRule.alignment()));
+        justification.setVal(mapTextAlignment(resolvedLayoutOverride.alignment().orElse(styleRule.alignment())));
         paragraphProperties.setJc(justification);
 
         PPrBase.Ind indentation = objectFactory.createPPrBaseInd();
         indentation.setFirstLine(BigInteger.valueOf(MeasurementConverter.centimetersToTwips(styleRule.firstLineIndentCm())));
-        indentation.setLeft(BigInteger.valueOf(MeasurementConverter.centimetersToTwips(styleRule.leftIndentCm())));
-        indentation.setRight(BigInteger.valueOf(MeasurementConverter.centimetersToTwips(styleRule.rightIndentCm())));
+        indentation.setLeft(BigInteger.valueOf(MeasurementConverter.centimetersToTwips(
+                resolvedLayoutOverride.leftIndentCm().orElse(styleRule.leftIndentCm())
+        )));
+        indentation.setRight(BigInteger.valueOf(MeasurementConverter.centimetersToTwips(
+                resolvedLayoutOverride.rightIndentCm().orElse(styleRule.rightIndentCm())
+        )));
         paragraphProperties.setInd(indentation);
 
         BigDecimal spacingBeforePt = spacingBeforeOverridePt.orElse(styleRule.spacingBeforePt());
@@ -235,7 +242,8 @@ public class Docx4jWriter implements DocxWriter {
         paragraph.setPPr(createParagraphProperties(
                 blankLine.styleRule(),
                 Optional.empty(),
-                blankLine.exactLineHeightPt()
+                blankLine.exactLineHeightPt(),
+                Optional.empty()
         ));
 
         R run = objectFactory.createR();

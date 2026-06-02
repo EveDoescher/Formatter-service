@@ -111,6 +111,26 @@ class SinglePageLayoutEngineTest {
     }
 
     @Test
+    void shouldExposeMixedLineHeightsInDiagnostic() {
+        SinglePageLayoutPlan plan = engineWithSafeCapacity(3).calculate(input(
+                List.of(group("a", item("simple", styleWithLineSpacing("simple", BigDecimal.ONE), "A")),
+                        group("b", item("oneHalf", styleWithLineSpacing("oneHalf", BigDecimal.valueOf(1.5)), "B"))),
+                List.of(resolvedGap("a", "b", 1)),
+                SinglePageLayoutPolicy.defaultSinglePagePolicy()
+        ));
+
+        int simpleHeight = plan.diagnostic().itemHeightTwips().get("a.simple");
+        int oneHalfHeight = plan.diagnostic().itemHeightTwips().get("b.oneHalf");
+
+        assertTrue(simpleHeight < oneHalfHeight);
+        assertEquals(simpleHeight + oneHalfHeight, plan.diagnostic().contentHeightTwips());
+        assertEquals(
+                plan.diagnostic().renderableArea().safeHeightTwips(),
+                plan.diagnostic().contentHeightTwips() + plan.diagnostic().availableGapHeightTwips()
+        );
+    }
+
+    @Test
     void shouldRejectSinglePageStyleWithSpacingBeforeOrAfter() {
         SinglePageLayoutEngine engine = engineWithSafeCapacity(3);
 
@@ -136,7 +156,14 @@ class SinglePageLayoutEngineTest {
     private static SinglePageLayoutEngine engineWithSafeCapacity(int safeCapacity) {
         return new SinglePageLayoutEngine(
                 new SinglePageLayoutLineMetrics(),
-                (pageRule, lineHeightTwips) -> new SinglePageRenderableArea(safeCapacity, 0, safeCapacity),
+                (pageRule, lineHeightTwips) -> new SinglePageRenderableArea(
+                        safeCapacity,
+                        0,
+                        safeCapacity,
+                        safeCapacity * lineHeightTwips,
+                        0,
+                        safeCapacity * lineHeightTwips
+                ),
                 new SinglePageGapDistributor()
         );
     }
@@ -183,13 +210,29 @@ class SinglePageLayoutEngineTest {
             BigDecimal spacingBeforePt,
             BigDecimal spacingAfterPt
     ) {
+        return style(id, BigDecimal.ONE, spacingBeforePt, spacingAfterPt);
+    }
+
+    private static StyleRule styleWithLineSpacing(
+            String id,
+            BigDecimal lineSpacing
+    ) {
+        return style(id, lineSpacing, BigDecimal.ZERO, BigDecimal.ZERO);
+    }
+
+    private static StyleRule style(
+            String id,
+            BigDecimal lineSpacing,
+            BigDecimal spacingBeforePt,
+            BigDecimal spacingAfterPt
+    ) {
         return new StyleRule(
                 id,
                 StyleType.PARAGRAPH,
                 "Times New Roman",
                 BigDecimal.valueOf(12),
                 TextAlignment.CENTER,
-                BigDecimal.ONE,
+                lineSpacing,
                 BigDecimal.ZERO,
                 BigDecimal.ZERO,
                 BigDecimal.ZERO,

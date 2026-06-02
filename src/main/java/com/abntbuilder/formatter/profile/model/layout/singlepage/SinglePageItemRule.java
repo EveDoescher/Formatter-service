@@ -8,12 +8,14 @@ import java.util.Optional;
 public record SinglePageItemRule(
         String id,
         boolean required,
-        Optional<Integer> maxVisualLinesPerValue
+        Optional<Integer> maxVisualLinesPerValue,
+        HorizontalPlacementRule horizontalPlacement
 ) {
 
     public SinglePageItemRule {
         requireNonBlank(id, "id");
         Objects.requireNonNull(maxVisualLinesPerValue, "maxVisualLinesPerValue must not be null");
+        Objects.requireNonNull(horizontalPlacement, "horizontalPlacement must not be null");
         maxVisualLinesPerValue.ifPresent(maxLines -> {
             if (maxLines <= 0) {
                 throw new InvalidProfileStructureException("maxVisualLinesPerValue must be greater than zero.");
@@ -24,12 +26,26 @@ public record SinglePageItemRule(
     public SinglePageItemRule(
             String id,
             boolean required,
+            Optional<Integer> maxVisualLinesPerValue
+    ) {
+        this(
+                id,
+                required,
+                maxVisualLinesPerValue,
+                HorizontalPlacementRule.fullContentWidth()
+        );
+    }
+
+    public SinglePageItemRule(
+            String id,
+            boolean required,
             Integer maxVisualLinesPerValue
     ) {
         this(
                 id,
                 required,
-                Optional.ofNullable(maxVisualLinesPerValue)
+                Optional.ofNullable(maxVisualLinesPerValue),
+                HorizontalPlacementRule.fullContentWidth()
         );
     }
 

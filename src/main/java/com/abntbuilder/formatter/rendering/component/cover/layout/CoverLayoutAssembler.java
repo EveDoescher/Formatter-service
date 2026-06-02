@@ -1,13 +1,16 @@
 package com.abntbuilder.formatter.rendering.component.cover.layout;
 
 import com.abntbuilder.formatter.document.component.cover.CoverComponent;
+import com.abntbuilder.formatter.output.docx.api.ParagraphLayoutOverride;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
 import com.abntbuilder.formatter.profile.model.PageRule;
 import com.abntbuilder.formatter.profile.model.StyleRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
+import com.abntbuilder.formatter.profile.model.layout.singlepage.HorizontalPlacementStrategy;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageGroupRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageItemRule;
 import com.abntbuilder.formatter.profile.resolution.StyleResolver;
+import com.abntbuilder.formatter.rendering.layout.singlepage.HorizontalPlacementResolver;
 import com.abntbuilder.formatter.rendering.layout.singlepage.OrderedLayoutGapResolver;
 import com.abntbuilder.formatter.rendering.layout.singlepage.ResolvedLayoutGap;
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutGroup;
@@ -15,9 +18,11 @@ import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutInp
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutItem;
 import com.abntbuilder.formatter.rendering.layout.text.MeasuredText;
 import com.abntbuilder.formatter.rendering.layout.text.TextMeasurer;
+import com.abntbuilder.formatter.rendering.layout.text.TextMeasurementArea;
 import com.abntbuilder.formatter.shared.exception.InvalidCoverContentException;
 import com.abntbuilder.formatter.shared.exception.InvalidProfileStructureException;
 
+import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -27,15 +32,34 @@ public final class CoverLayoutAssembler {
     private final TextMeasurer textMeasurer;
     private final OrderedLayoutGapResolver gapResolver;
     private final CoverProfileContentValidator validator;
+    private final HorizontalPlacementResolver horizontalPlacementResolver;
 
     public CoverLayoutAssembler(
             TextMeasurer textMeasurer,
             OrderedLayoutGapResolver gapResolver,
             CoverProfileContentValidator validator
     ) {
+        this(
+                textMeasurer,
+                gapResolver,
+                validator,
+                new HorizontalPlacementResolver()
+        );
+    }
+
+    public CoverLayoutAssembler(
+            TextMeasurer textMeasurer,
+            OrderedLayoutGapResolver gapResolver,
+            CoverProfileContentValidator validator,
+            HorizontalPlacementResolver horizontalPlacementResolver
+    ) {
         this.textMeasurer = Objects.requireNonNull(textMeasurer, "textMeasurer must not be null");
         this.gapResolver = Objects.requireNonNull(gapResolver, "gapResolver must not be null");
         this.validator = Objects.requireNonNull(validator, "validator must not be null");
+        this.horizontalPlacementResolver = Objects.requireNonNull(
+                horizontalPlacementResolver,
+                "horizontalPlacementResolver must not be null"
+        );
     }
 
     public SinglePageLayoutInput assemble(
@@ -99,7 +123,11 @@ public final class CoverLayoutAssembler {
             for (int valueIndex = 0; valueIndex < values.size(); valueIndex++) {
                 String value = values.get(valueIndex);
                 StyleRule styleRule = styleResolver.resolve(rule.styleMapping().styleIdForItem(itemRule.id()));
-                MeasuredText measuredText = textMeasurer.measure(value, pageRule, styleRule);
+                TextMeasurementArea measurementArea = horizontalPlacementResolver.resolve(
+                        pageRule,
+                        itemRule.horizontalPlacement()
+                );
+                MeasuredText measuredText = textMeasurer.measure(value, pageRule, styleRule, measurementArea);
 
                 itemRule.maxVisualLinesPerValue().ifPresent(maxLines -> {
                     if (measuredText.lineCount() > maxLines) {
@@ -110,7 +138,9 @@ public final class CoverLayoutAssembler {
                 items.add(new SinglePageLayoutItem(
                         itemInstanceId(itemRule.id(), valueIndex, values.size()),
                         styleRule,
-                        measuredText.visualLines()
+                        measuredText.visualLines(),
+                        Optional.of(measurementArea),
+                        layoutOverrideFor(itemRule, measurementArea)
                 ));
             }
         }
@@ -136,5 +166,20 @@ public final class CoverLayoutAssembler {
         }
 
         return itemId + "[" + valueIndex + "]";
+    }
+
+    private static ParagraphLayoutOverride layoutOverrideFor(
+            SinglePageItemRule itemRule,
+            TextMeasurementArea measurementArea
+    ) {
+        if (itemRule.horizontalPlacement().strategy() == HorizontalPlacementStrategy.FULL_CONTENT_WIDTH) {
+            return ParagraphLayoutOverride.none();
+        }
+
+        return new ParagraphLayoutOverride(
+                Optional.of(measurementArea.leftIndentCm()),
+                Optional.of(measurementArea.rightIndentCm()),
+                Optional.empty()
+        );
     }
 }

@@ -59,6 +59,25 @@ class ConservativeTextMeasurerTest {
     }
 
     @Test
+    void shouldMeasureUsingExplicitPartialArea() {
+        String text = "Titulo academico com quantidade suficiente de palavras para comparar";
+
+        MeasuredText fullWidth = measurer.measure(text, validPageRule(), regularStyle());
+        MeasuredText partialWidth = measurer.measure(
+                text,
+                validPageRule(),
+                regularStyle(),
+                new TextMeasurementArea(
+                        BigDecimal.valueOf(8),
+                        BigDecimal.valueOf(8),
+                        BigDecimal.ZERO
+                )
+        );
+
+        assertTrue(partialWidth.lineCount() > fullWidth.lineCount());
+    }
+
+    @Test
     void shouldRejectWordThatDoesNotFit() {
         assertThrows(
                 TextMeasurementException.class,
