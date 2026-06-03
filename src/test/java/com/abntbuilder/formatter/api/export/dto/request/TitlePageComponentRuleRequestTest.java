@@ -25,7 +25,8 @@ class TitlePageComponentRuleRequestTest {
                                                 "nature",
                                                 true,
                                                 null,
-                                                HorizontalPlacementStrategy.FROM_PAGE_CENTER_TO_RIGHT_MARGIN
+                                                HorizontalPlacementStrategy.FROM_PAGE_CENTER_TO_RIGHT_MARGIN,
+                                                1
                                         ))
                                 )
                         ),
@@ -47,6 +48,7 @@ class TitlePageComponentRuleRequestTest {
                 HorizontalPlacementStrategy.FROM_PAGE_CENTER_TO_RIGHT_MARGIN,
                 rule.layoutRule().groups().getFirst().items().getFirst().horizontalPlacement().strategy()
         );
+        assertEquals(1, rule.layoutRule().groups().getFirst().items().getFirst().blankLinesAfter());
     }
 
     private static TitlePageStyleMappingRequest styleMapping() {

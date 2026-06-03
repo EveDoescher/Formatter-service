@@ -65,27 +65,20 @@ public final class SinglePageLayoutEngine {
             ));
         }
 
-        int availableGapLines = input.gaps().isEmpty()
-                ? 0
-                : Math.max(renderableArea.safeLineCapacity() - contentLineCount, 0);
         int availableGapHeightTwips = input.gaps().isEmpty()
                 ? 0
                 : renderableArea.safeHeightTwips() - contentHeightTwips;
-        int[] gapLineCounts = input.gaps().isEmpty()
-                ? new int[0]
-                : gapDistributor.distribute(
-                        availableGapLines,
-                        input.gaps().stream().map(ResolvedLayoutGap::weight).toList()
-                );
         int[] gapHeightTwips = input.gaps().isEmpty()
                 ? new int[0]
                 : gapDistributor.distribute(
                         availableGapHeightTwips,
                         input.gaps().stream().map(ResolvedLayoutGap::weight).toList()
                 );
+        int[] gapLineCounts = createGapLineCounts(gapHeightTwips, lineHeightTwips);
+        int availableGapLines = sum(gapLineCounts);
         Map<String, Integer> gapLineCountMap = createGapLineCounts(input.gaps(), gapLineCounts);
         Map<String, Integer> gapHeightTwipsMap = createGapLineCounts(input.gaps(), gapHeightTwips);
-        List<SinglePageLayoutElement> elements = assembleElements(input, gapLineCounts, lineHeightTwips);
+        List<SinglePageLayoutElement> elements = assembleElements(input, gapLineCounts, gapHeightTwips, lineHeightTwips);
         SinglePageLayoutDiagnostic diagnostic = new SinglePageLayoutDiagnostic(
                 renderableArea,
                 contentLineCount,
@@ -104,7 +97,7 @@ public final class SinglePageLayoutEngine {
 
         return new SinglePageLayoutPlan(
                 elements,
-                renderableArea.safeLineCapacity(),
+                contentLineCount + sum(gapLineCountMap),
                 renderableArea.safeLineCapacity(),
                 exactLineHeightPt,
                 diagnostic
@@ -170,6 +163,7 @@ public final class SinglePageLayoutEngine {
     private static List<SinglePageLayoutElement> assembleElements(
             SinglePageLayoutInput input,
             int[] gapLineCounts,
+            int[] gapHeightTwips,
             int lineHeightTwips
     ) {
         List<SinglePageLayoutElement> elements = new ArrayList<>();
@@ -188,21 +182,35 @@ public final class SinglePageLayoutEngine {
                             gap.toPresentGroupId(),
                             gapLineCount,
                             resolveSpacerStyle(input, groupIndex),
-                            lineHeightTwips
+                            lineHeightTwips,
+                            gapHeightTwips[groupIndex - 1]
                     ));
                 }
             }
 
             for (SinglePageLayoutItem item : group.items()) {
+                int itemLineHeightTwips = lineMetricsFromStyle(item.styleRule());
                 elements.add(new SinglePageTextLines(
                         group.id(),
                         item.id(),
                         item.styleRule(),
+                        item.paragraphText(),
                         item.visualLines(),
                         item.measurementArea(),
                         item.layoutOverride(),
-                        lineMetricsFromStyle(item.styleRule())
+                        itemLineHeightTwips
                 ));
+
+                if (item.blankLinesAfter() > 0) {
+                    elements.add(new SinglePageSpacerLines(
+                            group.id() + "." + item.id() + ".blankLinesAfter",
+                            group.id(),
+                            group.id(),
+                            item.blankLinesAfter(),
+                            item.styleRule(),
+                            itemLineHeightTwips
+                    ));
+                }
             }
         }
 
@@ -283,11 +291,33 @@ public final class SinglePageLayoutEngine {
         return lineCounts;
     }
 
+    private static int[] createGapLineCounts(int[] gapHeightTwips, int lineHeightTwips) {
+        int[] gapLineCounts = new int[gapHeightTwips.length];
+
+        for (int index = 0; index < gapHeightTwips.length; index++) {
+            if (gapHeightTwips[index] > 0) {
+                gapLineCounts[index] = Math.max(1, gapHeightTwips[index] / lineHeightTwips);
+            }
+        }
+
+        return gapLineCounts;
+    }
+
     private static int sum(Map<String, Integer> values) {
         return values.values()
                 .stream()
                 .mapToInt(Integer::intValue)
                 .sum();
+    }
+
+    private static int sum(int[] values) {
+        int total = 0;
+
+        for (int value : values) {
+            total += value;
+        }
+
+        return total;
     }
 
     private static int roundUp(int value, int divisor) {

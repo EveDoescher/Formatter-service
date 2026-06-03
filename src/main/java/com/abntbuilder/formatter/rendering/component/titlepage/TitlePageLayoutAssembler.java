@@ -107,8 +107,10 @@ public final class TitlePageLayoutAssembler {
     ) {
         List<SinglePageLayoutItem> items = new ArrayList<>();
 
-        for (SinglePageItemRule itemRule : groupRule.items()) {
+        for (int itemRuleIndex = 0; itemRuleIndex < groupRule.items().size(); itemRuleIndex++) {
+            SinglePageItemRule itemRule = groupRule.items().get(itemRuleIndex);
             List<String> values = valuesForItem(component, rule, itemRule.id());
+            boolean hasFollowingContent = hasFollowingContent(component, rule, groupRule.items(), itemRuleIndex);
 
             for (int valueIndex = 0; valueIndex < values.size(); valueIndex++) {
                 String value = values.get(valueIndex);
@@ -128,14 +130,31 @@ public final class TitlePageLayoutAssembler {
                 items.add(new SinglePageLayoutItem(
                         itemInstanceId(itemRule.id(), valueIndex, values.size()),
                         styleRule,
+                        String.join(" ", measuredText.visualLines()),
                         measuredText.visualLines(),
                         Optional.of(measurementArea),
-                        layoutOverrideFor(itemRule, measurementArea)
+                        layoutOverrideFor(itemRule, measurementArea),
+                        blankLinesAfter(itemRule, valueIndex, values.size(), hasFollowingContent)
                 ));
             }
         }
 
         return List.copyOf(items);
+    }
+
+    private boolean hasFollowingContent(
+            TitlePageComponent component,
+            TitlePageComponentRule rule,
+            List<SinglePageItemRule> itemRules,
+            int currentItemRuleIndex
+    ) {
+        for (int index = currentItemRuleIndex + 1; index < itemRules.size(); index++) {
+            if (!valuesForItem(component, rule, itemRules.get(index).id()).isEmpty()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private List<String> valuesForItem(
@@ -166,6 +185,19 @@ public final class TitlePageLayoutAssembler {
         }
 
         return itemId + "[" + valueIndex + "]";
+    }
+
+    private static int blankLinesAfter(
+            SinglePageItemRule itemRule,
+            int valueIndex,
+            int valueCount,
+            boolean hasFollowingContent
+    ) {
+        if (valueIndex < valueCount - 1 || hasFollowingContent) {
+            return itemRule.blankLinesAfter();
+        }
+
+        return 0;
     }
 
     private static ParagraphLayoutOverride layoutOverrideFor(

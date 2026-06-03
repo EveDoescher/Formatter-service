@@ -9,7 +9,8 @@ public record SinglePageItemRule(
         String id,
         boolean required,
         Optional<Integer> maxVisualLinesPerValue,
-        HorizontalPlacementRule horizontalPlacement
+        HorizontalPlacementRule horizontalPlacement,
+        int blankLinesAfter
 ) {
 
     public SinglePageItemRule {
@@ -21,6 +22,25 @@ public record SinglePageItemRule(
                 throw new InvalidProfileStructureException("maxVisualLinesPerValue must be greater than zero.");
             }
         });
+
+        if (blankLinesAfter < 0) {
+            throw new InvalidProfileStructureException("blankLinesAfter must not be negative.");
+        }
+    }
+
+    public SinglePageItemRule(
+            String id,
+            boolean required,
+            Optional<Integer> maxVisualLinesPerValue,
+            HorizontalPlacementRule horizontalPlacement
+    ) {
+        this(
+                id,
+                required,
+                maxVisualLinesPerValue,
+                horizontalPlacement,
+                0
+        );
     }
 
     public SinglePageItemRule(
@@ -32,7 +52,8 @@ public record SinglePageItemRule(
                 id,
                 required,
                 maxVisualLinesPerValue,
-                HorizontalPlacementRule.fullContentWidth()
+                HorizontalPlacementRule.fullContentWidth(),
+                0
         );
     }
 
@@ -45,7 +66,8 @@ public record SinglePageItemRule(
                 id,
                 required,
                 Optional.ofNullable(maxVisualLinesPerValue),
-                HorizontalPlacementRule.fullContentWidth()
+                HorizontalPlacementRule.fullContentWidth(),
+                0
         );
     }
 

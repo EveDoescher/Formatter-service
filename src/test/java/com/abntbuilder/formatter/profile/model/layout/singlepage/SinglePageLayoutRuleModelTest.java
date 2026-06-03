@@ -48,6 +48,20 @@ class SinglePageLayoutRuleModelTest {
                         () -> new SinglePageItemRule("city", true, Optional.of(0))
                 ).getMessage()
         );
+
+        assertEquals(
+                "blankLinesAfter must not be negative.",
+                assertThrows(
+                        InvalidProfileStructureException.class,
+                        () -> new SinglePageItemRule(
+                                "nature",
+                                true,
+                                Optional.empty(),
+                                HorizontalPlacementRule.fullContentWidth(),
+                                -1
+                        )
+                ).getMessage()
+        );
     }
 
     @Test

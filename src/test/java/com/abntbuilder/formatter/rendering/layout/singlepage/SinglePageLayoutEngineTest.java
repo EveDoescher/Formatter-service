@@ -131,6 +131,25 @@ class SinglePageLayoutEngineTest {
     }
 
     @Test
+    void shouldAllowMixedLineHeightsWhenRealHeightFitsEvenIfLogicalLinesExceedCapacity() {
+        SinglePageLayoutPlan plan = engineWithSafeArea(2, 900).calculate(input(
+                List.of(group("a", item("simple", styleWithLineSpacing("simple", BigDecimal.ONE), "A1", "A2")),
+                        group("b", item("oneHalf", styleWithLineSpacing("oneHalf", BigDecimal.valueOf(1.5)), "B"))),
+                List.of(resolvedGap("a", "b", 1)),
+                SinglePageLayoutPolicy.defaultSinglePagePolicy()
+        ));
+
+        assertEquals(4, plan.totalLines());
+        assertEquals(2, plan.pageCapacityLines());
+        assertEquals(1, plan.diagnostic().availableGapLines());
+        assertTrue(plan.diagnostic().contentHeightTwips() <= plan.diagnostic().renderableArea().safeHeightTwips());
+        assertEquals(
+                plan.diagnostic().renderableArea().safeHeightTwips(),
+                plan.elements().stream().mapToInt(SinglePageLayoutElement::heightTwips).sum()
+        );
+    }
+
+    @Test
     void shouldRejectSinglePageStyleWithSpacingBeforeOrAfter() {
         SinglePageLayoutEngine engine = engineWithSafeCapacity(3);
 
@@ -163,6 +182,21 @@ class SinglePageLayoutEngineTest {
                         safeCapacity * lineHeightTwips,
                         0,
                         safeCapacity * lineHeightTwips
+                ),
+                new SinglePageGapDistributor()
+        );
+    }
+
+    private static SinglePageLayoutEngine engineWithSafeArea(int safeCapacity, int safeHeightTwips) {
+        return new SinglePageLayoutEngine(
+                new SinglePageLayoutLineMetrics(),
+                (pageRule, lineHeightTwips) -> new SinglePageRenderableArea(
+                        safeCapacity,
+                        0,
+                        safeCapacity,
+                        safeHeightTwips,
+                        0,
+                        safeHeightTwips
                 ),
                 new SinglePageGapDistributor()
         );

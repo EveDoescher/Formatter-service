@@ -58,6 +58,7 @@ class TitlePageLayoutAssemblerTest {
         assertTrue(String.join(" ", advisor.visualLines()).contains("Orientador(a): Prof. Dr. Jose da Silva."));
         assertTrue(nature.measurementArea().orElseThrow().leftIndentCm().compareTo(BigDecimal.ZERO) > 0);
         assertTrue(nature.layoutOverride().leftIndentCm().isPresent());
+        assertEquals(1, nature.blankLinesAfter());
     }
 
     @Test
@@ -69,6 +70,13 @@ class TitlePageLayoutAssemblerTest {
                 .flatMap(group -> group.items().stream())
                 .map(SinglePageLayoutItem::id)
                 .anyMatch("coadvisor"::equals));
+    }
+
+    @Test
+    void shouldNotAddNatureBlankLineWhenAdvisorAndCoadvisorAreAbsent() {
+        SinglePageLayoutInput input = assembler.assemble(componentWithoutAdvisor(), profile, rule);
+
+        assertEquals(0, item(input, "nature").blankLinesAfter());
     }
 
     private static SinglePageLayoutItem item(SinglePageLayoutInput input, String itemId) {
@@ -92,6 +100,24 @@ class TitlePageLayoutAssemblerTest {
                         "Universidade Paulista - UNIP"
                 ),
                 Optional.of(new AcademicPerson("Jose da Silva", Optional.of("Prof. Dr."))),
+                Optional.empty(),
+                "Limeira",
+                "2026"
+        );
+    }
+
+    private static TitlePageComponent componentWithoutAdvisor() {
+        return new TitlePageComponent(
+                List.of("Nome Completo do Aluno"),
+                "Titulo do Trabalho",
+                Optional.of("Subtitulo do trabalho"),
+                new TitlePageNature(
+                        "Trabalho de conclusao de curso",
+                        "obtencao do titulo de graduacao",
+                        "Analise e Desenvolvimento de Sistemas",
+                        "Universidade Paulista - UNIP"
+                ),
+                Optional.empty(),
                 Optional.empty(),
                 "Limeira",
                 "2026"

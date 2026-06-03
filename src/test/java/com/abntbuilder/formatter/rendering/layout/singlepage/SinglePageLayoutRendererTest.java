@@ -45,9 +45,18 @@ class SinglePageLayoutRendererTest {
 
         List<DocxBlock> blocks = renderer.render(plan);
 
-        assertEquals(4, blocks.size());
-        assertEquals(3, blocks.stream().filter(DocxParagraph.class::isInstance).count());
+        assertEquals(3, blocks.size());
+        assertEquals(2, blocks.stream().filter(DocxParagraph.class::isInstance).count());
         assertEquals(1, blocks.stream().filter(DocxBlankLine.class::isInstance).count());
+        assertEquals(
+                "Titulo Linha dois",
+                blocks.stream()
+                        .filter(DocxParagraph.class::isInstance)
+                        .map(DocxParagraph.class::cast)
+                        .findFirst()
+                        .orElseThrow()
+                        .text()
+        );
         assertTrue(blocks.stream()
                 .filter(DocxParagraph.class::isInstance)
                 .map(DocxParagraph.class::cast)

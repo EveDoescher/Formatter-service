@@ -11,9 +11,11 @@ import java.util.Optional;
 public record SinglePageLayoutItem(
         String id,
         StyleRule styleRule,
+        String paragraphText,
         List<String> visualLines,
         Optional<TextMeasurementArea> measurementArea,
-        ParagraphLayoutOverride layoutOverride
+        ParagraphLayoutOverride layoutOverride,
+        int blankLinesAfter
 ) {
 
     public SinglePageLayoutItem(
@@ -24,18 +26,61 @@ public record SinglePageLayoutItem(
         this(
                 id,
                 styleRule,
+                String.join(" ", visualLines),
                 visualLines,
                 Optional.empty(),
-                ParagraphLayoutOverride.none()
+                ParagraphLayoutOverride.none(),
+                0
+        );
+    }
+
+    public SinglePageLayoutItem(
+            String id,
+            StyleRule styleRule,
+            String paragraphText,
+            List<String> visualLines
+    ) {
+        this(
+                id,
+                styleRule,
+                paragraphText,
+                visualLines,
+                Optional.empty(),
+                ParagraphLayoutOverride.none(),
+                0
+        );
+    }
+
+    public SinglePageLayoutItem(
+            String id,
+            StyleRule styleRule,
+            String paragraphText,
+            List<String> visualLines,
+            Optional<TextMeasurementArea> measurementArea,
+            ParagraphLayoutOverride layoutOverride
+    ) {
+        this(
+                id,
+                styleRule,
+                paragraphText,
+                visualLines,
+                measurementArea,
+                layoutOverride,
+                0
         );
     }
 
     public SinglePageLayoutItem {
         requireNonBlank(id, "id");
         Objects.requireNonNull(styleRule, "styleRule must not be null");
+        requireNonBlank(paragraphText, "paragraphText");
         Objects.requireNonNull(visualLines, "visualLines must not be null");
         Objects.requireNonNull(measurementArea, "measurementArea must not be null");
         Objects.requireNonNull(layoutOverride, "layoutOverride must not be null");
+
+        if (blankLinesAfter < 0) {
+            throw new IllegalArgumentException("blankLinesAfter must not be negative.");
+        }
 
         if (visualLines.isEmpty()) {
             throw new IllegalArgumentException("visualLines must not be empty.");
@@ -49,6 +94,10 @@ public record SinglePageLayoutItem(
     }
 
     public int lineCount() {
+        return visualLines.size() + blankLinesAfter;
+    }
+
+    public int visualLineCount() {
         return visualLines.size();
     }
 

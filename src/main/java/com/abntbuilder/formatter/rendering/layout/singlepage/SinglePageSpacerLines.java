@@ -4,6 +4,8 @@ import com.abntbuilder.formatter.profile.model.StyleRule;
 import com.abntbuilder.formatter.shared.measurement.MeasurementConverter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public record SinglePageSpacerLines(
@@ -12,7 +14,8 @@ public record SinglePageSpacerLines(
         String toGroupId,
         int lineCount,
         StyleRule styleRule,
-        int lineHeightTwips
+        int lineHeightTwips,
+        int heightTwips
 ) implements SinglePageLayoutElement {
 
     public SinglePageSpacerLines(
@@ -32,6 +35,25 @@ public record SinglePageSpacerLines(
         );
     }
 
+    public SinglePageSpacerLines(
+            String gapId,
+            String fromGroupId,
+            String toGroupId,
+            int lineCount,
+            StyleRule styleRule,
+            int lineHeightTwips
+    ) {
+        this(
+                gapId,
+                fromGroupId,
+                toGroupId,
+                lineCount,
+                styleRule,
+                lineHeightTwips,
+                lineCount * lineHeightTwips
+        );
+    }
+
     public SinglePageSpacerLines {
         requireNonBlank(gapId, "gapId");
         requireNonBlank(fromGroupId, "fromGroupId");
@@ -45,15 +67,31 @@ public record SinglePageSpacerLines(
         if (lineHeightTwips <= 0) {
             throw new IllegalArgumentException("lineHeightTwips must be greater than zero.");
         }
+
+        if (heightTwips < lineCount) {
+            throw new IllegalArgumentException("heightTwips must be greater than or equal to lineCount.");
+        }
     }
 
     @Override
     public int heightTwips() {
-        return lineCount * lineHeightTwips;
+        return heightTwips;
     }
 
     public BigDecimal exactLineHeightPt() {
         return MeasurementConverter.twipsToPoints(lineHeightTwips);
+    }
+
+    public List<Integer> distributedLineHeightTwips() {
+        int baseLineHeightTwips = heightTwips / lineCount;
+        int remainingTwips = heightTwips % lineCount;
+        List<Integer> lineHeights = new ArrayList<>();
+
+        for (int index = 0; index < lineCount; index++) {
+            lineHeights.add(baseLineHeightTwips + (index < remainingTwips ? 1 : 0));
+        }
+
+        return List.copyOf(lineHeights);
     }
 
     private static void requireNonBlank(String value, String fieldName) {

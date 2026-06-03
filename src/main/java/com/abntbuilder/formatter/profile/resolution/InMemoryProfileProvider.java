@@ -188,7 +188,7 @@ public final class InMemoryProfileProvider implements ProfileProvider {
                                 "titlePage.natureBlock",
                                 true,
                                 List.of(
-                                        new SinglePageItemRule("nature", true, Optional.empty(), rightHalf),
+                                        new SinglePageItemRule("nature", true, Optional.empty(), rightHalf, 1),
                                         new SinglePageItemRule("advisor", false, Optional.empty(), rightHalf),
                                         new SinglePageItemRule("coadvisor", false, Optional.empty(), rightHalf)
                                 )

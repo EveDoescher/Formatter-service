@@ -57,7 +57,8 @@ class ComponentRulesRequestTest {
                                         "nature",
                                         true,
                                         null,
-                                        HorizontalPlacementStrategy.FROM_PAGE_CENTER_TO_RIGHT_MARGIN
+                                        HorizontalPlacementStrategy.FROM_PAGE_CENTER_TO_RIGHT_MARGIN,
+                                        1
                                 ))
                         )),
                         List.of(),

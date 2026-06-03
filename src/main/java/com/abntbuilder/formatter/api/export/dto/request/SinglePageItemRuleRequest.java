@@ -10,7 +10,8 @@ public record SinglePageItemRuleRequest(
         String id,
         Boolean required,
         Integer maxVisualLinesPerValue,
-        HorizontalPlacementStrategy horizontalPlacement
+        HorizontalPlacementStrategy horizontalPlacement,
+        Integer blankLinesAfter
 ) {
 
     public SinglePageItemRule toDomain() {
@@ -20,7 +21,8 @@ public record SinglePageItemRuleRequest(
                 Optional.ofNullable(maxVisualLinesPerValue),
                 new HorizontalPlacementRule(horizontalPlacement == null
                         ? HorizontalPlacementStrategy.FULL_CONTENT_WIDTH
-                        : horizontalPlacement)
+                        : horizontalPlacement),
+                blankLinesAfter == null ? 0 : blankLinesAfter
         );
     }
 }

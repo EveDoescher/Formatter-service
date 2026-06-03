@@ -15,6 +15,7 @@ class SinglePageItemRuleRequestTest {
                 "title",
                 true,
                 null,
+                null,
                 null
         );
 
@@ -24,6 +25,7 @@ class SinglePageItemRuleRequestTest {
         assertTrue(rule.required());
         assertTrue(rule.maxVisualLinesPerValue().isEmpty());
         assertEquals(HorizontalPlacementStrategy.FULL_CONTENT_WIDTH, rule.horizontalPlacement().strategy());
+        assertEquals(0, rule.blankLinesAfter());
     }
 
     @Test
@@ -32,7 +34,8 @@ class SinglePageItemRuleRequestTest {
                 "nature",
                 true,
                 3,
-                HorizontalPlacementStrategy.FROM_PAGE_CENTER_TO_RIGHT_MARGIN
+                HorizontalPlacementStrategy.FROM_PAGE_CENTER_TO_RIGHT_MARGIN,
+                1
         );
 
         SinglePageItemRule rule = request.toDomain();
@@ -44,5 +47,6 @@ class SinglePageItemRuleRequestTest {
                 HorizontalPlacementStrategy.FROM_PAGE_CENTER_TO_RIGHT_MARGIN,
                 rule.horizontalPlacement().strategy()
         );
+        assertEquals(1, rule.blankLinesAfter());
     }
 }

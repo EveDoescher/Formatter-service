@@ -14,6 +14,7 @@ public record SinglePageTextLines(
         String groupId,
         String itemId,
         StyleRule styleRule,
+        String paragraphText,
         List<String> lines,
         Optional<TextMeasurementArea> measurementArea,
         ParagraphLayoutOverride layoutOverride,
@@ -30,6 +31,26 @@ public record SinglePageTextLines(
                 groupId,
                 itemId,
                 styleRule,
+                String.join(" ", lines),
+                lines,
+                Optional.empty(),
+                ParagraphLayoutOverride.none(),
+                MeasurementConverter.pointsToTwips(styleRule.fontSizePt().multiply(styleRule.lineSpacing()))
+        );
+    }
+
+    public SinglePageTextLines(
+            String groupId,
+            String itemId,
+            StyleRule styleRule,
+            String paragraphText,
+            List<String> lines
+    ) {
+        this(
+                groupId,
+                itemId,
+                styleRule,
+                paragraphText,
                 lines,
                 Optional.empty(),
                 ParagraphLayoutOverride.none(),
@@ -41,6 +62,7 @@ public record SinglePageTextLines(
         requireNonBlank(groupId, "groupId");
         requireNonBlank(itemId, "itemId");
         Objects.requireNonNull(styleRule, "styleRule must not be null");
+        requireNonBlank(paragraphText, "paragraphText");
         Objects.requireNonNull(lines, "lines must not be null");
         Objects.requireNonNull(measurementArea, "measurementArea must not be null");
         Objects.requireNonNull(layoutOverride, "layoutOverride must not be null");

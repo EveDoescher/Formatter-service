@@ -3,6 +3,7 @@ package com.abntbuilder.formatter.rendering.layout.singlepage;
 import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
+import com.abntbuilder.formatter.shared.measurement.MeasurementConverter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,25 +31,23 @@ public final class SinglePageLayoutRenderer {
             List<DocxBlock> blocks,
             SinglePageTextLines textLines
     ) {
-        for (String line : textLines.lines()) {
-            blocks.add(new DocxParagraph(
-                    line,
-                    textLines.styleRule(),
-                    Optional.empty(),
-                    Optional.of(textLines.exactLineHeightPt()),
-                    Optional.of(textLines.layoutOverride())
-            ));
-        }
+        blocks.add(new DocxParagraph(
+                textLines.paragraphText(),
+                textLines.styleRule(),
+                Optional.empty(),
+                Optional.of(textLines.exactLineHeightPt()),
+                Optional.of(textLines.layoutOverride())
+        ));
     }
 
     private static void addSpacerLines(
             List<DocxBlock> blocks,
             SinglePageSpacerLines spacerLines
     ) {
-        for (int index = 0; index < spacerLines.lineCount(); index++) {
+        for (int lineHeightTwips : spacerLines.distributedLineHeightTwips()) {
             blocks.add(new DocxBlankLine(
                     spacerLines.styleRule(),
-                    Optional.of(spacerLines.exactLineHeightPt())
+                    Optional.of(MeasurementConverter.twipsToPoints(lineHeightTwips))
             ));
         }
     }

@@ -138,6 +138,7 @@ public final class CoverLayoutAssembler {
                 items.add(new SinglePageLayoutItem(
                         itemInstanceId(itemRule.id(), valueIndex, values.size()),
                         styleRule,
+                        String.join(" ", measuredText.visualLines()),
                         measuredText.visualLines(),
                         Optional.of(measurementArea),
                         layoutOverrideFor(itemRule, measurementArea)

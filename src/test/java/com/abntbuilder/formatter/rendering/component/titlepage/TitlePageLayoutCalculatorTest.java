@@ -35,8 +35,14 @@ class TitlePageLayoutCalculatorTest {
 
         assertFalse(plan.layoutPlan().elements().isEmpty());
         assertEquals(
-                plan.layoutPlan().pageCapacityLines(),
-                plan.layoutPlan().totalLines()
+                plan.layoutPlan().diagnostic().renderableArea().safeHeightTwips(),
+                plan.layoutPlan().diagnostic().contentHeightTwips()
+                        + plan.layoutPlan().diagnostic().allocatedGapHeightTwips()
+        );
+        assertEquals(
+                plan.layoutPlan().totalLines(),
+                plan.layoutPlan().diagnostic().contentLineCount()
+                        + plan.layoutPlan().diagnostic().availableGapLines()
         );
         assertTrue(plan.layoutPlan().elements().stream().anyMatch(SinglePageSpacerLines.class::isInstance));
         assertTrue(plan.layoutPlan().elements().stream().anyMatch(SinglePageTextLines.class::isInstance));
