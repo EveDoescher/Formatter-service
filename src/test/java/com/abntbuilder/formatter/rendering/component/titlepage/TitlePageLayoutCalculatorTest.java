@@ -4,7 +4,7 @@ import com.abntbuilder.formatter.document.component.titlepage.AcademicPerson;
 import com.abntbuilder.formatter.document.component.titlepage.TitlePageComponent;
 import com.abntbuilder.formatter.document.component.titlepage.TitlePageNature;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
-import com.abntbuilder.formatter.profile.resolution.InMemoryProfileProvider;
+import com.abntbuilder.formatter.profile.resolution.ClasspathJsonProfileProvider;
 import com.abntbuilder.formatter.rendering.layout.singlepage.HorizontalPlacementResolver;
 import com.abntbuilder.formatter.rendering.layout.singlepage.MarginBasedSinglePageSafetyPolicy;
 import com.abntbuilder.formatter.rendering.layout.singlepage.OrderedLayoutGapResolver;
@@ -30,7 +30,7 @@ class TitlePageLayoutCalculatorTest {
 
     @Test
     void shouldCreateSinglePagePlanFromTitlePageProfileRule() {
-        DocumentProfile profile = new InMemoryProfileProvider().findById("abnt-unip-profile");
+        DocumentProfile profile = new ClasspathJsonProfileProvider().findById("abnt-unip-profile");
         TitlePageLayoutPlan plan = calculator.calculate(validTitlePage(), profile);
 
         assertFalse(plan.layoutPlan().elements().isEmpty());

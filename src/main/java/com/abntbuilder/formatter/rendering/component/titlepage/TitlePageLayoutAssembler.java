@@ -117,6 +117,7 @@ public final class TitlePageLayoutAssembler {
                 StyleRule styleRule = styleResolver.resolve(rule.styleMapping().styleIdForItem(itemRule.id()));
                 TextMeasurementArea measurementArea = horizontalPlacementResolver.resolve(
                         pageRule,
+                        styleRule,
                         itemRule.horizontalPlacement()
                 );
                 MeasuredText measuredText = textMeasurer.measure(value, pageRule, styleRule, measurementArea);

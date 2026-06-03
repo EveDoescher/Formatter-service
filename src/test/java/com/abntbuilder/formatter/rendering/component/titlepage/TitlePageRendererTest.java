@@ -7,7 +7,7 @@ import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
-import com.abntbuilder.formatter.profile.resolution.InMemoryProfileProvider;
+import com.abntbuilder.formatter.profile.resolution.ClasspathJsonProfileProvider;
 import com.abntbuilder.formatter.rendering.layout.singlepage.HorizontalPlacementResolver;
 import com.abntbuilder.formatter.rendering.layout.singlepage.MarginBasedSinglePageSafetyPolicy;
 import com.abntbuilder.formatter.rendering.layout.singlepage.OrderedLayoutGapResolver;
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TitlePageRendererTest {
 
-    private final DocumentProfile profile = new InMemoryProfileProvider().findById("abnt-unip-profile");
+    private final DocumentProfile profile = new ClasspathJsonProfileProvider().findById("abnt-unip-profile");
     private final TitlePageRenderer renderer = titlePageRenderer();
 
     @Test

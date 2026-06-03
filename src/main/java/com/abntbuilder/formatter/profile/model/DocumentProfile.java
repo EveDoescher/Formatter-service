@@ -12,14 +12,35 @@ public record DocumentProfile(
         String displayName,
         PageRule pageRule,
         List<StyleRule> styleRules,
-        List<ComponentRule> componentRules
+        List<ComponentRule> componentRules,
+        List<String> componentOrder
 ) {
+    public DocumentProfile(
+            String id,
+            String displayName,
+            PageRule pageRule,
+            List<StyleRule> styleRules,
+            List<ComponentRule> componentRules
+    ) {
+        this(
+                id,
+                displayName,
+                pageRule,
+                styleRules,
+                componentRules,
+                componentRules.stream()
+                        .map(ComponentRule::componentId)
+                        .toList()
+        );
+    }
+
     public DocumentProfile {
         requireNonBlank(id, "id");
         requireNonBlank(displayName, "displayName");
         Objects.requireNonNull(pageRule, "pageRule must not be null");
         Objects.requireNonNull(styleRules, "styleRules must not be null");
         Objects.requireNonNull(componentRules, "componentRules must not be null");
+        Objects.requireNonNull(componentOrder, "componentOrder must not be null");
 
         if (styleRules.isEmpty()) {
             throw new IllegalArgumentException("styleRules must not be empty.");
@@ -27,9 +48,11 @@ public record DocumentProfile(
 
         styleRules = List.copyOf(styleRules);
         componentRules = List.copyOf(componentRules);
+        componentOrder = List.copyOf(componentOrder);
 
         validateStyleRules(styleRules);
         validateComponentRules(componentRules);
+        validateComponentOrder(componentOrder);
     }
 
     private static void validateStyleRules(List<StyleRule> styleRules) {
@@ -52,6 +75,18 @@ public record DocumentProfile(
 
             if (!componentIds.add(componentRule.componentId())) {
                 throw new IllegalArgumentException("Duplicate component rule id: " + componentRule.componentId());
+            }
+        }
+    }
+
+    private static void validateComponentOrder(List<String> componentOrder) {
+        Set<String> componentIds = new HashSet<>();
+
+        for (String componentId : componentOrder) {
+            requireNonBlank(componentId, "componentOrder item");
+
+            if (!componentIds.add(componentId)) {
+                throw new IllegalArgumentException("Duplicate component order id: " + componentId);
             }
         }
     }

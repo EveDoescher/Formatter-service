@@ -7,7 +7,7 @@ import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxDocument;
 import com.abntbuilder.formatter.output.docx.docx4j.Docx4jWriter;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
-import com.abntbuilder.formatter.profile.resolution.InMemoryProfileProvider;
+import com.abntbuilder.formatter.profile.resolution.ClasspathJsonProfileProvider;
 import com.abntbuilder.formatter.rendering.layout.singlepage.HorizontalPlacementResolver;
 import com.abntbuilder.formatter.rendering.layout.singlepage.MarginBasedSinglePageSafetyPolicy;
 import com.abntbuilder.formatter.rendering.layout.singlepage.OrderedLayoutGapResolver;
@@ -36,7 +36,7 @@ class TitlePageRendererDocxSanityTest {
 
     @Test
     void shouldGenerateTitlePageDocxXmlWithRightHalfNatureBlockAndMixedLineSpacing() throws IOException {
-        DocumentProfile profile = new InMemoryProfileProvider().findById("abnt-unip-profile");
+        DocumentProfile profile = new ClasspathJsonProfileProvider().findById("abnt-unip-profile");
         TitlePageComponent titlePage = validTitlePage();
         TitlePageRenderer renderer = new TitlePageRenderer(
                 titlePageLayoutCalculator(),

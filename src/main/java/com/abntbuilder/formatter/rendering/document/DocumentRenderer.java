@@ -10,9 +10,9 @@ import com.abntbuilder.formatter.rendering.component.ComponentRendererRegistry;
 import com.abntbuilder.formatter.rendering.component.titlepage.TitlePageRenderer;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public final class DocumentRenderer {
 
@@ -34,48 +34,45 @@ public final class DocumentRenderer {
     public DocxDocument render(ExportDocxCommand command) {
         Objects.requireNonNull(command, "command must not be null");
 
+        List<String> componentOrder = command.profile().componentOrder();
         selectionResolver.validateSupportedSelections(
                 command.selectedComponents(),
-                Set.of(COVER_COMPONENT_ID, TITLE_PAGE_COMPONENT_ID, PARAGRAPHS_COMPONENT_ID)
+                new LinkedHashSet<>(componentOrder)
         );
 
         StyleResolver styleResolver = new StyleResolver(command.profile());
         List<DocxBlock> blocks = new ArrayList<>();
-        boolean shouldRenderCover = selectionResolver.shouldRender(COVER_COMPONENT_ID, command.selectedComponents());
-        boolean shouldRenderParagraphs = selectionResolver.shouldRender(
-                PARAGRAPHS_COMPONENT_ID,
-                command.selectedComponents()
-        );
-        boolean shouldRenderTitlePage = selectionResolver.shouldRender(
-                TITLE_PAGE_COMPONENT_ID,
-                command.selectedComponents()
-        );
 
         validateSelectedContent(command);
 
-        if (shouldRenderCover) {
-            command.cover().ifPresent(cover -> addBlocks(
-                    blocks,
-                    rendererRegistry.get(COVER_COMPONENT_ID).renderComponent(cover, command.profile())
-            ));
-        }
+        for (String componentId : componentOrder) {
+            if (!selectionResolver.shouldRender(componentId, command.selectedComponents())) {
+                continue;
+            }
 
-        if (shouldRenderTitlePage) {
-            command.titlePage().ifPresent(titlePage -> addBlocks(
-                    blocks,
-                    rendererRegistry.get(TITLE_PAGE_COMPONENT_ID).renderComponent(titlePage, command.profile())
-            ));
-        }
-
-        if (shouldRenderParagraphs && !command.paragraphs().isEmpty()) {
-            addBlocks(blocks, command.paragraphs()
-                    .stream()
-                    .map(paragraph -> new DocxParagraph(
-                            paragraph.text(),
-                            styleResolver.resolve(paragraph.styleId())
-                    ))
-                    .map(DocxBlock.class::cast)
-                    .toList());
+            switch (componentId) {
+                case COVER_COMPONENT_ID -> command.cover().ifPresent(cover -> addBlocks(
+                        blocks,
+                        rendererRegistry.get(COVER_COMPONENT_ID).renderComponent(cover, command.profile())
+                ));
+                case TITLE_PAGE_COMPONENT_ID -> command.titlePage().ifPresent(titlePage -> addBlocks(
+                        blocks,
+                        rendererRegistry.get(TITLE_PAGE_COMPONENT_ID).renderComponent(titlePage, command.profile())
+                ));
+                case PARAGRAPHS_COMPONENT_ID -> {
+                    if (!command.paragraphs().isEmpty()) {
+                        addBlocks(blocks, command.paragraphs()
+                                .stream()
+                                .map(paragraph -> new DocxParagraph(
+                                        paragraph.text(),
+                                        styleResolver.resolve(paragraph.styleId())
+                                ))
+                                .map(DocxBlock.class::cast)
+                                .toList());
+                    }
+                }
+                default -> throw new IllegalArgumentException("unsupported render component: " + componentId);
+            }
         }
 
         if (blocks.isEmpty()) {

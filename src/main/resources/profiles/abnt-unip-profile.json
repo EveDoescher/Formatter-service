@@ -1,0 +1,431 @@
+{
+  "id": "abnt-unip-profile",
+  "displayName": "ABNT UNIP Profile",
+  "componentOrder": [
+    "cover",
+    "titlePage",
+    "paragraphs"
+  ],
+  "pageRule": {
+    "widthCm": 21,
+    "heightCm": 29.7,
+    "marginTopCm": 3,
+    "marginRightCm": 2,
+    "marginBottomCm": 2,
+    "marginLeftCm": 3,
+    "orientation": "PORTRAIT"
+  },
+  "styleRules": [
+    {
+      "id": "cover.top",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": true
+    },
+    {
+      "id": "cover.author",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": true
+    },
+    {
+      "id": "cover.title",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": true
+    },
+    {
+      "id": "cover.subtitle",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "cover.bottom",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": true
+    },
+    {
+      "id": "titlePage.author",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": true
+    },
+    {
+      "id": "titlePage.title",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": true
+    },
+    {
+      "id": "titlePage.subtitle",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "titlePage.nature",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "JUSTIFIED",
+      "lineSpacing": 1,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "titlePage.advisor",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 1,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "titlePage.coadvisor",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 1,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "titlePage.bottom",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    }
+  ],
+  "componentRules": {
+    "cover": {
+      "componentId": "cover",
+      "styleMapping": {
+        "institutionalLinesStyleId": "cover.top",
+        "authorsStyleId": "cover.author",
+        "titleStyleId": "cover.title",
+        "subtitleStyleId": "cover.subtitle",
+        "cityStyleId": "cover.bottom",
+        "yearStyleId": "cover.bottom"
+      },
+      "layoutRule": {
+        "groups": [
+          {
+            "id": "cover.institution",
+            "required": true,
+            "items": [
+              {
+                "id": "institutionalLines",
+                "required": true
+              }
+            ]
+          },
+          {
+            "id": "cover.authors",
+            "required": false,
+            "items": [
+              {
+                "id": "authors",
+                "required": false
+              }
+            ]
+          },
+          {
+            "id": "cover.titleBlock",
+            "required": true,
+            "items": [
+              {
+                "id": "title",
+                "required": true
+              },
+              {
+                "id": "subtitle",
+                "required": false
+              }
+            ]
+          },
+          {
+            "id": "cover.bottom",
+            "required": true,
+            "items": [
+              {
+                "id": "city",
+                "required": true,
+                "maxVisualLinesPerValue": 1
+              },
+              {
+                "id": "year",
+                "required": true,
+                "maxVisualLinesPerValue": 1
+              }
+            ]
+          }
+        ],
+        "gapRules": [
+          {
+            "fromGroupId": "cover.institution",
+            "toGroupId": "cover.authors",
+            "weight": 30
+          },
+          {
+            "fromGroupId": "cover.authors",
+            "toGroupId": "cover.titleBlock",
+            "weight": 10
+          },
+          {
+            "fromGroupId": "cover.titleBlock",
+            "toGroupId": "cover.bottom",
+            "weight": 60
+          }
+        ],
+        "policy": {
+          "anchorStrategy": "LAST_GROUP_AT_SAFE_AREA_END",
+          "lineHeightStrategy": "MAX_EXACT_LINE_HEIGHT",
+          "spacerStylePolicy": "NEXT_GROUP_STYLE",
+          "safetyPolicy": "MARGIN_BASED"
+        }
+      }
+    },
+    "titlePage": {
+      "componentId": "titlePage",
+      "styleMapping": {
+        "authorsStyleId": "titlePage.author",
+        "titleStyleId": "titlePage.title",
+        "subtitleStyleId": "titlePage.subtitle",
+        "natureStyleId": "titlePage.nature",
+        "advisorStyleId": "titlePage.advisor",
+        "coadvisorStyleId": "titlePage.coadvisor",
+        "cityStyleId": "titlePage.bottom",
+        "yearStyleId": "titlePage.bottom"
+      },
+      "textTemplates": {
+        "natureTemplate": "{workType} para {degreeObjective} em {courseName} apresentado \u00e0 {institutionName}.",
+        "advisorTemplate": "Orientador(a): {academicTitle} {name}.",
+        "coadvisorTemplate": "Coorientador(a): {academicTitle} {name}."
+      },
+      "layoutRule": {
+        "groups": [
+          {
+            "id": "titlePage.authors",
+            "required": true,
+            "items": [
+              {
+                "id": "authors",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              }
+            ]
+          },
+          {
+            "id": "titlePage.titleBlock",
+            "required": true,
+            "items": [
+              {
+                "id": "title",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              },
+              {
+                "id": "subtitle",
+                "required": false,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              }
+            ]
+          },
+          {
+            "id": "titlePage.natureBlock",
+            "required": true,
+            "items": [
+              {
+                "id": "nature",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FROM_PAGE_CENTER_TO_RIGHT_MARGIN"
+                },
+                "blankLinesAfter": 1
+              },
+              {
+                "id": "advisor",
+                "required": false,
+                "horizontalPlacement": {
+                  "strategy": "FROM_PAGE_CENTER_TO_RIGHT_MARGIN"
+                },
+                "blankLinesAfter": 1
+              },
+              {
+                "id": "coadvisor",
+                "required": false,
+                "horizontalPlacement": {
+                  "strategy": "FROM_PAGE_CENTER_TO_RIGHT_MARGIN"
+                }
+              }
+            ]
+          },
+          {
+            "id": "titlePage.bottom",
+            "required": true,
+            "items": [
+              {
+                "id": "city",
+                "required": true,
+                "maxVisualLinesPerValue": 1,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              },
+              {
+                "id": "year",
+                "required": true,
+                "maxVisualLinesPerValue": 1,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              }
+            ]
+          }
+        ],
+        "gapRules": [
+          {
+            "fromGroupId": "titlePage.authors",
+            "toGroupId": "titlePage.titleBlock",
+            "weight": 20
+          },
+          {
+            "fromGroupId": "titlePage.titleBlock",
+            "toGroupId": "titlePage.natureBlock",
+            "weight": 35
+          },
+          {
+            "fromGroupId": "titlePage.natureBlock",
+            "toGroupId": "titlePage.bottom",
+            "weight": 45
+          }
+        ],
+        "policy": {
+          "anchorStrategy": "LAST_GROUP_AT_SAFE_AREA_END",
+          "lineHeightStrategy": "MAX_EXACT_LINE_HEIGHT",
+          "spacerStylePolicy": "NEXT_GROUP_STYLE",
+          "safetyPolicy": "MARGIN_BASED"
+        }
+      }
+    }
+  }
+}

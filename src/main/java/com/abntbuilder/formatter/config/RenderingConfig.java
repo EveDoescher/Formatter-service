@@ -1,6 +1,6 @@
 package com.abntbuilder.formatter.config;
 
-import com.abntbuilder.formatter.profile.resolution.InMemoryProfileProvider;
+import com.abntbuilder.formatter.profile.resolution.ClasspathJsonProfileProvider;
 import com.abntbuilder.formatter.profile.resolution.ProfileProvider;
 import com.abntbuilder.formatter.rendering.component.ComponentRenderer;
 import com.abntbuilder.formatter.rendering.component.ComponentRendererRegistry;
@@ -42,7 +42,7 @@ public class RenderingConfig {
 
     @Bean
     public ProfileProvider profileProvider() {
-        return new InMemoryProfileProvider();
+        return new ClasspathJsonProfileProvider();
     }
 
     @Bean

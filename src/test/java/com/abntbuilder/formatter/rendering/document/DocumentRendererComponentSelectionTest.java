@@ -158,7 +158,8 @@ class DocumentRendererComponentSelectionTest {
                 "Test Profile",
                 pageRule(),
                 List.of(style("body")),
-                List.of()
+                List.of(),
+                List.of("cover", "titlePage", "paragraphs")
         );
     }
 

@@ -6,7 +6,7 @@ import com.abntbuilder.formatter.document.component.titlepage.TitlePageNature;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
 import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageComponentRule;
 import com.abntbuilder.formatter.profile.resolution.ComponentRuleResolver;
-import com.abntbuilder.formatter.profile.resolution.InMemoryProfileProvider;
+import com.abntbuilder.formatter.profile.resolution.ClasspathJsonProfileProvider;
 import com.abntbuilder.formatter.rendering.layout.singlepage.HorizontalPlacementResolver;
 import com.abntbuilder.formatter.rendering.layout.singlepage.OrderedLayoutGapResolver;
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutGroup;
@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TitlePageLayoutAssemblerTest {
 
-    private final DocumentProfile profile = new InMemoryProfileProvider().findById("abnt-unip-profile");
+    private final DocumentProfile profile = new ClasspathJsonProfileProvider().findById("abnt-unip-profile");
     private final TitlePageComponentRule rule = new ComponentRuleResolver(profile)
             .resolve("titlePage", TitlePageComponentRule.class);
     private final TitlePageLayoutAssembler assembler = new TitlePageLayoutAssembler(
@@ -79,6 +79,15 @@ class TitlePageLayoutAssemblerTest {
         assertEquals(0, item(input, "nature").blankLinesAfter());
     }
 
+    @Test
+    void shouldAddAdvisorBlankLineOnlyWhenCoadvisorIsPresent() {
+        SinglePageLayoutInput inputWithoutCoadvisor = assembler.assemble(component(), profile, rule);
+        SinglePageLayoutInput inputWithCoadvisor = assembler.assemble(componentWithCoadvisor(), profile, rule);
+
+        assertEquals(0, item(inputWithoutCoadvisor, "advisor").blankLinesAfter());
+        assertEquals(1, item(inputWithCoadvisor, "advisor").blankLinesAfter());
+    }
+
     private static SinglePageLayoutItem item(SinglePageLayoutInput input, String itemId) {
         return input.groups()
                 .stream()
@@ -119,6 +128,24 @@ class TitlePageLayoutAssemblerTest {
                 ),
                 Optional.empty(),
                 Optional.empty(),
+                "Limeira",
+                "2026"
+        );
+    }
+
+    private static TitlePageComponent componentWithCoadvisor() {
+        return new TitlePageComponent(
+                List.of("Nome Completo do Aluno"),
+                "Titulo do Trabalho",
+                Optional.of("Subtitulo do trabalho"),
+                new TitlePageNature(
+                        "Trabalho de conclusao de curso",
+                        "obtencao do titulo de graduacao",
+                        "Analise e Desenvolvimento de Sistemas",
+                        "Universidade Paulista - UNIP"
+                ),
+                Optional.of(new AcademicPerson("Jose da Silva", Optional.of("Prof. Dr."))),
+                Optional.of(new AcademicPerson("Maria Souza", Optional.of("Profa. Dra."))),
                 "Limeira",
                 "2026"
         );

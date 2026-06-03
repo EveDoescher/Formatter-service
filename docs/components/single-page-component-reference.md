@@ -166,6 +166,29 @@ isso.
 Componentes especificos podem ter adaptadores proprios por compatibilidade, mas o
 algoritmo de distribuicao nao deve ser duplicado dentro do componente.
 
+### Microespacamento interno
+
+`blankLinesAfter` pertence ao item do perfil e representa apenas microespacamento
+entre itens do mesmo grupo.
+
+Uso correto:
+
+```text
+nature -> advisor
+advisor -> coadvisor
+```
+
+Uso incorreto:
+
+```text
+titleBlock -> natureBlock
+natureBlock -> bottom
+```
+
+Distancias entre grupos devem continuar em `gapRules`. `blankLinesAfter` nao
+substitui pesos de gap, nao posiciona blocos na pagina e nao deve ser usado para
+simular layout vertical global.
+
 ### Texto medido
 
 O texto deve ser medido antes da renderizacao.

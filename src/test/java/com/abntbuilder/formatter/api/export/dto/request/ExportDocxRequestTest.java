@@ -1,7 +1,7 @@
 package com.abntbuilder.formatter.api.export.dto.request;
 
 import com.abntbuilder.formatter.application.export.ExportDocxCommand;
-import com.abntbuilder.formatter.profile.resolution.InMemoryProfileProvider;
+import com.abntbuilder.formatter.profile.resolution.ClasspathJsonProfileProvider;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -22,7 +22,7 @@ class ExportDocxRequestTest {
                 List.of()
         );
 
-        ExportDocxCommand command = request.toCommand(new InMemoryProfileProvider());
+        ExportDocxCommand command = request.toCommand(new ClasspathJsonProfileProvider());
 
         assertTrue(command.cover().isEmpty());
         assertTrue(command.titlePage().isPresent());
