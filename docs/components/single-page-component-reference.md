@@ -26,6 +26,21 @@ Essa regra vale para todos os componentes de pagina unica.
 
 ## Responsabilidades
 
+### Componentes internos
+
+`paragraphs` e um componente interno provisorio para texto simples e smoke tests.
+Ele pode aparecer em `componentOrder`, mas nao possui `ComponentRule` propria e
+nao deve ser usado como modelo para componentes academicos.
+
+Novos componentes academicos devem ter:
+
+```text
+modelo semantico proprio
+ComponentRule propria no perfil
+renderer proprio
+samples validos e invalidos
+```
+
 ### Perfil
 
 O perfil define decisoes visuais e estruturais:

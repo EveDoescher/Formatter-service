@@ -14,6 +14,7 @@ import com.abntbuilder.formatter.profile.model.PageRule;
 import com.abntbuilder.formatter.profile.model.StyleRule;
 import com.abntbuilder.formatter.profile.model.StyleType;
 import com.abntbuilder.formatter.profile.model.TextAlignment;
+import com.abntbuilder.formatter.profile.model.component.ComponentRule;
 import com.abntbuilder.formatter.rendering.component.ComponentRenderer;
 import com.abntbuilder.formatter.rendering.component.ComponentRendererRegistry;
 import org.junit.jupiter.api.Test;
@@ -158,7 +159,7 @@ class DocumentRendererComponentSelectionTest {
                 "Test Profile",
                 pageRule(),
                 List.of(style("body")),
-                List.of(),
+                List.of(new FakeComponentRule("cover"), new FakeComponentRule("titlePage")),
                 List.of("cover", "titlePage", "paragraphs")
         );
     }
@@ -228,5 +229,8 @@ class DocumentRendererComponentSelectionTest {
         public List<DocxBlock> render(TitlePageComponent component, DocumentProfile profile) {
             return List.of(new DocxParagraph("TITLE_PAGE", style("body")));
         }
+    }
+
+    private record FakeComponentRule(String componentId) implements ComponentRule {
     }
 }

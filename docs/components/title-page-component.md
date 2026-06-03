@@ -40,6 +40,9 @@ The UNIP profile currently declares these groups:
 
 The `nature`, `advisor` and `coadvisor` items use `FROM_PAGE_CENTER_TO_RIGHT_MARGIN`, so the engine calculates the right-half text area from the page rule instead of using a fixed indent.
 
+In this engine, `FROM_PAGE_CENTER_TO_RIGHT_MARGIN` means the center of the useful
+page area, after margins, not the physical center of the paper.
+
 The spacing between `nature`, `advisor` and `coadvisor` is profile-driven through
 `blankLinesAfter`. This is internal spacing inside `titlePage.natureBlock`; the
 distance from the title block to the nature block, and from the nature block to

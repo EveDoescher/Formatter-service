@@ -39,7 +39,7 @@ class DocumentProfileTest {
                 "test-profile",
                 "Test Profile",
                 validPageRule(),
-                List.of(validStyleRule("body")),
+                validCoverStyleRules(),
                 List.of(validCoverComponentRule("cover"))
         );
 
@@ -141,7 +141,7 @@ class DocumentProfileTest {
                 "test-profile",
                 "Test Profile",
                 validPageRule(),
-                List.of(validStyleRule("body")),
+                validCoverStyleRules(),
                 List.of(
                         validCoverComponentRule("cover"),
                         validCoverComponentRule("cover")
@@ -170,11 +170,55 @@ class DocumentProfileTest {
                 "test-profile",
                 "Test Profile",
                 validPageRule(),
-                List.of(validStyleRule("body")),
+                validCoverStyleRules(),
                 List.of(validCoverComponentRule("cover"))
         );
 
         assertThrows(UnsupportedOperationException.class, () -> profile.componentRules().add(validCoverComponentRule("title-page")));
+    }
+
+    @Test
+    void shouldRejectUnknownComponentOrderId() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new DocumentProfile(
+                "test-profile",
+                "Test Profile",
+                validPageRule(),
+                List.of(validStyleRule("body")),
+                List.of(),
+                List.of("abstract")
+        ));
+
+        assertEquals("Unknown component order id: abstract", exception.getMessage());
+    }
+
+    @Test
+    void shouldAllowParagraphsAsInternalComponentOrderId() {
+        DocumentProfile profile = new DocumentProfile(
+                "test-profile",
+                "Test Profile",
+                validPageRule(),
+                List.of(validStyleRule("body")),
+                List.of(),
+                List.of(DocumentProfile.PARAGRAPHS_INTERNAL_COMPONENT_ID)
+        );
+
+        assertEquals(List.of(DocumentProfile.PARAGRAPHS_INTERNAL_COMPONENT_ID), profile.componentOrder());
+    }
+
+    @Test
+    void shouldRejectComponentStyleMappingThatReferencesUnknownStyleId() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new DocumentProfile(
+                "test-profile",
+                "Test Profile",
+                validPageRule(),
+                List.of(validStyleRule("cover.top")),
+                List.of(validCoverComponentRule("cover"))
+        ));
+
+        assertEquals(
+                "Component style mapping references unknown style id: cover.author",
+                exception.getMessage()
+        );
     }
 
     private static PageRule validPageRule() {
@@ -205,6 +249,16 @@ class DocumentProfileTest {
                 false,
                 false,
                 false
+        );
+    }
+
+    private static List<StyleRule> validCoverStyleRules() {
+        return List.of(
+                validStyleRule("cover.top"),
+                validStyleRule("cover.author"),
+                validStyleRule("cover.title"),
+                validStyleRule("cover.subtitle"),
+                validStyleRule("cover.bottom")
         );
     }
 

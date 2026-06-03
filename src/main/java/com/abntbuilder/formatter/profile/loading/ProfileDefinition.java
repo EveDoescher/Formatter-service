@@ -24,6 +24,7 @@ import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageLayou
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageLineHeightStrategy;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageSafetyPolicyId;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SpacerStylePolicy;
+import com.abntbuilder.formatter.shared.exception.InvalidProfileStructureException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -40,9 +41,12 @@ public record ProfileDefinition(
 ) {
 
     public DocumentProfile toDomain() {
-        List<ComponentRule> resolvedComponentRules = componentRules == null
-                ? List.of()
-                : componentRules.toDomain();
+        requireNonNull(pageRule, "pageRule");
+        requireNonEmpty(styleRules, "styleRules");
+        requireNonNull(componentRules, "componentRules");
+        requireNonEmpty(componentOrder, "componentOrder");
+
+        List<ComponentRule> resolvedComponentRules = componentRules.toDomain();
 
         return new DocumentProfile(
                 id,
@@ -52,18 +56,8 @@ public record ProfileDefinition(
                         .map(StyleRuleDefinition::toDomain)
                         .toList(),
                 resolvedComponentRules,
-                componentOrder == null ? defaultComponentOrder(resolvedComponentRules) : componentOrder
+                componentOrder
         );
-    }
-
-    private static List<String> defaultComponentOrder(List<ComponentRule> componentRules) {
-        List<String> order = new ArrayList<>(componentRules.stream()
-                .map(ComponentRule::componentId)
-                .toList());
-
-        order.add("paragraphs");
-
-        return List.copyOf(order);
     }
 
     public record PageRuleDefinition(
@@ -149,6 +143,9 @@ public record ProfileDefinition(
             CoverLayoutRuleDefinition layoutRule
     ) {
         CoverComponentRule toDomain() {
+            requireNonNull(styleMapping, "cover.styleMapping");
+            requireNonNull(layoutRule, "cover.layoutRule");
+
             return new CoverComponentRule(
                     componentId,
                     styleMapping.toDomain(),
@@ -183,6 +180,10 @@ public record ProfileDefinition(
             SinglePageLayoutPolicyDefinition policy
     ) {
         CoverLayoutRule toDomain() {
+            requireNonEmpty(groups, "cover.layoutRule.groups");
+            requireNonNull(gapRules, "cover.layoutRule.gapRules");
+            requireNonNull(policy, "cover.layoutRule.policy");
+
             return new CoverLayoutRule(
                     groups.stream()
                             .map(SinglePageGroupRuleDefinition::toDomain)
@@ -190,7 +191,7 @@ public record ProfileDefinition(
                     gapRules.stream()
                             .map(LayoutGapRuleDefinition::toDomain)
                             .toList(),
-                    policy == null ? SinglePageLayoutPolicy.defaultSinglePagePolicy() : policy.toDomain()
+                    policy.toDomain()
             );
         }
     }
@@ -202,6 +203,10 @@ public record ProfileDefinition(
             SinglePageLayoutRuleDefinition layoutRule
     ) {
         TitlePageComponentRule toDomain() {
+            requireNonNull(styleMapping, "titlePage.styleMapping");
+            requireNonNull(textTemplates, "titlePage.textTemplates");
+            requireNonNull(layoutRule, "titlePage.layoutRule");
+
             return new TitlePageComponentRule(
                     componentId,
                     styleMapping.toDomain(),
@@ -255,6 +260,10 @@ public record ProfileDefinition(
             SinglePageLayoutPolicyDefinition policy
     ) {
         SinglePageLayoutRule toDomain() {
+            requireNonEmpty(groups, "layoutRule.groups");
+            requireNonNull(gapRules, "layoutRule.gapRules");
+            requireNonNull(policy, "layoutRule.policy");
+
             return new SinglePageLayoutRule(
                     groups.stream()
                             .map(SinglePageGroupRuleDefinition::toDomain)
@@ -262,7 +271,7 @@ public record ProfileDefinition(
                     gapRules.stream()
                             .map(LayoutGapRuleDefinition::toDomain)
                             .toList(),
-                    policy == null ? SinglePageLayoutPolicy.defaultSinglePagePolicy() : policy.toDomain()
+                    policy.toDomain()
             );
         }
     }
@@ -273,9 +282,12 @@ public record ProfileDefinition(
             List<SinglePageItemRuleDefinition> items
     ) {
         SinglePageGroupRule toDomain() {
+            requireNonNull(required, "group.required");
+            requireNonEmpty(items, "group.items");
+
             return new SinglePageGroupRule(
                     id,
-                    Boolean.TRUE.equals(required),
+                    required,
                     items.stream()
                             .map(SinglePageItemRuleDefinition::toDomain)
                             .toList()
@@ -291,13 +303,14 @@ public record ProfileDefinition(
             Integer blankLinesAfter
     ) {
         SinglePageItemRule toDomain() {
+            requireNonNull(required, "item.required");
+            requireNonNull(horizontalPlacement, "item.horizontalPlacement");
+
             return new SinglePageItemRule(
                     id,
-                    Boolean.TRUE.equals(required),
+                    required,
                     Optional.ofNullable(maxVisualLinesPerValue),
-                    horizontalPlacement == null
-                            ? HorizontalPlacementRule.fullContentWidth()
-                            : horizontalPlacement.toDomain(),
+                    horizontalPlacement.toDomain(),
                     blankLinesAfter == null ? 0 : blankLinesAfter
             );
         }
@@ -328,20 +341,31 @@ public record ProfileDefinition(
             SinglePageSafetyPolicyId safetyPolicy
     ) {
         SinglePageLayoutPolicy toDomain() {
+            requireNonNull(anchorStrategy, "policy.anchorStrategy");
+            requireNonNull(lineHeightStrategy, "policy.lineHeightStrategy");
+            requireNonNull(spacerStylePolicy, "policy.spacerStylePolicy");
+            requireNonNull(safetyPolicy, "policy.safetyPolicy");
+
             return new SinglePageLayoutPolicy(
-                    anchorStrategy == null
-                            ? SinglePageAnchorStrategy.LAST_GROUP_AT_SAFE_AREA_END
-                            : anchorStrategy,
-                    lineHeightStrategy == null
-                            ? SinglePageLineHeightStrategy.MAX_EXACT_LINE_HEIGHT
-                            : lineHeightStrategy,
-                    spacerStylePolicy == null
-                            ? SpacerStylePolicy.NEXT_GROUP_STYLE
-                            : spacerStylePolicy,
-                    safetyPolicy == null
-                            ? SinglePageSafetyPolicyId.MARGIN_BASED
-                            : safetyPolicy
+                    anchorStrategy,
+                    lineHeightStrategy,
+                    spacerStylePolicy,
+                    safetyPolicy
             );
+        }
+    }
+
+    private static void requireNonNull(Object value, String fieldName) {
+        if (value == null) {
+            throw new InvalidProfileStructureException(fieldName + " must be provided.");
+        }
+    }
+
+    private static void requireNonEmpty(List<?> value, String fieldName) {
+        requireNonNull(value, fieldName);
+
+        if (value.isEmpty()) {
+            throw new InvalidProfileStructureException(fieldName + " must not be empty.");
         }
     }
 }

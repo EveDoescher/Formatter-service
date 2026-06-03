@@ -1,7 +1,11 @@
 package com.abntbuilder.formatter.profile.model;
 
 import com.abntbuilder.formatter.profile.model.component.ComponentRule;
+import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
+import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageComponentRule;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -15,6 +19,9 @@ public record DocumentProfile(
         List<ComponentRule> componentRules,
         List<String> componentOrder
 ) {
+    public static final String PARAGRAPHS_INTERNAL_COMPONENT_ID = "paragraphs";
+    private static final Set<String> INTERNAL_COMPONENT_IDS = Set.of(PARAGRAPHS_INTERNAL_COMPONENT_ID);
+
     public DocumentProfile(
             String id,
             String displayName,
@@ -28,9 +35,7 @@ public record DocumentProfile(
                 pageRule,
                 styleRules,
                 componentRules,
-                componentRules.stream()
-                        .map(ComponentRule::componentId)
-                        .toList()
+                defaultComponentOrder(componentRules)
         );
     }
 
@@ -52,7 +57,8 @@ public record DocumentProfile(
 
         validateStyleRules(styleRules);
         validateComponentRules(componentRules);
-        validateComponentOrder(componentOrder);
+        validateComponentOrder(componentRules, componentOrder);
+        validateComponentStyleMappings(styleRules, componentRules);
     }
 
     private static void validateStyleRules(List<StyleRule> styleRules) {
@@ -79,16 +85,84 @@ public record DocumentProfile(
         }
     }
 
-    private static void validateComponentOrder(List<String> componentOrder) {
-        Set<String> componentIds = new HashSet<>();
+    private static void validateComponentOrder(
+            List<ComponentRule> componentRules,
+            List<String> componentOrder
+    ) {
+        if (componentOrder.isEmpty()) {
+            throw new IllegalArgumentException("componentOrder must not be empty.");
+        }
+
+        Set<String> declaredComponentIds = componentRules.stream()
+                .map(ComponentRule::componentId)
+                .collect(java.util.stream.Collectors.toUnmodifiableSet());
+        Set<String> orderedComponentIds = new HashSet<>();
 
         for (String componentId : componentOrder) {
             requireNonBlank(componentId, "componentOrder item");
 
-            if (!componentIds.add(componentId)) {
+            if (!orderedComponentIds.add(componentId)) {
                 throw new IllegalArgumentException("Duplicate component order id: " + componentId);
             }
+
+            if (!declaredComponentIds.contains(componentId) && !INTERNAL_COMPONENT_IDS.contains(componentId)) {
+                throw new IllegalArgumentException("Unknown component order id: " + componentId);
+            }
         }
+    }
+
+    private static void validateComponentStyleMappings(
+            List<StyleRule> styleRules,
+            List<ComponentRule> componentRules
+    ) {
+        Set<String> styleIds = styleRules.stream()
+                .map(StyleRule::id)
+                .collect(java.util.stream.Collectors.toUnmodifiableSet());
+
+        for (ComponentRule componentRule : componentRules) {
+            for (String styleId : styleIdsFor(componentRule)) {
+                if (!styleIds.contains(styleId)) {
+                    throw new IllegalArgumentException(
+                            "Component style mapping references unknown style id: " + styleId
+                    );
+                }
+            }
+        }
+    }
+
+    private static Collection<String> styleIdsFor(ComponentRule componentRule) {
+        return switch (componentRule) {
+            case CoverComponentRule coverRule -> List.of(
+                    coverRule.styleMapping().institutionalLinesStyleId(),
+                    coverRule.styleMapping().authorsStyleId(),
+                    coverRule.styleMapping().titleStyleId(),
+                    coverRule.styleMapping().subtitleStyleId(),
+                    coverRule.styleMapping().cityStyleId(),
+                    coverRule.styleMapping().yearStyleId()
+            );
+            case TitlePageComponentRule titlePageRule -> List.of(
+                    titlePageRule.styleMapping().authorsStyleId(),
+                    titlePageRule.styleMapping().titleStyleId(),
+                    titlePageRule.styleMapping().subtitleStyleId(),
+                    titlePageRule.styleMapping().natureStyleId(),
+                    titlePageRule.styleMapping().advisorStyleId(),
+                    titlePageRule.styleMapping().coadvisorStyleId(),
+                    titlePageRule.styleMapping().cityStyleId(),
+                    titlePageRule.styleMapping().yearStyleId()
+            );
+            default -> List.of();
+        };
+    }
+
+    private static List<String> defaultComponentOrder(List<ComponentRule> componentRules) {
+        Objects.requireNonNull(componentRules, "componentRules must not be null");
+
+        List<String> order = new ArrayList<>(componentRules.stream()
+                .map(ComponentRule::componentId)
+                .toList());
+        order.add(PARAGRAPHS_INTERNAL_COMPONENT_ID);
+
+        return List.copyOf(order);
     }
 
     private static void requireNonBlank(String value, String fieldName) {

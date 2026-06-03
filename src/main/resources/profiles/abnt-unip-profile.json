@@ -228,7 +228,10 @@
             "items": [
               {
                 "id": "institutionalLines",
-                "required": true
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
               }
             ]
           },
@@ -238,7 +241,10 @@
             "items": [
               {
                 "id": "authors",
-                "required": false
+                "required": false,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
               }
             ]
           },
@@ -248,11 +254,17 @@
             "items": [
               {
                 "id": "title",
-                "required": true
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
               },
               {
                 "id": "subtitle",
-                "required": false
+                "required": false,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
               }
             ]
           },
@@ -263,12 +275,18 @@
               {
                 "id": "city",
                 "required": true,
-                "maxVisualLinesPerValue": 1
+                "maxVisualLinesPerValue": 1,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
               },
               {
                 "id": "year",
                 "required": true,
-                "maxVisualLinesPerValue": 1
+                "maxVisualLinesPerValue": 1,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
               }
             ]
           }
