@@ -7,6 +7,7 @@ import com.abntbuilder.formatter.shared.exception.MissingComponentRendererExcept
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -20,6 +21,33 @@ class ComponentRendererRegistryTest {
         ComponentRendererRegistry registry = new ComponentRendererRegistry(List.of(renderer));
 
         assertSame(renderer, registry.get("cover"));
+    }
+
+    @Test
+    void shouldResolveComponentIdForRegisteredComponentType() {
+        ComponentRendererRegistry registry = new ComponentRendererRegistry(List.of(new FakeCoverRenderer()));
+
+        assertEquals("cover", registry.componentIdFor(new CoverComponent(
+                List.of("Universidade"),
+                List.of("Autor"),
+                "Titulo",
+                Optional.empty(),
+                "Limeira",
+                "2026"
+        )));
+    }
+
+    @Test
+    void shouldRejectDuplicateRendererComponentType() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new ComponentRendererRegistry(List.of(
+                        new FakeCoverRenderer(),
+                        new AlternativeFakeCoverRenderer()
+                ))
+        );
+
+        assertEquals("Duplicate component renderer type: CoverComponent", exception.getMessage());
     }
 
     @Test
@@ -39,6 +67,24 @@ class ComponentRendererRegistryTest {
         @Override
         public String componentId() {
             return "cover";
+        }
+
+        @Override
+        public Class<CoverComponent> componentType() {
+            return CoverComponent.class;
+        }
+
+        @Override
+        public List<DocxBlock> render(CoverComponent component, DocumentProfile profile) {
+            return List.of();
+        }
+    }
+
+    private static final class AlternativeFakeCoverRenderer implements ComponentRenderer<CoverComponent> {
+
+        @Override
+        public String componentId() {
+            return "alternativeCover";
         }
 
         @Override

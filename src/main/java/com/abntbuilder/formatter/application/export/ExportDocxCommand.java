@@ -1,9 +1,11 @@
 package com.abntbuilder.formatter.application.export;
 
+import com.abntbuilder.formatter.document.component.DocumentComponent;
 import com.abntbuilder.formatter.document.component.cover.CoverComponent;
 import com.abntbuilder.formatter.document.component.titlepage.TitlePageComponent;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -51,6 +53,15 @@ public record ExportDocxCommand(
         if (cover.isEmpty() && titlePage.isEmpty() && paragraphs.isEmpty()) {
             throw new IllegalArgumentException("document must contain at least one renderable component.");
         }
+    }
+
+    public List<DocumentComponent> documentComponents() {
+        List<DocumentComponent> components = new ArrayList<>();
+
+        cover.ifPresent(components::add);
+        titlePage.ifPresent(components::add);
+
+        return List.copyOf(components);
     }
 
     public record ParagraphCommand(
