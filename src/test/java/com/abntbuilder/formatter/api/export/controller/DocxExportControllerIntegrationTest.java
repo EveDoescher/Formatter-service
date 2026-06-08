@@ -153,6 +153,7 @@ class DocxExportControllerIntegrationTest {
                   "profile": {
                     "id": "test-profile",
                     "displayName": "Test Profile",
+                    "componentOrder": ["paragraphs"],
                     "pageRule": {
                       "widthCm": 21,
                       "heightCm": 29.7,
@@ -205,6 +206,7 @@ class DocxExportControllerIntegrationTest {
                   "profile": {
                     "id": "test-profile",
                     "displayName": "Test Profile",
+                    "componentOrder": ["paragraphs"],
                     "pageRule": {
                       "widthCm": 21,
                       "heightCm": 29.7,
@@ -256,6 +258,7 @@ class DocxExportControllerIntegrationTest {
                   "profile": {
                     "id": "test-profile",
                     "displayName": "Test Profile",
+                    "componentOrder": ["paragraphs"],
                     "pageRule": {
                       "widthCm": 21,
                       "heightCm": 29.7,
@@ -321,6 +324,7 @@ class DocxExportControllerIntegrationTest {
                   "profile": {
                     "id": "abnt-unip-profile",
                     "displayName": "ABNT UNIP Profile",
+                    "componentOrder": ["cover", "paragraphs"],
                     "pageRule": {
                       "widthCm": 21,
                       "heightCm": 29.7,
@@ -431,7 +435,8 @@ class DocxExportControllerIntegrationTest {
                               "items": [
                                 {
                                   "id": "institutionalLines",
-                                  "required": true
+                                  "required": true,
+                                  "horizontalPlacement": "FULL_CONTENT_WIDTH"
                                 }
                               ]
                             },
@@ -441,7 +446,8 @@ class DocxExportControllerIntegrationTest {
                               "items": [
                                 {
                                   "id": "authors",
-                                  "required": false
+                                  "required": false,
+                                  "horizontalPlacement": "FULL_CONTENT_WIDTH"
                                 }
                               ]
                             },
@@ -451,11 +457,13 @@ class DocxExportControllerIntegrationTest {
                               "items": [
                                 {
                                   "id": "title",
-                                  "required": true
+                                  "required": true,
+                                  "horizontalPlacement": "FULL_CONTENT_WIDTH"
                                 },
                                 {
                                   "id": "subtitle",
-                                  "required": false
+                                  "required": false,
+                                  "horizontalPlacement": "FULL_CONTENT_WIDTH"
                                 }
                               ]
                             },
@@ -466,12 +474,14 @@ class DocxExportControllerIntegrationTest {
                                 {
                                   "id": "city",
                                   "required": true,
-                                  "maxVisualLinesPerValue": 1
+                                  "maxVisualLinesPerValue": 1,
+                                  "horizontalPlacement": "FULL_CONTENT_WIDTH"
                                 },
                                 {
                                   "id": "year",
                                   "required": true,
-                                  "maxVisualLinesPerValue": 1
+                                  "maxVisualLinesPerValue": 1,
+                                  "horizontalPlacement": "FULL_CONTENT_WIDTH"
                                 }
                               ]
                             }

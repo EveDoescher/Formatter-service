@@ -258,7 +258,8 @@ class CoverLayoutCalculatorTest {
                                 "cover.bottom"
                         ),
                         validCoverLayoutRule()
-                ))
+                )),
+                List.of("cover", DocumentProfile.PARAGRAPHS_INTERNAL_COMPONENT_ID)
         );
     }
 

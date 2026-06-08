@@ -173,7 +173,8 @@ class CoverRendererDocxSanityTest {
                         style("cover.subtitle", false, false),
                         style("cover.bottom", false, false)
                 ),
-                List.of(validCoverComponentRule())
+                List.of(validCoverComponentRule()),
+                List.of("cover", DocumentProfile.PARAGRAPHS_INTERNAL_COMPONENT_ID)
         );
     }
 

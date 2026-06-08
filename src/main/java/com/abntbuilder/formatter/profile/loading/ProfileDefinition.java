@@ -99,6 +99,10 @@ public record ProfileDefinition(
             Boolean uppercase
     ) {
         StyleRule toDomain() {
+            requireNonNull(bold, "style.bold");
+            requireNonNull(italic, "style.italic");
+            requireNonNull(uppercase, "style.uppercase");
+
             return new StyleRule(
                     id,
                     type,
@@ -111,9 +115,9 @@ public record ProfileDefinition(
                     rightIndentCm,
                     spacingBeforePt,
                     spacingAfterPt,
-                    Boolean.TRUE.equals(bold),
-                    Boolean.TRUE.equals(italic),
-                    Boolean.TRUE.equals(uppercase)
+                    bold,
+                    italic,
+                    uppercase
             );
         }
     }

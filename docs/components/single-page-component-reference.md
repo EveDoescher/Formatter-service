@@ -237,13 +237,22 @@ permite trocar o medidor sem mudar a semantica do componente.
 Regra obrigatoria:
 
 ```text
-Tudo que foi medido deve ser renderizado como foi medido.
+Tudo que influencia a quebra medida deve ser preservado na renderizacao.
 ```
 
-Se o medidor retornou tres linhas visuais, renderizar tres `DocxParagraph`.
+O texto natural pode ser renderizado como um unico `DocxParagraph`, deixando o
+Word quebrar o paragrafo, desde que:
 
-Nao renderizar texto medido como um paragrafo livre esperando que o Word quebre do
-mesmo jeito.
+```text
+a medicao use a mesma largura horizontal;
+o paragrafo renderizado use o mesmo estilo;
+os mesmos recuos sejam aplicados;
+o mesmo espacamento seja usado;
+a area segura tenha folga suficiente para pequenas diferencas do Word.
+```
+
+O medidor estima altura e risco de overflow. Ele nao substitui a validacao visual
+do motor do Word.
 
 Mesmo com `FontMetricsTextMeasurer`, validar visualmente no Microsoft Word quando a
 mudanca afetar quebra de linha. A metrica Java e uma aproximacao melhor que fator
@@ -384,7 +393,8 @@ lineHeightTwips no perfil ou request
 exactLineHeightPt no perfil ou request
 linhas vazias fixas espalhadas no renderer
 calculo de area segura duplicado no componente
-texto medido renderizado como paragrafo livre
+texto renderizado sem medicao previa
+texto renderizado sem preservar largura, estilo, recuos e espacamento medidos
 DocxMultilineParagraph para resolver pagina unica
 gerar DOCX e torcer para o Word nao quebrar
 decisao visual institucional hardcoded no componente

@@ -4,7 +4,6 @@ import com.abntbuilder.formatter.profile.model.component.ComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageComponentRule;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -21,23 +20,6 @@ public record DocumentProfile(
 ) {
     public static final String PARAGRAPHS_INTERNAL_COMPONENT_ID = "paragraphs";
     private static final Set<String> INTERNAL_COMPONENT_IDS = Set.of(PARAGRAPHS_INTERNAL_COMPONENT_ID);
-
-    public DocumentProfile(
-            String id,
-            String displayName,
-            PageRule pageRule,
-            List<StyleRule> styleRules,
-            List<ComponentRule> componentRules
-    ) {
-        this(
-                id,
-                displayName,
-                pageRule,
-                styleRules,
-                componentRules,
-                defaultComponentOrder(componentRules)
-        );
-    }
 
     public DocumentProfile {
         requireNonBlank(id, "id");
@@ -152,17 +134,6 @@ public record DocumentProfile(
             );
             default -> List.of();
         };
-    }
-
-    private static List<String> defaultComponentOrder(List<ComponentRule> componentRules) {
-        Objects.requireNonNull(componentRules, "componentRules must not be null");
-
-        List<String> order = new ArrayList<>(componentRules.stream()
-                .map(ComponentRule::componentId)
-                .toList());
-        order.add(PARAGRAPHS_INTERNAL_COMPONENT_ID);
-
-        return List.copyOf(order);
     }
 
     private static void requireNonBlank(String value, String fieldName) {

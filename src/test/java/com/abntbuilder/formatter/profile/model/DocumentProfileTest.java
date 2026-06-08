@@ -24,7 +24,8 @@ class DocumentProfileTest {
                 "Test Profile",
                 validPageRule(),
                 List.of(validStyleRule("body")),
-                List.of()
+                List.of(),
+                paragraphsOrder()
         );
 
         assertEquals("test-profile", profile.id());
@@ -40,7 +41,8 @@ class DocumentProfileTest {
                 "Test Profile",
                 validPageRule(),
                 validCoverStyleRules(),
-                List.of(validCoverComponentRule("cover"))
+                List.of(validCoverComponentRule("cover")),
+                coverOrder()
         );
 
         assertEquals(1, profile.componentRules().size());
@@ -54,7 +56,8 @@ class DocumentProfileTest {
                 "Test Profile",
                 validPageRule(),
                 List.of(validStyleRule("body")),
-                List.of()
+                List.of(),
+                paragraphsOrder()
         ));
 
         assertEquals("id must not be blank.", exception.getMessage());
@@ -67,7 +70,8 @@ class DocumentProfileTest {
                 "",
                 validPageRule(),
                 List.of(validStyleRule("body")),
-                List.of()
+                List.of(),
+                paragraphsOrder()
         ));
 
         assertEquals("displayName must not be blank.", exception.getMessage());
@@ -80,7 +84,8 @@ class DocumentProfileTest {
                 "Test Profile",
                 null,
                 List.of(validStyleRule("body")),
-                List.of()
+                List.of(),
+                paragraphsOrder()
         ));
     }
 
@@ -91,7 +96,8 @@ class DocumentProfileTest {
                 "Test Profile",
                 validPageRule(),
                 null,
-                List.of()
+                List.of(),
+                paragraphsOrder()
         ));
     }
 
@@ -102,7 +108,8 @@ class DocumentProfileTest {
                 "Test Profile",
                 validPageRule(),
                 List.of(validStyleRule("body")),
-                null
+                null,
+                paragraphsOrder()
         ));
     }
 
@@ -113,7 +120,8 @@ class DocumentProfileTest {
                 "Test Profile",
                 validPageRule(),
                 List.of(),
-                List.of()
+                List.of(),
+                paragraphsOrder()
         ));
 
         assertEquals("styleRules must not be empty.", exception.getMessage());
@@ -129,7 +137,8 @@ class DocumentProfileTest {
                         validStyleRule("body"),
                         validStyleRule("body")
                 ),
-                List.of()
+                List.of(),
+                paragraphsOrder()
         ));
 
         assertEquals("Duplicate style rule id: body", exception.getMessage());
@@ -145,7 +154,8 @@ class DocumentProfileTest {
                 List.of(
                         validCoverComponentRule("cover"),
                         validCoverComponentRule("cover")
-                )
+                ),
+                coverOrder()
         ));
 
         assertEquals("Duplicate component rule id: cover", exception.getMessage());
@@ -158,7 +168,8 @@ class DocumentProfileTest {
                 "Test Profile",
                 validPageRule(),
                 List.of(validStyleRule("body")),
-                List.of()
+                List.of(),
+                paragraphsOrder()
         );
 
         assertThrows(UnsupportedOperationException.class, () -> profile.styleRules().add(validStyleRule("title")));
@@ -171,7 +182,8 @@ class DocumentProfileTest {
                 "Test Profile",
                 validPageRule(),
                 validCoverStyleRules(),
-                List.of(validCoverComponentRule("cover"))
+                List.of(validCoverComponentRule("cover")),
+                coverOrder()
         );
 
         assertThrows(UnsupportedOperationException.class, () -> profile.componentRules().add(validCoverComponentRule("title-page")));
@@ -212,7 +224,8 @@ class DocumentProfileTest {
                 "Test Profile",
                 validPageRule(),
                 List.of(validStyleRule("cover.top")),
-                List.of(validCoverComponentRule("cover"))
+                List.of(validCoverComponentRule("cover")),
+                coverOrder()
         ));
 
         assertEquals(
@@ -260,6 +273,14 @@ class DocumentProfileTest {
                 validStyleRule("cover.subtitle"),
                 validStyleRule("cover.bottom")
         );
+    }
+
+    private static List<String> paragraphsOrder() {
+        return List.of(DocumentProfile.PARAGRAPHS_INTERNAL_COMPONENT_ID);
+    }
+
+    private static List<String> coverOrder() {
+        return List.of("cover", DocumentProfile.PARAGRAPHS_INTERNAL_COMPONENT_ID);
     }
 
     private static CoverComponentRule validCoverComponentRule(String componentId) {

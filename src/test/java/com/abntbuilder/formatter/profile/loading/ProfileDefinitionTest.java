@@ -100,6 +100,49 @@ class ProfileDefinitionTest {
     }
 
     @Test
+    void shouldRejectStyleRuleWithoutRequiredBooleanFlags() {
+        InvalidProfileStructureException exception = assertThrows(
+                InvalidProfileStructureException.class,
+                () -> readProfile("""
+                        {
+                          "id": "test-profile",
+                          "displayName": "Test Profile",
+                          "componentOrder": ["paragraphs"],
+                          "pageRule": {
+                            "widthCm": 21,
+                            "heightCm": 29.7,
+                            "marginTopCm": 3,
+                            "marginRightCm": 2,
+                            "marginBottomCm": 2,
+                            "marginLeftCm": 3,
+                            "orientation": "PORTRAIT"
+                          },
+                          "styleRules": [
+                            {
+                              "id": "body",
+                              "type": "PARAGRAPH",
+                              "fontFamily": "Times New Roman",
+                              "fontSizePt": 12,
+                              "alignment": "JUSTIFIED",
+                              "lineSpacing": 1.5,
+                              "firstLineIndentCm": 1.25,
+                              "leftIndentCm": 0,
+                              "rightIndentCm": 0,
+                              "spacingBeforePt": 0,
+                              "spacingAfterPt": 0,
+                              "italic": false,
+                              "uppercase": false
+                            }
+                          ],
+                          "componentRules": {}
+                        }
+                        """)
+        );
+
+        assertEquals("style.bold must be provided.", exception.getMessage());
+    }
+
+    @Test
     void shouldRejectSinglePageItemWithoutHorizontalPlacement() {
         InvalidProfileStructureException exception = assertThrows(
                 InvalidProfileStructureException.class,

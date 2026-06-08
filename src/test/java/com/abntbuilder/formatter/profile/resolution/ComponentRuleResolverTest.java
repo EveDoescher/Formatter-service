@@ -115,7 +115,8 @@ class ComponentRuleResolverTest {
                 "Test Profile",
                 validPageRule(),
                 validCoverStyleRules(),
-                List.of(validCoverComponentRule())
+                List.of(validCoverComponentRule()),
+                List.of("cover", DocumentProfile.PARAGRAPHS_INTERNAL_COMPONENT_ID)
         );
     }
 
