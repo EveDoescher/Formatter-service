@@ -54,7 +54,29 @@ public final class SinglePageLayoutLineMetrics {
             throw new IllegalArgumentException("layoutLineHeightTwips must be greater than zero.");
         }
 
-        return contentLineCount(groups) * layoutLineHeightTwips;
+        return contentHeightTwips(groups);
+    }
+
+    public int contentHeightTwips(List<SinglePageLayoutGroup> groups) {
+        Objects.requireNonNull(groups, "groups must not be null");
+
+        int heightTwips = 0;
+
+        for (SinglePageLayoutGroup group : groups) {
+            Objects.requireNonNull(group, "groups must not contain null values.");
+
+            for (SinglePageLayoutItem item : group.items()) {
+                heightTwips += itemHeightTwips(item);
+            }
+        }
+
+        return heightTwips;
+    }
+
+    public int itemHeightTwips(SinglePageLayoutItem item) {
+        Objects.requireNonNull(item, "item must not be null");
+
+        return item.lineCount() * exactLineHeightTwips(item.styleRule());
     }
 
     public int exactLineHeightTwips(StyleRule styleRule) {

@@ -48,6 +48,35 @@ class SinglePageLayoutRuleModelTest {
                         () -> new SinglePageItemRule("city", true, Optional.of(0))
                 ).getMessage()
         );
+
+        assertEquals(
+                "blankLinesAfter must not be negative.",
+                assertThrows(
+                        InvalidProfileStructureException.class,
+                        () -> new SinglePageItemRule(
+                                "nature",
+                                true,
+                                Optional.empty(),
+                                HorizontalPlacementRule.fullContentWidth(),
+                                -1
+                        )
+                ).getMessage()
+        );
+    }
+
+    @Test
+    void shouldUseFullContentWidthAsDefaultHorizontalPlacement() {
+        SinglePageItemRule item = new SinglePageItemRule("nature", true, Optional.empty());
+
+        assertEquals(HorizontalPlacementStrategy.FULL_CONTENT_WIDTH, item.horizontalPlacement().strategy());
+    }
+
+    @Test
+    void shouldRejectNullHorizontalPlacement() {
+        assertThrows(
+                NullPointerException.class,
+                () -> new SinglePageItemRule("nature", true, Optional.empty(), null)
+        );
     }
 
     @Test

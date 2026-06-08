@@ -45,17 +45,30 @@ class SinglePageLayoutRendererTest {
 
         List<DocxBlock> blocks = renderer.render(plan);
 
-        assertEquals(4, blocks.size());
-        assertEquals(3, blocks.stream().filter(DocxParagraph.class::isInstance).count());
+        assertEquals(3, blocks.size());
+        assertEquals(2, blocks.stream().filter(DocxParagraph.class::isInstance).count());
         assertEquals(1, blocks.stream().filter(DocxBlankLine.class::isInstance).count());
+        assertEquals(
+                "Titulo Linha dois",
+                blocks.stream()
+                        .filter(DocxParagraph.class::isInstance)
+                        .map(DocxParagraph.class::cast)
+                        .findFirst()
+                        .orElseThrow()
+                        .text()
+        );
         assertTrue(blocks.stream()
                 .filter(DocxParagraph.class::isInstance)
                 .map(DocxParagraph.class::cast)
-                .allMatch(paragraph -> paragraph.exactLineHeightPt().orElseThrow().equals(exactLineHeightPt)));
+                .allMatch(paragraph -> paragraph.exactLineHeightPt()
+                        .orElseThrow()
+                        .compareTo(exactLineHeightPt) == 0));
         assertTrue(blocks.stream()
                 .filter(DocxBlankLine.class::isInstance)
                 .map(DocxBlankLine.class::cast)
-                .allMatch(blankLine -> blankLine.exactLineHeightPt().orElseThrow().equals(exactLineHeightPt)));
+                .allMatch(blankLine -> blankLine.exactLineHeightPt()
+                        .orElseThrow()
+                        .compareTo(exactLineHeightPt) == 0));
     }
 
     private static StyleRule style() {

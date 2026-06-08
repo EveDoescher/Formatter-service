@@ -46,7 +46,6 @@ class CoverLayoutCalculatorTest {
         CoverLayoutDiagnostic diagnostic = plan.diagnostic();
 
         assertFalse(plan.elements().isEmpty());
-        assertEquals(plan.pageCapacityLines(), plan.totalLines());
         assertTrue(plan.elements().stream().anyMatch(SinglePageSpacerLines.class::isInstance));
         assertTrue(plan.elements().stream().anyMatch(SinglePageTextLines.class::isInstance));
         assertTrue(plan.exactLineHeightPt().compareTo(BigDecimal.ZERO) > 0);
@@ -66,6 +65,11 @@ class CoverLayoutCalculatorTest {
         assertEquals(diagnostic.contentLineCount(), blockLineCount);
         assertEquals(diagnostic.availableGapLines(), gapLineCount);
         assertEquals(plan.totalLines(), diagnostic.contentLineCount() + diagnostic.availableGapLines());
+        assertEquals(
+                plan.layoutPlan().diagnostic().renderableArea().safeHeightTwips(),
+                plan.layoutPlan().diagnostic().contentHeightTwips()
+                        + plan.layoutPlan().diagnostic().allocatedGapHeightTwips()
+        );
         assertEquals(plan.exactLineHeightPt(), diagnostic.exactLineHeightPt());
         assertEquals(2, diagnostic.blockLineCounts().get("cover.bottom"));
     }
@@ -254,7 +258,8 @@ class CoverLayoutCalculatorTest {
                                 "cover.bottom"
                         ),
                         validCoverLayoutRule()
-                ))
+                )),
+                List.of("cover", DocumentProfile.PARAGRAPHS_INTERNAL_COMPONENT_ID)
         );
     }
 

@@ -25,8 +25,8 @@ public record SinglePageLayoutPlan(
             throw new IllegalArgumentException("totalLines must be greater than zero.");
         }
 
-        if (pageCapacityLines < totalLines) {
-            throw new IllegalArgumentException("pageCapacityLines must be greater than or equal to totalLines.");
+        if (pageCapacityLines <= 0) {
+            throw new IllegalArgumentException("pageCapacityLines must be greater than zero.");
         }
 
         if (exactLineHeightPt.compareTo(BigDecimal.ZERO) <= 0) {

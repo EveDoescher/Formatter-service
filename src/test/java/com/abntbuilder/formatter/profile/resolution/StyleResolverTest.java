@@ -26,7 +26,8 @@ class StyleResolverTest {
                         validStyleRule("body"),
                         validStyleRule("cover.title")
                 ),
-                List.of()
+                List.of(),
+                List.of(DocumentProfile.PARAGRAPHS_INTERNAL_COMPONENT_ID)
         );
 
         StyleResolver resolver = new StyleResolver(profile);
@@ -65,7 +66,8 @@ class StyleResolverTest {
                 "Test Profile",
                 validPageRule(),
                 List.of(validStyleRule("body")),
-                List.of()
+                List.of(),
+                List.of(DocumentProfile.PARAGRAPHS_INTERNAL_COMPONENT_ID)
         );
     }
 

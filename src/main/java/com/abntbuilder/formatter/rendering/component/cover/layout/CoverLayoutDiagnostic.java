@@ -4,7 +4,9 @@ import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutDia
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageRenderableArea;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public record CoverLayoutDiagnostic(
         SinglePageRenderableArea renderableArea,
@@ -36,23 +38,39 @@ public record CoverLayoutDiagnostic(
     }
 
     public CoverLayoutDiagnostic {
-        SinglePageLayoutDiagnostic diagnostic = createDiagnostic(
-                renderableArea,
-                contentLineCount,
-                availableGapLines,
-                blockLineCounts,
-                itemLineCounts,
-                gapLineCounts,
-                exactLineHeightPt
-        );
+        Objects.requireNonNull(renderableArea, "renderableArea must not be null");
+        Objects.requireNonNull(blockLineCounts, "blockLineCounts must not be null");
+        Objects.requireNonNull(itemLineCounts, "itemLineCounts must not be null");
+        Objects.requireNonNull(gapLineCounts, "gapLineCounts must not be null");
+        Objects.requireNonNull(exactLineHeightPt, "exactLineHeightPt must not be null");
 
-        renderableArea = diagnostic.renderableArea();
-        contentLineCount = diagnostic.contentLineCount();
-        availableGapLines = diagnostic.availableGapLines();
-        blockLineCounts = diagnostic.groupLineCounts();
-        itemLineCounts = diagnostic.itemLineCounts();
-        gapLineCounts = diagnostic.gapLineCounts();
-        exactLineHeightPt = diagnostic.exactLineHeightPt();
+        if (contentLineCount < 0) {
+            throw new IllegalArgumentException("contentLineCount must not be negative.");
+        }
+
+        if (availableGapLines < 0) {
+            throw new IllegalArgumentException("availableGapLines must not be negative.");
+        }
+
+        if (exactLineHeightPt.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("exactLineHeightPt must be greater than zero.");
+        }
+
+        blockLineCounts = Map.copyOf(new LinkedHashMap<>(blockLineCounts));
+        itemLineCounts = Map.copyOf(new LinkedHashMap<>(itemLineCounts));
+        gapLineCounts = Map.copyOf(new LinkedHashMap<>(gapLineCounts));
+
+        if (sum(blockLineCounts) != contentLineCount) {
+            throw new IllegalArgumentException("blockLineCounts must sum to contentLineCount.");
+        }
+
+        if (sum(itemLineCounts) != contentLineCount) {
+            throw new IllegalArgumentException("itemLineCounts must sum to contentLineCount.");
+        }
+
+        if (sum(gapLineCounts) != availableGapLines) {
+            throw new IllegalArgumentException("gapLineCounts must sum to availableGapLines.");
+        }
     }
 
     public static CoverLayoutDiagnostic from(SinglePageLayoutDiagnostic diagnostic) {
@@ -71,35 +89,10 @@ public record CoverLayoutDiagnostic(
         return blockLineCounts;
     }
 
-    private static SinglePageLayoutDiagnostic createDiagnostic(
-            SinglePageRenderableArea renderableArea,
-            int contentLineCount,
-            int availableGapLines,
-            Map<String, Integer> blockLineCounts,
-            Map<String, Integer> itemLineCounts,
-            Map<String, Integer> gapLineCounts,
-            BigDecimal exactLineHeightPt
-    ) {
-        try {
-            return new SinglePageLayoutDiagnostic(
-                    renderableArea,
-                    contentLineCount,
-                    availableGapLines,
-                    blockLineCounts,
-                    itemLineCounts,
-                    gapLineCounts,
-                    exactLineHeightPt
-            );
-        } catch (IllegalArgumentException exception) {
-            throw new IllegalArgumentException(toCoverMessage(exception.getMessage()), exception);
-        }
-    }
-
-    private static String toCoverMessage(String message) {
-        if ("groupLineCounts must sum to contentLineCount.".equals(message)) {
-            return "blockLineCounts must sum to contentLineCount.";
-        }
-
-        return message;
+    private static int sum(Map<String, Integer> lineCounts) {
+        return lineCounts.values()
+                .stream()
+                .mapToInt(Integer::intValue)
+                .sum();
     }
 }

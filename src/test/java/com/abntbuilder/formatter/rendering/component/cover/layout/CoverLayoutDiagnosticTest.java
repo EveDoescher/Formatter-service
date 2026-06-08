@@ -53,23 +53,20 @@ class CoverLayoutDiagnosticTest {
     }
 
     @Test
-    void shouldRejectDiagnosticWhenContentAndGapsDoNotMatchSafeCapacity() {
+    void shouldRejectDiagnosticWhenGapCountsDoNotSumToAvailableGapLines() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> new CoverLayoutDiagnostic(
                         new SinglePageRenderableArea(7, 2, 5),
                         2,
-                        2,
+                        3,
                         lineCounts("cover.title", 2),
                         lineCounts("cover.title-to-cover.bottom", 2),
                         BigDecimal.valueOf(18)
                 )
         );
 
-        assertEquals(
-                "contentLineCount plus availableGapLines must match safeLineCapacity.",
-                exception.getMessage()
-        );
+        assertEquals("gapLineCounts must sum to availableGapLines.", exception.getMessage());
     }
 
     private static Map<String, Integer> lineCounts(String key, int value) {

@@ -1,0 +1,37 @@
+{
+  "fileName": "title-page-many-authors.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "titlePage"
+    ]
+  },
+  "document": {
+    "titlePage": {
+      "authors": [
+        "Autor Teste Um",
+        "Autor Teste Dois",
+        "Autor Teste Tres",
+        "Autor Teste Quatro",
+        "Autor Teste Cinco",
+        "Autor Teste Seis"
+      ],
+      "title": "Titulo do Trabalho",
+      "subtitle": "Subtitulo do trabalho",
+      "nature": {
+        "workType": "Trabalho academico",
+        "degreeObjective": "avaliacao parcial da disciplina",
+        "courseName": "Psicologia",
+        "institutionName": "Universidade Paulista - UNIP"
+      },
+      "advisor": {
+        "academicTitle": "Prof.",
+        "name": "Jose da Silva"
+      },
+      "coadvisor": null,
+      "city": "Limeira",
+      "year": "2026"
+    }
+  },
+  "paragraphs": []
+}

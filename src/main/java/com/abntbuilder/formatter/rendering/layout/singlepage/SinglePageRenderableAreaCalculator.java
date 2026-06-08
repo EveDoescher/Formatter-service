@@ -21,11 +21,17 @@ public final class SinglePageRenderableAreaCalculator {
         int physicalLineCapacity = calculatePhysicalLineCapacity(pageRule, lineHeightTwips);
         int boundarySafetyLineCount = calculateBoundarySafetyLineCount(pageRule, lineHeightTwips);
         int safeLineCapacity = Math.max(physicalLineCapacity - boundarySafetyLineCount, 0);
+        int physicalHeightTwips = calculatePhysicalHeightTwips(pageRule);
+        int boundarySafetyHeightTwips = calculateBoundarySafetyHeightTwips(pageRule);
+        int safeHeightTwips = Math.max(physicalHeightTwips - boundarySafetyHeightTwips, 0);
 
         return new SinglePageRenderableArea(
                 physicalLineCapacity,
                 boundarySafetyLineCount,
-                safeLineCapacity
+                safeLineCapacity,
+                physicalHeightTwips,
+                boundarySafetyHeightTwips,
+                safeHeightTwips
         );
     }
 
@@ -36,9 +42,7 @@ public final class SinglePageRenderableAreaCalculator {
             throw new IllegalArgumentException("lineHeightTwips must be greater than zero.");
         }
 
-        int usableHeightTwips = MeasurementConverter.centimetersToTwips(pageRule.usableHeightCm());
-
-        return usableHeightTwips / lineHeightTwips;
+        return calculatePhysicalHeightTwips(pageRule) / lineHeightTwips;
     }
 
     int calculateBoundarySafetyLineCount(PageRule pageRule, int lineHeightTwips) {
@@ -48,10 +52,20 @@ public final class SinglePageRenderableAreaCalculator {
             throw new IllegalArgumentException("lineHeightTwips must be greater than zero.");
         }
 
-        int boundarySafetyHeightTwips = MeasurementConverter.centimetersToTwips(
+        return calculateBoundarySafetyHeightTwips(pageRule) / lineHeightTwips;
+    }
+
+    int calculatePhysicalHeightTwips(PageRule pageRule) {
+        Objects.requireNonNull(pageRule, "pageRule must not be null");
+
+        return MeasurementConverter.centimetersToTwips(pageRule.usableHeightCm());
+    }
+
+    int calculateBoundarySafetyHeightTwips(PageRule pageRule) {
+        Objects.requireNonNull(pageRule, "pageRule must not be null");
+
+        return MeasurementConverter.centimetersToTwips(
                 pageRule.marginTopCm().add(pageRule.marginBottomCm())
         );
-
-        return boundarySafetyHeightTwips / lineHeightTwips;
     }
 }

@@ -50,7 +50,8 @@ public final class FontMetricsTextMeasurer implements TextMeasurer {
     public MeasuredText measure(
             String text,
             PageRule pageRule,
-            StyleRule styleRule
+            StyleRule styleRule,
+            TextMeasurementArea area
     ) {
         if (text == null || text.isBlank()) {
             throw TextMeasurementException.blankText();
@@ -58,8 +59,9 @@ public final class FontMetricsTextMeasurer implements TextMeasurer {
 
         Objects.requireNonNull(pageRule, "pageRule must not be null");
         Objects.requireNonNull(styleRule, "styleRule must not be null");
+        Objects.requireNonNull(area, "area must not be null");
 
-        double availableTextWidthPt = calculateAvailableTextWidthPt(pageRule, styleRule);
+        double availableTextWidthPt = calculateAvailableTextWidthPt(area);
         Font font = createFont(styleRule, missingFontPolicy);
         List<String> visualLines = new ArrayList<>();
 
@@ -113,14 +115,8 @@ public final class FontMetricsTextMeasurer implements TextMeasurer {
         return List.copyOf(lines);
     }
 
-    private static double calculateAvailableTextWidthPt(PageRule pageRule, StyleRule styleRule) {
-        BigDecimal usableWidthPt = MeasurementConverter.centimetersToPoints(pageRule.usableWidthCm());
-        BigDecimal leftIndentPt = MeasurementConverter.centimetersToPoints(styleRule.leftIndentCm());
-        BigDecimal rightIndentPt = MeasurementConverter.centimetersToPoints(styleRule.rightIndentCm());
-
-        BigDecimal availableWidthPt = usableWidthPt
-                .subtract(leftIndentPt)
-                .subtract(rightIndentPt);
+    private static double calculateAvailableTextWidthPt(TextMeasurementArea area) {
+        BigDecimal availableWidthPt = MeasurementConverter.centimetersToPoints(area.availableWidthCm());
 
         if (availableWidthPt.compareTo(BigDecimal.ZERO) <= 0) {
             throw TextMeasurementException.unavailableTextWidth();

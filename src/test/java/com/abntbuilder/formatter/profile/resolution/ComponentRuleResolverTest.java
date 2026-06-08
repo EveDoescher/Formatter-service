@@ -114,8 +114,9 @@ class ComponentRuleResolverTest {
                 "test-profile",
                 "Test Profile",
                 validPageRule(),
-                List.of(validStyleRule("body")),
-                List.of(validCoverComponentRule())
+                validCoverStyleRules(),
+                List.of(validCoverComponentRule()),
+                List.of("cover", DocumentProfile.PARAGRAPHS_INTERNAL_COMPONENT_ID)
         );
     }
 
@@ -147,6 +148,16 @@ class ComponentRuleResolverTest {
                 false,
                 false,
                 false
+        );
+    }
+
+    private static List<StyleRule> validCoverStyleRules() {
+        return List.of(
+                validStyleRule("cover.top"),
+                validStyleRule("cover.author"),
+                validStyleRule("cover.title"),
+                validStyleRule("cover.subtitle"),
+                validStyleRule("cover.bottom")
         );
     }
 

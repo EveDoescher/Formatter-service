@@ -37,7 +37,7 @@ class CoverLayoutFailureDiagnosticTest {
     }
 
     @Test
-    void shouldRejectDiagnosticWhenOverflowDoesNotMatchSafeCapacity() {
+    void shouldRejectDiagnosticWhenOverflowHeightDoesNotMatchSafeCapacity() {
         Map<String, Integer> blockLineCounts = Map.of(
                 "cover.top", 1,
                 "cover.authors", 35,
@@ -57,7 +57,7 @@ class CoverLayoutFailureDiagnosticTest {
         );
 
         assertEquals(
-                "overflowLineCount must match contentLineCount minus safeLineCapacity.",
+                "overflowHeightTwips must match contentHeightTwips minus safeHeightTwips.",
                 exception.getMessage()
         );
     }

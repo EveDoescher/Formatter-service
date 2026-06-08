@@ -1,0 +1,45 @@
+{
+  "fileName": "cover-and-title-page.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "cover",
+      "titlePage"
+    ]
+  },
+  "document": {
+    "cover": {
+      "institutionalLines": [
+        "Universidade Paulista"
+      ],
+      "authors": [
+        "Nome Completo do Aluno"
+      ],
+      "title": "Titulo do Trabalho",
+      "subtitle": "Subtitulo do trabalho",
+      "city": "Limeira",
+      "year": "2026"
+    },
+    "titlePage": {
+      "authors": [
+        "Nome Completo do Aluno"
+      ],
+      "title": "Titulo do Trabalho",
+      "subtitle": "Subtitulo do trabalho",
+      "nature": {
+        "workType": "Trabalho de conclusao de curso",
+        "degreeObjective": "obtencao do titulo de graduacao",
+        "courseName": "Analise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Paulista - UNIP"
+      },
+      "advisor": {
+        "academicTitle": "Prof. Dr.",
+        "name": "Jose da Silva"
+      },
+      "coadvisor": null,
+      "city": "Limeira",
+      "year": "2026"
+    }
+  },
+  "paragraphs": []
+}

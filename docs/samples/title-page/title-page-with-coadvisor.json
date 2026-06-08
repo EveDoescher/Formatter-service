@@ -1,0 +1,35 @@
+{
+  "fileName": "title-page-with-coadvisor.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "titlePage"
+    ]
+  },
+  "document": {
+    "titlePage": {
+      "authors": [
+        "Nome Completo do Aluno"
+      ],
+      "title": "Titulo do Trabalho",
+      "subtitle": "Subtitulo do trabalho",
+      "nature": {
+        "workType": "Trabalho de conclusao de curso",
+        "degreeObjective": "obtencao do titulo de graduacao",
+        "courseName": "Analise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Paulista - UNIP"
+      },
+      "advisor": {
+        "academicTitle": "Prof. Dr.",
+        "name": "Jose da Silva"
+      },
+      "coadvisor": {
+        "academicTitle": "Profa. Dra.",
+        "name": "Maria de Souza"
+      },
+      "city": "Limeira",
+      "year": "2026"
+    }
+  },
+  "paragraphs": []
+}

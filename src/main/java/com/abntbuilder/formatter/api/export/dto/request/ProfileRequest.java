@@ -22,7 +22,10 @@ public record ProfileRequest(
         List<StyleRuleRequest> styleRules,
 
         @Valid
-        ComponentRulesRequest componentRules
+        ComponentRulesRequest componentRules,
+
+        @NotEmpty
+        List<String> componentOrder
 ) {
     public DocumentProfile toDomain() {
         List<ComponentRule> resolvedComponentRules = componentRules == null
@@ -36,7 +39,8 @@ public record ProfileRequest(
                 styleRules.stream()
                         .map(StyleRuleRequest::toDomain)
                         .toList(),
-                resolvedComponentRules
+                resolvedComponentRules,
+                componentOrder
         );
     }
 }

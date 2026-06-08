@@ -3,6 +3,7 @@ package com.abntbuilder.formatter.rendering.component.cover;
 import com.abntbuilder.formatter.document.component.cover.CoverComponent;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
+import com.abntbuilder.formatter.rendering.component.ComponentRenderer;
 import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutCalculator;
 import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutPlan;
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutRenderer;
@@ -10,7 +11,7 @@ import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutRen
 import java.util.List;
 import java.util.Objects;
 
-public final class CoverRenderer {
+public final class CoverRenderer implements ComponentRenderer<CoverComponent> {
 
     private final CoverLayoutCalculator layoutCalculator;
     private final SinglePageLayoutRenderer singlePageRenderer;
@@ -23,6 +24,17 @@ public final class CoverRenderer {
         this.singlePageRenderer = Objects.requireNonNull(singlePageRenderer, "singlePageRenderer must not be null");
     }
 
+    @Override
+    public String componentId() {
+        return "cover";
+    }
+
+    @Override
+    public Class<CoverComponent> componentType() {
+        return CoverComponent.class;
+    }
+
+    @Override
     public List<DocxBlock> render(CoverComponent cover, DocumentProfile profile) {
         Objects.requireNonNull(cover, "cover must not be null");
         Objects.requireNonNull(profile, "profile must not be null");
