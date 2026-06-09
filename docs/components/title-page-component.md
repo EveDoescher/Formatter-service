@@ -88,9 +88,12 @@ Samples live in `docs/samples/title-page`:
 - `title-page-many-authors.json`
 - `title-page-overflow.json`
 - `title-page-bottom-wrap-invalid.json`
-- `cover-and-title-page.json`
 
 The `overflow` and `bottom-wrap-invalid` samples are expected to fail.
+
+Composed samples live in `docs/samples/composed`:
+
+- `cover-and-title-page.json`
 
 ## Visual Checklist
 
@@ -102,4 +105,4 @@ Validate generated DOCX files in Word:
 - nature/advisor/coadvisor use simple spacing;
 - city and year stay at the bottom;
 - no page break appears inside the title page;
-- `cover-and-title-page.json` generates cover, page break, title page.
+- `docs/samples/composed/cover-and-title-page.json` generates cover, page break, title page.

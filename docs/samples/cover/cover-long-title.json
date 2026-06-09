@@ -1,27 +1,25 @@
-﻿{
-    "fileName":  "cover-long-title.docx",
-    "profileId":  "abnt-unip-profile",
-    "options":  {
-                    "selectedComponents":  [
-                                               "cover"
-                                           ]
-                },
-    "document":  {
-                     "cover":  {
-                                   "institutionalLines":  [
-                                                              "Universidade da Integracao Internacional da Lusofonia Afro-Brasileira",
-                                                              "Curso de Engenharia Ambiental Sanitaria e Ocupacional"
-                                                          ],
-                                   "authors":  [
-                                                   "Ana Clara de Albuquerque Vasconcelos"
-                                               ],
-                                   "title":  "Pneumoultramicroscopicossilicovulcanoconiotico: uma analise epidemiologica e socioambiental da exposicao ocupacional prolongada a particulas silicovulcanicas",
-                                   "subtitle":  "Estudo interdisciplinar sobre saude coletiva, responsabilidade empresarial e prevencao em ambientes industriais",
-                                   "city":  "Sao Jose do Vale do Rio Preto",
-                                   "year":  "2026"
-                               }
-                 },
-    "paragraphs":  [
-
-                   ]
+{
+  "fileName": "cover-long-title.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "cover"
+    ]
+  },
+  "document": {
+    "cover": {
+      "institutionalLines": [
+        "Universidade da Integracao Internacional da Lusofonia Afro-Brasileira",
+        "Curso de Engenharia Ambiental Sanitaria e Ocupacional"
+      ],
+      "authors": [
+        "Ana Clara de Albuquerque Vasconcelos"
+      ],
+      "title": "Pneumoultramicroscopicossilicovulcanoconiotico: uma análise epidemiologica e socioambiental da exposicao ocupacional prolongada a particulas silicovulcanicas",
+      "subtitle": "Estudo interdisciplinar sobre saude coletiva, responsabilidade empresarial e prevencao em ambientes industriais",
+      "city": "Sao José do Vale do Rio Preto",
+      "year": "2026"
+    }
+  },
+  "paragraphs": []
 }

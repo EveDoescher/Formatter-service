@@ -1,15 +1,13 @@
 package com.abntbuilder.formatter.api.export.dto.request;
 
 import com.abntbuilder.formatter.application.export.ExportDocxCommand;
-import com.abntbuilder.formatter.document.component.cover.CoverComponent;
-import com.abntbuilder.formatter.document.component.titlepage.TitlePageComponent;
+import com.abntbuilder.formatter.document.component.DocumentComponent;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
 import com.abntbuilder.formatter.profile.resolution.ProfileProvider;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
-import java.util.Optional;
 
 public record ExportDocxRequest(
         @NotBlank String fileName,
@@ -45,8 +43,9 @@ public record ExportDocxRequest(
     }
 
     private ExportDocxCommand toCommand(DocumentProfile documentProfile) {
-        Optional<CoverComponent> coverComponent = resolveCover();
-        Optional<TitlePageComponent> titlePageComponent = resolveTitlePage();
+        List<DocumentComponent> documentComponents = document == null
+                ? List.of()
+                : document.toComponents();
 
         List<ExportDocxCommand.ParagraphCommand> paragraphCommands = paragraphs == null
                 ? List.of()
@@ -57,29 +56,12 @@ public record ExportDocxRequest(
         return new ExportDocxCommand(
                 fileName,
                 documentProfile,
-                coverComponent,
-                titlePageComponent,
+                documentComponents,
                 options == null || options.selectedComponents() == null
                         ? List.of()
                         : options.selectedComponents(),
                 paragraphCommands
         );
-    }
-
-    private Optional<CoverComponent> resolveCover() {
-        if (document != null && document.cover() != null) {
-            return Optional.of(document.cover().toDomain());
-        }
-
-        return Optional.empty();
-    }
-
-    private Optional<TitlePageComponent> resolveTitlePage() {
-        if (document != null && document.titlePage() != null) {
-            return Optional.of(document.titlePage().toDomain());
-        }
-
-        return Optional.empty();
     }
 
     private DocumentProfile resolveProfile(ProfileProvider profileProvider) {

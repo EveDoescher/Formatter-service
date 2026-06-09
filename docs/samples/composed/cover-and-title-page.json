@@ -15,8 +15,8 @@
       "authors": [
         "Nome Completo do Aluno"
       ],
-      "title": "Titulo do Trabalho",
-      "subtitle": "Subtitulo do trabalho",
+      "title": "Título do Trabalho",
+      "subtitle": "Subtítulo do trabalho",
       "city": "Limeira",
       "year": "2026"
     },
@@ -24,17 +24,17 @@
       "authors": [
         "Nome Completo do Aluno"
       ],
-      "title": "Titulo do Trabalho",
-      "subtitle": "Subtitulo do trabalho",
+      "title": "Título do Trabalho",
+      "subtitle": "Subtítulo do trabalho",
       "nature": {
-        "workType": "Trabalho de conclusao de curso",
-        "degreeObjective": "obtencao do titulo de graduacao",
-        "courseName": "Analise e Desenvolvimento de Sistemas",
+        "workType": "Trabalho de conclusão de curso",
+        "degreeObjective": "obtenção do título de graduação",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
         "institutionName": "Universidade Paulista - UNIP"
       },
       "advisor": {
         "academicTitle": "Prof. Dr.",
-        "name": "Jose da Silva"
+        "name": "José da Silva"
       },
       "coadvisor": null,
       "city": "Limeira",

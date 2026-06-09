@@ -1,34 +1,32 @@
-﻿{
-    "fileName":  "cover-many-authors.docx",
-    "profileId":  "abnt-unip-profile",
-    "options":  {
-                    "selectedComponents":  [
-                                               "cover"
-                                           ]
-                },
-    "document":  {
-                     "cover":  {
-                                   "institutionalLines":  [
-                                                              "Universidade Paulista",
-                                                              "Curso de Sistemas de Informacao"
-                                                          ],
-                                   "authors":  [
-                                                   "Ana Clara de Albuquerque",
-                                                   "Bruno Henrique Cavalcanti",
-                                                   "Camila Aparecida Rodrigues",
-                                                   "Diego Fernando Nascimento",
-                                                   "Eduarda Cristina Menezes",
-                                                   "Felipe Augusto Pereira",
-                                                   "Gabriela Martins de Souza",
-                                                   "Henrique Rafael Oliveira"
-                                               ],
-                                   "title":  "Titulo do Trabalho em Grupo",
-                                   "subtitle":  "Relatorio academico desenvolvido por multiplos autores",
-                                   "city":  "Limeira",
-                                   "year":  "2026"
-                               }
-                 },
-    "paragraphs":  [
-
-                   ]
+{
+  "fileName": "cover-many-authors.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "cover"
+    ]
+  },
+  "document": {
+    "cover": {
+      "institutionalLines": [
+        "Universidade Paulista",
+        "Curso de Sistemas de Informacao"
+      ],
+      "authors": [
+        "Ana Clara de Albuquerque",
+        "Bruno Henrique Cavalcanti",
+        "Camila Aparecida Rodrigues",
+        "Diego Fernando Nascimento",
+        "Eduarda Cristina Menezes",
+        "Felipe Augusto Pereira",
+        "Gabriela Martins de Souza",
+        "Henrique Rafael Oliveira"
+      ],
+      "title": "Título do Trabalho em Grupo",
+      "subtitle": "Relatorio acadêmico desenvolvido por multiplos autores",
+      "city": "Limeira",
+      "year": "2026"
+    }
+  },
+  "paragraphs": []
 }

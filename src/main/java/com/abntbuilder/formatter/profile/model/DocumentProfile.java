@@ -1,6 +1,7 @@
 package com.abntbuilder.formatter.profile.model;
 
 import com.abntbuilder.formatter.profile.model.component.ComponentRule;
+import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageComponentRule;
 
@@ -131,6 +132,15 @@ public record DocumentProfile(
                     titlePageRule.styleMapping().coadvisorStyleId(),
                     titlePageRule.styleMapping().cityStyleId(),
                     titlePageRule.styleMapping().yearStyleId()
+            );
+            case ApprovalSheetComponentRule approvalSheetRule -> List.of(
+                    approvalSheetRule.styleMapping().authorsStyleId(),
+                    approvalSheetRule.styleMapping().titleStyleId(),
+                    approvalSheetRule.styleMapping().subtitleStyleId(),
+                    approvalSheetRule.styleMapping().natureStyleId(),
+                    approvalSheetRule.styleMapping().approvalTextStyleId(),
+                    approvalSheetRule.styleMapping().committeeHeadingStyleId(),
+                    approvalSheetRule.styleMapping().committeeMembersStyleId()
             );
             default -> List.of();
         };

@@ -4,6 +4,11 @@ import com.abntbuilder.formatter.profile.resolution.ClasspathJsonProfileProvider
 import com.abntbuilder.formatter.profile.resolution.ProfileProvider;
 import com.abntbuilder.formatter.rendering.component.ComponentRenderer;
 import com.abntbuilder.formatter.rendering.component.ComponentRendererRegistry;
+import com.abntbuilder.formatter.rendering.component.approvalsheet.ApprovalSheetLayoutAssembler;
+import com.abntbuilder.formatter.rendering.component.approvalsheet.ApprovalSheetLayoutCalculator;
+import com.abntbuilder.formatter.rendering.component.approvalsheet.ApprovalSheetProfileContentValidator;
+import com.abntbuilder.formatter.rendering.component.approvalsheet.ApprovalSheetRenderer;
+import com.abntbuilder.formatter.rendering.component.approvalsheet.ApprovalSheetTextTemplateResolver;
 import com.abntbuilder.formatter.rendering.component.cover.CoverRenderer;
 import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutAssembler;
 import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutCalculator;
@@ -156,6 +161,49 @@ public class RenderingConfig {
             SinglePageLayoutRenderer singlePageRenderer
     ) {
         return new TitlePageRenderer(layoutCalculator, singlePageRenderer);
+    }
+
+    @Bean
+    public ApprovalSheetProfileContentValidator approvalSheetProfileContentValidator() {
+        return new ApprovalSheetProfileContentValidator();
+    }
+
+    @Bean
+    public ApprovalSheetTextTemplateResolver approvalSheetTextTemplateResolver() {
+        return new ApprovalSheetTextTemplateResolver();
+    }
+
+    @Bean
+    public ApprovalSheetLayoutAssembler approvalSheetLayoutAssembler(
+            TextMeasurer textMeasurer,
+            OrderedLayoutGapResolver gapResolver,
+            ApprovalSheetProfileContentValidator validator,
+            ApprovalSheetTextTemplateResolver templateResolver,
+            HorizontalPlacementResolver horizontalPlacementResolver
+    ) {
+        return new ApprovalSheetLayoutAssembler(
+                textMeasurer,
+                gapResolver,
+                validator,
+                templateResolver,
+                horizontalPlacementResolver
+        );
+    }
+
+    @Bean
+    public ApprovalSheetLayoutCalculator approvalSheetLayoutCalculator(
+            ApprovalSheetLayoutAssembler assembler,
+            SinglePageLayoutEngine layoutEngine
+    ) {
+        return new ApprovalSheetLayoutCalculator(assembler, layoutEngine);
+    }
+
+    @Bean
+    public ApprovalSheetRenderer approvalSheetRenderer(
+            ApprovalSheetLayoutCalculator layoutCalculator,
+            SinglePageLayoutRenderer singlePageRenderer
+    ) {
+        return new ApprovalSheetRenderer(layoutCalculator, singlePageRenderer);
     }
 
     @Bean

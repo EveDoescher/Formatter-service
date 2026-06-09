@@ -16,17 +16,17 @@
         "Autor Teste Cinco",
         "Autor Teste Seis"
       ],
-      "title": "Titulo do Trabalho",
-      "subtitle": "Subtitulo do trabalho",
+      "title": "Título do Trabalho",
+      "subtitle": "Subtítulo do trabalho",
       "nature": {
-        "workType": "Trabalho academico",
-        "degreeObjective": "avaliacao parcial da disciplina",
+        "workType": "Trabalho acadêmico",
+        "degreeObjective": "avaliação parcial da disciplina",
         "courseName": "Psicologia",
         "institutionName": "Universidade Paulista - UNIP"
       },
       "advisor": {
         "academicTitle": "Prof.",
-        "name": "Jose da Silva"
+        "name": "José da Silva"
       },
       "coadvisor": null,
       "city": "Limeira",

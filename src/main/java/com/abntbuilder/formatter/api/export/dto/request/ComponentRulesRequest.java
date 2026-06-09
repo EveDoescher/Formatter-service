@@ -8,7 +8,8 @@ import java.util.List;
 
 public record ComponentRulesRequest(
         @Valid CoverComponentRuleRequest cover,
-        @Valid TitlePageComponentRuleRequest titlePage
+        @Valid TitlePageComponentRuleRequest titlePage,
+        @Valid ApprovalSheetComponentRuleRequest approvalSheet
 ) {
     public List<ComponentRule> toDomain() {
         List<ComponentRule> rules = new ArrayList<>();
@@ -19,6 +20,10 @@ public record ComponentRulesRequest(
 
         if (titlePage != null) {
             rules.add(titlePage.toDomain());
+        }
+
+        if (approvalSheet != null) {
+            rules.add(approvalSheet.toDomain());
         }
 
         return List.copyOf(rules);

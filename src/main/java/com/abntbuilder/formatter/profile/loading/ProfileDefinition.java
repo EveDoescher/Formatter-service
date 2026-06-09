@@ -7,6 +7,11 @@ import com.abntbuilder.formatter.profile.model.StyleRule;
 import com.abntbuilder.formatter.profile.model.StyleType;
 import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.ComponentRule;
+import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetCommitteeMemberRule;
+import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetComponentRule;
+import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetSignatureLineRule;
+import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetStyleMapping;
+import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetTextTemplateRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverStyleMapping;
@@ -124,7 +129,8 @@ public record ProfileDefinition(
 
     public record ComponentRulesDefinition(
             CoverComponentRuleDefinition cover,
-            TitlePageComponentRuleDefinition titlePage
+            TitlePageComponentRuleDefinition titlePage,
+            ApprovalSheetComponentRuleDefinition approvalSheet
     ) {
         List<ComponentRule> toDomain() {
             List<ComponentRule> rules = new ArrayList<>();
@@ -135,6 +141,10 @@ public record ProfileDefinition(
 
             if (titlePage != null) {
                 rules.add(titlePage.toDomain());
+            }
+
+            if (approvalSheet != null) {
+                rules.add(approvalSheet.toDomain());
             }
 
             return List.copyOf(rules);
@@ -255,6 +265,89 @@ public record ProfileDefinition(
                     advisorTemplate,
                     coadvisorTemplate
             );
+        }
+    }
+
+    public record ApprovalSheetComponentRuleDefinition(
+            String componentId,
+            ApprovalSheetStyleMappingDefinition styleMapping,
+            ApprovalSheetTextTemplateRuleDefinition textTemplates,
+            SinglePageLayoutRuleDefinition layoutRule
+    ) {
+        ApprovalSheetComponentRule toDomain() {
+            requireNonNull(styleMapping, "approvalSheet.styleMapping");
+            requireNonNull(textTemplates, "approvalSheet.textTemplates");
+            requireNonNull(layoutRule, "approvalSheet.layoutRule");
+
+            return new ApprovalSheetComponentRule(
+                    componentId,
+                    styleMapping.toDomain(),
+                    textTemplates.toDomain(),
+                    layoutRule.toDomain()
+            );
+        }
+    }
+
+    public record ApprovalSheetStyleMappingDefinition(
+            String authorsStyleId,
+            String titleStyleId,
+            String subtitleStyleId,
+            String natureStyleId,
+            String approvalTextStyleId,
+            String committeeHeadingStyleId,
+            String committeeMembersStyleId
+    ) {
+        ApprovalSheetStyleMapping toDomain() {
+            return new ApprovalSheetStyleMapping(
+                    authorsStyleId,
+                    titleStyleId,
+                    subtitleStyleId,
+                    natureStyleId,
+                    approvalTextStyleId,
+                    committeeHeadingStyleId,
+                    committeeMembersStyleId
+            );
+        }
+    }
+
+    public record ApprovalSheetTextTemplateRuleDefinition(
+            String natureTemplate,
+            String approvalTextTemplate,
+            String committeeHeadingTemplate,
+            ApprovalSheetCommitteeMemberRuleDefinition committeeMemberTemplate
+    ) {
+        ApprovalSheetTextTemplateRule toDomain() {
+            requireNonNull(committeeMemberTemplate, "approvalSheet.textTemplates.committeeMemberTemplate");
+
+            return new ApprovalSheetTextTemplateRule(
+                    natureTemplate,
+                    approvalTextTemplate,
+                    committeeHeadingTemplate,
+                    committeeMemberTemplate.toDomain()
+            );
+        }
+    }
+
+    public record ApprovalSheetCommitteeMemberRuleDefinition(
+            ApprovalSheetSignatureLineRuleDefinition signatureLine,
+            List<String> lineTemplates
+    ) {
+        ApprovalSheetCommitteeMemberRule toDomain() {
+            requireNonNull(signatureLine, "approvalSheet.textTemplates.committeeMemberTemplate.signatureLine");
+            requireNonEmpty(lineTemplates, "approvalSheet.textTemplates.committeeMemberTemplate.lineTemplates");
+
+            return new ApprovalSheetCommitteeMemberRule(signatureLine.toDomain(), lineTemplates);
+        }
+    }
+
+    public record ApprovalSheetSignatureLineRuleDefinition(
+            Boolean enabled,
+            String text
+    ) {
+        ApprovalSheetSignatureLineRule toDomain() {
+            requireNonNull(enabled, "approvalSheet.textTemplates.committeeMemberTemplate.signatureLine.enabled");
+
+            return new ApprovalSheetSignatureLineRule(enabled, text);
         }
     }
 

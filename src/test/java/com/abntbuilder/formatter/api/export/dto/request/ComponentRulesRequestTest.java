@@ -14,7 +14,7 @@ class ComponentRulesRequestTest {
 
     @Test
     void shouldConvertTitlePageComponentRuleWhenPresent() {
-        ComponentRulesRequest request = new ComponentRulesRequest(null, titlePageRuleRequest());
+        ComponentRulesRequest request = new ComponentRulesRequest(null, titlePageRuleRequest(), null);
 
         List<ComponentRule> rules = request.toDomain();
 
@@ -26,7 +26,7 @@ class ComponentRulesRequestTest {
 
     @Test
     void shouldReturnEmptyRulesWhenNoComponentRuleIsPresent() {
-        ComponentRulesRequest request = new ComponentRulesRequest(null, null);
+        ComponentRulesRequest request = new ComponentRulesRequest(null, null, null);
 
         assertEquals(List.of(), request.toDomain());
     }
