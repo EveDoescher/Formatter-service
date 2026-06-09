@@ -7,6 +7,12 @@ proximos componentes.
 O objetivo e permitir que uma IA ou pessoa continue o desenvolvimento sem depender
 do historico do chat.
 
+Antes de criar ou renomear arquivos, seguir:
+
+```text
+docs/architecture/naming-conventions.md
+```
+
 ## Estado atual
 
 O projeto ja possui dois componentes academicos reais:
@@ -400,6 +406,8 @@ Observacao:
 
 ```text
 Nao hardcodar "Aprovado em" no renderer se isso puder variar por perfil.
+Para o perfil UNIP atual, o texto de aprovacao e
+`Aprovado(a) em: ______/______/______`, sem depender de `approvalEvent`.
 Nao hardcodar "Banca examinadora" no renderer se isso puder variar por perfil.
 Textos institucionais devem vir de templates do perfil.
 ```
@@ -491,8 +499,8 @@ approvalSheet.authors
 approvalSheet.titleBlock
 approvalSheet.natureBlock
 approvalSheet.approvalBlock
+approvalSheet.committeeHeading
 approvalSheet.committeeBlock
-approvalSheet.bottom
 ```
 
 Itens sugeridos:
@@ -503,10 +511,13 @@ title
 subtitle
 nature
 approvalText
+committeeHeading
 committeeMembers
-city
-year
 ```
+
+Para UNIP, `approvalSheet` nao possui `city`, `year` nem
+`approvalSheet.bottom`. Esses itens pertencem a `cover` e `titlePage`, nao devem
+ser herdados automaticamente por outros componentes single-page.
 
 O perfil deve decidir:
 
@@ -527,37 +538,42 @@ Templates esperados para `approvalSheet` podem incluir:
 ```text
 natureTemplate
 approvalTextTemplate
+committeeHeadingTemplate
 committeeMemberTemplate
-signatureLineTemplate
 ```
 
-Cada `committeeMember` deve ser convertido por template do perfil.
+`committeeMemberTemplate` nao deve ser uma string corrida unica. Ele deve ser
+estruturado como sub-bloco, por exemplo:
 
 Exemplo conceitual:
 
 ```text
+committeeMemberTemplate.signatureLine
+committeeMemberTemplate.lines[]
+```
+
+Exemplo de linhas:
+
+```text
+________________________________________
 {title} {name}
 {institutionName}
 {role}
 ```
 
-O assembler deve gerar uma instancia de item por membro ou um subgrupo calculado,
-sem hardcodar linhas de assinatura, nomes ou instituicoes no renderer.
+O assembler deve expandir cada membro em linhas/paragrafos separados. Linha de
+assinatura, nome, instituicao e funcao nao podem ser concatenados em um unico
+paragrafo corrido.
 
-Linhas de assinatura, quando existirem, devem ser itens estruturais do perfil,
-nao strings hardcoded no renderer.
-
-Possivel modelo futuro:
+Linhas de assinatura, titulo da banca e textos dos membros devem vir do perfil,
+nao do renderer. O componente pode conhecer a estrutura semantica:
 
 ```text
-signatureLine.enabled
-signatureLine.widthCm
-signatureLine.position
+approvalText
+committeeHeading
+committeeMembers[]
+bottom
 ```
-
-Para MVP, a assinatura pode ser representada por texto/template, por exemplo
-underscores vindos do perfil. Se essa solucao for usada, documentar como
-transitoria.
 
 ### 6. Criar assembler/calculator/renderer
 
@@ -642,11 +658,22 @@ approval-sheet-long-title.json
 approval-sheet-many-committee-members.json
 approval-sheet-overflow.json
 approval-sheet-bottom-wrap-invalid.json
-cover-title-page-approval-sheet.json
 README.md
 ```
 
 Os invalidos devem falhar antes da geracao DOCX.
+
+Samples compostos devem ficar em:
+
+```text
+docs/samples/composed
+```
+
+Exemplo:
+
+```text
+cover-title-page-approval-sheet.json
+```
 
 ### 10. Criar testes
 

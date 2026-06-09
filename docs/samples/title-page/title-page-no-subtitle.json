@@ -11,11 +11,11 @@
       "authors": [
         "Nome Completo do Aluno"
       ],
-      "title": "Titulo do Trabalho Sem Subtitulo",
+      "title": "Título do Trabalho Sem Subtítulo",
       "subtitle": null,
       "nature": {
-        "workType": "Trabalho academico",
-        "degreeObjective": "avaliacao parcial da disciplina",
+        "workType": "Trabalho acadêmico",
+        "degreeObjective": "avaliação parcial da disciplina",
         "courseName": "Psicologia",
         "institutionName": "Universidade Paulista - UNIP"
       },

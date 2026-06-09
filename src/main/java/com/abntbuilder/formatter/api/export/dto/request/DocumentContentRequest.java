@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 
 public record DocumentContentRequest(
         @Valid CoverRequest cover,
-        @Valid TitlePageRequest titlePage
+        @Valid TitlePageRequest titlePage,
+        @Valid ApprovalSheetRequest approvalSheet
 ) {
 }

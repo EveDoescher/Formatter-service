@@ -1,6 +1,7 @@
 package com.abntbuilder.formatter.application.export;
 
 import com.abntbuilder.formatter.document.component.DocumentComponent;
+import com.abntbuilder.formatter.document.component.approvalsheet.ApprovalSheetComponent;
 import com.abntbuilder.formatter.document.component.cover.CoverComponent;
 import com.abntbuilder.formatter.document.component.titlepage.TitlePageComponent;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
@@ -15,11 +16,12 @@ public record ExportDocxCommand(
         DocumentProfile profile,
         Optional<CoverComponent> cover,
         Optional<TitlePageComponent> titlePage,
+        Optional<ApprovalSheetComponent> approvalSheet,
         List<String> selectedComponents,
         List<ParagraphCommand> paragraphs
 ) {
     public ExportDocxCommand(String fileName, DocumentProfile profile, List<ParagraphCommand> paragraphs) {
-        this(fileName, profile, Optional.empty(), Optional.empty(), List.of(), paragraphs);
+        this(fileName, profile, Optional.empty(), Optional.empty(), Optional.empty(), List.of(), paragraphs);
     }
 
     public ExportDocxCommand(
@@ -28,7 +30,18 @@ public record ExportDocxCommand(
             Optional<CoverComponent> cover,
             List<ParagraphCommand> paragraphs
     ) {
-        this(fileName, profile, cover, Optional.empty(), List.of(), paragraphs);
+        this(fileName, profile, cover, Optional.empty(), Optional.empty(), List.of(), paragraphs);
+    }
+
+    public ExportDocxCommand(
+            String fileName,
+            DocumentProfile profile,
+            Optional<CoverComponent> cover,
+            Optional<TitlePageComponent> titlePage,
+            List<String> selectedComponents,
+            List<ParagraphCommand> paragraphs
+    ) {
+        this(fileName, profile, cover, titlePage, Optional.empty(), selectedComponents, paragraphs);
     }
 
     public ExportDocxCommand {
@@ -36,6 +49,7 @@ public record ExportDocxCommand(
         Objects.requireNonNull(profile, "profile must not be null");
         Objects.requireNonNull(cover, "cover must not be null");
         Objects.requireNonNull(titlePage, "titlePage must not be null");
+        Objects.requireNonNull(approvalSheet, "approvalSheet must not be null");
         Objects.requireNonNull(selectedComponents, "selectedComponents must not be null");
         Objects.requireNonNull(paragraphs, "paragraphs must not be null");
 
@@ -50,7 +64,7 @@ public record ExportDocxCommand(
             Objects.requireNonNull(paragraph, "paragraphs must not contain null values.");
         }
 
-        if (cover.isEmpty() && titlePage.isEmpty() && paragraphs.isEmpty()) {
+        if (cover.isEmpty() && titlePage.isEmpty() && approvalSheet.isEmpty() && paragraphs.isEmpty()) {
             throw new IllegalArgumentException("document must contain at least one renderable component.");
         }
     }
@@ -60,6 +74,7 @@ public record ExportDocxCommand(
 
         cover.ifPresent(components::add);
         titlePage.ifPresent(components::add);
+        approvalSheet.ifPresent(components::add);
 
         return List.copyOf(components);
     }

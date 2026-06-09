@@ -18,7 +18,7 @@ class ExportDocxRequestTest {
                 "abnt-unip-profile",
                 null,
                 new ExportOptionsRequest(List.of("titlePage")),
-                new DocumentContentRequest(null, titlePageRequest()),
+                new DocumentContentRequest(null, titlePageRequest(), null),
                 List.of()
         );
 
@@ -26,6 +26,7 @@ class ExportDocxRequestTest {
 
         assertTrue(command.cover().isEmpty());
         assertTrue(command.titlePage().isPresent());
+        assertTrue(command.approvalSheet().isEmpty());
         assertEquals(List.of("titlePage"), command.selectedComponents());
         assertEquals("Titulo", command.titlePage().orElseThrow().title());
     }

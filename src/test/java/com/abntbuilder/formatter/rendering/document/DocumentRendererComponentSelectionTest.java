@@ -1,6 +1,8 @@
 package com.abntbuilder.formatter.rendering.document;
 
 import com.abntbuilder.formatter.application.export.ExportDocxCommand;
+import com.abntbuilder.formatter.document.component.approvalsheet.ApprovalSheetComponent;
+import com.abntbuilder.formatter.document.component.approvalsheet.ApprovalSheetNature;
 import com.abntbuilder.formatter.document.component.cover.CoverComponent;
 import com.abntbuilder.formatter.document.component.titlepage.TitlePageComponent;
 import com.abntbuilder.formatter.document.component.titlepage.TitlePageNature;
@@ -29,7 +31,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class DocumentRendererComponentSelectionTest {
 
     private final DocumentRenderer renderer = new DocumentRenderer(
-            new ComponentRendererRegistry(List.of(new FakeCoverRenderer(), new FakeTitlePageRenderer())),
+            new ComponentRendererRegistry(List.of(
+                    new FakeCoverRenderer(),
+                    new FakeTitlePageRenderer(),
+                    new FakeApprovalSheetRenderer()
+            )),
             new ComponentSelectionResolver()
     );
 
@@ -75,6 +81,21 @@ class DocumentRendererComponentSelectionTest {
         List<String> paragraphTexts = paragraphTexts(document);
 
         assertEquals(List.of("TITLE_PAGE"), paragraphTexts);
+    }
+
+    @Test
+    void shouldRenderSelectedApprovalSheetThroughRegistry() {
+        DocxDocument document = renderer.render(new ExportDocxCommand(
+                "test.docx",
+                profile(),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.of(approvalSheet()),
+                List.of("approvalSheet"),
+                List.of()
+        ));
+
+        assertEquals(List.of("APPROVAL_SHEET"), paragraphTexts(document));
     }
 
     @Test
@@ -159,8 +180,8 @@ class DocumentRendererComponentSelectionTest {
                 "Test Profile",
                 pageRule(),
                 List.of(style("body")),
-                List.of(new FakeComponentRule("cover"), new FakeComponentRule("titlePage")),
-                List.of("cover", "titlePage", "paragraphs")
+                List.of(new FakeComponentRule("cover"), new FakeComponentRule("titlePage"), new FakeComponentRule("approvalSheet")),
+                List.of("cover", "titlePage", "approvalSheet", "paragraphs")
         );
     }
 
@@ -192,6 +213,22 @@ class DocumentRendererComponentSelectionTest {
                 false,
                 false,
                 false
+        );
+    }
+
+    private static ApprovalSheetComponent approvalSheet() {
+        return new ApprovalSheetComponent(
+                List.of("Autor"),
+                "Titulo",
+                Optional.empty(),
+                new ApprovalSheetNature(
+                        "Trabalho academico",
+                        "avaliacao parcial",
+                        "Curso",
+                        "Universidade"
+                ),
+                Optional.empty(),
+                List.of()
         );
     }
 
@@ -228,6 +265,24 @@ class DocumentRendererComponentSelectionTest {
         @Override
         public List<DocxBlock> render(TitlePageComponent component, DocumentProfile profile) {
             return List.of(new DocxParagraph("TITLE_PAGE", style("body")));
+        }
+    }
+
+    private static final class FakeApprovalSheetRenderer implements ComponentRenderer<ApprovalSheetComponent> {
+
+        @Override
+        public String componentId() {
+            return "approvalSheet";
+        }
+
+        @Override
+        public Class<ApprovalSheetComponent> componentType() {
+            return ApprovalSheetComponent.class;
+        }
+
+        @Override
+        public List<DocxBlock> render(ApprovalSheetComponent component, DocumentProfile profile) {
+            return List.of(new DocxParagraph("APPROVAL_SHEET", style("body")));
         }
     }
 

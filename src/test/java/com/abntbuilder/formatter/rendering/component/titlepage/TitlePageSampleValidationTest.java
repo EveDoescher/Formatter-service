@@ -21,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TitlePageSampleValidationTest {
 
     private static final Path TITLE_PAGE_SAMPLES_DIR = Path.of("docs", "samples", "title-page");
+    private static final Path COMPOSED_SAMPLES_DIR = Path.of("docs", "samples", "composed");
 
     @Autowired
     private MockMvc mockMvc;
@@ -33,8 +34,7 @@ class TitlePageSampleValidationTest {
                 "title-page-with-coadvisor.json",
                 "title-page-long-title.json",
                 "title-page-long-nature.json",
-                "title-page-many-authors.json",
-                "cover-and-title-page.json"
+                "title-page-many-authors.json"
         );
 
         for (String sampleName : sampleNames) {
@@ -49,6 +49,20 @@ class TitlePageSampleValidationTest {
             assertTrue(responseBytes.length > 0, sampleName + " should generate a DOCX.");
             assertTrue(startsWithZipHeader(responseBytes), sampleName + " should generate ZIP/DOCX bytes.");
         }
+    }
+
+    @Test
+    void shouldGenerateComposedCoverAndTitlePageSampleFromOfficialJsonFile() throws Exception {
+        byte[] responseBytes = mockMvc.perform(post("/api/v1/exports/docx")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(readComposedSample("cover-and-title-page.json")))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsByteArray();
+
+        assertTrue(responseBytes.length > 0, "cover-and-title-page.json should generate a DOCX.");
+        assertTrue(startsWithZipHeader(responseBytes), "cover-and-title-page.json should generate ZIP/DOCX bytes.");
     }
 
     @Test
@@ -80,6 +94,14 @@ class TitlePageSampleValidationTest {
         Path samplePath = TITLE_PAGE_SAMPLES_DIR.resolve(sampleName);
 
         assertTrue(Files.isRegularFile(samplePath), "Missing titlePage sample: " + sampleName);
+
+        return Files.readString(samplePath);
+    }
+
+    private static String readComposedSample(String sampleName) throws Exception {
+        Path samplePath = COMPOSED_SAMPLES_DIR.resolve(sampleName);
+
+        assertTrue(Files.isRegularFile(samplePath), "Missing composed sample: " + sampleName);
 
         return Files.readString(samplePath);
     }

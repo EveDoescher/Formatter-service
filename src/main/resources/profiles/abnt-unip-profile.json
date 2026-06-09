@@ -4,6 +4,7 @@
   "componentOrder": [
     "cover",
     "titlePage",
+    "approvalSheet",
     "paragraphs"
   ],
   "pageRule": {
@@ -199,6 +200,118 @@
       "fontSizePt": 12,
       "alignment": "CENTER",
       "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "approvalSheet.author",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": true
+    },
+    {
+      "id": "approvalSheet.title",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": true
+    },
+    {
+      "id": "approvalSheet.subtitle",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "approvalSheet.nature",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "JUSTIFIED",
+      "lineSpacing": 1,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "approvalSheet.approval",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "approvalSheet.committee.heading",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 1,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": true
+    },
+    {
+      "id": "approvalSheet.committee",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 1,
       "firstLineIndentCm": 0,
       "leftIndentCm": 0,
       "rightIndentCm": 0,
@@ -435,6 +548,155 @@
             "fromGroupId": "titlePage.natureBlock",
             "toGroupId": "titlePage.bottom",
             "weight": 45
+          }
+        ],
+        "policy": {
+          "anchorStrategy": "LAST_GROUP_AT_SAFE_AREA_END",
+          "lineHeightStrategy": "MAX_EXACT_LINE_HEIGHT",
+          "spacerStylePolicy": "NEXT_GROUP_STYLE",
+          "safetyPolicy": "MARGIN_BASED"
+        }
+      }
+    },
+    "approvalSheet": {
+      "componentId": "approvalSheet",
+      "styleMapping": {
+        "authorsStyleId": "approvalSheet.author",
+        "titleStyleId": "approvalSheet.title",
+        "subtitleStyleId": "approvalSheet.subtitle",
+        "natureStyleId": "approvalSheet.nature",
+        "approvalTextStyleId": "approvalSheet.approval",
+        "committeeHeadingStyleId": "approvalSheet.committee.heading",
+        "committeeMembersStyleId": "approvalSheet.committee"
+      },
+      "textTemplates": {
+        "natureTemplate": "{workType} para {degreeObjective} em {courseName} apresentado \u00e0 {institutionName}.",
+        "approvalTextTemplate": "Aprovado(a) em: ______/______/______",
+        "committeeHeadingTemplate": "BANCA EXAMINADORA",
+        "committeeMemberTemplate": {
+          "signatureLine": "________________________________________",
+          "lines": [
+            "{title} {name}",
+            "{institutionName}",
+            "{role}"
+          ]
+        }
+      },
+      "layoutRule": {
+        "groups": [
+          {
+            "id": "approvalSheet.authors",
+            "required": true,
+            "items": [
+              {
+                "id": "authors",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              }
+            ]
+          },
+          {
+            "id": "approvalSheet.titleBlock",
+            "required": true,
+            "items": [
+              {
+                "id": "title",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              },
+              {
+                "id": "subtitle",
+                "required": false,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              }
+            ]
+          },
+          {
+            "id": "approvalSheet.natureBlock",
+            "required": true,
+            "items": [
+              {
+                "id": "nature",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FROM_PAGE_CENTER_TO_RIGHT_MARGIN"
+                }
+              }
+            ]
+          },
+          {
+            "id": "approvalSheet.approvalBlock",
+            "required": true,
+            "items": [
+              {
+                "id": "approvalText",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              }
+            ]
+          },
+          {
+            "id": "approvalSheet.committeeHeading",
+            "required": true,
+            "items": [
+              {
+                "id": "committeeHeading",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                },
+                "blankLinesAfter": 1
+              }
+            ]
+          },
+          {
+            "id": "approvalSheet.committeeBlock",
+            "required": true,
+            "items": [
+              {
+                "id": "committeeMembers",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                },
+                "blankLinesAfter": 1
+              }
+            ]
+          }
+        ],
+        "gapRules": [
+          {
+            "fromGroupId": "approvalSheet.authors",
+            "toGroupId": "approvalSheet.titleBlock",
+            "weight": 15
+          },
+          {
+            "fromGroupId": "approvalSheet.titleBlock",
+            "toGroupId": "approvalSheet.natureBlock",
+            "weight": 20
+          },
+          {
+            "fromGroupId": "approvalSheet.natureBlock",
+            "toGroupId": "approvalSheet.approvalBlock",
+            "weight": 15
+          },
+          {
+            "fromGroupId": "approvalSheet.approvalBlock",
+            "toGroupId": "approvalSheet.committeeHeading",
+            "weight": 25
+          },
+          {
+            "fromGroupId": "approvalSheet.committeeHeading",
+            "toGroupId": "approvalSheet.committeeBlock",
+            "weight": 40
           }
         ],
         "policy": {

@@ -1,6 +1,7 @@
 package com.abntbuilder.formatter.api.export.dto.request;
 
 import com.abntbuilder.formatter.application.export.ExportDocxCommand;
+import com.abntbuilder.formatter.document.component.approvalsheet.ApprovalSheetComponent;
 import com.abntbuilder.formatter.document.component.cover.CoverComponent;
 import com.abntbuilder.formatter.document.component.titlepage.TitlePageComponent;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
@@ -47,6 +48,7 @@ public record ExportDocxRequest(
     private ExportDocxCommand toCommand(DocumentProfile documentProfile) {
         Optional<CoverComponent> coverComponent = resolveCover();
         Optional<TitlePageComponent> titlePageComponent = resolveTitlePage();
+        Optional<ApprovalSheetComponent> approvalSheetComponent = resolveApprovalSheet();
 
         List<ExportDocxCommand.ParagraphCommand> paragraphCommands = paragraphs == null
                 ? List.of()
@@ -59,6 +61,7 @@ public record ExportDocxRequest(
                 documentProfile,
                 coverComponent,
                 titlePageComponent,
+                approvalSheetComponent,
                 options == null || options.selectedComponents() == null
                         ? List.of()
                         : options.selectedComponents(),
@@ -77,6 +80,14 @@ public record ExportDocxRequest(
     private Optional<TitlePageComponent> resolveTitlePage() {
         if (document != null && document.titlePage() != null) {
             return Optional.of(document.titlePage().toDomain());
+        }
+
+        return Optional.empty();
+    }
+
+    private Optional<ApprovalSheetComponent> resolveApprovalSheet() {
+        if (document != null && document.approvalSheet() != null) {
+            return Optional.of(document.approvalSheet().toDomain());
         }
 
         return Optional.empty();

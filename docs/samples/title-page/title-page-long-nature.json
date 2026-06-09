@@ -11,17 +11,17 @@
       "authors": [
         "Nome Completo do Aluno"
       ],
-      "title": "Arquitetura de Software Aplicada a Sistemas de Formatacao Academica",
-      "subtitle": "Uma analise sobre criterios de layout automatico em documentos institucionais",
+      "title": "Arquitetura de Software Aplicada a Sistemas de Formatação Acadêmica",
+      "subtitle": "Uma análise sobre criterios de layout automatico em documentos institucionais",
       "nature": {
-        "workType": "Trabalho de conclusao de curso desenvolvido como requisito academico institucional",
-        "degreeObjective": "obtencao do titulo de graduacao e avaliacao final da disciplina integradora",
-        "courseName": "Analise e Desenvolvimento de Sistemas",
+        "workType": "Trabalho de conclusão de curso desenvolvido como requisito acadêmico institucional",
+        "degreeObjective": "obtenção do título de graduação e avaliação final da disciplina integradora",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
         "institutionName": "Universidade Paulista - UNIP"
       },
       "advisor": {
         "academicTitle": "Prof. Dr.",
-        "name": "Jose da Silva"
+        "name": "José da Silva"
       },
       "coadvisor": null,
       "city": "Limeira",
