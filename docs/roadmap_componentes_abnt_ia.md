@@ -548,14 +548,15 @@ estruturado como sub-bloco, por exemplo:
 Exemplo conceitual:
 
 ```text
-committeeMemberTemplate.signatureLine
-committeeMemberTemplate.lines[]
+committeeMemberTemplate.signatureLine.enabled
+committeeMemberTemplate.signatureLine.text
+committeeMemberTemplate.lineTemplates[]
 ```
 
 Exemplo de linhas:
 
 ```text
-________________________________________
+signatureLine.text = ________________________________________
 {title} {name}
 {institutionName}
 {role}

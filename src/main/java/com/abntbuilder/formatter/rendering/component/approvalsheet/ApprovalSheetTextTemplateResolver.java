@@ -70,9 +70,14 @@ public final class ApprovalSheetTextTemplateResolver {
         Set<String> requiredFields = new HashSet<>();
         Set<String> allowedFields = Set.of("name", "title", "institutionName", "role");
 
-        requiredFields.addAll(placeholdersIn(templates.committeeMemberTemplate().signatureLine(), allowedFields));
+        if (templates.committeeMemberTemplate().signatureLine().enabled()) {
+            requiredFields.addAll(placeholdersIn(
+                    templates.committeeMemberTemplate().signatureLine().text(),
+                    allowedFields
+            ));
+        }
 
-        for (String line : templates.committeeMemberTemplate().lines()) {
+        for (String line : templates.committeeMemberTemplate().lineTemplates()) {
             requiredFields.addAll(placeholdersIn(line, allowedFields));
         }
 
@@ -100,9 +105,11 @@ public final class ApprovalSheetTextTemplateResolver {
         );
         List<String> resolvedLines = new ArrayList<>();
 
-        resolvedLines.add(resolve(templates.committeeMemberTemplate().signatureLine(), values));
+        if (templates.committeeMemberTemplate().signatureLine().enabled()) {
+            resolvedLines.add(resolve(templates.committeeMemberTemplate().signatureLine().text(), values));
+        }
 
-        for (String lineTemplate : templates.committeeMemberTemplate().lines()) {
+        for (String lineTemplate : templates.committeeMemberTemplate().lineTemplates()) {
             String resolvedLine = resolve(lineTemplate, values);
 
             if (!resolvedLine.isBlank()) {

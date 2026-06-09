@@ -1,13 +1,13 @@
 package com.abntbuilder.formatter.api.export.dto.request;
 
 import com.abntbuilder.formatter.application.export.ExportDocxCommand;
+import com.abntbuilder.formatter.document.component.titlepage.TitlePageComponent;
 import com.abntbuilder.formatter.profile.resolution.ClasspathJsonProfileProvider;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ExportDocxRequestTest {
 
@@ -24,11 +24,10 @@ class ExportDocxRequestTest {
 
         ExportDocxCommand command = request.toCommand(new ClasspathJsonProfileProvider());
 
-        assertTrue(command.cover().isEmpty());
-        assertTrue(command.titlePage().isPresent());
-        assertTrue(command.approvalSheet().isEmpty());
+        assertEquals(1, command.documentComponents().size());
+        TitlePageComponent titlePage = (TitlePageComponent) command.documentComponents().getFirst();
         assertEquals(List.of("titlePage"), command.selectedComponents());
-        assertEquals("Titulo", command.titlePage().orElseThrow().title());
+        assertEquals("Titulo", titlePage.title());
     }
 
     private static TitlePageRequest titlePageRequest() {

@@ -6,6 +6,7 @@ import com.abntbuilder.formatter.document.component.approvalsheet.ApprovalSheetC
 import com.abntbuilder.formatter.document.component.approvalsheet.ApprovalSheetNature;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetCommitteeMemberRule;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetComponentRule;
+import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetSignatureLineRule;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetStyleMapping;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetTextTemplateRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.HorizontalPlacementRule;
@@ -139,7 +140,7 @@ class ApprovalSheetProfileContentValidatorTest {
                         approvalTextTemplate,
                         "BANCA EXAMINADORA",
                         new ApprovalSheetCommitteeMemberRule(
-                                "________________________________________",
+                                new ApprovalSheetSignatureLineRule(true, "________________________________________"),
                                 committeeMemberLines
                         )
                 ),

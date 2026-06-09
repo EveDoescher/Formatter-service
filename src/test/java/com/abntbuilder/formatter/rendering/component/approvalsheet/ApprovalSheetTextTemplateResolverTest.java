@@ -4,6 +4,7 @@ import com.abntbuilder.formatter.document.component.approvalsheet.ApprovalCommit
 import com.abntbuilder.formatter.document.component.approvalsheet.ApprovalEvent;
 import com.abntbuilder.formatter.document.component.approvalsheet.ApprovalSheetNature;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetCommitteeMemberRule;
+import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetSignatureLineRule;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetTextTemplateRule;
 import com.abntbuilder.formatter.shared.exception.InvalidProfileStructureException;
 import org.junit.jupiter.api.Test;
@@ -65,7 +66,7 @@ class ApprovalSheetTextTemplateResolverTest {
                 "Aprovado em {location}, {date}.",
                 "BANCA EXAMINADORA",
                 new ApprovalSheetCommitteeMemberRule(
-                        "________________________________________",
+                        signatureLine(),
                         List.of("{title} {name}")
                 )
         );
@@ -84,7 +85,7 @@ class ApprovalSheetTextTemplateResolverTest {
                 "Aprovado em {location}, {date}.",
                 "BANCA EXAMINADORA",
                 new ApprovalSheetCommitteeMemberRule(
-                        "________________________________________",
+                        signatureLine(),
                         List.of(
                                 "{title} {name}",
                                 "{institutionName}",
@@ -92,6 +93,10 @@ class ApprovalSheetTextTemplateResolverTest {
                         )
                 )
         );
+    }
+
+    private static ApprovalSheetSignatureLineRule signatureLine() {
+        return new ApprovalSheetSignatureLineRule(true, "________________________________________");
     }
 
     private static ApprovalSheetNature nature() {

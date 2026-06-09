@@ -88,9 +88,7 @@ class DocumentRendererComponentSelectionTest {
         DocxDocument document = renderer.render(new ExportDocxCommand(
                 "test.docx",
                 profile(),
-                Optional.empty(),
-                Optional.empty(),
-                Optional.of(approvalSheet()),
+                List.of(approvalSheet()),
                 List.of("approvalSheet"),
                 List.of()
         ));
@@ -115,8 +113,7 @@ class DocumentRendererComponentSelectionTest {
                 () -> renderer.render(new ExportDocxCommand(
                         "test.docx",
                         profile(),
-                        Optional.of(cover()),
-                        Optional.empty(),
+                        List.of(cover()),
                         List.of("titlePage"),
                         List.of(new ExportDocxCommand.ParagraphCommand("Paragraph", "body"))
                 ))
@@ -138,8 +135,7 @@ class DocumentRendererComponentSelectionTest {
         return new ExportDocxCommand(
                 "test.docx",
                 profile(),
-                Optional.of(cover()),
-                Optional.of(titlePage()),
+                List.of(cover(), titlePage()),
                 selectedComponents,
                 List.of(new ExportDocxCommand.ParagraphCommand("Paragraph", "body"))
         );

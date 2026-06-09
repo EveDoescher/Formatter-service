@@ -574,8 +574,11 @@
         "approvalTextTemplate": "Aprovado(a) em: ______/______/______",
         "committeeHeadingTemplate": "BANCA EXAMINADORA",
         "committeeMemberTemplate": {
-          "signatureLine": "________________________________________",
-          "lines": [
+          "signatureLine": {
+            "enabled": true,
+            "text": "________________________________________"
+          },
+          "lineTemplates": [
             "{title} {name}",
             "{institutionName}",
             "{role}"

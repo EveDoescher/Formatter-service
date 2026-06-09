@@ -6,22 +6,22 @@ import java.util.List;
 import java.util.Objects;
 
 public record ApprovalSheetCommitteeMemberRule(
-        String signatureLine,
-        List<String> lines
+        ApprovalSheetSignatureLineRule signatureLine,
+        List<String> lineTemplates
 ) {
 
     public ApprovalSheetCommitteeMemberRule {
-        requireNonBlank(signatureLine, "signatureLine");
-        Objects.requireNonNull(lines, "lines must not be null");
+        Objects.requireNonNull(signatureLine, "signatureLine must not be null");
+        Objects.requireNonNull(lineTemplates, "lineTemplates must not be null");
 
-        if (lines.isEmpty()) {
-            throw new InvalidProfileStructureException("lines must not be empty.");
+        if (lineTemplates.isEmpty()) {
+            throw new InvalidProfileStructureException("lineTemplates must not be empty.");
         }
 
-        lines = List.copyOf(lines);
+        lineTemplates = List.copyOf(lineTemplates);
 
-        for (String line : lines) {
-            requireNonBlank(line, "lines item");
+        for (String lineTemplate : lineTemplates) {
+            requireNonBlank(lineTemplate, "lineTemplates item");
         }
     }
 

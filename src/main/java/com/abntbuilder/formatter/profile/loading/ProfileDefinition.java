@@ -9,6 +9,7 @@ import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.ComponentRule;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetCommitteeMemberRule;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetComponentRule;
+import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetSignatureLineRule;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetStyleMapping;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetTextTemplateRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
@@ -328,13 +329,25 @@ public record ProfileDefinition(
     }
 
     public record ApprovalSheetCommitteeMemberRuleDefinition(
-            String signatureLine,
-            List<String> lines
+            ApprovalSheetSignatureLineRuleDefinition signatureLine,
+            List<String> lineTemplates
     ) {
         ApprovalSheetCommitteeMemberRule toDomain() {
-            requireNonEmpty(lines, "approvalSheet.textTemplates.committeeMemberTemplate.lines");
+            requireNonNull(signatureLine, "approvalSheet.textTemplates.committeeMemberTemplate.signatureLine");
+            requireNonEmpty(lineTemplates, "approvalSheet.textTemplates.committeeMemberTemplate.lineTemplates");
 
-            return new ApprovalSheetCommitteeMemberRule(signatureLine, lines);
+            return new ApprovalSheetCommitteeMemberRule(signatureLine.toDomain(), lineTemplates);
+        }
+    }
+
+    public record ApprovalSheetSignatureLineRuleDefinition(
+            Boolean enabled,
+            String text
+    ) {
+        ApprovalSheetSignatureLineRule toDomain() {
+            requireNonNull(enabled, "approvalSheet.textTemplates.committeeMemberTemplate.signatureLine.enabled");
+
+            return new ApprovalSheetSignatureLineRule(enabled, text);
         }
     }
 
