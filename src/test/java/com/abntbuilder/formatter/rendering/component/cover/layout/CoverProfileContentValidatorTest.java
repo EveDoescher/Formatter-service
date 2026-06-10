@@ -80,6 +80,7 @@ class CoverProfileContentValidatorTest {
     private static CoverComponentRule ruleWithRequiredAuthors() {
         return new CoverComponentRule(
                 "cover",
+                new com.abntbuilder.formatter.profile.model.component.ComponentContentBindings(java.util.Map.of()),
                 styleMapping(),
                 new CoverLayoutRule(
                         List.of(new SinglePageGroupRule(
@@ -96,6 +97,7 @@ class CoverProfileContentValidatorTest {
     private static CoverComponentRule ruleWithRequiredOptionalOnlyGroup() {
         return new CoverComponentRule(
                 "cover",
+                new com.abntbuilder.formatter.profile.model.component.ComponentContentBindings(java.util.Map.of()),
                 styleMapping(),
                 new CoverLayoutRule(
                         List.of(new SinglePageGroupRule(
@@ -112,6 +114,7 @@ class CoverProfileContentValidatorTest {
     private static CoverComponentRule ruleWithUnknownItem() {
         return new CoverComponentRule(
                 "cover",
+                new com.abntbuilder.formatter.profile.model.component.ComponentContentBindings(java.util.Map.of()),
                 styleMapping(),
                 new CoverLayoutRule(
                         List.of(new SinglePageGroupRule(

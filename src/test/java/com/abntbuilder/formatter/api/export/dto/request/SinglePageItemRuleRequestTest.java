@@ -5,12 +5,13 @@ import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageItemR
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SinglePageItemRuleRequestTest {
 
     @Test
-    void shouldDefaultHorizontalPlacementToFullContentWidth() {
+    void shouldRejectMissingHorizontalPlacement() {
         SinglePageItemRuleRequest request = new SinglePageItemRuleRequest(
                 "title",
                 true,
@@ -19,13 +20,9 @@ class SinglePageItemRuleRequestTest {
                 null
         );
 
-        SinglePageItemRule rule = request.toDomain();
+        NullPointerException exception = assertThrows(NullPointerException.class, request::toDomain);
 
-        assertEquals("title", rule.id());
-        assertTrue(rule.required());
-        assertTrue(rule.maxVisualLinesPerValue().isEmpty());
-        assertEquals(HorizontalPlacementStrategy.FULL_CONTENT_WIDTH, rule.horizontalPlacement().strategy());
-        assertEquals(0, rule.blankLinesAfter());
+        assertEquals("horizontalPlacement must not be null", exception.getMessage());
     }
 
     @Test

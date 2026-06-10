@@ -933,3 +933,14 @@ Every important decision should have a clear owner:
 - DOCX/OpenXML details belong only to the DOCX implementation.
 
 If a future change would require editing many unrelated places, the design is not good enough yet.
+
+Shared academic work data must not be duplicated across components.
+
+Use `work` as the semantic source for repeated document data such as authors,
+title, subtitle, nature, advisor, city and year. Profiles should declare
+`contentBindings` that map component fields to `work` fields.
+
+Do not infer that two component fields are equal just because they have similar
+names. Do not copy values from one component to another. Components may use
+explicit overrides, but the default shared source must be profile-declared
+work data.

@@ -20,6 +20,7 @@ class CoverComponentRuleTest {
     void shouldCreateValidCoverComponentRule() {
         CoverComponentRule rule = new CoverComponentRule(
                 "cover",
+                new com.abntbuilder.formatter.profile.model.component.ComponentContentBindings(java.util.Map.of()),
                 validStyleMapping(),
                 validLayoutRule()
         );
@@ -48,6 +49,7 @@ class CoverComponentRuleTest {
     void shouldRejectBlankComponentId() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new CoverComponentRule(
                 " ",
+                new com.abntbuilder.formatter.profile.model.component.ComponentContentBindings(java.util.Map.of()),
                 validStyleMapping(),
                 validLayoutRule()
         ));
@@ -59,6 +61,7 @@ class CoverComponentRuleTest {
     void shouldRejectNullStyleMapping() {
         assertThrows(NullPointerException.class, () -> new CoverComponentRule(
                 "cover",
+                new com.abntbuilder.formatter.profile.model.component.ComponentContentBindings(java.util.Map.of()),
                 null,
                 validLayoutRule()
         ));
@@ -68,6 +71,7 @@ class CoverComponentRuleTest {
     void shouldRejectNullLayoutRule() {
         assertThrows(NullPointerException.class, () -> new CoverComponentRule(
                 "cover",
+                new com.abntbuilder.formatter.profile.model.component.ComponentContentBindings(java.util.Map.of()),
                 validStyleMapping(),
                 null
         ));

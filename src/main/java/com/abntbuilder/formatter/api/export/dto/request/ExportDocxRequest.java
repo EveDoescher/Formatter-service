@@ -21,6 +21,9 @@ public record ExportDocxRequest(
         ExportOptionsRequest options,
 
         @Valid
+        AcademicWorkRequest work,
+
+        @Valid
         DocumentContentRequest document,
 
         @Valid
@@ -45,7 +48,7 @@ public record ExportDocxRequest(
     private ExportDocxCommand toCommand(DocumentProfile documentProfile) {
         List<DocumentComponent> documentComponents = document == null
                 ? List.of()
-                : document.toComponents();
+                : document.toComponents(work, documentProfile);
 
         List<ExportDocxCommand.ParagraphCommand> paragraphCommands = paragraphs == null
                 ? List.of()

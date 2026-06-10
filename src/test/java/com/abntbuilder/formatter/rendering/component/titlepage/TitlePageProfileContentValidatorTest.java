@@ -98,6 +98,7 @@ class TitlePageProfileContentValidatorTest {
     private static TitlePageComponentRule ruleWithComponentId(String componentId) {
         return new TitlePageComponentRule(
                 componentId,
+                new com.abntbuilder.formatter.profile.model.component.ComponentContentBindings(java.util.Map.of()),
                 styleMapping(),
                 textTemplates(),
                 layoutRule(List.of(group("titlePage.authors", true, item("authors", true))))
@@ -107,6 +108,7 @@ class TitlePageProfileContentValidatorTest {
     private static TitlePageComponentRule ruleWithGroups(List<SinglePageGroupRule> groups) {
         return new TitlePageComponentRule(
                 "titlePage",
+                new com.abntbuilder.formatter.profile.model.component.ComponentContentBindings(java.util.Map.of()),
                 styleMapping(),
                 textTemplates(),
                 layoutRule(groups)

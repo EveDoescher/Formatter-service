@@ -1,35 +1,54 @@
 package com.abntbuilder.formatter.api.export.dto.request;
 
 import com.abntbuilder.formatter.document.component.titlepage.TitlePageComponent;
+import com.abntbuilder.formatter.profile.model.component.ComponentContentBindings;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 import java.util.Optional;
 
 public record TitlePageRequest(
-        @NotEmpty List<@NotBlank String> authors,
-        @NotBlank String title,
+        List<String> authors,
+        String title,
         String subtitle,
-        @Valid @NotNull TitlePageNatureRequest nature,
+        @Valid TitlePageNatureRequest nature,
         @Valid AcademicPersonRequest advisor,
         @Valid AcademicPersonRequest coadvisor,
-        @NotBlank String city,
-        @NotBlank String year
+        String city,
+        String year
 ) {
 
     public TitlePageComponent toDomain() {
+        return toDomain(null, new ComponentContentBindings(java.util.Map.of()));
+    }
+
+    public TitlePageComponent toDomain(AcademicWorkRequest work, ComponentContentBindings bindings) {
+        WorkContentBindingResolver resolver = new WorkContentBindingResolver("titlePage", work, bindings);
+        TitlePageNatureRequest resolvedNature = resolver.resolveTitlePageNature("nature", nature);
+
         return new TitlePageComponent(
-                authors == null ? List.of() : authors,
-                title,
-                subtitle == null ? Optional.empty() : Optional.of(subtitle),
-                nature.toDomain(),
-                advisor == null ? Optional.empty() : Optional.of(advisor.toDomain()),
-                coadvisor == null ? Optional.empty() : Optional.of(coadvisor.toDomain()),
-                city,
-                year
+                resolvedList(resolver.resolveStringList("authors", authors)),
+                resolver.resolveString("title", title),
+                Optional.ofNullable(resolver.resolveString("subtitle", subtitle)),
+                requireNature(resolvedNature).toDomain(),
+                Optional.ofNullable(resolver.resolveAcademicPerson("advisor", advisor))
+                        .map(AcademicPersonRequest::toDomain),
+                Optional.ofNullable(resolver.resolveAcademicPerson("coadvisor", coadvisor))
+                        .map(AcademicPersonRequest::toDomain),
+                resolver.resolveString("city", city),
+                resolver.resolveString("year", year)
         );
+    }
+
+    private static List<String> resolvedList(List<String> value) {
+        return value == null ? List.of() : value;
+    }
+
+    private static TitlePageNatureRequest requireNature(TitlePageNatureRequest value) {
+        if (value == null) {
+            throw new IllegalArgumentException("titlePage.nature must be provided explicitly or through work bindings.");
+        }
+
+        return value;
     }
 }

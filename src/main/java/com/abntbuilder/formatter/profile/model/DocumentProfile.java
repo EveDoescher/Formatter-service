@@ -2,6 +2,7 @@ package com.abntbuilder.formatter.profile.model;
 
 import com.abntbuilder.formatter.profile.model.component.ComponentRule;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetComponentRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageComponentRule;
 
@@ -142,6 +143,14 @@ public record DocumentProfile(
                     approvalSheetRule.styleMapping().committeeHeadingStyleId(),
                     approvalSheetRule.styleMapping().committeeMembersStyleId()
             );
+            case BodyContentComponentRule bodyContentRule -> {
+                List<String> styleIds = new java.util.ArrayList<>(
+                        bodyContentRule.styleMapping().sectionTitleStyleIdsByLevel()
+                );
+                styleIds.add(bodyContentRule.styleMapping().paragraphStyleId());
+                styleIds.add(bodyContentRule.layout().blankLineStyleId());
+                yield styleIds;
+            }
             default -> List.of();
         };
     }

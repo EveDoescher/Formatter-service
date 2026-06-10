@@ -9,6 +9,7 @@ import com.abntbuilder.formatter.rendering.component.approvalsheet.ApprovalSheet
 import com.abntbuilder.formatter.rendering.component.approvalsheet.ApprovalSheetProfileContentValidator;
 import com.abntbuilder.formatter.rendering.component.approvalsheet.ApprovalSheetRenderer;
 import com.abntbuilder.formatter.rendering.component.approvalsheet.ApprovalSheetTextTemplateResolver;
+import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentRenderer;
 import com.abntbuilder.formatter.rendering.component.cover.CoverRenderer;
 import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutAssembler;
 import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutCalculator;
@@ -204,6 +205,11 @@ public class RenderingConfig {
             SinglePageLayoutRenderer singlePageRenderer
     ) {
         return new ApprovalSheetRenderer(layoutCalculator, singlePageRenderer);
+    }
+
+    @Bean
+    public BodyContentRenderer bodyContentRenderer() {
+        return new BodyContentRenderer();
     }
 
     @Bean

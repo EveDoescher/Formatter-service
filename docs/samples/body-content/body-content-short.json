@@ -1,0 +1,58 @@
+{
+  "fileName": "body-content-short.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "bodyContent"
+    ]
+  },
+  "document": {
+    "bodyContent": {
+      "sections": [
+        {
+          "id": "introducao",
+          "level": 1,
+          "title": "Introdução",
+          "paragraphs": [
+            "A presente pesquisa apresenta uma análise introdutória sobre a organização textual de trabalhos acadêmicos conforme regras institucionais e normas de apresentação.",
+            "O objetivo desta seção é demonstrar que o conteúdo textual pode fluir naturalmente no documento sem depender das regras de página única usadas nos elementos pré-textuais."
+          ]
+        },
+        {
+          "id": "desenvolvimento",
+          "level": 1,
+          "title": "Desenvolvimento",
+          "paragraphs": [
+            "O desenvolvimento reúne os principais argumentos do trabalho, articulando conceitos, dados e interpretações em parágrafos contínuos.",
+            "Nesta etapa, o formatador deve aplicar estilos definidos pelo perfil, preservando fonte, espaçamento, alinhamento justificado e recuo de primeira linha."
+          ]
+        },
+        {
+          "id": "fundamentacao",
+          "level": 2,
+          "title": "Fundamentação do componente textual",
+          "paragraphs": [
+            "A fundamentação do componente textual depende da representação explícita dos níveis de título, permitindo que o documento preserve hierarquia sem transformar o conteúdo em texto solto."
+          ]
+        },
+        {
+          "id": "metadados",
+          "level": 3,
+          "title": "Metadados para navegação",
+          "paragraphs": [
+            "Os metadados de seção permitem que recursos futuros identifiquem títulos, níveis e ordem documental de forma estável."
+          ]
+        },
+        {
+          "id": "conclusao",
+          "level": 1,
+          "title": "Conclusão",
+          "paragraphs": [
+            "Conclui-se que a base textual deve ser tratada como componente próprio, reutilizável e orientado por perfil, preparando o sistema para sumário, listas e elementos posteriores."
+          ]
+        }
+      ]
+    }
+  },
+  "paragraphs": []
+}

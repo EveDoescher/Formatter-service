@@ -5,35 +5,23 @@ import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageLayou
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageLineHeightStrategy;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageSafetyPolicyId;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SpacerStylePolicy;
+import jakarta.validation.constraints.NotNull;
+
+import java.util.Objects;
 
 public record SinglePageLayoutPolicyRequest(
-        SinglePageAnchorStrategy anchorStrategy,
-        SinglePageLineHeightStrategy lineHeightStrategy,
-        SpacerStylePolicy spacerStylePolicy,
-        SinglePageSafetyPolicyId safetyPolicy
+        @NotNull SinglePageAnchorStrategy anchorStrategy,
+        @NotNull SinglePageLineHeightStrategy lineHeightStrategy,
+        @NotNull SpacerStylePolicy spacerStylePolicy,
+        @NotNull SinglePageSafetyPolicyId safetyPolicy
 ) {
 
     public SinglePageLayoutPolicy toDomain() {
-        if (anchorStrategy == null
-                && lineHeightStrategy == null
-                && spacerStylePolicy == null
-                && safetyPolicy == null) {
-            return SinglePageLayoutPolicy.defaultSinglePagePolicy();
-        }
-
         return new SinglePageLayoutPolicy(
-                anchorStrategy == null
-                        ? SinglePageAnchorStrategy.LAST_GROUP_AT_SAFE_AREA_END
-                        : anchorStrategy,
-                lineHeightStrategy == null
-                        ? SinglePageLineHeightStrategy.MAX_EXACT_LINE_HEIGHT
-                        : lineHeightStrategy,
-                spacerStylePolicy == null
-                        ? SpacerStylePolicy.NEXT_GROUP_STYLE
-                        : spacerStylePolicy,
-                safetyPolicy == null
-                        ? SinglePageSafetyPolicyId.MARGIN_BASED
-                        : safetyPolicy
+                Objects.requireNonNull(anchorStrategy, "anchorStrategy must not be null"),
+                Objects.requireNonNull(lineHeightStrategy, "lineHeightStrategy must not be null"),
+                Objects.requireNonNull(spacerStylePolicy, "spacerStylePolicy must not be null"),
+                Objects.requireNonNull(safetyPolicy, "safetyPolicy must not be null")
         );
     }
 }

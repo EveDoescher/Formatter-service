@@ -6,12 +6,17 @@ import com.abntbuilder.formatter.profile.model.PageRule;
 import com.abntbuilder.formatter.profile.model.StyleRule;
 import com.abntbuilder.formatter.profile.model.StyleType;
 import com.abntbuilder.formatter.profile.model.TextAlignment;
+import com.abntbuilder.formatter.profile.model.component.ComponentContentBindings;
 import com.abntbuilder.formatter.profile.model.component.ComponentRule;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetCommitteeMemberRule;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetComponentRule;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetSignatureLineRule;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetStyleMapping;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetTextTemplateRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentComponentRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentLayoutRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentNumberingRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentStyleMapping;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverStyleMapping;
@@ -34,6 +39,7 @@ import com.abntbuilder.formatter.shared.exception.InvalidProfileStructureExcepti
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public record ProfileDefinition(
@@ -130,7 +136,8 @@ public record ProfileDefinition(
     public record ComponentRulesDefinition(
             CoverComponentRuleDefinition cover,
             TitlePageComponentRuleDefinition titlePage,
-            ApprovalSheetComponentRuleDefinition approvalSheet
+            ApprovalSheetComponentRuleDefinition approvalSheet,
+            BodyContentComponentRuleDefinition bodyContent
     ) {
         List<ComponentRule> toDomain() {
             List<ComponentRule> rules = new ArrayList<>();
@@ -147,12 +154,17 @@ public record ProfileDefinition(
                 rules.add(approvalSheet.toDomain());
             }
 
+            if (bodyContent != null) {
+                rules.add(bodyContent.toDomain());
+            }
+
             return List.copyOf(rules);
         }
     }
 
     public record CoverComponentRuleDefinition(
             String componentId,
+            Map<String, String> contentBindings,
             CoverStyleMappingDefinition styleMapping,
             CoverLayoutRuleDefinition layoutRule
     ) {
@@ -162,6 +174,7 @@ public record ProfileDefinition(
 
             return new CoverComponentRule(
                     componentId,
+                    createContentBindings(contentBindings),
                     styleMapping.toDomain(),
                     layoutRule.toDomain()
             );
@@ -212,6 +225,7 @@ public record ProfileDefinition(
 
     public record TitlePageComponentRuleDefinition(
             String componentId,
+            Map<String, String> contentBindings,
             TitlePageStyleMappingDefinition styleMapping,
             TitlePageTextTemplateRuleDefinition textTemplates,
             SinglePageLayoutRuleDefinition layoutRule
@@ -223,6 +237,7 @@ public record ProfileDefinition(
 
             return new TitlePageComponentRule(
                     componentId,
+                    createContentBindings(contentBindings),
                     styleMapping.toDomain(),
                     textTemplates.toDomain(),
                     layoutRule.toDomain()
@@ -270,6 +285,7 @@ public record ProfileDefinition(
 
     public record ApprovalSheetComponentRuleDefinition(
             String componentId,
+            Map<String, String> contentBindings,
             ApprovalSheetStyleMappingDefinition styleMapping,
             ApprovalSheetTextTemplateRuleDefinition textTemplates,
             SinglePageLayoutRuleDefinition layoutRule
@@ -281,6 +297,7 @@ public record ProfileDefinition(
 
             return new ApprovalSheetComponentRule(
                     componentId,
+                    createContentBindings(contentBindings),
                     styleMapping.toDomain(),
                     textTemplates.toDomain(),
                     layoutRule.toDomain()
@@ -348,6 +365,72 @@ public record ProfileDefinition(
             requireNonNull(enabled, "approvalSheet.textTemplates.committeeMemberTemplate.signatureLine.enabled");
 
             return new ApprovalSheetSignatureLineRule(enabled, text);
+        }
+    }
+
+    public record BodyContentComponentRuleDefinition(
+            String componentId,
+            BodyContentStyleMappingDefinition styleMapping,
+            BodyContentNumberingRuleDefinition numbering,
+            BodyContentLayoutRuleDefinition layout
+    ) {
+        BodyContentComponentRule toDomain() {
+            requireNonNull(styleMapping, "bodyContent.styleMapping");
+            requireNonNull(numbering, "bodyContent.numbering");
+            requireNonNull(layout, "bodyContent.layout");
+
+            return new BodyContentComponentRule(
+                    componentId,
+                    styleMapping.toDomain(),
+                    numbering.toDomain(),
+                    layout.toDomain()
+            );
+        }
+    }
+
+    public record BodyContentStyleMappingDefinition(
+            List<String> sectionTitleStyleIdsByLevel,
+            String paragraphStyleId
+    ) {
+        BodyContentStyleMapping toDomain() {
+            requireNonEmpty(sectionTitleStyleIdsByLevel, "bodyContent.styleMapping.sectionTitleStyleIdsByLevel");
+
+            return new BodyContentStyleMapping(sectionTitleStyleIdsByLevel, paragraphStyleId);
+        }
+    }
+
+    public record BodyContentNumberingRuleDefinition(
+            Boolean enabled,
+            String separator,
+            String primarySuffix
+    ) {
+        BodyContentNumberingRule toDomain() {
+            requireNonNull(enabled, "bodyContent.numbering.enabled");
+
+            return new BodyContentNumberingRule(enabled, separator, primarySuffix);
+        }
+    }
+
+    public record BodyContentLayoutRuleDefinition(
+            Integer blankLinesBeforeSectionTitleWhenPrecededByContent,
+            Integer blankLinesAfterSectionTitle,
+            Boolean pageBreakBeforePrimarySection,
+            String blankLineStyleId
+    ) {
+        BodyContentLayoutRule toDomain() {
+            requireNonNull(
+                    blankLinesBeforeSectionTitleWhenPrecededByContent,
+                    "bodyContent.layout.blankLinesBeforeSectionTitleWhenPrecededByContent"
+            );
+            requireNonNull(blankLinesAfterSectionTitle, "bodyContent.layout.blankLinesAfterSectionTitle");
+            requireNonNull(pageBreakBeforePrimarySection, "bodyContent.layout.pageBreakBeforePrimarySection");
+
+            return new BodyContentLayoutRule(
+                    blankLinesBeforeSectionTitleWhenPrecededByContent,
+                    blankLinesAfterSectionTitle,
+                    pageBreakBeforePrimarySection,
+                    blankLineStyleId
+            );
         }
     }
 
@@ -464,5 +547,9 @@ public record ProfileDefinition(
         if (value.isEmpty()) {
             throw new InvalidProfileStructureException(fieldName + " must not be empty.");
         }
+    }
+
+    private static ComponentContentBindings createContentBindings(Map<String, String> value) {
+        return new ComponentContentBindings(value == null ? Map.of() : value);
     }
 }

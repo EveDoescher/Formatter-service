@@ -21,6 +21,7 @@ class TitlePageComponentRuleTest {
     void shouldCreateValidRule() {
         TitlePageComponentRule rule = new TitlePageComponentRule(
                 "titlePage",
+                new com.abntbuilder.formatter.profile.model.component.ComponentContentBindings(java.util.Map.of()),
                 styleMapping(),
                 textTemplates(),
                 layoutRule()

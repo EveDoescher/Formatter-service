@@ -3,13 +3,17 @@ package com.abntbuilder.formatter.api.export.dto.request;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageItemRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.HorizontalPlacementRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.HorizontalPlacementStrategy;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.Optional;
+import java.util.Objects;
 
 public record SinglePageItemRuleRequest(
-        String id,
-        Boolean required,
+        @NotBlank String id,
+        @NotNull Boolean required,
         Integer maxVisualLinesPerValue,
+        @NotNull
         HorizontalPlacementStrategy horizontalPlacement,
         Integer blankLinesAfter
 ) {
@@ -17,11 +21,12 @@ public record SinglePageItemRuleRequest(
     public SinglePageItemRule toDomain() {
         return new SinglePageItemRule(
                 id,
-                Boolean.TRUE.equals(required),
+                Objects.requireNonNull(required, "required must not be null"),
                 Optional.ofNullable(maxVisualLinesPerValue),
-                new HorizontalPlacementRule(horizontalPlacement == null
-                        ? HorizontalPlacementStrategy.FULL_CONTENT_WIDTH
-                        : horizontalPlacement),
+                new HorizontalPlacementRule(Objects.requireNonNull(
+                        horizontalPlacement,
+                        "horizontalPlacement must not be null"
+                )),
                 blankLinesAfter == null ? 0 : blankLinesAfter
         );
     }

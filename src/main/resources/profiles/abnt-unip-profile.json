@@ -5,6 +5,7 @@
     "cover",
     "titlePage",
     "approvalSheet",
+    "bodyContent",
     "paragraphs"
   ],
   "pageRule": {
@@ -320,11 +321,131 @@
       "bold": false,
       "italic": false,
       "uppercase": false
+    },
+    {
+      "id": "bodyContent.heading1",
+      "type": "HEADING_1",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": true
+    },
+    {
+      "id": "bodyContent.heading2",
+      "type": "HEADING_2",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.heading3",
+      "type": "HEADING_3",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.heading4",
+      "type": "HEADING_4",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.heading5",
+      "type": "HEADING_5",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.heading6",
+      "type": "HEADING_6",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.paragraph",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "JUSTIFIED",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 1.25,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
     }
   ],
   "componentRules": {
     "cover": {
       "componentId": "cover",
+      "contentBindings": {
+        "institutionalLines": "work.institutionalLines",
+        "authors": "work.authors",
+        "title": "work.title",
+        "subtitle": "work.subtitle",
+        "city": "work.city",
+        "year": "work.year"
+      },
       "styleMapping": {
         "institutionalLinesStyleId": "cover.top",
         "authorsStyleId": "cover.author",
@@ -431,6 +552,16 @@
     },
     "titlePage": {
       "componentId": "titlePage",
+      "contentBindings": {
+        "authors": "work.authors",
+        "title": "work.title",
+        "subtitle": "work.subtitle",
+        "nature": "work.nature",
+        "advisor": "work.advisor",
+        "coadvisor": "work.coadvisor",
+        "city": "work.city",
+        "year": "work.year"
+      },
       "styleMapping": {
         "authorsStyleId": "titlePage.author",
         "titleStyleId": "titlePage.title",
@@ -560,6 +691,12 @@
     },
     "approvalSheet": {
       "componentId": "approvalSheet",
+      "contentBindings": {
+        "authors": "work.authors",
+        "title": "work.title",
+        "subtitle": "work.subtitle",
+        "nature": "work.nature"
+      },
       "styleMapping": {
         "authorsStyleId": "approvalSheet.author",
         "titleStyleId": "approvalSheet.title",
@@ -708,6 +845,31 @@
           "spacerStylePolicy": "NEXT_GROUP_STYLE",
           "safetyPolicy": "MARGIN_BASED"
         }
+      }
+    },
+    "bodyContent": {
+      "componentId": "bodyContent",
+      "styleMapping": {
+        "sectionTitleStyleIdsByLevel": [
+          "bodyContent.heading1",
+          "bodyContent.heading2",
+          "bodyContent.heading3",
+          "bodyContent.heading4",
+          "bodyContent.heading5",
+          "bodyContent.heading6"
+        ],
+        "paragraphStyleId": "bodyContent.paragraph"
+      },
+      "numbering": {
+        "enabled": true,
+        "separator": ".",
+        "primarySuffix": ".0"
+      },
+      "layout": {
+        "blankLinesBeforeSectionTitleWhenPrecededByContent": 1,
+        "blankLinesAfterSectionTitle": 1,
+        "pageBreakBeforePrimarySection": false,
+        "blankLineStyleId": "bodyContent.paragraph"
       }
     }
   }

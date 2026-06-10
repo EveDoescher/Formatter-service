@@ -1,0 +1,32 @@
+package com.abntbuilder.formatter.profile.model.component.bodycontent;
+
+import com.abntbuilder.formatter.shared.exception.InvalidProfileStructureException;
+
+public record BodyContentLayoutRule(
+        int blankLinesBeforeSectionTitleWhenPrecededByContent,
+        int blankLinesAfterSectionTitle,
+        boolean pageBreakBeforePrimarySection,
+        String blankLineStyleId
+) {
+
+    public BodyContentLayoutRule {
+        requireNonNegative(
+                blankLinesBeforeSectionTitleWhenPrecededByContent,
+                "blankLinesBeforeSectionTitleWhenPrecededByContent"
+        );
+        requireNonNegative(blankLinesAfterSectionTitle, "blankLinesAfterSectionTitle");
+        requireNonBlank(blankLineStyleId, "blankLineStyleId");
+    }
+
+    private static void requireNonNegative(int value, String fieldName) {
+        if (value < 0) {
+            throw new InvalidProfileStructureException(fieldName + " must not be negative.");
+        }
+    }
+
+    private static void requireNonBlank(String value, String fieldName) {
+        if (value == null || value.isBlank()) {
+            throw new InvalidProfileStructureException(fieldName + " must not be blank.");
+        }
+    }
+}

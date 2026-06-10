@@ -181,6 +181,7 @@ class CoverRendererDocxSanityTest {
     private static CoverComponentRule validCoverComponentRule() {
         return new CoverComponentRule(
                 "cover",
+                new com.abntbuilder.formatter.profile.model.component.ComponentContentBindings(java.util.Map.of()),
                 new CoverStyleMapping(
                         "cover.top",
                         "cover.author",

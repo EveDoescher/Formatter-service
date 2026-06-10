@@ -126,6 +126,7 @@ class ApprovalSheetProfileContentValidatorTest {
     ) {
         return new ApprovalSheetComponentRule(
                 ApprovalSheetRenderer.COMPONENT_ID,
+                new com.abntbuilder.formatter.profile.model.component.ComponentContentBindings(java.util.Map.of()),
                 new ApprovalSheetStyleMapping(
                         "approvalSheet.author",
                         "approvalSheet.title",

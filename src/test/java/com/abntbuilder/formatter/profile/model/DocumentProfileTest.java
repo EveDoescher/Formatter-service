@@ -286,6 +286,7 @@ class DocumentProfileTest {
     private static CoverComponentRule validCoverComponentRule(String componentId) {
         return new CoverComponentRule(
                 componentId,
+                new com.abntbuilder.formatter.profile.model.component.ComponentContentBindings(java.util.Map.of()),
                 new CoverStyleMapping(
                         "cover.top",
                         "cover.author",

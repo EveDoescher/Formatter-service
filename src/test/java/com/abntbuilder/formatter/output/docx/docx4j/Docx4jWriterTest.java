@@ -102,6 +102,45 @@ class Docx4jWriterTest {
         assertTrue(documentXml.contains("w:val=\"left\""));
     }
 
+    @Test
+    void shouldCustomizeAndApplyWordHeadingStyleForHeadingStyleRules() throws IOException {
+        StyleRule headingStyle = new StyleRule(
+                "bodyContent.heading1",
+                StyleType.HEADING_1,
+                "Test Font",
+                BigDecimal.valueOf(12),
+                TextAlignment.LEFT,
+                BigDecimal.valueOf(1.5),
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                true,
+                false,
+                true
+        );
+        DocxDocument document = new DocxDocument(
+                validPageRule(),
+                List.of(new DocxParagraph("1.0 Introducao", headingStyle))
+        );
+
+        byte[] bytes = new Docx4jWriter().write(document);
+
+        String documentXml = readZipEntry(bytes, "word/document.xml");
+        String stylesXml = readZipEntry(bytes, "word/styles.xml");
+
+        assertTrue(documentXml.contains("w:pStyle"));
+        assertTrue(documentXml.contains("w:val=\"Heading1\""));
+        assertFalse(documentXml.contains("Test Font"));
+        assertTrue(stylesXml.contains("w:styleId=\"Heading1\""));
+        assertTrue(stylesXml.contains("w:outlineLvl"));
+        assertTrue(stylesXml.contains("w:val=\"0\""));
+        assertTrue(stylesXml.contains("Test Font"));
+        assertTrue(stylesXml.contains("w:before=\"0\""));
+        assertTrue(stylesXml.contains("w:after=\"0\""));
+    }
+
     private static boolean zipContains(byte[] zipBytes, String entryName) throws IOException {
         try (ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(zipBytes))) {
             ZipEntry entry;

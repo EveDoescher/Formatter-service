@@ -707,9 +707,107 @@ Criar uma base para elementos que fluem por multiplas paginas.
 Nome conceitual:
 
 ```text
-body-content
+bodyContent
 flow-section
 ```
+
+Primeira implementacao criada:
+
+```text
+bodyContent
+sections[]
+section.id
+section.level
+section.title
+section.paragraphs[]
+```
+
+`paragraphs` continua existindo apenas como caminho interno/provisorio de
+compatibilidade. Novos textos academicos devem preferir `bodyContent`.
+
+## Dados compartilhados do trabalho
+
+Dados repetidos entre componentes devem viver em `work`, nao duplicados em
+`cover`, `titlePage` e `approvalSheet`.
+
+Exemplos:
+
+```text
+work.institutionalLines
+work.authors
+work.title
+work.subtitle
+work.nature
+work.advisor
+work.coadvisor
+work.city
+work.year
+```
+
+O perfil declara `contentBindings` para dizer quais campos de cada componente
+consomem esses dados:
+
+```text
+cover.authors -> work.authors
+titlePage.authors -> work.authors
+approvalSheet.authors -> work.authors
+```
+
+Regra de resolucao:
+
+```text
+1. valor explicito no componente vence;
+2. se o valor do componente estiver ausente, usa o binding do perfil;
+3. se o binding apontar para dado ausente, a validacao final do componente falha;
+4. nunca inferir igualdade entre componentes;
+5. nunca copiar dados de um componente para outro.
+```
+
+Esse recurso existe para melhorar a experiencia de quem monta perfil e de quem
+preenche o trabalho. No futuro, uma interface de montagem de perfil deve expor
+`contentBindings` como mapeamentos por dropdown, nao como JSON cru.
+
+Titulos de secao do `bodyContent` devem virar headings reais do Word quando o
+perfil usar `StyleType.HEADING_1` ate `StyleType.HEADING_6`. O writer deve
+customizar os estilos embutidos `Heading1` ate `Heading6` com a formatacao
+declarada pelo perfil e aplicar o `w:pStyle` correspondente no paragrafo.
+
+Nao simular heading com paragrafo normal e apenas `outlineLvl`. Nao mascarar a
+aparencia padrao do Word com formatacao direta no paragrafo ou no run. A
+aparencia do heading deve estar no proprio estilo do Word, definida a partir do
+perfil.
+
+A numeracao de secoes pertence ao perfil. O perfil UNIP usa:
+
+```text
+separator = .
+primarySuffix = .0
+```
+
+Exemplo:
+
+```text
+1.0
+1.1
+1.1.1
+```
+
+O espacamento ao redor dos titulos tambem pertence ao perfil. O perfil UNIP
+atual declara:
+
+```text
+blankLinesBeforeSectionTitleWhenPrecededByContent = 1
+blankLinesAfterSectionTitle = 1
+pageBreakBeforePrimarySection = false
+blankLineStyleId = bodyContent.paragraph
+```
+
+Assim, o primeiro titulo nao recebe linha em branco antes. Quando um titulo vem
+depois de paragrafo textual, uma linha em branco e inserida antes dele. Todo
+titulo renderizado recebe uma linha em branco depois.
+
+Nao ativar quebra de pagina para titulo nivel 1 por codigo. Se uma instituicao
+exigir isso, a decisao deve vir de `pageBreakBeforePrimarySection` no perfil.
 
 Ela deve atender:
 
@@ -753,7 +851,7 @@ lista de tabelas
 ```
 
 `resumo` e `abstract` devem reutilizar a base textual/flow, mas nao devem virar
-simples `body-content` generico. Eles sao componentes pre-textuais proprios, com:
+simples `bodyContent` generico. Eles sao componentes pre-textuais proprios, com:
 
 ```text
 titulo proprio
@@ -977,7 +1075,7 @@ criar engine propria quando single-page ja resolve.
 
 ```text
 1. approvalSheet usando single-page.
-2. body-content/flow-section para corpo textual.
+2. bodyContent/flow-section para corpo textual.
 3. references, appendix, annex e glossario.
 4. summary, listOfFigures e listOfTables usando metadados reais.
 5. outros pre-textuais derivados ou opcionais.
