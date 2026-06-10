@@ -418,12 +418,23 @@ public record ProfileDefinition(
 
     public record BodyContentStyleMappingDefinition(
             List<String> sectionTitleStyleIdsByLevel,
-            String paragraphStyleId
+            String paragraphStyleId,
+            String directShortQuoteStyleId,
+            String directLongQuoteStyleId,
+            String indirectCitationStyleId,
+            String citationOfCitationStyleId
     ) {
         BodyContentStyleMapping toDomain() {
             requireNonEmpty(sectionTitleStyleIdsByLevel, "bodyContent.styleMapping.sectionTitleStyleIdsByLevel");
 
-            return new BodyContentStyleMapping(sectionTitleStyleIdsByLevel, paragraphStyleId);
+            return new BodyContentStyleMapping(
+                    sectionTitleStyleIdsByLevel,
+                    paragraphStyleId,
+                    directShortQuoteStyleId,
+                    directLongQuoteStyleId,
+                    indirectCitationStyleId,
+                    citationOfCitationStyleId
+            );
         }
     }
 

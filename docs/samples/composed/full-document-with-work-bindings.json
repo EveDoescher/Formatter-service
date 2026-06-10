@@ -16,8 +16,8 @@
       "CURSO SUPERIOR DE TECNOLOGIA EM ANÁLISE E DESENVOLVIMENTO DE SISTEMAS"
     ],
     "authors": [
-      "EVELYNN DOESCHER",
-      "MARIA CLARA ALMEIDA"
+      "PESSOA AUTORA TESTE 01",
+      "PESSOA AUTORA TESTE 02"
     ],
     "title": "FORMATAÇÃO AUTOMÁTICA DE DOCUMENTOS ACADÊMICOS",
     "subtitle": "Uma análise sobre dados compartilhados e componentes semânticos",
@@ -29,11 +29,11 @@
     },
     "advisor": {
       "academicTitle": "Prof. Dr.",
-      "name": "Rafael Henrique Martins"
+      "name": "Pessoa Orientadora Teste"
     },
     "coadvisor": {
       "academicTitle": "Profa. Ma.",
-      "name": "Camila Fernanda Ribeiro"
+      "name": "Pessoa Coorientadora Teste"
     },
     "city": "Limeira",
     "year": "2026"
@@ -49,19 +49,19 @@
       "committeeMembers": [
         {
           "title": "Prof. Dr.",
-          "name": "Rafael Henrique Martins",
+          "name": "Pessoa Orientadora Teste",
           "institutionName": "Universidade Paulista - UNIP",
           "role": "Orientador"
         },
         {
           "title": "Profa. Ma.",
-          "name": "Camila Fernanda Ribeiro",
+          "name": "Pessoa Coorientadora Teste",
           "institutionName": "Universidade Paulista - UNIP",
           "role": "Coorientadora"
         },
         {
           "title": "Prof. Me.",
-          "name": "André Luiz Carvalho",
+          "name": "Pessoa Examinadora Teste",
           "institutionName": "Universidade Paulista - UNIP",
           "role": "Examinador"
         }

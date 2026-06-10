@@ -458,6 +458,22 @@
       "bold": false,
       "italic": false,
       "uppercase": false
+    },
+    {
+      "id": "bodyContent.longQuote",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 10,
+      "alignment": "JUSTIFIED",
+      "lineSpacing": 1,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 4,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 6,
+      "spacingAfterPt": 6,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
     }
   ],
   "componentRules": {
@@ -883,12 +899,16 @@
           "bodyContent.heading5",
           "bodyContent.heading6"
         ],
-        "paragraphStyleId": "bodyContent.paragraph"
+        "paragraphStyleId": "bodyContent.paragraph",
+        "directShortQuoteStyleId": "bodyContent.paragraph",
+        "directLongQuoteStyleId": "bodyContent.longQuote",
+        "indirectCitationStyleId": "bodyContent.paragraph",
+        "citationOfCitationStyleId": "bodyContent.paragraph"
       },
       "numbering": {
         "enabled": true,
         "separator": ".",
-        "primarySuffix": ".0"
+        "primarySuffix": ""
       },
       "layout": {
         "blankLinesBeforeSectionTitleWhenPrecededByContent": 1,

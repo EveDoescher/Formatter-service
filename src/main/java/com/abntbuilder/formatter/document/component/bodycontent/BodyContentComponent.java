@@ -22,10 +22,42 @@ public record BodyContentComponent(
         for (BodySection section : sections) {
             Objects.requireNonNull(section, "sections must not contain null values.");
         }
+
+        validateSectionHierarchy(sections);
     }
 
     @Override
     public ComponentType type() {
         return ComponentType.BODY_CONTENT;
+    }
+
+    private static void validateSectionHierarchy(List<BodySection> sections) {
+        int previousTitledLevel = 0;
+
+        for (BodySection section : sections) {
+            if (section.title().isEmpty()) {
+                continue;
+            }
+
+            int currentLevel = section.level();
+
+            if (previousTitledLevel == 0 && currentLevel > 1) {
+                throw new IllegalArgumentException(
+                        "bodyContent section hierarchy cannot start at level " + currentLevel + "."
+                );
+            }
+
+            if (previousTitledLevel > 0 && currentLevel > previousTitledLevel + 1) {
+                throw new IllegalArgumentException(
+                        "bodyContent section hierarchy cannot jump from level "
+                                + previousTitledLevel
+                                + " to level "
+                                + currentLevel
+                                + "."
+                );
+            }
+
+            previousTitledLevel = currentLevel;
+        }
     }
 }

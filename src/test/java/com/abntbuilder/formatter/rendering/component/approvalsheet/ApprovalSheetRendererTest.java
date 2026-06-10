@@ -38,16 +38,16 @@ class ApprovalSheetRendererTest {
                 .toList();
         String fullText = String.join(" ", paragraphTexts);
 
-        assertTrue(paragraphTexts.contains("NOME COMPLETO DO ALUNO"));
+        assertTrue(paragraphTexts.contains("PESSOA AUTORA TESTE 01"));
         assertTrue(paragraphTexts.contains("TITULO DO TRABALHO"));
         assertTrue(fullText.contains("Trabalho de conclusao de curso"));
         assertTrue(paragraphTexts.contains("Aprovado(a) em: ______/______/______"));
         assertTrue(paragraphTexts.contains("BANCA EXAMINADORA"));
         assertTrue(paragraphTexts.contains("________________________________________"));
-        assertTrue(paragraphTexts.contains("Prof. Dr. Jose da Silva"));
+        assertTrue(paragraphTexts.contains("Prof. Dr. Pessoa Orientadora Teste"));
         assertTrue(paragraphTexts.contains("Universidade Paulista - UNIP"));
         assertTrue(paragraphTexts.contains("Orientador"));
-        assertFalse(paragraphTexts.contains("________________________________________ Prof. Dr. Jose da Silva"));
+        assertFalse(paragraphTexts.contains("________________________________________ Prof. Dr. Pessoa Orientadora Teste"));
         assertFalse(paragraphTexts.contains("Limeira"));
         assertFalse(fullText.contains("10 de junho de 2026"));
     }
@@ -61,7 +61,7 @@ class ApprovalSheetRendererTest {
 
     private static ApprovalSheetComponent validApprovalSheet() {
         return new ApprovalSheetComponent(
-                List.of("Nome Completo do Aluno"),
+                List.of("Pessoa Autora Teste 01"),
                 "Titulo do Trabalho",
                 Optional.empty(),
                 new ApprovalSheetNature(
@@ -76,7 +76,7 @@ class ApprovalSheetRendererTest {
                         Optional.empty()
                 )),
                 List.of(new ApprovalCommitteeMember(
-                        "Jose da Silva",
+                        "Pessoa Orientadora Teste",
                         Optional.of("Prof. Dr."),
                         Optional.of("Universidade Paulista - UNIP"),
                         Optional.of("Orientador")

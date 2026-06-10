@@ -77,7 +77,7 @@ class DocxExportControllerIntegrationTest {
         String documentXml = readZipEntry(responseBytes, "word/document.xml");
 
         assertTrue(documentXml.contains("UNIVERSIDADE PAULISTA"));
-        assertTrue(documentXml.contains("NOME COMPLETO DO ALUNO"));
+        assertTrue(documentXml.contains("PESSOA AUTORA TESTE 01"));
         assertTrue(documentXml.contains("TÍTULO DO TRABALHO"));
         assertTrue(documentXml.contains("Limeira"));
         assertTrue(documentXml.contains("2026"));
@@ -519,7 +519,7 @@ class DocxExportControllerIntegrationTest {
                         "UNIVERSIDADE PAULISTA"
                       ],
                       "authors": [
-                        "NOME COMPLETO DO ALUNO"
+                        "PESSOA AUTORA TESTE 01"
                       ],
                     "title": "TÍTULO DO TRABALHO",
                     "subtitle": "Subtítulo do trabalho",

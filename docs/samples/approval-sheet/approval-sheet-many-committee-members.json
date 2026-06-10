@@ -9,7 +9,7 @@
   "document": {
     "approvalSheet": {
       "authors": [
-        "Nome Completo do Aluno"
+        "Pessoa Autora Teste 01"
       ],
       "title": "Título do Trabalho",
       "subtitle": "Subtítulo do trabalho",
@@ -21,19 +21,19 @@
       },
       "committeeMembers": [
         {
-          "name": "Carlos Henrique Martins",
+          "name": "Pessoa Orientadora Teste",
           "title": "Prof. Dr.",
           "institutionName": "Universidade Paulista - UNIP",
           "role": "Orientador"
         },
         {
-          "name": "Fernanda Cristina Rocha",
+          "name": "Pessoa Examinadora Teste 02",
           "title": "Profa. Ma.",
           "institutionName": "Universidade Paulista - UNIP",
           "role": "Coorientadora"
         },
         {
-          "name": "Juliana Aparecida Moreira",
+          "name": "Pessoa Examinadora Teste 03",
           "title": "Profa. Dra.",
           "institutionName": "Universidade Paulista - UNIP",
           "role": "Examinadora"

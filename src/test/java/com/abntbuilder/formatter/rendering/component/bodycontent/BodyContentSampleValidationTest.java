@@ -27,7 +27,11 @@ class BodyContentSampleValidationTest {
 
     @Test
     void shouldGenerateAllSuccessfulBodyContentSamplesFromOfficialJsonFiles() throws Exception {
-        List<String> sampleNames = List.of("body-content-short.json");
+        List<String> sampleNames = List.of(
+                "body-content-short.json",
+                "body-content-citations.json",
+                "body-content-title-only-section.json"
+        );
 
         for (String sampleName : sampleNames) {
             byte[] responseBytes = mockMvc.perform(post("/api/v1/exports/docx")
@@ -40,6 +44,23 @@ class BodyContentSampleValidationTest {
 
             assertTrue(responseBytes.length > 0, sampleName + " should generate a DOCX.");
             assertTrue(startsWithZipHeader(responseBytes), sampleName + " should generate ZIP/DOCX bytes.");
+        }
+    }
+
+    @Test
+    void shouldFailInvalidBodyContentSamplesFromOfficialJsonFilesBeforeGeneratingDocx() throws Exception {
+        List<String> sampleNames = List.of(
+                "body-content-section-hierarchy-invalid.json",
+                "body-content-citation-direct-missing-page-invalid.json",
+                "body-content-citation-manual-quotes-invalid.json",
+                "body-content-selected-components-pagination-invalid.json"
+        );
+
+        for (String sampleName : sampleNames) {
+            mockMvc.perform(post("/api/v1/exports/docx")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(readSample(sampleName)))
+                    .andExpect(status().isBadRequest());
         }
     }
 

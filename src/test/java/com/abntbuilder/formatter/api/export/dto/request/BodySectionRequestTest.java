@@ -1,0 +1,153 @@
+package com.abntbuilder.formatter.api.export.dto.request;
+
+import com.abntbuilder.formatter.document.component.bodycontent.BodyCitation;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationType;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyParagraph;
+import com.abntbuilder.formatter.document.component.bodycontent.BodySection;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+
+class BodySectionRequestTest {
+
+    @Test
+    void shouldConvertSemanticContentBlocksToDomain() {
+        BodySectionRequest request = new BodySectionRequest(
+                "citacoes",
+                1,
+                "Citacoes",
+                null,
+                null,
+                List.of(
+                        new BodyBlockRequest(
+                                BodyBlockType.PARAGRAPH,
+                                null,
+                                "Paragrafo comum.",
+                                null,
+                                null,
+                                null,
+                                null
+                        ),
+                        new BodyBlockRequest(
+                                BodyBlockType.DIRECT_LONG_QUOTE,
+                                null,
+                                "Citacao direta longa.",
+                                null,
+                                new CitationSourceRequest(List.of(author("Sobrenome Teste Um")), "2020", "10"),
+                                null,
+                                null
+                        )
+                )
+        );
+
+        BodySection section = request.toDomain();
+
+        BodyParagraph paragraph = assertInstanceOf(BodyParagraph.class, section.content().get(0));
+        BodyCitation citation = assertInstanceOf(BodyCitation.class, section.content().get(1));
+
+        assertEquals("Paragrafo comum.", paragraph.text());
+        assertEquals(BodyCitationType.DIRECT_LONG, citation.type());
+        assertEquals("Citacao direta longa (Sobrenome Teste Um, 2020, p. 10).", citation.renderedText());
+    }
+
+    @Test
+    void shouldConvertParagraphInlineContentToDomain() {
+        BodySectionRequest request = new BodySectionRequest(
+                "citacoes-inline",
+                1,
+                "Citacoes inline",
+                null,
+                null,
+                List.of(new BodyBlockRequest(
+                        BodyBlockType.PARAGRAPH,
+                        null,
+                        null,
+                        List.of(
+                                new BodyInlineRequest(
+                                        BodyInlineType.TEXT,
+                                        "Segundo ",
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null
+                                ),
+                                new BodyInlineRequest(
+                                        BodyInlineType.CITATION,
+                                        null,
+                                        null,
+                                        BodyCitationType.DIRECT_SHORT,
+                                        com.abntbuilder.formatter.document.component.bodycontent.BodyCitationMode.NARRATIVE,
+                                        new CitationSourceRequest(List.of(author("Sobrenome Teste Um")), "2020", "10"),
+                                        null,
+                                        null
+                                ),
+                                new BodyInlineRequest(
+                                        BodyInlineType.TEXT,
+                                        ", ",
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null
+                                ),
+                                new BodyInlineRequest(
+                                        BodyInlineType.QUOTE_TEXT,
+                                        "a organizacao documental depende de criterios formais",
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null
+                                )
+                        ),
+                        null,
+                        null,
+                        null
+                ))
+        );
+
+        BodySection section = request.toDomain();
+
+        BodyParagraph paragraph = assertInstanceOf(BodyParagraph.class, section.content().getFirst());
+
+        assertEquals(
+                "Segundo Sobrenome Teste Um (2020, p. 10), \"a organizacao documental depende de criterios formais\"",
+                paragraph.text()
+        );
+    }
+
+    @Test
+    void shouldConvertLegacyParagraphsToParagraphBlocks() {
+        BodySectionRequest request = new BodySectionRequest(
+                "introducao",
+                1,
+                "Introducao",
+                List.of("Paragrafo legado."),
+                null,
+                null
+        );
+
+        BodySection section = request.toDomain();
+
+        BodyParagraph paragraph = assertInstanceOf(BodyParagraph.class, section.content().getFirst());
+
+        assertEquals("Paragrafo legado.", paragraph.text());
+    }
+
+    private static CitationAuthorRequest author(String surname) {
+        return new CitationAuthorRequest(
+                com.abntbuilder.formatter.document.component.bodycontent.CitationAuthorType.PERSON,
+                surname,
+                null,
+                null,
+                null
+        );
+    }
+}

@@ -9,7 +9,7 @@
   "document": {
     "titlePage": {
       "authors": [
-        "Nome Completo do Aluno"
+        "Pessoa Autora Teste 01"
       ],
       "title": "Pneumoultramicroscopicossilicovulcanoconiotico como Tema de Estudo em Saude Publica e Tecnologia",
       "subtitle": "Uma análise de requisitos para documentos acadêmicos com títulos extensos",
@@ -21,7 +21,7 @@
       },
       "advisor": {
         "academicTitle": "Prof. Dr.",
-        "name": "José da Silva"
+        "name": "Pessoa Orientadora Teste"
       },
       "coadvisor": null,
       "city": "Limeira",

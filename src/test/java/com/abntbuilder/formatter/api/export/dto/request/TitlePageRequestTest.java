@@ -22,7 +22,7 @@ class TitlePageRequestTest {
                         "Curso",
                         "Universidade"
                 ),
-                new AcademicPersonRequest("Prof. Dr.", "Jose da Silva"),
+                new AcademicPersonRequest("Prof. Dr.", "Pessoa Orientadora Teste"),
                 null,
                 "Limeira",
                 "2026"
@@ -35,7 +35,7 @@ class TitlePageRequestTest {
         assertEquals("Subtitulo", titlePage.subtitle().orElseThrow());
         assertEquals("Trabalho academico", titlePage.nature().workType());
         assertEquals("Prof. Dr.", titlePage.advisor().orElseThrow().academicTitle().orElseThrow());
-        assertEquals("Jose da Silva", titlePage.advisor().orElseThrow().name());
+        assertEquals("Pessoa Orientadora Teste", titlePage.advisor().orElseThrow().name());
         assertTrue(titlePage.coadvisor().isEmpty());
         assertEquals("Limeira", titlePage.city());
         assertEquals("2026", titlePage.year());

@@ -24,7 +24,7 @@ class ApprovalSheetRequestTest {
                 ),
                 new ApprovalEventRequest("Limeira", "10 de junho de 2026", null),
                 List.of(new ApprovalCommitteeMemberRequest(
-                        "Jose da Silva",
+                        "Pessoa Orientadora Teste",
                         "Prof. Dr.",
                         "Universidade Paulista",
                         "Orientador"
@@ -38,7 +38,7 @@ class ApprovalSheetRequestTest {
         assertEquals("Subtitulo", approvalSheet.subtitle().orElseThrow());
         assertEquals("Trabalho academico", approvalSheet.nature().workType());
         assertEquals("Limeira", approvalSheet.approvalEvent().orElseThrow().location().orElseThrow());
-        assertEquals("Jose da Silva", approvalSheet.committeeMembers().getFirst().name());
+        assertEquals("Pessoa Orientadora Teste", approvalSheet.committeeMembers().getFirst().name());
         assertEquals("Orientador", approvalSheet.committeeMembers().getFirst().role().orElseThrow());
     }
 

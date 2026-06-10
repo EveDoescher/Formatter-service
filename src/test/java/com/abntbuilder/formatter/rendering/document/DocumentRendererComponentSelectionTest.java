@@ -130,7 +130,7 @@ class DocumentRendererComponentSelectionTest {
     void shouldUseInitialPageNumberingWhenConfiguredComponentIsFirst() {
         DocxDocument document = renderer.render(new ExportDocxCommand(
                 "test.docx",
-                profileWithPageNumberingFromParagraphs(),
+                profileWithPageNumberingAtParagraphs(),
                 List.of(),
                 List.of("paragraphs"),
                 List.of(new ExportDocxCommand.ParagraphCommand("Paragraph", "body"))
@@ -138,8 +138,27 @@ class DocumentRendererComponentSelectionTest {
 
         assertEquals(List.of("Paragraph"), paragraphTexts(document));
         assertEquals("body", document.initialPageNumbering().orElseThrow().styleRule().id());
-        assertFalse(document.initialPageNumbering().orElseThrow().countingStarts());
+        assertTrue(document.initialPageNumbering().orElseThrow().countingStarts());
         assertTrue(document.initialPageNumbering().orElseThrow().visible());
+    }
+
+    @Test
+    void shouldRejectSelectedComponentsWhenPageCountingAnchorIsMissing() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> renderer.render(new ExportDocxCommand(
+                        "test.docx",
+                        profileWithPageNumberingFromTitlePageToParagraphs(),
+                        List.of(),
+                        List.of("paragraphs"),
+                        List.of(new ExportDocxCommand.ParagraphCommand("Paragraph", "body"))
+                ))
+        );
+
+        assertEquals(
+                "selectedComponents must include pageNumbering.countFromComponentId: titlePage",
+                exception.getMessage()
+        );
     }
 
     @Test
@@ -278,6 +297,26 @@ class DocumentRendererComponentSelectionTest {
                 Optional.of(new PageNumberingRule(
                         true,
                         "titlePage",
+                        "paragraphs",
+                        "body",
+                        PageNumberingPlacement.HEADER_RIGHT,
+                        BigDecimal.valueOf(2),
+                        BigDecimal.valueOf(2)
+                )),
+                List.of(style("body")),
+                List.of(new FakeComponentRule("cover"), new FakeComponentRule("titlePage"), new FakeComponentRule("approvalSheet")),
+                List.of("cover", "titlePage", "approvalSheet", "paragraphs")
+        );
+    }
+
+    private static DocumentProfile profileWithPageNumberingAtParagraphs() {
+        return new DocumentProfile(
+                "test-profile",
+                "Test Profile",
+                pageRule(),
+                Optional.of(new PageNumberingRule(
+                        true,
+                        "paragraphs",
                         "paragraphs",
                         "body",
                         PageNumberingPlacement.HEADER_RIGHT,

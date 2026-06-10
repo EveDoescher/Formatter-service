@@ -1,6 +1,9 @@
 package com.abntbuilder.formatter.rendering.component.bodycontent;
 
 import com.abntbuilder.formatter.document.component.bodycontent.BodyContentComponent;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyBlock;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyCitation;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyParagraph;
 import com.abntbuilder.formatter.document.component.bodycontent.BodySection;
 import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
@@ -65,11 +68,8 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                 addBlankLines(blocks, blankLineStyle, rule.layout().blankLinesAfterSectionTitle());
             }
 
-            for (String paragraph : section.paragraphs()) {
-                blocks.add(new DocxParagraph(
-                        paragraph,
-                        styleResolver.resolve(rule.styleMapping().paragraphStyleId())
-                ));
+            for (BodyBlock contentBlock : section.blocks()) {
+                blocks.add(renderContentBlock(contentBlock, rule, styleResolver));
                 previousRenderedTextWasBodyParagraph = true;
             }
         }
@@ -85,6 +85,23 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
         for (int index = 0; index < count; index++) {
             blocks.add(new DocxBlankLine(styleRule));
         }
+    }
+
+    private static DocxParagraph renderContentBlock(
+            BodyBlock contentBlock,
+            BodyContentComponentRule rule,
+            StyleResolver styleResolver
+    ) {
+        return switch (contentBlock) {
+            case BodyParagraph paragraph -> new DocxParagraph(
+                    paragraph.text(),
+                    styleResolver.resolve(rule.styleMapping().paragraphStyleId())
+            );
+            case BodyCitation citation -> new DocxParagraph(
+                    citation.renderedText(),
+                    styleResolver.resolve(rule.styleMapping().styleIdForCitation(citation.type()))
+            );
+        };
     }
 
     private static final class SectionNumberingState {

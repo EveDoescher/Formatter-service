@@ -12,7 +12,7 @@ sections[]
 section.id
 section.level
 section.title
-section.paragraphs[]
+section.blocks[]
 ```
 
 `section.id` is required because future components such as summaries, lists and cross-references need stable document metadata.
@@ -21,6 +21,86 @@ section.paragraphs[]
 
 `section.title` is optional so the same base can represent unheaded textual blocks when a profile or component needs it.
 
+`section.blocks[]` is the semantic flow of the section. The current supported
+block types are:
+
+```text
+PARAGRAPH
+DIRECT_SHORT_QUOTE
+DIRECT_LONG_QUOTE
+INDIRECT_CITATION
+CITATION_OF_CITATION
+```
+
+`content[]` and `paragraphs[]` are still accepted only as compatibility inputs.
+`paragraphs[]` is converted to `PARAGRAPH` blocks. New samples and new clients
+should prefer `blocks[]`.
+
+Short direct citations, indirect citations and apud citations must be modeled as
+inline paragraph content. Do not send a ready-made citation marker such as
+`(AUTOR TESTE UM, 2020, p. 10)` as free text. The request provides semantic
+source data and the component formats the author-date call.
+
+Minimum inline citation shape:
+
+```json
+{
+  "type": "PARAGRAPH",
+  "content": [
+    {
+      "type": "TEXT",
+      "text": "Conforme "
+    },
+    {
+      "type": "CITATION",
+      "citationType": "DIRECT_SHORT",
+      "mode": "NARRATIVE",
+      "source": {
+        "authors": [
+          {
+            "type": "PERSON",
+            "surname": "Sobrenome Teste Um"
+          }
+        ],
+        "year": "2020",
+        "page": "10"
+      }
+    },
+    {
+      "type": "TEXT",
+      "text": ", "
+    },
+    {
+      "type": "QUOTE_TEXT",
+      "quoteType": "SHORT",
+      "text": "quoted text without manual quotation marks"
+    }
+  ]
+}
+```
+
+For `CITATION_OF_CITATION`, use `originalSource` and `consultedSource`.
+The consulted source is the one that must later connect to references.
+
+`NARRATIVE` renders only the author-date call, for example
+`Sobrenome Teste Um (2020, p. 10)`. Surrounding words such as `Segundo`,
+`Conforme`, `Para` or `de acordo com` belong to `TEXT` inline content.
+
+`QUOTE_TEXT` renders quotation marks for short direct quotes. The user should not
+send manual quotation marks in the input; boundary quotation marks are rejected.
+Long direct quotes remain block-level `DIRECT_LONG_QUOTE` items and must not
+render quotation marks.
+
+Citation modes:
+
+```text
+PARENTHETICAL
+NARRATIVE
+```
+
+Direct short and direct long citations require `page`. Indirect citations may
+omit `page`. Citation of citation requires `page` in the consulted source.
+
 ## Profile Ownership
 
 The profile owns:
@@ -28,6 +108,10 @@ The profile owns:
 ```text
 bodyContent.styleMapping.sectionTitleStyleIdsByLevel[]
 bodyContent.styleMapping.paragraphStyleId
+bodyContent.styleMapping.directShortQuoteStyleId
+bodyContent.styleMapping.directLongQuoteStyleId
+bodyContent.styleMapping.indirectCitationStyleId
+bodyContent.styleMapping.citationOfCitationStyleId
 bodyContent.numbering.enabled
 bodyContent.numbering.separator
 bodyContent.numbering.primarySuffix
@@ -59,13 +143,13 @@ The UNIP profile currently enables numbering with:
 
 ```text
 separator = .
-primarySuffix = .0
+primarySuffix =
 ```
 
 This produces:
 
 ```text
-1.0
+1
 1.1
 1.1.1
 ```
@@ -120,6 +204,10 @@ This first version intentionally renders only:
 ```text
 section title paragraphs
 body paragraphs
+inline short direct citations
+block long direct citations
+inline indirect citations
+inline citation of citation / apud
 profile-driven section numbering
 real Word heading paragraph styles
 ```
@@ -129,16 +217,29 @@ It does not yet implement:
 ```text
 summary metadata extraction
 figure/table metadata
-citations
 lists
 footnotes
 page headers
 ```
 
-Those features should be built on top of this flow base, not inside the provisional `paragraphs` path.
+Citations are represented as semantic inline content or semantic block content,
+depending on the citation type. The component does not hardcode font,
+indentation or spacing: the profile maps each block-level citation type to the
+style that must be rendered. The component does format citation punctuation and
+author-date calls from semantic source data, because those are textual citation
+rules rather than visual layout.
+
+Those future features should be built on top of this flow base, not inside the
+compatibility `paragraphs` path.
 
 ## Samples
 
 ```text
 docs/samples/body-content/body-content-short.json
+docs/samples/body-content/body-content-citations.json
+docs/samples/body-content/body-content-title-only-section.json
+docs/samples/body-content/body-content-section-hierarchy-invalid.json
+docs/samples/body-content/body-content-citation-direct-missing-page-invalid.json
+docs/samples/body-content/body-content-citation-manual-quotes-invalid.json
+docs/samples/body-content/body-content-selected-components-pagination-invalid.json
 ```

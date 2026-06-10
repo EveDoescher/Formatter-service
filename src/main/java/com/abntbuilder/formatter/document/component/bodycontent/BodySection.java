@@ -8,7 +8,7 @@ public record BodySection(
         String id,
         int level,
         Optional<String> title,
-        List<String> paragraphs
+        List<BodyBlock> blocks
 ) {
 
     public BodySection {
@@ -18,19 +18,42 @@ public record BodySection(
         }
 
         Objects.requireNonNull(title, "title must not be null");
-        Objects.requireNonNull(paragraphs, "paragraphs must not be null");
+        Objects.requireNonNull(blocks, "blocks must not be null");
 
         title.ifPresent(value -> requireNonBlank(value, "title"));
 
-        if (paragraphs.isEmpty()) {
-            throw new IllegalArgumentException("paragraphs must not be empty.");
+        if (title.isEmpty() && blocks.isEmpty()) {
+            throw new IllegalArgumentException("bodyContent section without title must contain at least one block.");
         }
 
-        paragraphs = List.copyOf(paragraphs);
+        blocks = List.copyOf(blocks);
 
-        for (String paragraph : paragraphs) {
-            requireNonBlank(paragraph, "paragraphs item");
+        for (BodyBlock block : blocks) {
+            Objects.requireNonNull(block, "blocks must not contain null values.");
         }
+    }
+
+    public List<BodyBlock> content() {
+        return blocks;
+    }
+
+    public static BodySection fromParagraphs(
+            String id,
+            int level,
+            Optional<String> title,
+            List<String> paragraphs
+    ) {
+        Objects.requireNonNull(paragraphs, "paragraphs must not be null");
+
+        return new BodySection(
+                id,
+                level,
+                title,
+                paragraphs.stream()
+                        .map(BodyParagraph::new)
+                        .map(BodyBlock.class::cast)
+                        .toList()
+        );
     }
 
     private static void requireNonBlank(String value, String fieldName) {

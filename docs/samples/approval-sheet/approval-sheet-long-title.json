@@ -9,7 +9,7 @@
   "document": {
     "approvalSheet": {
       "authors": [
-        "Nome Completo do Aluno"
+        "Pessoa Autora Teste 01"
       ],
       "title": "Desenvolvimento de um Sistema Web para Gestão Acadêmica com Ênfase em Automação de Documentos Institucionais",
       "subtitle": "Uma análise aplicada à padronização de documentos acadêmicos",
@@ -21,13 +21,13 @@
       },
       "committeeMembers": [
         {
-          "name": "Carlos Henrique Martins",
+          "name": "Pessoa Orientadora Teste",
           "title": "Prof. Dr.",
           "institutionName": "Universidade Paulista - UNIP",
           "role": "Orientador"
         },
         {
-          "name": "Maria de Oliveira",
+          "name": "Pessoa Examinadora Teste",
           "title": "Profa. Dra.",
           "institutionName": "Universidade Paulista - UNIP",
           "role": "Examinadora"

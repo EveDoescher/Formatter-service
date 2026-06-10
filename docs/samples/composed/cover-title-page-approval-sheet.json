@@ -16,7 +16,7 @@
         "CURSO DE ANÁLISE E DESENVOLVIMENTO DE SISTEMAS"
       ],
       "authors": [
-        "NOME COMPLETO DO ALUNO"
+        "PESSOA AUTORA TESTE 01"
       ],
       "title": "TÍTULO DO TRABALHO",
       "subtitle": "Subtítulo do trabalho",
@@ -25,7 +25,7 @@
     },
     "titlePage": {
       "authors": [
-        "Nome Completo do Aluno"
+        "Pessoa Autora Teste 01"
       ],
       "title": "Título do Trabalho",
       "subtitle": "Subtítulo do trabalho",
@@ -37,14 +37,14 @@
       },
       "advisor": {
         "academicTitle": "Prof. Dr.",
-        "name": "Carlos Henrique Martins"
+        "name": "Pessoa Orientadora Teste"
       },
       "city": "Limeira",
       "year": "2026"
     },
     "approvalSheet": {
       "authors": [
-        "Nome Completo do Aluno"
+        "Pessoa Autora Teste 01"
       ],
       "title": "Título do Trabalho",
       "subtitle": "Subtítulo do trabalho",
@@ -56,13 +56,13 @@
       },
       "committeeMembers": [
         {
-          "name": "Carlos Henrique Martins",
+          "name": "Pessoa Orientadora Teste",
           "title": "Prof. Dr.",
           "institutionName": "Universidade Paulista - UNIP",
           "role": "Orientador"
         },
         {
-          "name": "Maria de Oliveira",
+          "name": "Pessoa Examinadora Teste",
           "title": "Profa. Dra.",
           "institutionName": "Universidade Paulista - UNIP",
           "role": "Examinadora"

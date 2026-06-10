@@ -9,7 +9,7 @@
   "document": {
     "titlePage": {
       "authors": [
-        "Nome Completo do Aluno"
+        "Pessoa Autora Teste 01"
       ],
       "title": "Arquitetura de Software Aplicada a Sistemas de Formatação Acadêmica",
       "subtitle": "Uma análise sobre criterios de layout automatico em documentos institucionais",
@@ -21,7 +21,7 @@
       },
       "advisor": {
         "academicTitle": "Prof. Dr.",
-        "name": "José da Silva"
+        "name": "Pessoa Orientadora Teste"
       },
       "coadvisor": null,
       "city": "Limeira",

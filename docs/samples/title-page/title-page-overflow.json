@@ -50,11 +50,11 @@
       },
       "advisor": {
         "academicTitle": "Prof. Dr.",
-        "name": "José da Silva"
+        "name": "Pessoa Orientadora Teste"
       },
       "coadvisor": {
         "academicTitle": "Profa. Dra.",
-        "name": "Maria de Souza"
+        "name": "Pessoa Coorientadora Teste"
       },
       "city": "Limeira",
       "year": "2026"

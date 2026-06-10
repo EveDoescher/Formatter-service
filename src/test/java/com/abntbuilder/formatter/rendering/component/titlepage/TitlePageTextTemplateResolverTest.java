@@ -29,10 +29,10 @@ class TitlePageTextTemplateResolverTest {
     void shouldResolveAdvisorTemplateWithoutDoubleSpacesWhenAcademicTitleIsAbsent() {
         String text = resolver.resolveAdvisor(
                 templates(),
-                new AcademicPerson("Jose da Silva", Optional.empty())
+                new AcademicPerson("Pessoa Orientadora Teste", Optional.empty())
         );
 
-        assertEquals("Orientador(a): Jose da Silva.", text);
+        assertEquals("Orientador(a): Pessoa Orientadora Teste.", text);
     }
 
     @Test

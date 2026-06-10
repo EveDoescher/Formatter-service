@@ -17,7 +17,7 @@
         "CURSO DE ANÁLISE E DESENVOLVIMENTO DE SISTEMAS"
       ],
       "authors": [
-        "NOME COMPLETO DO ALUNO"
+        "PESSOA AUTORA TESTE 01"
       ],
       "title": "FORMATAÇÃO AUTOMÁTICA DE TRABALHOS ACADÊMICOS",
       "subtitle": "Uma proposta orientada por perfis institucionais",
@@ -26,7 +26,7 @@
     },
     "titlePage": {
       "authors": [
-        "Nome Completo do Aluno"
+        "Pessoa Autora Teste 01"
       ],
       "title": "Formatação Automática de Trabalhos Acadêmicos",
       "subtitle": "Uma proposta orientada por perfis institucionais",
@@ -38,14 +38,14 @@
       },
       "advisor": {
         "academicTitle": "Prof. Dr.",
-        "name": "Carlos Henrique Martins"
+        "name": "Pessoa Orientadora Teste"
       },
       "city": "Limeira",
       "year": "2026"
     },
     "approvalSheet": {
       "authors": [
-        "Nome Completo do Aluno"
+        "Pessoa Autora Teste 01"
       ],
       "title": "Formatação Automática de Trabalhos Acadêmicos",
       "subtitle": "Uma proposta orientada por perfis institucionais",
@@ -57,13 +57,13 @@
       },
       "committeeMembers": [
         {
-          "name": "Carlos Henrique Martins",
+          "name": "Pessoa Orientadora Teste",
           "title": "Prof. Dr.",
           "institutionName": "Universidade Paulista - UNIP",
           "role": "Orientador"
         },
         {
-          "name": "Maria de Oliveira",
+          "name": "Pessoa Examinadora Teste",
           "title": "Profa. Dra.",
           "institutionName": "Universidade Paulista - UNIP",
           "role": "Examinadora"

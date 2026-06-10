@@ -1,0 +1,47 @@
+{
+  "fileName": "body-content-section-hierarchy-invalid.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "titlePage",
+      "bodyContent"
+    ]
+  },
+  "work": {
+    "authors": [
+      "PESSOA AUTORA TESTE 01"
+    ],
+    "title": "HIERARQUIA INVÁLIDA DE SEÇÕES",
+    "nature": {
+      "workType": "Trabalho acadêmico",
+      "degreeObjective": "avaliação parcial da disciplina",
+      "courseName": "Análise e Desenvolvimento de Sistemas",
+      "institutionName": "Universidade Paulista - UNIP"
+    },
+    "advisor": {
+      "academicTitle": "Prof. Dr.",
+      "name": "Pessoa Orientadora Teste"
+    },
+    "city": "Limeira",
+    "year": "2026"
+  },
+  "document": {
+    "titlePage": {},
+    "bodyContent": {
+      "sections": [
+        {
+          "id": "conceitos-basicos",
+          "level": 2,
+          "title": "Conceitos básicos",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "text": "Esta seção é inválida porque a árvore textual não pode começar diretamente no nível dois."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "paragraphs": []
+}

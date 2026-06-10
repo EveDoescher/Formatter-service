@@ -52,12 +52,12 @@ class TitlePageRendererDocxSanityTest {
 
         String documentXml = readZipEntry(bytes, "word/document.xml");
 
-        assertTrue(documentXml.contains("NOME COMPLETO DO ALUNO"));
+        assertTrue(documentXml.contains("PESSOA AUTORA TESTE 01"));
         assertTrue(documentXml.contains("TITULO DO TRABALHO"));
         assertTrue(documentXml.contains("Subtitulo do trabalho"));
         assertTrue(documentXml.contains("Universidade Paulista - UNIP"));
         assertTrue(documentXml.contains("Orientador(a): Prof. Dr."));
-        assertTrue(documentXml.contains("Jose da Silva."));
+        assertTrue(documentXml.contains("Pessoa Orientadora Teste."));
         assertTrue(documentXml.contains("Limeira"));
         assertTrue(documentXml.contains("2026"));
 
@@ -68,7 +68,7 @@ class TitlePageRendererDocxSanityTest {
         assertTrue(documentXml.contains("w:line=\"360\""));
         assertEquals(blocks.size(), countParagraphs(documentXml));
 
-        assertAppearsBefore(documentXml, "NOME COMPLETO DO ALUNO", "TITULO DO TRABALHO");
+        assertAppearsBefore(documentXml, "PESSOA AUTORA TESTE 01", "TITULO DO TRABALHO");
         assertAppearsBefore(documentXml, "TITULO DO TRABALHO", "Universidade Paulista - UNIP");
         assertAppearsBefore(documentXml, "Universidade Paulista - UNIP", "Limeira");
         assertAppearsBefore(documentXml, "Limeira", "2026");
@@ -79,7 +79,7 @@ class TitlePageRendererDocxSanityTest {
 
     private static TitlePageComponent validTitlePage() {
         return new TitlePageComponent(
-                List.of("Nome Completo do Aluno"),
+                List.of("Pessoa Autora Teste 01"),
                 "Titulo do Trabalho",
                 Optional.of("Subtitulo do trabalho"),
                 new TitlePageNature(
@@ -88,7 +88,7 @@ class TitlePageRendererDocxSanityTest {
                         "Analise e Desenvolvimento de Sistemas",
                         "Universidade Paulista - UNIP"
                 ),
-                Optional.of(new AcademicPerson("Jose da Silva", Optional.of("Prof. Dr."))),
+                Optional.of(new AcademicPerson("Pessoa Orientadora Teste", Optional.of("Prof. Dr."))),
                 Optional.empty(),
                 "Limeira",
                 "2026"

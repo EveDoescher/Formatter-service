@@ -74,7 +74,7 @@ class TitlePageComponentTest {
                 "Titulo do Trabalho",
                 Optional.of("Subtitulo"),
                 TitlePageNatureTest.validNature(),
-                Optional.of(new AcademicPerson("Jose da Silva", Optional.of("Prof. Dr."))),
+                Optional.of(new AcademicPerson("Pessoa Orientadora Teste", Optional.of("Prof. Dr."))),
                 Optional.empty(),
                 "Limeira",
                 "2026"

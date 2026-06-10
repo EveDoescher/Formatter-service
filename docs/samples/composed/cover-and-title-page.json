@@ -13,7 +13,7 @@
         "Universidade Paulista"
       ],
       "authors": [
-        "Nome Completo do Aluno"
+        "Pessoa Autora Teste 01"
       ],
       "title": "Título do Trabalho",
       "subtitle": "Subtítulo do trabalho",
@@ -22,7 +22,7 @@
     },
     "titlePage": {
       "authors": [
-        "Nome Completo do Aluno"
+        "Pessoa Autora Teste 01"
       ],
       "title": "Título do Trabalho",
       "subtitle": "Subtítulo do trabalho",
@@ -34,7 +34,7 @@
       },
       "advisor": {
         "academicTitle": "Prof. Dr.",
-        "name": "José da Silva"
+        "name": "Pessoa Orientadora Teste"
       },
       "coadvisor": null,
       "city": "Limeira",

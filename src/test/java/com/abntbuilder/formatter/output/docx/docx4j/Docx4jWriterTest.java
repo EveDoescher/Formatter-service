@@ -123,7 +123,7 @@ class Docx4jWriterTest {
         );
         DocxDocument document = new DocxDocument(
                 validPageRule(),
-                List.of(new DocxParagraph("1.0 Introducao", headingStyle))
+                List.of(new DocxParagraph("1 Introducao", headingStyle))
         );
 
         byte[] bytes = new Docx4jWriter().write(document);

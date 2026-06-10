@@ -8,10 +8,21 @@ import java.util.List;
 
 public record BodyContentStyleMappingRequest(
         @NotEmpty List<@NotBlank String> sectionTitleStyleIdsByLevel,
-        @NotBlank String paragraphStyleId
+        @NotBlank String paragraphStyleId,
+        @NotBlank String directShortQuoteStyleId,
+        @NotBlank String directLongQuoteStyleId,
+        @NotBlank String indirectCitationStyleId,
+        @NotBlank String citationOfCitationStyleId
 ) {
 
     public BodyContentStyleMapping toDomain() {
-        return new BodyContentStyleMapping(sectionTitleStyleIdsByLevel, paragraphStyleId);
+        return new BodyContentStyleMapping(
+                sectionTitleStyleIdsByLevel,
+                paragraphStyleId,
+                directShortQuoteStyleId,
+                directLongQuoteStyleId,
+                indirectCitationStyleId,
+                citationOfCitationStyleId
+        );
     }
 }

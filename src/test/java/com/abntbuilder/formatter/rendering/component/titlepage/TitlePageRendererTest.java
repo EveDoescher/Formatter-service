@@ -39,11 +39,11 @@ class TitlePageRendererTest {
                 .map(DocxParagraph::text)
                 .toList();
 
-        assertTrue(paragraphTexts.contains("NOME COMPLETO DO ALUNO"));
+        assertTrue(paragraphTexts.contains("PESSOA AUTORA TESTE 01"));
         assertTrue(paragraphTexts.contains("TITULO DO TRABALHO"));
         assertTrue(paragraphTexts.contains("Subtitulo do trabalho"));
         assertTrue(String.join(" ", paragraphTexts).contains("Trabalho de conclusao de curso"));
-        assertTrue(String.join(" ", paragraphTexts).contains("Orientador(a): Prof. Dr. Jose da Silva."));
+        assertTrue(String.join(" ", paragraphTexts).contains("Orientador(a): Prof. Dr. Pessoa Orientadora Teste."));
         assertTrue(paragraphTexts.contains("Limeira"));
         assertTrue(paragraphTexts.contains("2026"));
 
@@ -62,7 +62,7 @@ class TitlePageRendererTest {
     @Test
     void shouldRenderTitlePageWithoutSubtitleAdvisorOrCoadvisor() {
         TitlePageComponent titlePage = new TitlePageComponent(
-                List.of("Nome Completo do Aluno"),
+                List.of("Pessoa Autora Teste 01"),
                 "Titulo do Trabalho",
                 Optional.empty(),
                 nature(),
@@ -77,7 +77,7 @@ class TitlePageRendererTest {
                 .map(DocxParagraph::text)
                 .toList();
 
-        assertTrue(paragraphTexts.contains("NOME COMPLETO DO ALUNO"));
+        assertTrue(paragraphTexts.contains("PESSOA AUTORA TESTE 01"));
         assertTrue(paragraphTexts.contains("TITULO DO TRABALHO"));
         assertTrue(paragraphTexts.stream().noneMatch(text -> text.contains("Subtitulo")));
         assertTrue(paragraphTexts.stream().noneMatch(text -> text.contains("Orientador")));
@@ -93,11 +93,11 @@ class TitlePageRendererTest {
 
     private static TitlePageComponent validTitlePage() {
         return new TitlePageComponent(
-                List.of("Nome Completo do Aluno"),
+                List.of("Pessoa Autora Teste 01"),
                 "Titulo do Trabalho",
                 Optional.of("Subtitulo do trabalho"),
                 nature(),
-                Optional.of(new AcademicPerson("Jose da Silva", Optional.of("Prof. Dr."))),
+                Optional.of(new AcademicPerson("Pessoa Orientadora Teste", Optional.of("Prof. Dr."))),
                 Optional.empty(),
                 "Limeira",
                 "2026"

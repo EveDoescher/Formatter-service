@@ -11,9 +11,9 @@ class AcademicPersonTest {
 
     @Test
     void shouldCreateAcademicPersonWithTitle() {
-        AcademicPerson person = new AcademicPerson("Jose da Silva", Optional.of("Prof. Dr."));
+        AcademicPerson person = new AcademicPerson("Pessoa Orientadora Teste", Optional.of("Prof. Dr."));
 
-        assertEquals("Jose da Silva", person.name());
+        assertEquals("Pessoa Orientadora Teste", person.name());
         assertEquals(Optional.of("Prof. Dr."), person.academicTitle());
     }
 
@@ -31,7 +31,7 @@ class AcademicPersonTest {
     void shouldRejectBlankAcademicTitleWhenPresent() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new AcademicPerson("Jose da Silva", Optional.of(" "))
+                () -> new AcademicPerson("Pessoa Orientadora Teste", Optional.of(" "))
         );
 
         assertEquals("academicTitle must not be blank.", exception.getMessage());

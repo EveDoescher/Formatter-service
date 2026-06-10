@@ -1,7 +1,13 @@
 package com.abntbuilder.formatter.rendering.component.bodycontent;
 
 import com.abntbuilder.formatter.document.component.bodycontent.BodyContentComponent;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyCitation;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationMode;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationType;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyParagraph;
 import com.abntbuilder.formatter.document.component.bodycontent.BodySection;
+import com.abntbuilder.formatter.document.component.bodycontent.CitationAuthor;
+import com.abntbuilder.formatter.document.component.bodycontent.CitationSource;
 import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxPageBreak;
@@ -31,19 +37,19 @@ class BodyContentRendererTest {
     @Test
     void shouldRenderSectionTitlesAndParagraphsWithProfileStyles() {
         BodyContentComponent component = new BodyContentComponent(List.of(
-                new BodySection(
+                BodySection.fromParagraphs(
                         "introducao",
                         1,
                         Optional.of("Introducao"),
                         List.of("Primeiro paragrafo.", "Segundo paragrafo.")
                 ),
-                new BodySection(
+                BodySection.fromParagraphs(
                         "fundamentacao",
                         2,
                         Optional.of("Fundamentacao"),
                         List.of("Paragrafo de fundamentacao.")
                 ),
-                new BodySection(
+                BodySection.fromParagraphs(
                         "detalhe",
                         3,
                         Optional.of("Detalhe"),
@@ -59,7 +65,7 @@ class BodyContentRendererTest {
 
         assertEquals(
                 List.of(
-                        "1.0 Introducao",
+                        "1 Introducao",
                         "Primeiro paragrafo.",
                         "Segundo paragrafo.",
                         "1.1 Fundamentacao",
@@ -78,7 +84,7 @@ class BodyContentRendererTest {
     @Test
     void shouldRenderSectionWithoutTitle() {
         BodyContentComponent component = new BodyContentComponent(List.of(
-                new BodySection("sem-titulo", 1, Optional.empty(), List.of("Paragrafo sem titulo."))
+                BodySection.fromParagraphs("sem-titulo", 1, Optional.empty(), List.of("Paragrafo sem titulo."))
         ));
 
         List<DocxBlock> blocks = renderer.render(component, profile());
@@ -90,8 +96,8 @@ class BodyContentRendererTest {
     @Test
     void shouldRenderProfileDrivenBlankLinesAroundSectionTitles() {
         BodyContentComponent component = new BodyContentComponent(List.of(
-                new BodySection("introducao", 1, Optional.of("Introducao"), List.of("Primeiro paragrafo.")),
-                new BodySection("desenvolvimento", 1, Optional.of("Desenvolvimento"), List.of("Segundo paragrafo."))
+                BodySection.fromParagraphs("introducao", 1, Optional.of("Introducao"), List.of("Primeiro paragrafo.")),
+                BodySection.fromParagraphs("desenvolvimento", 1, Optional.of("Desenvolvimento"), List.of("Segundo paragrafo."))
         ));
 
         List<DocxBlock> blocks = renderer.render(component, profile());
@@ -108,14 +114,92 @@ class BodyContentRendererTest {
     @Test
     void shouldRenderPageBreakBeforePrimarySectionWhenProfileRequestsIt() {
         BodyContentComponent component = new BodyContentComponent(List.of(
-                new BodySection("introducao", 1, Optional.of("Introducao"), List.of("Primeiro paragrafo.")),
-                new BodySection("desenvolvimento", 1, Optional.of("Desenvolvimento"), List.of("Segundo paragrafo."))
+                BodySection.fromParagraphs("introducao", 1, Optional.of("Introducao"), List.of("Primeiro paragrafo.")),
+                BodySection.fromParagraphs("desenvolvimento", 1, Optional.of("Desenvolvimento"), List.of("Segundo paragrafo."))
         ));
 
         List<DocxBlock> blocks = renderer.render(component, profileWithPrimarySectionPageBreak());
 
         assertEquals(DocxPageBreak.class, blocks.get(3).getClass());
-        assertEquals("2.0 Desenvolvimento", ((DocxParagraph) blocks.get(4)).text());
+        assertEquals("2 Desenvolvimento", ((DocxParagraph) blocks.get(4)).text());
+    }
+
+    @Test
+    void shouldRenderCitationBlocksWithProfileMappedStyles() {
+        BodyContentComponent component = new BodyContentComponent(List.of(
+                new BodySection(
+                        "citacoes",
+                        1,
+                        Optional.of("Citacoes"),
+                        List.of(
+                                new BodyParagraph("Paragrafo comum."),
+                                new BodyCitation(
+                                        BodyCitationType.DIRECT_SHORT,
+                                        BodyCitationMode.PARENTHETICAL,
+                                        "Citacao direta curta.",
+                                        Optional.of(source("SOBRENOME TESTE UM", "2020", "10")),
+                                        Optional.empty(),
+                                        Optional.empty()
+                                ),
+                                new BodyCitation(
+                                        BodyCitationType.DIRECT_LONG,
+                                        BodyCitationMode.PARENTHETICAL,
+                                        "Citacao direta longa com mais de tres linhas representada em bloco proprio.",
+                                        Optional.of(source("SOBRENOME TESTE UM", "2020", "11")),
+                                        Optional.empty(),
+                                        Optional.empty()
+                                ),
+                                new BodyCitation(
+                                        BodyCitationType.INDIRECT,
+                                        BodyCitationMode.PARENTHETICAL,
+                                        "Texto de citacao indireta.",
+                                        Optional.of(source("SOBRENOME TESTE UM", "2020", null)),
+                                        Optional.empty(),
+                                        Optional.empty()
+                                ),
+                                new BodyCitation(
+                                        BodyCitationType.CITATION_OF_CITATION,
+                                        BodyCitationMode.PARENTHETICAL,
+                                        "Texto de citacao de citacao.",
+                                        Optional.empty(),
+                                        Optional.of(source("SOBRENOME TESTE UM", "1990", null)),
+                                        Optional.of(source("SOBRENOME TESTE DOIS", "2020", "3"))
+                                )
+                        )
+                )
+        ));
+
+        List<DocxParagraph> paragraphs = renderer.render(component, profile())
+                .stream()
+                .filter(DocxParagraph.class::isInstance)
+                .map(DocxParagraph.class::cast)
+                .toList();
+
+        assertEquals("bodyContent.paragraph", paragraphs.get(1).styleRule().id());
+        assertEquals("bodyContent.directShortQuote", paragraphs.get(2).styleRule().id());
+        assertEquals("bodyContent.directLongQuote", paragraphs.get(3).styleRule().id());
+        assertEquals("bodyContent.indirectCitation", paragraphs.get(4).styleRule().id());
+        assertEquals("bodyContent.citationOfCitation", paragraphs.get(5).styleRule().id());
+        assertEquals(
+                "Texto de citacao de citacao (Sobrenome Teste Um, 1990 apud Sobrenome Teste Dois, 2020, p. 3).",
+                paragraphs.get(5).text()
+        );
+    }
+
+    private static CitationSource source(String author, String year, String page) {
+        return new CitationSource(
+                List.of(CitationAuthor.person(toDisplayName(author))),
+                year,
+                page == null ? Optional.empty() : Optional.of(page)
+        );
+    }
+
+    private static String toDisplayName(String author) {
+        return switch (author) {
+            case "SOBRENOME TESTE UM" -> "Sobrenome Teste Um";
+            case "SOBRENOME TESTE DOIS" -> "Sobrenome Teste Dois";
+            default -> author;
+        };
     }
 
     private static DocumentProfile profile() {
@@ -127,15 +211,23 @@ class BodyContentRendererTest {
                         style("bodyContent.heading1", StyleType.HEADING_1, true, true),
                         style("bodyContent.heading2", StyleType.HEADING_2, true, false),
                         style("bodyContent.heading3", StyleType.HEADING_3, true, false),
-                        style("bodyContent.paragraph", false, false)
+                        style("bodyContent.paragraph", false, false),
+                        style("bodyContent.directShortQuote", false, false),
+                        style("bodyContent.directLongQuote", false, false),
+                        style("bodyContent.indirectCitation", false, false),
+                        style("bodyContent.citationOfCitation", false, false)
                 ),
                 List.of(new BodyContentComponentRule(
                         "bodyContent",
                         new BodyContentStyleMapping(
                                 List.of("bodyContent.heading1", "bodyContent.heading2", "bodyContent.heading3"),
-                                "bodyContent.paragraph"
+                                "bodyContent.paragraph",
+                                "bodyContent.directShortQuote",
+                                "bodyContent.directLongQuote",
+                                "bodyContent.indirectCitation",
+                                "bodyContent.citationOfCitation"
                         ),
-                        new BodyContentNumberingRule(true, ".", ".0"),
+                        new BodyContentNumberingRule(true, ".", ""),
                         new BodyContentLayoutRule(1, 1, false, "bodyContent.paragraph")
                 )),
                 List.of("bodyContent")
@@ -151,15 +243,23 @@ class BodyContentRendererTest {
                         style("bodyContent.heading1", StyleType.HEADING_1, true, true),
                         style("bodyContent.heading2", StyleType.HEADING_2, true, false),
                         style("bodyContent.heading3", StyleType.HEADING_3, true, false),
-                        style("bodyContent.paragraph", false, false)
+                        style("bodyContent.paragraph", false, false),
+                        style("bodyContent.directShortQuote", false, false),
+                        style("bodyContent.directLongQuote", false, false),
+                        style("bodyContent.indirectCitation", false, false),
+                        style("bodyContent.citationOfCitation", false, false)
                 ),
                 List.of(new BodyContentComponentRule(
                         "bodyContent",
                         new BodyContentStyleMapping(
                                 List.of("bodyContent.heading1", "bodyContent.heading2", "bodyContent.heading3"),
-                                "bodyContent.paragraph"
+                                "bodyContent.paragraph",
+                                "bodyContent.directShortQuote",
+                                "bodyContent.directLongQuote",
+                                "bodyContent.indirectCitation",
+                                "bodyContent.citationOfCitation"
                         ),
-                        new BodyContentNumberingRule(true, ".", ".0"),
+                        new BodyContentNumberingRule(true, ".", ""),
                         new BodyContentLayoutRule(1, 1, true, "bodyContent.paragraph")
                 )),
                 List.of("bodyContent")

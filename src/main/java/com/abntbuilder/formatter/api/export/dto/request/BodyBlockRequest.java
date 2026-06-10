@@ -1,0 +1,54 @@
+package com.abntbuilder.formatter.api.export.dto.request;
+
+import com.abntbuilder.formatter.document.component.bodycontent.BodyBlock;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyCitation;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationMode;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationType;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyParagraph;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
+import java.util.Optional;
+
+public record BodyBlockRequest(
+        @NotNull BodyBlockType type,
+        BodyCitationMode mode,
+        String text,
+        @Valid List<BodyInlineRequest> content,
+        @Valid CitationSourceRequest source,
+        @Valid CitationSourceRequest originalSource,
+        @Valid CitationSourceRequest consultedSource
+) {
+
+    public BodyBlock toDomain() {
+        return switch (type) {
+            case PARAGRAPH -> paragraph();
+            case DIRECT_SHORT_QUOTE -> citation(BodyCitationType.DIRECT_SHORT);
+            case DIRECT_LONG_QUOTE -> citation(BodyCitationType.DIRECT_LONG);
+            case INDIRECT_CITATION -> citation(BodyCitationType.INDIRECT);
+            case CITATION_OF_CITATION -> citation(BodyCitationType.CITATION_OF_CITATION);
+        };
+    }
+
+    private BodyParagraph paragraph() {
+        if (content != null) {
+            return new BodyParagraph(content.stream()
+                    .map(BodyInlineRequest::toDomain)
+                    .toList());
+        }
+
+        return new BodyParagraph(text);
+    }
+
+    private BodyCitation citation(BodyCitationType citationType) {
+        return new BodyCitation(
+                citationType,
+                mode == null ? BodyCitationMode.PARENTHETICAL : mode,
+                text,
+                source == null ? Optional.empty() : Optional.of(source.toDomain()),
+                originalSource == null ? Optional.empty() : Optional.of(originalSource.toDomain()),
+                consultedSource == null ? Optional.empty() : Optional.of(consultedSource.toDomain())
+        );
+    }
+}

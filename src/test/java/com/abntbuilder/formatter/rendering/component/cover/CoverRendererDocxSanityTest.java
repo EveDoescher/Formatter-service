@@ -153,7 +153,7 @@ class CoverRendererDocxSanityTest {
     private static CoverComponent validCover() {
         return new CoverComponent(
                 List.of("UNIVERSIDADE PAULISTA"),
-                List.of("NOME COMPLETO DO ALUNO"),
+                List.of("PESSOA AUTORA TESTE 01"),
                 "TITULO DO TRABALHO",
                 Optional.of("Subtitulo do trabalho"),
                 "Limeira",

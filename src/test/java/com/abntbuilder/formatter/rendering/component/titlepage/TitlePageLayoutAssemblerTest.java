@@ -55,7 +55,7 @@ class TitlePageLayoutAssemblerTest {
         SinglePageLayoutItem advisor = item(input, "advisor");
 
         assertTrue(String.join(" ", nature.visualLines()).contains("Trabalho de conclusao de curso"));
-        assertTrue(String.join(" ", advisor.visualLines()).contains("Orientador(a): Prof. Dr. Jose da Silva."));
+        assertTrue(String.join(" ", advisor.visualLines()).contains("Orientador(a): Prof. Dr. Pessoa Orientadora Teste."));
         assertTrue(nature.measurementArea().orElseThrow().leftIndentCm().compareTo(BigDecimal.ZERO) > 0);
         assertTrue(nature.layoutOverride().leftIndentCm().isPresent());
         assertEquals(1, nature.blankLinesAfter());
@@ -99,7 +99,7 @@ class TitlePageLayoutAssemblerTest {
 
     private static TitlePageComponent component() {
         return new TitlePageComponent(
-                List.of("Nome Completo do Aluno"),
+                List.of("Pessoa Autora Teste 01"),
                 "Titulo do Trabalho",
                 Optional.of("Subtitulo do trabalho"),
                 new TitlePageNature(
@@ -108,7 +108,7 @@ class TitlePageLayoutAssemblerTest {
                         "Analise e Desenvolvimento de Sistemas",
                         "Universidade Paulista - UNIP"
                 ),
-                Optional.of(new AcademicPerson("Jose da Silva", Optional.of("Prof. Dr."))),
+                Optional.of(new AcademicPerson("Pessoa Orientadora Teste", Optional.of("Prof. Dr."))),
                 Optional.empty(),
                 "Limeira",
                 "2026"
@@ -117,7 +117,7 @@ class TitlePageLayoutAssemblerTest {
 
     private static TitlePageComponent componentWithoutAdvisor() {
         return new TitlePageComponent(
-                List.of("Nome Completo do Aluno"),
+                List.of("Pessoa Autora Teste 01"),
                 "Titulo do Trabalho",
                 Optional.of("Subtitulo do trabalho"),
                 new TitlePageNature(
@@ -135,7 +135,7 @@ class TitlePageLayoutAssemblerTest {
 
     private static TitlePageComponent componentWithCoadvisor() {
         return new TitlePageComponent(
-                List.of("Nome Completo do Aluno"),
+                List.of("Pessoa Autora Teste 01"),
                 "Titulo do Trabalho",
                 Optional.of("Subtitulo do trabalho"),
                 new TitlePageNature(
@@ -144,8 +144,8 @@ class TitlePageLayoutAssemblerTest {
                         "Analise e Desenvolvimento de Sistemas",
                         "Universidade Paulista - UNIP"
                 ),
-                Optional.of(new AcademicPerson("Jose da Silva", Optional.of("Prof. Dr."))),
-                Optional.of(new AcademicPerson("Maria Souza", Optional.of("Profa. Dra."))),
+                Optional.of(new AcademicPerson("Pessoa Orientadora Teste", Optional.of("Prof. Dr."))),
+                Optional.of(new AcademicPerson("Pessoa Coorientadora Teste", Optional.of("Profa. Dra."))),
                 "Limeira",
                 "2026"
         );

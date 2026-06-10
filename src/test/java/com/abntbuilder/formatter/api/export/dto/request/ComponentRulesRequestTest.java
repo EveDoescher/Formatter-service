@@ -48,7 +48,7 @@ class ComponentRulesRequestTest {
         assertEquals("bodyContent", rule.componentId());
         assertEquals("bodyContent.heading1", rule.styleMapping().sectionTitleStyleIdForLevel(1));
         assertEquals("bodyContent.paragraph", rule.styleMapping().paragraphStyleId());
-        assertEquals(".0", rule.numbering().primarySuffix());
+        assertEquals("", rule.numbering().primarySuffix());
     }
 
     private static TitlePageComponentRuleRequest titlePageRuleRequest() {
@@ -93,9 +93,13 @@ class ComponentRulesRequestTest {
                 "bodyContent",
                 new BodyContentStyleMappingRequest(
                         List.of("bodyContent.heading1", "bodyContent.heading2", "bodyContent.heading3"),
+                        "bodyContent.paragraph",
+                        "bodyContent.paragraph",
+                        "bodyContent.longQuote",
+                        "bodyContent.paragraph",
                         "bodyContent.paragraph"
                 ),
-                new BodyContentNumberingRuleRequest(true, ".", ".0"),
+                new BodyContentNumberingRuleRequest(true, ".", ""),
                 new BodyContentLayoutRuleRequest(1, 1, false, "bodyContent.paragraph")
         );
     }

@@ -113,7 +113,7 @@ class ApprovalSheetProfileContentValidatorTest {
 
     private static ApprovalCommitteeMember committeeMember(Optional<String> role) {
         return new ApprovalCommitteeMember(
-                "Jose da Silva",
+                "Pessoa Orientadora Teste",
                 Optional.of("Prof. Dr."),
                 Optional.of("Universidade"),
                 role

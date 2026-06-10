@@ -1,0 +1,57 @@
+{
+  "fileName": "body-content-citation-direct-missing-page-invalid.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "titlePage",
+      "bodyContent"
+    ]
+  },
+  "work": {
+    "authors": [
+      "PESSOA AUTORA TESTE 01"
+    ],
+    "title": "CITAÇÃO DIRETA SEM PÁGINA",
+    "nature": {
+      "workType": "Trabalho acadêmico",
+      "degreeObjective": "avaliação parcial da disciplina",
+      "courseName": "Análise e Desenvolvimento de Sistemas",
+      "institutionName": "Universidade Paulista - UNIP"
+    },
+    "advisor": {
+      "academicTitle": "Prof. Dr.",
+      "name": "Pessoa Orientadora Teste"
+    },
+    "city": "Limeira",
+    "year": "2026"
+  },
+  "document": {
+    "titlePage": {},
+    "bodyContent": {
+      "sections": [
+        {
+          "id": "citacao-direta",
+          "level": 1,
+          "title": "Citação direta",
+          "blocks": [
+            {
+              "type": "DIRECT_SHORT_QUOTE",
+              "mode": "PARENTHETICAL",
+              "text": "a organização documental depende de critérios formais",
+              "source": {
+                "authors": [
+                  {
+                    "type": "PERSON",
+                    "surname": "Sobrenome Teste Um"
+                  }
+                ],
+                "year": "2020"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "paragraphs": []
+}

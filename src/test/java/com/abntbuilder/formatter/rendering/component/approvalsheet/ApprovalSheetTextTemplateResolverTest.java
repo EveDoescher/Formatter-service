@@ -43,14 +43,14 @@ class ApprovalSheetTextTemplateResolverTest {
         assertEquals(
                 List.of(
                         "________________________________________",
-                        "Prof. Dr. Jose da Silva",
+                        "Prof. Dr. Pessoa Orientadora Teste",
                         "Universidade",
                         "Orientador"
                 ),
                 resolver.resolveCommitteeMemberLines(
                         templates(),
                         new ApprovalCommitteeMember(
-                                "Jose da Silva",
+                                "Pessoa Orientadora Teste",
                                 Optional.of("Prof. Dr."),
                                 Optional.of("Universidade"),
                                 Optional.of("Orientador")

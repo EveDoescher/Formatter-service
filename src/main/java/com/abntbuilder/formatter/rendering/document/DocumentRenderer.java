@@ -53,6 +53,7 @@ public final class DocumentRenderer {
         Optional<DocxPageNumbering> initialPageNumbering = Optional.empty();
 
         validateSelectedContent(command, documentComponentsById);
+        validateSelectedPageNumberingComponents(command.selectedComponents(), componentOrder, pageNumberingRule);
 
         for (String componentId : componentOrder) {
             if (!selectionResolver.shouldRender(componentId, command.selectedComponents())) {
@@ -155,6 +156,41 @@ public final class DocumentRenderer {
             if (!hasContent) {
                 throw new IllegalArgumentException("selected component has no content: " + selectedComponent);
             }
+        }
+    }
+
+    private static void validateSelectedPageNumberingComponents(
+            List<String> selectedComponents,
+            List<String> componentOrder,
+            Optional<PageNumberingRule> pageNumberingRule
+    ) {
+        if (selectedComponents.isEmpty() || pageNumberingRule.isEmpty()) {
+            return;
+        }
+
+        PageNumberingRule rule = pageNumberingRule.orElseThrow();
+        int countFromIndex = componentOrder.indexOf(rule.countFromComponentId());
+        int visibleFromIndex = componentOrder.indexOf(rule.visibleFromComponentId());
+
+        boolean selectedReachesCountingArea = selectedComponents.stream()
+                .mapToInt(componentOrder::indexOf)
+                .anyMatch(index -> index >= countFromIndex);
+        boolean selectedReachesVisibleArea = selectedComponents.stream()
+                .mapToInt(componentOrder::indexOf)
+                .anyMatch(index -> index >= visibleFromIndex);
+
+        if (selectedReachesCountingArea && !selectedComponents.contains(rule.countFromComponentId())) {
+            throw new IllegalArgumentException(
+                    "selectedComponents must include pageNumbering.countFromComponentId: "
+                            + rule.countFromComponentId()
+            );
+        }
+
+        if (selectedReachesVisibleArea && !selectedComponents.contains(rule.visibleFromComponentId())) {
+            throw new IllegalArgumentException(
+                    "selectedComponents must include pageNumbering.visibleFromComponentId: "
+                            + rule.visibleFromComponentId()
+            );
         }
     }
 

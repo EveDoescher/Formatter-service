@@ -221,6 +221,10 @@ public record DocumentProfile(
                         bodyContentRule.styleMapping().sectionTitleStyleIdsByLevel()
                 );
                 styleIds.add(bodyContentRule.styleMapping().paragraphStyleId());
+                styleIds.add(bodyContentRule.styleMapping().directShortQuoteStyleId());
+                styleIds.add(bodyContentRule.styleMapping().directLongQuoteStyleId());
+                styleIds.add(bodyContentRule.styleMapping().indirectCitationStyleId());
+                styleIds.add(bodyContentRule.styleMapping().citationOfCitationStyleId());
                 styleIds.add(bodyContentRule.layout().blankLineStyleId());
                 yield styleIds;
             }

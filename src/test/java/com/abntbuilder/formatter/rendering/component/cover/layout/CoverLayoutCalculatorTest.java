@@ -79,7 +79,7 @@ class CoverLayoutCalculatorTest {
         List<String> authors = new ArrayList<>();
 
         for (int index = 0; index < 40; index++) {
-            authors.add("NOME COMPLETO DO ALUNO " + index);
+            authors.add("PESSOA AUTORA TESTE 01 " + index);
         }
 
         CoverComponent cover = new CoverComponent(
@@ -112,7 +112,7 @@ class CoverLayoutCalculatorTest {
     void shouldFailWhenBottomBlockWrapsToMoreThanCityAndYearLines() {
         CoverComponent cover = new CoverComponent(
                 List.of("UNIVERSIDADE PAULISTA"),
-                List.of("NOME COMPLETO DO ALUNO"),
+                List.of("PESSOA AUTORA TESTE 01"),
                 "TITULO DO TRABALHO",
                 Optional.empty(),
                 "Cidade Brasileira Com Nome Propositalmente Extenso Para Forcar Quebra Em Mais De Uma Linha",
@@ -131,7 +131,7 @@ class CoverLayoutCalculatorTest {
     void shouldFailWhenBottomItemContainsExplicitLineBreak() {
         CoverComponent cover = new CoverComponent(
                 List.of("UNIVERSIDADE PAULISTA"),
-                List.of("NOME COMPLETO DO ALUNO"),
+                List.of("PESSOA AUTORA TESTE 01"),
                 "TITULO DO TRABALHO",
                 Optional.empty(),
                 "Limeira\n2026",
@@ -205,7 +205,7 @@ class CoverLayoutCalculatorTest {
     void shouldFailBeforeRenderingWhenWordExceedsAvailableWidth() {
         CoverComponent cover = new CoverComponent(
                 List.of("UNIVERSIDADE PAULISTA"),
-                List.of("NOME COMPLETO DO ALUNO"),
+                List.of("PESSOA AUTORA TESTE 01"),
                 "PALAVRAEXTREMAMENTELONGAQUEULTRAPASSAALARGURADISPONIVELSEMESPACOS",
                 Optional.empty(),
                 "Limeira",
@@ -223,7 +223,7 @@ class CoverLayoutCalculatorTest {
     private static CoverComponent validCover() {
         return new CoverComponent(
                 List.of("UNIVERSIDADE PAULISTA"),
-                List.of("NOME COMPLETO DO ALUNO"),
+                List.of("PESSOA AUTORA TESTE 01"),
                 "TITULO DO TRABALHO",
                 Optional.of("Subtitulo do trabalho"),
                 "Limeira",

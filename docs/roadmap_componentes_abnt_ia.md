@@ -719,11 +719,86 @@ sections[]
 section.id
 section.level
 section.title
-section.paragraphs[]
+section.blocks[]
 ```
 
-`paragraphs` continua existindo apenas como caminho interno/provisorio de
-compatibilidade. Novos textos academicos devem preferir `bodyContent`.
+`section.blocks[]` representa o fluxo semantico da secao. Os blocos textuais
+iniciais sao:
+
+```text
+PARAGRAPH
+DIRECT_SHORT_QUOTE
+DIRECT_LONG_QUOTE
+INDIRECT_CITATION
+CITATION_OF_CITATION
+```
+
+`content` e `paragraphs` continuam existindo apenas como caminho de
+compatibilidade para samples e clientes antigos. Novos textos academicos devem
+preferir `bodyContent.sections[].blocks[]`.
+
+Citacoes nao devem ser formatadas por hardcode no renderer. O request fornece o
+texto e dados semanticos da fonte. Nao aceitar marcador pronto como
+`(AUTOR TESTE UM, 2020, p. 10)` em string livre como contrato principal.
+
+Citacao direta curta, citacao indireta e apud devem poder existir como spans
+inline dentro de um paragrafo:
+
+```text
+PARAGRAPH.content[]
+TEXT
+CITATION
+QUOTE_TEXT
+```
+
+Citacao direta longa continua sendo bloco proprio, porque a regra visual e
+estrutural dela e diferente do paragrafo comum.
+
+O modelo minimo de citacao inclui:
+
+```text
+CitationType:
+DIRECT_SHORT
+DIRECT_LONG
+INDIRECT
+CITATION_OF_CITATION
+
+CitationMode:
+PARENTHETICAL
+NARRATIVE
+```
+
+Para citacao comum, usar `source`. Para apud, separar `originalSource` e
+`consultedSource`. A fonte consultada e a que deve se conectar futuramente ao
+componente de referencias.
+
+Autoria da citacao deve ser semantica, nao string livre:
+
+```text
+PERSON.surname
+ORGANIZATION.organizationName/displayName
+TITLE.title
+```
+
+Nao depender de converter `AUTOR EM CAIXA ALTA` para title case, porque siglas e
+entidades podem ter regras proprias.
+
+Regras atuais:
+
+```text
+citacao direta curta exige page;
+citacao direta longa exige page;
+citacao indireta permite page opcional;
+apud exige page na fonte consultada;
+pontuacao final fica depois da chamada autor-data;
+modo NARRATIVE renderiza apenas a chamada, como `Sobrenome Teste Um (2020)`;
+palavras como Segundo, Conforme ou Para pertencem ao TEXT inline ao redor.
+QUOTE_TEXT recebe texto sem aspas externas; aspas manuais no limite do texto
+devem ser rejeitadas.
+```
+
+O perfil decide quais estilos sao usados para citacao direta curta, direta
+longa, indireta e apud.
 
 ## Dados compartilhados do trabalho
 
@@ -762,6 +837,23 @@ Regra de resolucao:
 4. nunca inferir igualdade entre componentes;
 5. nunca copiar dados de um componente para outro.
 ```
+
+`contentBindings` deve validar as origens contra catalogo conhecido de `work`.
+Exemplos permitidos:
+
+```text
+work.institutionalLines
+work.authors
+work.title
+work.subtitle
+work.nature
+work.advisor
+work.coadvisor
+work.city
+work.year
+```
+
+Origem invalida como `work.titel` deve falhar na validacao do perfil.
 
 Esse recurso existe para melhorar a experiencia de quem monta perfil e de quem
 preenche o trabalho. No futuro, uma interface de montagem de perfil deve expor
@@ -831,13 +923,13 @@ A numeracao de secoes pertence ao perfil. O perfil UNIP usa:
 
 ```text
 separator = .
-primarySuffix = .0
+primarySuffix =
 ```
 
 Exemplo:
 
 ```text
-1.0
+1
 1.1
 1.1.1
 ```
