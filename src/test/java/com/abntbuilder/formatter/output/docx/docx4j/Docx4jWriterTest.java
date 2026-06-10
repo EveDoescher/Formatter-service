@@ -2,6 +2,7 @@ package com.abntbuilder.formatter.output.docx.docx4j;
 
 import com.abntbuilder.formatter.output.docx.api.DocxDocument;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
+import com.abntbuilder.formatter.output.docx.api.DocxSectionBreak;
 import com.abntbuilder.formatter.output.docx.api.ParagraphLayoutOverride;
 import com.abntbuilder.formatter.profile.model.PageOrientation;
 import com.abntbuilder.formatter.profile.model.PageRule;
@@ -141,6 +142,74 @@ class Docx4jWriterTest {
         assertTrue(stylesXml.contains("w:after=\"0\""));
     }
 
+    @Test
+    void shouldWritePageNumberingHeaderWhenInitialPageNumberingIsPresent() throws IOException {
+        DocxDocument document = new DocxDocument(
+                validPageRule(),
+                Optional.of(new com.abntbuilder.formatter.output.docx.api.DocxPageNumbering(
+                        validStyleRule(),
+                        com.abntbuilder.formatter.profile.model.PageNumberingPlacement.HEADER_RIGHT,
+                        true,
+                        true,
+                        BigDecimal.valueOf(2),
+                        BigDecimal.valueOf(2)
+                )),
+                List.of(new DocxParagraph("Body text", validStyleRule()))
+        );
+
+        byte[] bytes = new Docx4jWriter().write(document);
+
+        String documentXml = readZipEntry(bytes, "word/document.xml");
+        String headerXml = readZipEntryStartingWith(bytes, "word/header");
+
+        assertTrue(documentXml.contains("w:headerReference"));
+        assertTrue(documentXml.contains("w:pgNumType"));
+        assertTrue(documentXml.contains("w:header=\"1134\""));
+        assertTrue(headerXml.contains("PAGE"));
+        assertTrue(headerXml.contains("w:jc"));
+        assertTrue(headerXml.contains("w:val=\"right\""));
+    }
+
+    @Test
+    void shouldApplyPageNumberingOnlyToSectionAfterSectionBreak() throws IOException {
+        DocxDocument document = new DocxDocument(
+                validPageRule(),
+                List.of(
+                        new DocxParagraph("Pre textual content", validStyleRule()),
+                        new DocxSectionBreak(new com.abntbuilder.formatter.output.docx.api.DocxPageNumbering(
+                                validStyleRule(),
+                                com.abntbuilder.formatter.profile.model.PageNumberingPlacement.HEADER_RIGHT,
+                                true,
+                                false,
+                                BigDecimal.valueOf(2),
+                                BigDecimal.valueOf(2)
+                        )),
+                        new DocxParagraph("Hidden counted content", validStyleRule()),
+                        new DocxSectionBreak(new com.abntbuilder.formatter.output.docx.api.DocxPageNumbering(
+                                validStyleRule(),
+                                com.abntbuilder.formatter.profile.model.PageNumberingPlacement.HEADER_RIGHT,
+                                false,
+                                true,
+                                BigDecimal.valueOf(2),
+                                BigDecimal.valueOf(2)
+                        )),
+                        new DocxParagraph("Body content", validStyleRule())
+                )
+        );
+
+        byte[] bytes = new Docx4jWriter().write(document);
+
+        String documentXml = readZipEntry(bytes, "word/document.xml");
+        String headerXml = readZipEntryStartingWith(bytes, "word/header");
+        int bodyContentIndex = documentXml.indexOf("Body content");
+        int headerReferenceIndex = documentXml.indexOf("w:headerReference");
+
+        assertTrue(bodyContentIndex > 0);
+        assertTrue(headerReferenceIndex > bodyContentIndex);
+        assertTrue(documentXml.contains("w:header=\"1134\""));
+        assertTrue(headerXml.contains("PAGE"));
+    }
+
     private static boolean zipContains(byte[] zipBytes, String entryName) throws IOException {
         try (ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(zipBytes))) {
             ZipEntry entry;
@@ -166,6 +235,20 @@ class Docx4jWriterTest {
             }
 
             throw new IllegalArgumentException("ZIP entry not found: " + entryName);
+        }
+    }
+
+    private static String readZipEntryStartingWith(byte[] zipBytes, String entryNamePrefix) throws IOException {
+        try (ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(zipBytes))) {
+            ZipEntry entry;
+
+            while ((entry = zipInputStream.getNextEntry()) != null) {
+                if (entry.getName().startsWith(entryNamePrefix)) {
+                    return new String(zipInputStream.readAllBytes(), StandardCharsets.UTF_8);
+                }
+            }
+
+            throw new IllegalArgumentException("ZIP entry not found with prefix: " + entryNamePrefix);
         }
     }
 

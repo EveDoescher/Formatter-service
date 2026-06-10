@@ -4,8 +4,11 @@ import com.abntbuilder.formatter.application.export.ExportDocxCommand;
 import com.abntbuilder.formatter.document.component.DocumentComponent;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxDocument;
+import com.abntbuilder.formatter.output.docx.api.DocxPageNumbering;
 import com.abntbuilder.formatter.output.docx.api.DocxPageBreak;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
+import com.abntbuilder.formatter.output.docx.api.DocxSectionBreak;
+import com.abntbuilder.formatter.profile.model.PageNumberingRule;
 import com.abntbuilder.formatter.profile.resolution.StyleResolver;
 import com.abntbuilder.formatter.rendering.component.ComponentRendererRegistry;
 
@@ -15,6 +18,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 public final class DocumentRenderer {
 
@@ -43,6 +47,10 @@ public final class DocumentRenderer {
         StyleResolver styleResolver = new StyleResolver(command.profile());
         List<DocxBlock> blocks = new ArrayList<>();
         Map<String, DocumentComponent> documentComponentsById = documentComponentsById(command);
+        Optional<PageNumberingRule> pageNumberingRule = command.profile().pageNumberingRule()
+                .filter(PageNumberingRule::enabled);
+        PageNumberingState pageNumberingState = new PageNumberingState(pageNumberingRule, styleResolver);
+        Optional<DocxPageNumbering> initialPageNumbering = Optional.empty();
 
         validateSelectedContent(command, documentComponentsById);
 
@@ -53,7 +61,12 @@ public final class DocumentRenderer {
 
             if (PARAGRAPHS_COMPONENT_ID.equals(componentId)) {
                 if (!command.paragraphs().isEmpty()) {
-                    addBlocks(blocks, command.paragraphs()
+                    Optional<DocxPageNumbering> pageNumbering = pageNumberingState.beforeRendering(componentId);
+                    if (blocks.isEmpty() && pageNumbering.isPresent()) {
+                        initialPageNumbering = pageNumbering;
+                    }
+
+                    addBlocks(blocks, pageNumbering, command.paragraphs()
                             .stream()
                             .map(paragraph -> new DocxParagraph(
                                     paragraph.text(),
@@ -61,6 +74,7 @@ public final class DocumentRenderer {
                             ))
                             .map(DocxBlock.class::cast)
                             .toList());
+                    pageNumberingState.afterRendering();
                 }
                 continue;
             }
@@ -68,10 +82,17 @@ public final class DocumentRenderer {
             DocumentComponent component = documentComponentsById.get(componentId);
 
             if (component != null) {
+                Optional<DocxPageNumbering> pageNumbering = pageNumberingState.beforeRendering(componentId);
+                if (blocks.isEmpty() && pageNumbering.isPresent()) {
+                    initialPageNumbering = pageNumbering;
+                }
+
                 addBlocks(
                         blocks,
+                        pageNumbering,
                         rendererRegistry.get(componentId).renderComponent(component, command.profile())
                 );
+                pageNumberingState.afterRendering();
             }
         }
 
@@ -81,17 +102,24 @@ public final class DocumentRenderer {
 
         return new DocxDocument(
                 command.profile().pageRule(),
+                initialPageNumbering,
                 blocks
         );
     }
 
-    private static void addBlocks(List<DocxBlock> blocks, List<DocxBlock> newBlocks) {
+    private static void addBlocks(
+            List<DocxBlock> blocks,
+            Optional<DocxPageNumbering> pageNumbering,
+            List<DocxBlock> newBlocks
+    ) {
         if (newBlocks.isEmpty()) {
             return;
         }
 
         if (!blocks.isEmpty()) {
-            blocks.add(new DocxPageBreak());
+            blocks.add(pageNumbering
+                    .<DocxBlock>map(DocxSectionBreak::new)
+                    .orElseGet(DocxPageBreak::new));
         }
 
         blocks.addAll(newBlocks);
@@ -127,6 +155,51 @@ public final class DocumentRenderer {
             if (!hasContent) {
                 throw new IllegalArgumentException("selected component has no content: " + selectedComponent);
             }
+        }
+    }
+
+    private static final class PageNumberingState {
+        private final Optional<PageNumberingRule> rule;
+        private final StyleResolver styleResolver;
+        private boolean countingStarted;
+
+        private PageNumberingState(Optional<PageNumberingRule> rule, StyleResolver styleResolver) {
+            this.rule = Objects.requireNonNull(rule, "rule must not be null");
+            this.styleResolver = Objects.requireNonNull(styleResolver, "styleResolver must not be null");
+        }
+
+        private Optional<DocxPageNumbering> beforeRendering(String componentId) {
+            if (rule.isEmpty()) {
+                return Optional.empty();
+            }
+
+            PageNumberingRule resolvedRule = rule.orElseThrow();
+            boolean startsCountingHere = resolvedRule.countFromComponentId().equals(componentId);
+            boolean becomesVisibleHere = resolvedRule.visibleFromComponentId().equals(componentId);
+
+            if (startsCountingHere) {
+                countingStarted = true;
+            }
+
+            if (!startsCountingHere && !becomesVisibleHere) {
+                return Optional.empty();
+            }
+
+            if (becomesVisibleHere && !countingStarted) {
+                countingStarted = true;
+            }
+
+            return Optional.of(new DocxPageNumbering(
+                    styleResolver.resolve(resolvedRule.styleId()),
+                    resolvedRule.placement(),
+                    startsCountingHere,
+                    becomesVisibleHere,
+                    resolvedRule.verticalDistanceFromPageEdgeCm(),
+                    resolvedRule.horizontalDistanceFromPageEdgeCm()
+            ));
+        }
+
+        private void afterRendering() {
         }
     }
 }

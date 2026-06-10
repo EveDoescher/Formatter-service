@@ -2,6 +2,8 @@ package com.abntbuilder.formatter.profile.loading;
 
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
 import com.abntbuilder.formatter.profile.model.PageOrientation;
+import com.abntbuilder.formatter.profile.model.PageNumberingPlacement;
+import com.abntbuilder.formatter.profile.model.PageNumberingRule;
 import com.abntbuilder.formatter.profile.model.PageRule;
 import com.abntbuilder.formatter.profile.model.StyleRule;
 import com.abntbuilder.formatter.profile.model.StyleType;
@@ -46,6 +48,7 @@ public record ProfileDefinition(
         String id,
         String displayName,
         PageRuleDefinition pageRule,
+        PageNumberingRuleDefinition pageNumbering,
         List<StyleRuleDefinition> styleRules,
         ComponentRulesDefinition componentRules,
         List<String> componentOrder
@@ -63,6 +66,7 @@ public record ProfileDefinition(
                 id,
                 displayName,
                 pageRule.toDomain(),
+                Optional.ofNullable(pageNumbering).map(PageNumberingRuleDefinition::toDomain),
                 styleRules.stream()
                         .map(StyleRuleDefinition::toDomain)
                         .toList(),
@@ -89,6 +93,30 @@ public record ProfileDefinition(
                     marginBottomCm,
                     marginLeftCm,
                     orientation
+            );
+        }
+    }
+
+    public record PageNumberingRuleDefinition(
+            Boolean enabled,
+            String countFromComponentId,
+            String visibleFromComponentId,
+            String styleId,
+            PageNumberingPlacement placement,
+            BigDecimal verticalDistanceFromPageEdgeCm,
+            BigDecimal horizontalDistanceFromPageEdgeCm
+    ) {
+        PageNumberingRule toDomain() {
+            requireNonNull(enabled, "pageNumbering.enabled");
+
+            return new PageNumberingRule(
+                    enabled,
+                    countFromComponentId,
+                    visibleFromComponentId,
+                    styleId,
+                    placement,
+                    verticalDistanceFromPageEdgeCm,
+                    horizontalDistanceFromPageEdgeCm
             );
         }
     }

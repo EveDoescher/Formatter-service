@@ -1,6 +1,7 @@
 package com.abntbuilder.formatter.output.docx.docx4j;
 
 import com.abntbuilder.formatter.output.docx.api.*;
+import com.abntbuilder.formatter.profile.model.PageNumberingPlacement;
 import com.abntbuilder.formatter.profile.model.PageOrientation;
 import com.abntbuilder.formatter.profile.model.PageRule;
 import com.abntbuilder.formatter.profile.model.StyleRule;
@@ -10,8 +11,19 @@ import com.abntbuilder.formatter.shared.measurement.MeasurementConverter;
 import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.PartName;
+import org.docx4j.openpackaging.parts.WordprocessingML.FooterPart;
+import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.StyleDefinitionsPart;
+import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.BooleanDefaultTrue;
+import org.docx4j.wml.CTPageNumber;
+import org.docx4j.wml.FldChar;
+import org.docx4j.wml.FooterReference;
+import org.docx4j.wml.Ftr;
+import org.docx4j.wml.HeaderReference;
+import org.docx4j.wml.Hdr;
+import org.docx4j.wml.HdrFtrRef;
 import org.docx4j.wml.HpsMeasure;
 import org.docx4j.wml.Jc;
 import org.docx4j.wml.JcEnumeration;
@@ -24,6 +36,7 @@ import org.docx4j.wml.RFonts;
 import org.docx4j.wml.RPr;
 import org.docx4j.wml.STLineSpacingRule;
 import org.docx4j.wml.STPageOrientation;
+import org.docx4j.wml.STFldCharType;
 import org.docx4j.wml.SectPr;
 import org.docx4j.wml.Style;
 import org.docx4j.wml.Styles;
@@ -53,12 +66,21 @@ public class Docx4jWriter implements DocxWriter {
             WordprocessingMLPackage wordPackage = WordprocessingMLPackage.createPackage();
 
             clearDefaultBodyContent(wordPackage);
-            applyPageRule(wordPackage, document.pageRule());
             applyHeadingStyleDefinitions(wordPackage, document.blocks());
 
+            Optional<DocxPageNumbering> currentSectionPageNumbering = document.initialPageNumbering();
+
             for (DocxBlock block : document.blocks()) {
+                if (block instanceof DocxSectionBreak sectionBreak) {
+                    writeSectionBreak(wordPackage, document.pageRule(), currentSectionPageNumbering);
+                    currentSectionPageNumbering = Optional.of(sectionBreak.pageNumbering());
+                    continue;
+                }
+
                 writeBlock(wordPackage, block);
             }
+
+            applyPageRule(wordPackage, document.pageRule(), currentSectionPageNumbering);
 
             try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
                 wordPackage.save(outputStream);
@@ -78,7 +100,25 @@ public class Docx4jWriter implements DocxWriter {
                 .clear();
     }
 
-    private void applyPageRule(WordprocessingMLPackage wordPackage, PageRule pageRule) {
+    private void applyPageRule(
+            WordprocessingMLPackage wordPackage,
+            PageRule pageRule,
+            Optional<DocxPageNumbering> pageNumbering
+    ) throws Exception {
+        SectPr sectionProperties = createSectionProperties(wordPackage, pageRule, pageNumbering);
+
+        wordPackage
+                .getMainDocumentPart()
+                .getJaxbElement()
+                .getBody()
+                .setSectPr(sectionProperties);
+    }
+
+    private SectPr createSectionProperties(
+            WordprocessingMLPackage wordPackage,
+            PageRule pageRule,
+            Optional<DocxPageNumbering> pageNumbering
+    ) throws Exception {
         SectPr sectionProperties = objectFactory.createSectPr();
 
         SectPr.PgSz pageSize = objectFactory.createSectPrPgSz();
@@ -95,14 +135,24 @@ public class Docx4jWriter implements DocxWriter {
         pageMargins.setFooter(BigInteger.ZERO);
         pageMargins.setGutter(BigInteger.ZERO);
 
+        pageNumbering.filter(DocxPageNumbering::visible)
+                .ifPresent(numbering -> applyPageNumberingMargins(pageMargins, numbering));
+
         sectionProperties.setPgSz(pageSize);
         sectionProperties.setPgMar(pageMargins);
 
-        wordPackage
-                .getMainDocumentPart()
-                .getJaxbElement()
-                .getBody()
-                .setSectPr(sectionProperties);
+        if (pageNumbering.isPresent()) {
+            DocxPageNumbering numbering = pageNumbering.orElseThrow();
+            if (numbering.countingStarts()) {
+                applyPageCountingBoundary(sectionProperties);
+            }
+
+            if (numbering.visible()) {
+                addPageNumberingReference(wordPackage, sectionProperties, pageRule, numbering);
+            }
+        }
+
+        return sectionProperties;
     }
 
     private void writeBlock(WordprocessingMLPackage wordPackage, DocxBlock block) {
@@ -110,6 +160,9 @@ public class Docx4jWriter implements DocxWriter {
             case DocxParagraph paragraph -> writeParagraph(wordPackage, paragraph);
             case DocxPageBreak ignored -> writePageBreak(wordPackage);
             case DocxBlankLine blankLine -> writeBlankLine(wordPackage, blankLine);
+            case DocxSectionBreak ignored -> throw new IllegalArgumentException(
+                    "Section breaks must be handled by the document section state."
+            );
         }
     }
 
@@ -378,6 +431,146 @@ public class Docx4jWriter implements DocxWriter {
         paragraph.getContent().add(run);
 
         wordPackage.getMainDocumentPart().addObject(paragraph);
+    }
+
+    private void addPageNumberingReference(
+            WordprocessingMLPackage wordPackage,
+            SectPr sectionProperties,
+            PageRule pageRule,
+            DocxPageNumbering pageNumbering
+    ) throws Exception {
+        if (isHeaderPlacement(pageNumbering.placement())) {
+            HeaderPart headerPart = new HeaderPart(new PartName("/word/header" + System.nanoTime() + ".xml"));
+            Hdr header = objectFactory.createHdr();
+            header.getContent().add(createPageNumberParagraph(pageNumbering, pageRule));
+            headerPart.setJaxbElement(header);
+
+            Relationship relationship = wordPackage.getMainDocumentPart().addTargetPart(headerPart);
+            HeaderReference headerReference = objectFactory.createHeaderReference();
+            headerReference.setType(HdrFtrRef.DEFAULT);
+            headerReference.setId(relationship.getId());
+            sectionProperties.getEGHdrFtrReferences().add(headerReference);
+            return;
+        }
+
+        FooterPart footerPart = new FooterPart(new PartName("/word/footer" + System.nanoTime() + ".xml"));
+        Ftr footer = objectFactory.createFtr();
+        footer.getContent().add(createPageNumberParagraph(pageNumbering, pageRule));
+        footerPart.setJaxbElement(footer);
+
+        Relationship relationship = wordPackage.getMainDocumentPart().addTargetPart(footerPart);
+        FooterReference footerReference = objectFactory.createFooterReference();
+        footerReference.setType(HdrFtrRef.DEFAULT);
+        footerReference.setId(relationship.getId());
+        sectionProperties.getEGHdrFtrReferences().add(footerReference);
+    }
+
+    private void applyPageNumberingMargins(SectPr.PgMar pageMargins, DocxPageNumbering pageNumbering) {
+        BigInteger verticalDistance = BigInteger.valueOf(MeasurementConverter.centimetersToTwips(
+                pageNumbering.verticalDistanceFromPageEdgeCm()
+        ));
+
+        if (isHeaderPlacement(pageNumbering.placement())) {
+            pageMargins.setHeader(verticalDistance);
+            return;
+        }
+
+        pageMargins.setFooter(verticalDistance);
+    }
+
+    private void applyPageCountingBoundary(SectPr sectionProperties) {
+        CTPageNumber pageNumber = objectFactory.createCTPageNumber();
+        pageNumber.setStart(BigInteger.ONE);
+        sectionProperties.setPgNumType(pageNumber);
+    }
+
+    private P createPageNumberParagraph(DocxPageNumbering pageNumbering, PageRule pageRule) {
+        P paragraph = objectFactory.createP();
+        paragraph.setPPr(createParagraphProperties(
+                pageNumbering.styleRule(),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.of(new ParagraphLayoutOverride(
+                        Optional.empty(),
+                        rightIndentForPageNumbering(pageNumbering, pageRule),
+                        Optional.of(alignmentForPageNumbering(pageNumbering.placement()))
+                ))
+        ));
+
+        R beginRun = objectFactory.createR();
+        beginRun.setRPr(createRunProperties(pageNumbering.styleRule()));
+        FldChar begin = objectFactory.createFldChar();
+        begin.setFldCharType(STFldCharType.BEGIN);
+        beginRun.getContent().add(objectFactory.createRFldChar(begin));
+
+        R instructionRun = objectFactory.createR();
+        instructionRun.setRPr(createRunProperties(pageNumbering.styleRule()));
+        Text instruction = objectFactory.createText();
+        instruction.setSpace("preserve");
+        instruction.setValue(" PAGE ");
+        instructionRun.getContent().add(objectFactory.createRInstrText(instruction));
+
+        R endRun = objectFactory.createR();
+        endRun.setRPr(createRunProperties(pageNumbering.styleRule()));
+        FldChar end = objectFactory.createFldChar();
+        end.setFldCharType(STFldCharType.END);
+        endRun.getContent().add(objectFactory.createRFldChar(end));
+
+        paragraph.getContent().add(beginRun);
+        paragraph.getContent().add(instructionRun);
+        paragraph.getContent().add(endRun);
+
+        return paragraph;
+    }
+
+    private Optional<BigDecimal> rightIndentForPageNumbering(DocxPageNumbering pageNumbering, PageRule pageRule) {
+        return switch (pageNumbering.placement()) {
+            case HEADER_RIGHT, FOOTER_RIGHT -> {
+                BigDecimal rightIndent = pageNumbering.horizontalDistanceFromPageEdgeCm()
+                        .subtract(pageRule.marginRightCm());
+                yield rightIndent.signum() > 0 ? Optional.of(rightIndent) : Optional.empty();
+            }
+            case HEADER_CENTER, FOOTER_CENTER -> Optional.empty();
+        };
+    }
+
+    private boolean isHeaderPlacement(PageNumberingPlacement placement) {
+        return switch (placement) {
+            case HEADER_RIGHT, HEADER_CENTER -> true;
+            case FOOTER_RIGHT, FOOTER_CENTER -> false;
+        };
+    }
+
+    private TextAlignment alignmentForPageNumbering(PageNumberingPlacement placement) {
+        return switch (placement) {
+            case HEADER_RIGHT, FOOTER_RIGHT -> TextAlignment.RIGHT;
+            case HEADER_CENTER, FOOTER_CENTER -> TextAlignment.CENTER;
+        };
+    }
+
+    private void writeSectionBreak(
+            WordprocessingMLPackage wordPackage,
+            PageRule pageRule,
+            Optional<DocxPageNumbering> currentSectionPageNumbering
+    ) {
+        try {
+            P paragraph = objectFactory.createP();
+            PPr paragraphProperties = objectFactory.createPPr();
+            SectPr sectionProperties = createSectionProperties(
+                    wordPackage,
+                    pageRule,
+                    currentSectionPageNumbering
+            );
+            SectPr.Type sectionType = objectFactory.createSectPrType();
+            sectionType.setVal("nextPage");
+            sectionProperties.setType(sectionType);
+            paragraphProperties.setSectPr(sectionProperties);
+            paragraph.setPPr(paragraphProperties);
+
+            wordPackage.getMainDocumentPart().addObject(paragraph);
+        } catch (Exception exception) {
+            throw new DocxWriterException("Failed to write DOCX section break.", exception);
+        }
     }
 
     private void writeBlankLine(WordprocessingMLPackage wordPackage, DocxBlankLine blankLine) {

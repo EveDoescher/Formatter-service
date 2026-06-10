@@ -10,12 +10,14 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 public record DocumentProfile(
         String id,
         String displayName,
         PageRule pageRule,
+        Optional<PageNumberingRule> pageNumberingRule,
         List<StyleRule> styleRules,
         List<ComponentRule> componentRules,
         List<String> componentOrder
@@ -27,6 +29,7 @@ public record DocumentProfile(
         requireNonBlank(id, "id");
         requireNonBlank(displayName, "displayName");
         Objects.requireNonNull(pageRule, "pageRule must not be null");
+        Objects.requireNonNull(pageNumberingRule, "pageNumberingRule must not be null");
         Objects.requireNonNull(styleRules, "styleRules must not be null");
         Objects.requireNonNull(componentRules, "componentRules must not be null");
         Objects.requireNonNull(componentOrder, "componentOrder must not be null");
@@ -43,6 +46,18 @@ public record DocumentProfile(
         validateComponentRules(componentRules);
         validateComponentOrder(componentRules, componentOrder);
         validateComponentStyleMappings(styleRules, componentRules);
+        validatePageNumberingRule(styleRules, componentRules, componentOrder, pageNumberingRule);
+    }
+
+    public DocumentProfile(
+            String id,
+            String displayName,
+            PageRule pageRule,
+            List<StyleRule> styleRules,
+            List<ComponentRule> componentRules,
+            List<String> componentOrder
+    ) {
+        this(id, displayName, pageRule, Optional.empty(), styleRules, componentRules, componentOrder);
     }
 
     private static void validateStyleRules(List<StyleRule> styleRules) {
@@ -111,6 +126,64 @@ public record DocumentProfile(
                     );
                 }
             }
+        }
+    }
+
+    private static void validatePageNumberingRule(
+            List<StyleRule> styleRules,
+            List<ComponentRule> componentRules,
+            List<String> componentOrder,
+            Optional<PageNumberingRule> pageNumberingRule
+    ) {
+        if (pageNumberingRule.isEmpty() || !pageNumberingRule.orElseThrow().enabled()) {
+            return;
+        }
+
+        PageNumberingRule rule = pageNumberingRule.orElseThrow();
+        Set<String> styleIds = styleRules.stream()
+                .map(StyleRule::id)
+                .collect(java.util.stream.Collectors.toUnmodifiableSet());
+
+        if (!styleIds.contains(rule.styleId())) {
+            throw new IllegalArgumentException(
+                    "Page numbering references unknown style id: " + rule.styleId()
+            );
+        }
+
+        Set<String> componentIds = componentRules.stream()
+                .map(ComponentRule::componentId)
+                .collect(java.util.stream.Collectors.toUnmodifiableSet());
+
+        validatePageNumberingComponentId(componentIds, rule.countFromComponentId());
+        validatePageNumberingComponentId(componentIds, rule.visibleFromComponentId());
+
+        int countFromIndex = componentOrder.indexOf(rule.countFromComponentId());
+        int visibleFromIndex = componentOrder.indexOf(rule.visibleFromComponentId());
+
+        if (countFromIndex < 0) {
+            throw new IllegalArgumentException(
+                    "Page numbering countFromComponentId is not present in componentOrder: "
+                            + rule.countFromComponentId()
+            );
+        }
+
+        if (visibleFromIndex < 0) {
+            throw new IllegalArgumentException(
+                    "Page numbering visibleFromComponentId is not present in componentOrder: "
+                            + rule.visibleFromComponentId()
+            );
+        }
+
+        if (countFromIndex > visibleFromIndex) {
+            throw new IllegalArgumentException(
+                    "Page numbering countFromComponentId must not come after visibleFromComponentId."
+            );
+        }
+    }
+
+    private static void validatePageNumberingComponentId(Set<String> componentIds, String componentId) {
+        if (!componentIds.contains(componentId) && !INTERNAL_COMPONENT_IDS.contains(componentId)) {
+            throw new IllegalArgumentException("Page numbering references unknown component id: " + componentId);
         }
     }
 

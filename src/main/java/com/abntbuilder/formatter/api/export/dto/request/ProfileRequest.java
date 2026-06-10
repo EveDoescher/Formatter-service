@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
+import java.util.Optional;
 
 public record ProfileRequest(
         @NotBlank String id,
@@ -16,6 +17,9 @@ public record ProfileRequest(
         @Valid
         @NotNull
         PageRuleRequest pageRule,
+
+        @Valid
+        PageNumberingRuleRequest pageNumbering,
 
         @Valid
         @NotEmpty
@@ -36,6 +40,7 @@ public record ProfileRequest(
                 id,
                 displayName,
                 pageRule.toDomain(),
+                Optional.ofNullable(pageNumbering).map(PageNumberingRuleRequest::toDomain),
                 styleRules.stream()
                         .map(StyleRuleRequest::toDomain)
                         .toList(),

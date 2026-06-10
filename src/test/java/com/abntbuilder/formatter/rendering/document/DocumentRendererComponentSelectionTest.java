@@ -10,7 +10,10 @@ import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxDocument;
 import com.abntbuilder.formatter.output.docx.api.DocxPageBreak;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
+import com.abntbuilder.formatter.output.docx.api.DocxSectionBreak;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
+import com.abntbuilder.formatter.profile.model.PageNumberingPlacement;
+import com.abntbuilder.formatter.profile.model.PageNumberingRule;
 import com.abntbuilder.formatter.profile.model.PageOrientation;
 import com.abntbuilder.formatter.profile.model.PageRule;
 import com.abntbuilder.formatter.profile.model.StyleRule;
@@ -26,7 +29,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DocumentRendererComponentSelectionTest {
 
@@ -94,6 +99,70 @@ class DocumentRendererComponentSelectionTest {
         ));
 
         assertEquals(List.of("APPROVAL_SHEET"), paragraphTexts(document));
+    }
+
+    @Test
+    void shouldStartPageNumberingSectionBeforeConfiguredComponent() {
+        DocxDocument document = renderer.render(new ExportDocxCommand(
+                "test.docx",
+                profileWithPageNumberingFromParagraphs(),
+                List.of(cover()),
+                List.of("cover", "paragraphs"),
+                List.of(new ExportDocxCommand.ParagraphCommand("Paragraph", "body"))
+        ));
+
+        assertEquals(List.of("COVER", "Paragraph"), paragraphTexts(document));
+        assertEquals(1, document.blocks().stream().filter(DocxSectionBreak.class::isInstance).count());
+        assertEquals(0, document.blocks().stream().filter(DocxPageBreak.class::isInstance).count());
+        assertTrue(document.initialPageNumbering().orElseThrow().countingStarts());
+        assertFalse(document.initialPageNumbering().orElseThrow().visible());
+        DocxSectionBreak sectionBreak = document.blocks()
+                .stream()
+                .filter(DocxSectionBreak.class::isInstance)
+                .map(DocxSectionBreak.class::cast)
+                .findFirst()
+                .orElseThrow();
+        assertFalse(sectionBreak.pageNumbering().countingStarts());
+        assertTrue(sectionBreak.pageNumbering().visible());
+    }
+
+    @Test
+    void shouldUseInitialPageNumberingWhenConfiguredComponentIsFirst() {
+        DocxDocument document = renderer.render(new ExportDocxCommand(
+                "test.docx",
+                profileWithPageNumberingFromParagraphs(),
+                List.of(),
+                List.of("paragraphs"),
+                List.of(new ExportDocxCommand.ParagraphCommand("Paragraph", "body"))
+        ));
+
+        assertEquals(List.of("Paragraph"), paragraphTexts(document));
+        assertEquals("body", document.initialPageNumbering().orElseThrow().styleRule().id());
+        assertFalse(document.initialPageNumbering().orElseThrow().countingStarts());
+        assertTrue(document.initialPageNumbering().orElseThrow().visible());
+    }
+
+    @Test
+    void shouldStartCountingAndOnlyShowNumberingAtConfiguredVisibilityStart() {
+        DocxDocument document = renderer.render(new ExportDocxCommand(
+                "test.docx",
+                profileWithPageNumberingFromTitlePageToParagraphs(),
+                List.of(cover(), titlePage()),
+                List.of("cover", "titlePage", "paragraphs"),
+                List.of(new ExportDocxCommand.ParagraphCommand("Paragraph", "body"))
+        ));
+
+        List<DocxSectionBreak> sectionBreaks = document.blocks()
+                .stream()
+                .filter(DocxSectionBreak.class::isInstance)
+                .map(DocxSectionBreak.class::cast)
+                .toList();
+
+        assertEquals(2, sectionBreaks.size());
+        assertTrue(sectionBreaks.get(0).pageNumbering().countingStarts());
+        assertFalse(sectionBreaks.get(0).pageNumbering().visible());
+        assertFalse(sectionBreaks.get(1).pageNumbering().countingStarts());
+        assertTrue(sectionBreaks.get(1).pageNumbering().visible());
     }
 
     @Test
@@ -175,6 +244,46 @@ class DocumentRendererComponentSelectionTest {
                 "test-profile",
                 "Test Profile",
                 pageRule(),
+                List.of(style("body")),
+                List.of(new FakeComponentRule("cover"), new FakeComponentRule("titlePage"), new FakeComponentRule("approvalSheet")),
+                List.of("cover", "titlePage", "approvalSheet", "paragraphs")
+        );
+    }
+
+    private static DocumentProfile profileWithPageNumberingFromParagraphs() {
+        return new DocumentProfile(
+                "test-profile",
+                "Test Profile",
+                pageRule(),
+                Optional.of(new PageNumberingRule(
+                        true,
+                        "cover",
+                        "paragraphs",
+                        "body",
+                        PageNumberingPlacement.HEADER_RIGHT,
+                        BigDecimal.valueOf(2),
+                        BigDecimal.valueOf(2)
+                )),
+                List.of(style("body")),
+                List.of(new FakeComponentRule("cover"), new FakeComponentRule("titlePage"), new FakeComponentRule("approvalSheet")),
+                List.of("cover", "titlePage", "approvalSheet", "paragraphs")
+        );
+    }
+
+    private static DocumentProfile profileWithPageNumberingFromTitlePageToParagraphs() {
+        return new DocumentProfile(
+                "test-profile",
+                "Test Profile",
+                pageRule(),
+                Optional.of(new PageNumberingRule(
+                        true,
+                        "titlePage",
+                        "paragraphs",
+                        "body",
+                        PageNumberingPlacement.HEADER_RIGHT,
+                        BigDecimal.valueOf(2),
+                        BigDecimal.valueOf(2)
+                )),
                 List.of(style("body")),
                 List.of(new FakeComponentRule("cover"), new FakeComponentRule("titlePage"), new FakeComponentRule("approvalSheet")),
                 List.of("cover", "titlePage", "approvalSheet", "paragraphs")

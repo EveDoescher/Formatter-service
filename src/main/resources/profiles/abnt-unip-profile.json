@@ -17,7 +17,32 @@
     "marginLeftCm": 3,
     "orientation": "PORTRAIT"
   },
+  "pageNumbering": {
+    "enabled": true,
+    "countFromComponentId": "titlePage",
+    "visibleFromComponentId": "bodyContent",
+    "styleId": "pageNumber",
+    "placement": "HEADER_RIGHT",
+    "verticalDistanceFromPageEdgeCm": 2,
+    "horizontalDistanceFromPageEdgeCm": 2
+  },
   "styleRules": [
+    {
+      "id": "pageNumber",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "RIGHT",
+      "lineSpacing": 1,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
     {
       "id": "cover.top",
       "type": "PARAGRAPH",

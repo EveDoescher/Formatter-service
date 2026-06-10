@@ -7,6 +7,7 @@ import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRul
 import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageComponentRule;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,6 +21,11 @@ class ClasspathJsonProfileProviderTest {
 
         assertEquals("ABNT UNIP Profile", profile.displayName());
         assertEquals(List.of("cover", "titlePage", "approvalSheet", "bodyContent", "paragraphs"), profile.componentOrder());
+        assertEquals("titlePage", profile.pageNumberingRule().orElseThrow().countFromComponentId());
+        assertEquals("bodyContent", profile.pageNumberingRule().orElseThrow().visibleFromComponentId());
+        assertEquals("pageNumber", profile.pageNumberingRule().orElseThrow().styleId());
+        assertEquals(BigDecimal.valueOf(2), profile.pageNumberingRule().orElseThrow().verticalDistanceFromPageEdgeCm());
+        assertEquals(BigDecimal.valueOf(2), profile.pageNumberingRule().orElseThrow().horizontalDistanceFromPageEdgeCm());
         CoverComponentRule coverRule = assertInstanceOf(CoverComponentRule.class, profile.componentRules().get(0));
         assertInstanceOf(TitlePageComponentRule.class, profile.componentRules().get(1));
         assertInstanceOf(ApprovalSheetComponentRule.class, profile.componentRules().get(2));

@@ -35,6 +35,10 @@ bodyContent.layout.blankLinesBeforeSectionTitleWhenPrecededByContent
 bodyContent.layout.blankLinesAfterSectionTitle
 bodyContent.layout.pageBreakBeforePrimarySection
 bodyContent.layout.blankLineStyleId
+pageNumbering.visibleFromComponentId
+pageNumbering.countFromComponentId
+pageNumbering.verticalDistanceFromPageEdgeCm
+pageNumbering.horizontalDistanceFromPageEdgeCm
 ```
 
 The renderer must not hardcode fonts, indentation, spacing, uppercase, bold or alignment.
@@ -90,6 +94,24 @@ paragraph
 `pageBreakBeforePrimarySection` exists because some institutional profiles may
 require level-1 sections to start on a new page. Keep it profile-driven; do not
 hardcode this behavior in the renderer.
+
+Page numbering is document infrastructure, not a `bodyContent` rendering detail.
+When the profile declares `pageNumbering.visibleFromComponentId = bodyContent`,
+the document renderer starts a new DOCX section before `bodyContent` and the
+writer applies the configured page-number header/footer to that section.
+
+Counting and visibility are separate profile decisions:
+
+```text
+pageNumbering.countFromComponentId controls which rendered component is page 1.
+pageNumbering.visibleFromComponentId controls where the number becomes visible.
+```
+
+Do not infer counting from visibility. The renderer only follows the component
+ids declared by the profile: counting begins at `countFromComponentId`, remains
+invisible until `visibleFromComponentId`, and becomes visible there. Position and
+font size must come from the profile style/measurements, not from hardcoded
+renderer or writer values.
 
 ## Current Scope
 

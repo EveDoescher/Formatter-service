@@ -767,6 +767,56 @@ Esse recurso existe para melhorar a experiencia de quem monta perfil e de quem
 preenche o trabalho. No futuro, uma interface de montagem de perfil deve expor
 `contentBindings` como mapeamentos por dropdown, nao como JSON cru.
 
+## Numeracao de paginas
+
+Numeracao de paginas pertence ao perfil e a infraestrutura DOCX, nao aos
+componentes individuais.
+
+O perfil deve declarar:
+
+```text
+pageNumbering.enabled
+pageNumbering.countFromComponentId
+pageNumbering.visibleFromComponentId
+pageNumbering.styleId
+pageNumbering.placement
+pageNumbering.verticalDistanceFromPageEdgeCm
+pageNumbering.horizontalDistanceFromPageEdgeCm
+```
+
+O perfil UNIP atual usa:
+
+```text
+enabled = true
+countFromComponentId = titlePage
+visibleFromComponentId = bodyContent
+styleId = pageNumber
+placement = HEADER_RIGHT
+verticalDistanceFromPageEdgeCm = 2
+horizontalDistanceFromPageEdgeCm = 2
+```
+
+Isso significa:
+
+```text
+cover nao entra na contagem;
+titlePage inicia a contagem;
+pre-textuais renderizam sem numero visivel ate o ponto definido pelo perfil;
+antes de bodyContent entra uma quebra de secao nextPage;
+o componente definido em countFromComponentId inicia a contagem;
+a contagem segue invisivel ate visibleFromComponentId;
+o componente definido em visibleFromComponentId passa a receber header com campo PAGE;
+o estilo visual e as medidas do numero vem do perfil.
+```
+
+`countFromComponentId` e `visibleFromComponentId` sao regras diferentes. Nao
+usar o inicio de exibicao como inicio de contagem. Em perfis ABNT e UNIP, a
+capa geralmente nao deve ser contada, enquanto a numeracao visivel costuma
+comecar apenas na parte textual.
+
+Nao hardcodar fonte, tamanho, posicao, medidas ou componente de inicio no writer. O
+writer apenas materializa a regra ja resolvida pelo renderer.
+
 Titulos de secao do `bodyContent` devem virar headings reais do Word quando o
 perfil usar `StyleType.HEADING_1` ate `StyleType.HEADING_6`. O writer deve
 customizar os estilos embutidos `Heading1` ate `Heading6` com a formatacao

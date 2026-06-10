@@ -218,6 +218,58 @@ class DocumentProfileTest {
     }
 
     @Test
+    void shouldRejectPageNumberingWhenCountStartComesAfterVisibilityStart() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new DocumentProfile(
+                "test-profile",
+                "Test Profile",
+                validPageRule(),
+                Optional.of(new PageNumberingRule(
+                        true,
+                        DocumentProfile.PARAGRAPHS_INTERNAL_COMPONENT_ID,
+                        "cover",
+                        "pageNumber",
+                        PageNumberingPlacement.HEADER_RIGHT,
+                        BigDecimal.valueOf(2),
+                        BigDecimal.valueOf(2)
+                )),
+                validCoverAndPageNumberStyleRules(),
+                List.of(validCoverComponentRule("cover")),
+                coverOrder()
+        ));
+
+        assertEquals(
+                "Page numbering countFromComponentId must not come after visibleFromComponentId.",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void shouldRejectPageNumberingWhenCountStartIsNotInComponentOrder() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new DocumentProfile(
+                "test-profile",
+                "Test Profile",
+                validPageRule(),
+                Optional.of(new PageNumberingRule(
+                        true,
+                        "cover",
+                        DocumentProfile.PARAGRAPHS_INTERNAL_COMPONENT_ID,
+                        "pageNumber",
+                        PageNumberingPlacement.HEADER_RIGHT,
+                        BigDecimal.valueOf(2),
+                        BigDecimal.valueOf(2)
+                )),
+                validCoverAndPageNumberStyleRules(),
+                List.of(validCoverComponentRule("cover")),
+                paragraphsOrder()
+        ));
+
+        assertEquals(
+                "Page numbering countFromComponentId is not present in componentOrder: cover",
+                exception.getMessage()
+        );
+    }
+
+    @Test
     void shouldRejectComponentStyleMappingThatReferencesUnknownStyleId() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new DocumentProfile(
                 "test-profile",
@@ -267,6 +319,17 @@ class DocumentProfileTest {
 
     private static List<StyleRule> validCoverStyleRules() {
         return List.of(
+                validStyleRule("cover.top"),
+                validStyleRule("cover.author"),
+                validStyleRule("cover.title"),
+                validStyleRule("cover.subtitle"),
+                validStyleRule("cover.bottom")
+        );
+    }
+
+    private static List<StyleRule> validCoverAndPageNumberStyleRules() {
+        return List.of(
+                validStyleRule("pageNumber"),
                 validStyleRule("cover.top"),
                 validStyleRule("cover.author"),
                 validStyleRule("cover.title"),
