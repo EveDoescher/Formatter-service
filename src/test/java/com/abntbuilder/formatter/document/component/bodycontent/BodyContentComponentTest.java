@@ -54,4 +54,35 @@ class BodyContentComponentTest {
 
         assertEquals("bodyContent section without title must contain at least one block.", exception.getMessage());
     }
+
+    @Test
+    void shouldRejectDuplicatedFigureId() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new BodyContentComponent(List.of(
+                        new BodySection(
+                                "figuras",
+                                1,
+                                Optional.of("Figuras"),
+                                List.of(figure("figura-teste"), figure("figura-teste"))
+                        )
+                ))
+        );
+
+        assertEquals("bodyContent figure id must be unique: figura-teste", exception.getMessage());
+    }
+
+    private static BodyFigure figure(String id) {
+        return new BodyFigure(
+                id,
+                Optional.of("grupo-figura-teste"),
+                "Figura teste",
+                Optional.empty(),
+                new BodyImageSource(
+                        ImageSourceType.DATA_URI,
+                        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
+                        "Imagem teste"
+                )
+        );
+    }
 }

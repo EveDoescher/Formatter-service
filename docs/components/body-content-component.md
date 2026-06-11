@@ -30,6 +30,7 @@ DIRECT_SHORT_QUOTE
 DIRECT_LONG_QUOTE
 INDIRECT_CITATION
 CITATION_OF_CITATION
+FIGURE
 ```
 
 `content[]` and `paragraphs[]` are still accepted only as compatibility inputs.
@@ -101,6 +102,49 @@ NARRATIVE
 Direct short and direct long citations require `page`. Indirect citations may
 omit `page`. Citation of citation requires `page` in the consulted source.
 
+`FIGURE` is a numbered display object. It is rendered as one semantic block:
+
+```text
+caption
+image
+source
+```
+
+The figure `id` must be unique. Do not repeat `id` to indicate continuation.
+Use `continuationGroupId` when one logical figure is split into explicit parts.
+The renderer assigns one number to the continuation group and applies the
+continuation labels declared by the profile:
+
+```text
+Figura 1 - Caption (continua)
+Figura 1 - Caption (continuação)
+Figura 1 - Caption (conclusão)
+```
+
+For two parts, the first receives `continua` and the second receives
+`conclusão`. For three or more parts, intermediate parts receive `continuação`.
+
+Bitmap images are not split automatically. If a figure needs to continue on
+another page, the request must provide explicit image parts with the same
+`continuationGroupId`. A single image is only scaled down according to the
+profile fit policy.
+
+For continued figures, `source` belongs to the logical group. It may be provided
+in any part, but repeated values for the same `continuationGroupId` must be
+identical.
+
+Figure images currently support:
+
+```text
+DATA_URI
+URL
+```
+
+`DATA_URI` is useful for deterministic offline tests. `URL` is useful for visual
+development and future storage integrations, such as Supabase public object
+URLs. URL fetching only accepts `http` and `https`, respects the profile timeout
+and rejects images larger than `maxImageBytes`.
+
 ## Profile Ownership
 
 The profile owns:
@@ -112,6 +156,19 @@ bodyContent.styleMapping.directShortQuoteStyleId
 bodyContent.styleMapping.directLongQuoteStyleId
 bodyContent.styleMapping.indirectCitationStyleId
 bodyContent.styleMapping.citationOfCitationStyleId
+bodyContent.figure.captionStyleId
+bodyContent.figure.sourceStyleId
+bodyContent.figure.captionTemplate
+bodyContent.figure.sourceTemplate
+bodyContent.figure.continuationLabels
+bodyContent.figure.sourcePlacement
+bodyContent.figure.imageAlignment
+bodyContent.figure.maxWidthCm
+bodyContent.figure.maxHeightCm
+bodyContent.figure.defaultDpi
+bodyContent.figure.maxImageBytes
+bodyContent.figure.urlFetchTimeoutSeconds
+bodyContent.figure.fitPolicy
 bodyContent.numbering.enabled
 bodyContent.numbering.separator
 bodyContent.numbering.primarySuffix
@@ -208,6 +265,7 @@ inline short direct citations
 block long direct citations
 inline indirect citations
 inline citation of citation / apud
+figure display objects with caption, image, source and continuation groups
 profile-driven section numbering
 real Word heading paragraph styles
 ```
@@ -237,6 +295,8 @@ compatibility `paragraphs` path.
 ```text
 docs/samples/body-content/body-content-short.json
 docs/samples/body-content/body-content-citations.json
+docs/samples/body-content/body-content-figures.json
+docs/samples/body-content/body-content-figures-url-visual.json
 docs/samples/body-content/body-content-title-only-section.json
 docs/samples/body-content/body-content-section-hierarchy-invalid.json
 docs/samples/body-content/body-content-citation-direct-missing-page-invalid.json

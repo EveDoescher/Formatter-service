@@ -30,6 +30,7 @@ class BodyContentSampleValidationTest {
         List<String> sampleNames = List.of(
                 "body-content-short.json",
                 "body-content-citations.json",
+                "body-content-figures.json",
                 "body-content-title-only-section.json"
         );
 

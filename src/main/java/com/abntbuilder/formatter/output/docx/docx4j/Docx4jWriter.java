@@ -11,6 +11,7 @@ import com.abntbuilder.formatter.shared.measurement.MeasurementConverter;
 import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.FooterPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
@@ -42,6 +43,7 @@ import org.docx4j.wml.Style;
 import org.docx4j.wml.Styles;
 import org.docx4j.wml.Text;
 import org.docx4j.wml.Br;
+import org.docx4j.wml.Drawing;
 import org.docx4j.wml.STBrType;
 
 import java.io.ByteArrayOutputStream;
@@ -160,6 +162,7 @@ public class Docx4jWriter implements DocxWriter {
             case DocxParagraph paragraph -> writeParagraph(wordPackage, paragraph);
             case DocxPageBreak ignored -> writePageBreak(wordPackage);
             case DocxBlankLine blankLine -> writeBlankLine(wordPackage, blankLine);
+            case DocxImageBlock imageBlock -> writeImage(wordPackage, imageBlock);
             case DocxSectionBreak ignored -> throw new IllegalArgumentException(
                     "Section breaks must be handled by the document section state."
             );
@@ -176,6 +179,7 @@ public class Docx4jWriter implements DocxWriter {
                         paragraph.exactLineHeightPt(),
                         paragraph.layoutOverride()
                 ));
+        applyKeepOptions(docxParagraph.getPPr(), paragraph.keepWithNext(), paragraph.keepLines());
 
         R run = objectFactory.createR();
 
@@ -190,6 +194,62 @@ public class Docx4jWriter implements DocxWriter {
         docxParagraph.getContent().add(run);
 
         wordPackage.getMainDocumentPart().addObject(docxParagraph);
+    }
+
+    private void writeImage(WordprocessingMLPackage wordPackage, DocxImageBlock imageBlock) {
+        try {
+            BinaryPartAbstractImage imagePart = BinaryPartAbstractImage.createImagePart(
+                    wordPackage,
+                    imageBlock.bytes()
+            );
+            org.docx4j.dml.wordprocessingDrawing.Inline inline = imagePart.createImageInline(
+                    "image",
+                    imageBlock.altText(),
+                    Math.toIntExact(Math.floorMod(System.nanoTime(), Integer.MAX_VALUE)),
+                    Math.toIntExact(Math.floorMod(System.nanoTime(), Integer.MAX_VALUE)),
+                    false
+            );
+            inline.getExtent().setCx(centimetersToEmu(imageBlock.widthCm()));
+            inline.getExtent().setCy(centimetersToEmu(imageBlock.heightCm()));
+
+            Drawing drawing = objectFactory.createDrawing();
+            drawing.getAnchorOrInline().add(inline);
+
+            R run = objectFactory.createR();
+            run.getContent().add(drawing);
+
+            P paragraph = objectFactory.createP();
+            PPr paragraphProperties = objectFactory.createPPr();
+
+            Jc justification = objectFactory.createJc();
+            justification.setVal(mapTextAlignment(imageBlock.alignment()));
+            paragraphProperties.setJc(justification);
+            applyKeepOptions(paragraphProperties, imageBlock.keepWithNext(), imageBlock.keepLines());
+
+            paragraph.setPPr(paragraphProperties);
+            paragraph.getContent().add(run);
+
+            wordPackage.getMainDocumentPart().addObject(paragraph);
+        } catch (Exception exception) {
+            throw new DocxWriterException("Failed to write DOCX image.", exception);
+        }
+    }
+
+    private void applyKeepOptions(PPr paragraphProperties, boolean keepWithNext, boolean keepLines) {
+        if (keepWithNext) {
+            paragraphProperties.setKeepNext(objectFactory.createBooleanDefaultTrue());
+        }
+
+        if (keepLines) {
+            paragraphProperties.setKeepLines(objectFactory.createBooleanDefaultTrue());
+        }
+    }
+
+    private static long centimetersToEmu(BigDecimal centimeters) {
+        return centimeters
+                .multiply(BigDecimal.valueOf(360000))
+                .setScale(0, java.math.RoundingMode.HALF_UP)
+                .longValueExact();
     }
 
     private void applyHeadingStyleDefinitions(

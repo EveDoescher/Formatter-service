@@ -3,8 +3,10 @@ package com.abntbuilder.formatter.document.component.bodycontent;
 import com.abntbuilder.formatter.document.component.ComponentType;
 import com.abntbuilder.formatter.document.component.DocumentComponent;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public record BodyContentComponent(
         List<BodySection> sections
@@ -24,6 +26,7 @@ public record BodyContentComponent(
         }
 
         validateSectionHierarchy(sections);
+        validateDisplayObjectIds(sections);
     }
 
     @Override
@@ -58,6 +61,18 @@ public record BodyContentComponent(
             }
 
             previousTitledLevel = currentLevel;
+        }
+    }
+
+    private static void validateDisplayObjectIds(List<BodySection> sections) {
+        Set<String> figureIds = new HashSet<>();
+
+        for (BodySection section : sections) {
+            for (BodyBlock block : section.blocks()) {
+                if (block instanceof BodyFigure figure && !figureIds.add(figure.id())) {
+                    throw new IllegalArgumentException("bodyContent figure id must be unique: " + figure.id());
+                }
+            }
         }
     }
 }

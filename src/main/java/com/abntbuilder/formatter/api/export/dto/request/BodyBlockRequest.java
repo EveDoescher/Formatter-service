@@ -18,7 +18,8 @@ public record BodyBlockRequest(
         @Valid List<BodyInlineRequest> content,
         @Valid CitationSourceRequest source,
         @Valid CitationSourceRequest originalSource,
-        @Valid CitationSourceRequest consultedSource
+        @Valid CitationSourceRequest consultedSource,
+        @Valid BodyFigureRequest figure
 ) {
 
     public BodyBlock toDomain() {
@@ -28,6 +29,7 @@ public record BodyBlockRequest(
             case DIRECT_LONG_QUOTE -> citation(BodyCitationType.DIRECT_LONG);
             case INDIRECT_CITATION -> citation(BodyCitationType.INDIRECT);
             case CITATION_OF_CITATION -> citation(BodyCitationType.CITATION_OF_CITATION);
+            case FIGURE -> figureBlock();
         };
     }
 
@@ -50,5 +52,13 @@ public record BodyBlockRequest(
                 originalSource == null ? Optional.empty() : Optional.of(originalSource.toDomain()),
                 consultedSource == null ? Optional.empty() : Optional.of(consultedSource.toDomain())
         );
+    }
+
+    private BodyBlock figureBlock() {
+        if (figure == null) {
+            throw new IllegalArgumentException("figure must be provided for FIGURE block.");
+        }
+
+        return figure.toDomain();
     }
 }

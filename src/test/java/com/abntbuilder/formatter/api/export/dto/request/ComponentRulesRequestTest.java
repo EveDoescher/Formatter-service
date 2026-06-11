@@ -1,7 +1,10 @@
 package com.abntbuilder.formatter.api.export.dto.request;
 
 import com.abntbuilder.formatter.profile.model.component.ComponentRule;
+import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentComponentRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
 import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageComponentRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.HorizontalPlacementStrategy;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageAnchorStrategy;
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -100,7 +104,26 @@ class ComponentRulesRequestTest {
                         "bodyContent.paragraph"
                 ),
                 new BodyContentNumberingRuleRequest(true, ".", ""),
-                new BodyContentLayoutRuleRequest(1, 1, false, "bodyContent.paragraph")
+                new BodyContentLayoutRuleRequest(1, 1, false, "bodyContent.paragraph"),
+                figureRuleRequest()
+        );
+    }
+
+    private static FigureRuleRequest figureRuleRequest() {
+        return new FigureRuleRequest(
+                "bodyContent.figure.caption",
+                "bodyContent.figure.source",
+                "Figura {number} - {caption}",
+                "Fonte: {source}",
+                new DisplayObjectContinuationLabelsRequest("continua", "continuação", "conclusão"),
+                DisplayObjectSourcePlacement.LAST_PART_ONLY,
+                TextAlignment.CENTER,
+                BigDecimal.valueOf(16),
+                BigDecimal.valueOf(18),
+                BigDecimal.valueOf(96),
+                2_000_000,
+                10,
+                ImageFitPolicy.SCALE_DOWN_PRESERVE_ASPECT_RATIO
         );
     }
 

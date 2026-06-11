@@ -19,6 +19,10 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContent
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentNumberingRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentStyleMapping;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectContinuationLabels;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.FigureRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverStyleMapping;
@@ -400,18 +404,21 @@ public record ProfileDefinition(
             String componentId,
             BodyContentStyleMappingDefinition styleMapping,
             BodyContentNumberingRuleDefinition numbering,
-            BodyContentLayoutRuleDefinition layout
+            BodyContentLayoutRuleDefinition layout,
+            FigureRuleDefinition figure
     ) {
         BodyContentComponentRule toDomain() {
             requireNonNull(styleMapping, "bodyContent.styleMapping");
             requireNonNull(numbering, "bodyContent.numbering");
             requireNonNull(layout, "bodyContent.layout");
+            requireNonNull(figure, "bodyContent.figure");
 
             return new BodyContentComponentRule(
                     componentId,
                     styleMapping.toDomain(),
                     numbering.toDomain(),
-                    layout.toDomain()
+                    layout.toDomain(),
+                    figure.toDomain()
             );
         }
     }
@@ -435,6 +442,52 @@ public record ProfileDefinition(
                     indirectCitationStyleId,
                     citationOfCitationStyleId
             );
+        }
+    }
+
+    public record FigureRuleDefinition(
+            String captionStyleId,
+            String sourceStyleId,
+            String captionTemplate,
+            String sourceTemplate,
+            DisplayObjectContinuationLabelsDefinition continuationLabels,
+            DisplayObjectSourcePlacement sourcePlacement,
+            TextAlignment imageAlignment,
+            BigDecimal maxWidthCm,
+            BigDecimal maxHeightCm,
+            BigDecimal defaultDpi,
+            Integer maxImageBytes,
+            Integer urlFetchTimeoutSeconds,
+            ImageFitPolicy fitPolicy
+    ) {
+        FigureRule toDomain() {
+            requireNonNull(continuationLabels, "bodyContent.figure.continuationLabels");
+
+            return new FigureRule(
+                    captionStyleId,
+                    sourceStyleId,
+                    captionTemplate,
+                    sourceTemplate,
+                    continuationLabels.toDomain(),
+                    sourcePlacement,
+                    imageAlignment,
+                    maxWidthCm,
+                    maxHeightCm,
+                    defaultDpi,
+                    maxImageBytes,
+                    urlFetchTimeoutSeconds,
+                    fitPolicy
+            );
+        }
+    }
+
+    public record DisplayObjectContinuationLabelsDefinition(
+            String first,
+            String middle,
+            String last
+    ) {
+        DisplayObjectContinuationLabels toDomain() {
+            return new DisplayObjectContinuationLabels(first, middle, last);
         }
     }
 

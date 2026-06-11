@@ -474,6 +474,38 @@
       "bold": false,
       "italic": false,
       "uppercase": false
+    },
+    {
+      "id": "bodyContent.figure.caption",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 10,
+      "alignment": "CENTER",
+      "lineSpacing": 1,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 6,
+      "spacingAfterPt": 3,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.figure.source",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 10,
+      "alignment": "CENTER",
+      "lineSpacing": 1,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 3,
+      "spacingAfterPt": 6,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
     }
   ],
   "componentRules": {
@@ -915,6 +947,25 @@
         "blankLinesAfterSectionTitle": 1,
         "pageBreakBeforePrimarySection": false,
         "blankLineStyleId": "bodyContent.paragraph"
+      },
+      "figure": {
+        "captionStyleId": "bodyContent.figure.caption",
+        "sourceStyleId": "bodyContent.figure.source",
+        "captionTemplate": "Figura {number} - {caption}",
+        "sourceTemplate": "Fonte: {source}",
+        "continuationLabels": {
+          "first": "continua",
+          "middle": "continuação",
+          "last": "conclusão"
+        },
+        "sourcePlacement": "LAST_PART_ONLY",
+        "imageAlignment": "CENTER",
+        "maxWidthCm": 16,
+        "maxHeightCm": 18,
+        "defaultDpi": 96,
+        "maxImageBytes": 2000000,
+        "urlFetchTimeoutSeconds": 10,
+        "fitPolicy": "SCALE_DOWN_PRESERVE_ASPECT_RATIO"
       }
     }
   }

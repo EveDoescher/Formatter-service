@@ -37,6 +37,8 @@ class ClasspathJsonProfileProviderTest {
         assertEquals(1, bodyContentRule.layout().blankLinesAfterSectionTitle());
         assertEquals(false, bodyContentRule.layout().pageBreakBeforePrimarySection());
         assertEquals("bodyContent.paragraph", bodyContentRule.layout().blankLineStyleId());
+        assertEquals("bodyContent.figure.caption", bodyContentRule.figure().captionStyleId());
+        assertEquals("Figura {number} - {caption}", bodyContentRule.figure().captionTemplate());
         assertEquals("work.authors", coverRule.contentBindings().sourceFor("authors").orElseThrow());
         assertEquals("work.title", coverRule.contentBindings().sourceFor("title").orElseThrow());
     }

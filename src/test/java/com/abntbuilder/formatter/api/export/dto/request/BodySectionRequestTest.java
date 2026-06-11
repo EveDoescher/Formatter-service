@@ -2,8 +2,10 @@ package com.abntbuilder.formatter.api.export.dto.request;
 
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCitation;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationType;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyFigure;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyParagraph;
 import com.abntbuilder.formatter.document.component.bodycontent.BodySection;
+import com.abntbuilder.formatter.document.component.bodycontent.ImageSourceType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -29,6 +31,7 @@ class BodySectionRequestTest {
                                 null,
                                 null,
                                 null,
+                                null,
                                 null
                         ),
                         new BodyBlockRequest(
@@ -37,6 +40,7 @@ class BodySectionRequestTest {
                                 "Citacao direta longa.",
                                 null,
                                 new CitationSourceRequest(List.of(author("Sobrenome Teste Um")), "2020", "10"),
+                                null,
                                 null,
                                 null
                         )
@@ -109,6 +113,7 @@ class BodySectionRequestTest {
                         ),
                         null,
                         null,
+                        null,
                         null
                 ))
         );
@@ -139,6 +144,46 @@ class BodySectionRequestTest {
         BodyParagraph paragraph = assertInstanceOf(BodyParagraph.class, section.content().getFirst());
 
         assertEquals("Paragrafo legado.", paragraph.text());
+    }
+
+    @Test
+    void shouldConvertFigureBlockToDomain() {
+        BodySectionRequest request = new BodySectionRequest(
+                "figuras",
+                1,
+                "Figuras",
+                null,
+                null,
+                List.of(new BodyBlockRequest(
+                        BodyBlockType.FIGURE,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        new BodyFigureRequest(
+                                "figura-teste",
+                                "grupo-figura-teste",
+                                "Figura teste",
+                                "Elaboração teste",
+                                new ImageSourceRequest(
+                                        ImageSourceType.DATA_URI,
+                                        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
+                                        "Imagem teste",
+                                        null
+                                )
+                        )
+                ))
+        );
+
+        BodySection section = request.toDomain();
+
+        BodyFigure figure = assertInstanceOf(BodyFigure.class, section.content().getFirst());
+
+        assertEquals("figura-teste", figure.id());
+        assertEquals("grupo-figura-teste", figure.continuationGroupId().orElseThrow());
+        assertEquals("Figura teste", figure.caption());
     }
 
     private static CitationAuthorRequest author(String surname) {

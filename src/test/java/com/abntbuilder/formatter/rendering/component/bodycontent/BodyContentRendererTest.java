@@ -4,12 +4,16 @@ import com.abntbuilder.formatter.document.component.bodycontent.BodyContentCompo
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCitation;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationMode;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationType;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyFigure;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyImageSource;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyParagraph;
 import com.abntbuilder.formatter.document.component.bodycontent.BodySection;
 import com.abntbuilder.formatter.document.component.bodycontent.CitationAuthor;
 import com.abntbuilder.formatter.document.component.bodycontent.CitationSource;
+import com.abntbuilder.formatter.document.component.bodycontent.ImageSourceType;
 import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
+import com.abntbuilder.formatter.output.docx.api.DocxImageBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxPageBreak;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
@@ -22,6 +26,10 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContent
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentNumberingRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentStyleMapping;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectContinuationLabels;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.FigureRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -31,6 +39,9 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BodyContentRendererTest {
+
+    private static final String ONE_PIXEL_PNG_DATA_URI =
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=";
 
     private final BodyContentRenderer renderer = new BodyContentRenderer();
 
@@ -186,11 +197,53 @@ class BodyContentRendererTest {
         );
     }
 
+    @Test
+    void shouldRenderFigureContinuationAsSingleNumberedDisplayObject() {
+        BodyContentComponent component = new BodyContentComponent(List.of(
+                new BodySection(
+                        "figuras",
+                        1,
+                        Optional.of("Figuras"),
+                        List.of(
+                                figure("figura-arquitetura-parte-1", "grupo-arquitetura", Optional.empty()),
+                                figure("figura-arquitetura-parte-2", "grupo-arquitetura", Optional.of("Elaboração teste"))
+                        )
+                )
+        ));
+
+        List<DocxBlock> blocks = renderer.render(component, profile());
+        List<DocxParagraph> paragraphs = blocks.stream()
+                .filter(DocxParagraph.class::isInstance)
+                .map(DocxParagraph.class::cast)
+                .toList();
+        List<DocxImageBlock> images = blocks.stream()
+                .filter(DocxImageBlock.class::isInstance)
+                .map(DocxImageBlock.class::cast)
+                .toList();
+
+        assertEquals("Figura 1 - Arquitetura de teste (continua)", paragraphs.get(1).text());
+        assertEquals("Figura 1 - Arquitetura de teste (conclusão)", paragraphs.get(2).text());
+        assertEquals("Fonte: Elaboração teste", paragraphs.get(3).text());
+        assertEquals(2, images.size());
+        assertEquals(true, paragraphs.get(1).keepWithNext());
+        assertEquals(true, images.getFirst().keepLines());
+    }
+
     private static CitationSource source(String author, String year, String page) {
         return new CitationSource(
                 List.of(CitationAuthor.person(toDisplayName(author))),
                 year,
                 page == null ? Optional.empty() : Optional.of(page)
+        );
+    }
+
+    private static BodyFigure figure(String id, String continuationGroupId, Optional<String> source) {
+        return new BodyFigure(
+                id,
+                Optional.of(continuationGroupId),
+                "Arquitetura de teste",
+                source,
+                new BodyImageSource(ImageSourceType.DATA_URI, ONE_PIXEL_PNG_DATA_URI, "Imagem teste")
         );
     }
 
@@ -215,7 +268,9 @@ class BodyContentRendererTest {
                         style("bodyContent.directShortQuote", false, false),
                         style("bodyContent.directLongQuote", false, false),
                         style("bodyContent.indirectCitation", false, false),
-                        style("bodyContent.citationOfCitation", false, false)
+                        style("bodyContent.citationOfCitation", false, false),
+                        style("bodyContent.figure.caption", false, false),
+                        style("bodyContent.figure.source", false, false)
                 ),
                 List.of(new BodyContentComponentRule(
                         "bodyContent",
@@ -228,7 +283,8 @@ class BodyContentRendererTest {
                                 "bodyContent.citationOfCitation"
                         ),
                         new BodyContentNumberingRule(true, ".", ""),
-                        new BodyContentLayoutRule(1, 1, false, "bodyContent.paragraph")
+                        new BodyContentLayoutRule(1, 1, false, "bodyContent.paragraph"),
+                        figureRule()
                 )),
                 List.of("bodyContent")
         );
@@ -247,7 +303,9 @@ class BodyContentRendererTest {
                         style("bodyContent.directShortQuote", false, false),
                         style("bodyContent.directLongQuote", false, false),
                         style("bodyContent.indirectCitation", false, false),
-                        style("bodyContent.citationOfCitation", false, false)
+                        style("bodyContent.citationOfCitation", false, false),
+                        style("bodyContent.figure.caption", false, false),
+                        style("bodyContent.figure.source", false, false)
                 ),
                 List.of(new BodyContentComponentRule(
                         "bodyContent",
@@ -260,7 +318,8 @@ class BodyContentRendererTest {
                                 "bodyContent.citationOfCitation"
                         ),
                         new BodyContentNumberingRule(true, ".", ""),
-                        new BodyContentLayoutRule(1, 1, true, "bodyContent.paragraph")
+                        new BodyContentLayoutRule(1, 1, true, "bodyContent.paragraph"),
+                        figureRule()
                 )),
                 List.of("bodyContent")
         );
@@ -298,6 +357,24 @@ class BodyContentRendererTest {
                 bold,
                 false,
                 uppercase
+        );
+    }
+
+    private static FigureRule figureRule() {
+        return new FigureRule(
+                "bodyContent.figure.caption",
+                "bodyContent.figure.source",
+                "Figura {number} - {caption}",
+                "Fonte: {source}",
+                new DisplayObjectContinuationLabels("continua", "continuação", "conclusão"),
+                DisplayObjectSourcePlacement.LAST_PART_ONLY,
+                TextAlignment.CENTER,
+                BigDecimal.valueOf(16),
+                BigDecimal.valueOf(18),
+                BigDecimal.valueOf(96),
+                2_000_000,
+                10,
+                ImageFitPolicy.SCALE_DOWN_PRESERVE_ASPECT_RATIO
         );
     }
 }

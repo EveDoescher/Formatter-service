@@ -731,6 +731,7 @@ DIRECT_SHORT_QUOTE
 DIRECT_LONG_QUOTE
 INDIRECT_CITATION
 CITATION_OF_CITATION
+FIGURE
 ```
 
 `content` e `paragraphs` continuam existindo apenas como caminho de
@@ -799,6 +800,51 @@ devem ser rejeitadas.
 
 O perfil decide quais estilos sao usados para citacao direta curta, direta
 longa, indireta e apud.
+
+Figuras entram como `FIGURE` dentro de `bodyContent.sections[].blocks[]`, mas
+devem ser pensadas como primeiro caso de uma base reutilizavel de display
+objects numerados. A mesma familia deve servir depois para:
+
+```text
+TABLE
+CODE_LISTING
+CHART
+```
+
+Regra para figuras:
+
+```text
+id e unico;
+continuationGroupId agrupa partes da mesma figura logica;
+caption, image e source formam um unico bloco semantico;
+caption e source usam estilos proprios do perfil;
+o usuario nao digita "Figura 1";
+o codigo calcula a numeracao;
+o perfil define templates, alinhamento, limites, DPI padrao e politica de ajuste;
+DATA_URI e URL sao fontes de imagem aceitas;
+URL deve aceitar apenas http/https, respeitar timeout e limite de bytes do perfil;
+imagem bitmap nao e quebrada automaticamente;
+se houver continuacao, as partes devem ser explicitas no request;
+source pode aparecer em todas as partes ou somente na conclusao, conforme perfil.
+se source for informado em mais de uma parte do mesmo continuationGroupId, os
+valores devem ser identicos.
+```
+
+Continuacao esperada:
+
+```text
+2 partes:
+Figura 1 - Caption (continua)
+Figura 1 - Caption (conclusao)
+
+3+ partes:
+Figura 1 - Caption (continua)
+Figura 1 - Caption (continuacao)
+Figura 1 - Caption (conclusao)
+```
+
+Para lista futura de figuras, o `continuationGroupId` gera uma unica entrada
+logica. As partes nao devem virar entradas separadas.
 
 ## Dados compartilhados do trabalho
 

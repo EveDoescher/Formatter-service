@@ -11,15 +11,17 @@ public record DocxParagraph(
         StyleRule styleRule,
         Optional<BigDecimal> spacingBeforeOverridePt,
         Optional<BigDecimal> exactLineHeightPt,
-        Optional<ParagraphLayoutOverride> layoutOverride
+        Optional<ParagraphLayoutOverride> layoutOverride,
+        boolean keepWithNext,
+        boolean keepLines
 ) implements DocxBlock {
 
     public DocxParagraph(String text, StyleRule styleRule) {
-        this(text, styleRule, Optional.empty(), Optional.empty(), Optional.empty());
+        this(text, styleRule, Optional.empty(), Optional.empty(), Optional.empty(), false, false);
     }
 
     public DocxParagraph(String text, StyleRule styleRule, Optional<BigDecimal> spacingBeforeOverridePt) {
-        this(text, styleRule, spacingBeforeOverridePt, Optional.empty(), Optional.empty());
+        this(text, styleRule, spacingBeforeOverridePt, Optional.empty(), Optional.empty(), false, false);
     }
 
     public DocxParagraph(
@@ -28,7 +30,17 @@ public record DocxParagraph(
             Optional<BigDecimal> spacingBeforeOverridePt,
             Optional<BigDecimal> exactLineHeightPt
     ) {
-        this(text, styleRule, spacingBeforeOverridePt, exactLineHeightPt, Optional.empty());
+        this(text, styleRule, spacingBeforeOverridePt, exactLineHeightPt, Optional.empty(), false, false);
+    }
+
+    public DocxParagraph(
+            String text,
+            StyleRule styleRule,
+            Optional<BigDecimal> spacingBeforeOverridePt,
+            Optional<BigDecimal> exactLineHeightPt,
+            Optional<ParagraphLayoutOverride> layoutOverride
+    ) {
+        this(text, styleRule, spacingBeforeOverridePt, exactLineHeightPt, layoutOverride, false, false);
     }
 
     public DocxParagraph {
