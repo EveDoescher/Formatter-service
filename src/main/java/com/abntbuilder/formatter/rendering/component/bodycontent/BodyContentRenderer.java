@@ -8,11 +8,13 @@ import com.abntbuilder.formatter.document.component.bodycontent.BodyImageSource;
 import com.abntbuilder.formatter.document.component.bodycontent.ImageSourceType;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyParagraph;
 import com.abntbuilder.formatter.document.component.bodycontent.BodySection;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyTable;
 import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxImageBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxPageBreak;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
+import com.abntbuilder.formatter.output.docx.api.DocxTableBlock;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
 import com.abntbuilder.formatter.profile.model.StyleRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentComponentRule;
@@ -20,6 +22,7 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContent
 import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FigureRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.TableRule;
 import com.abntbuilder.formatter.profile.resolution.ComponentRuleResolver;
 import com.abntbuilder.formatter.profile.resolution.StyleResolver;
 import com.abntbuilder.formatter.rendering.component.ComponentRenderer;
@@ -37,11 +40,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -70,7 +70,12 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
         SectionNumberingState numberingState = new SectionNumberingState(rule.numbering());
         StyleRule blankLineStyle = styleResolver.resolve(rule.layout().blankLineStyleId());
         boolean previousRenderedTextWasBodyParagraph = false;
-        FigureRenderingState figureRenderingState = new FigureRenderingState(component.sections());
+        DisplayObjectRenderingState<BodyFigure> figureRenderingState = new DisplayObjectRenderingState<>(
+                figuresFrom(component.sections())
+        );
+        DisplayObjectRenderingState<BodyTable> tableRenderingState = new DisplayObjectRenderingState<>(
+                tablesFrom(component.sections())
+        );
 
         for (BodySection section : component.sections()) {
             if (section.title().isPresent()) {
@@ -94,7 +99,13 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             }
 
             for (BodyBlock contentBlock : section.blocks()) {
-                blocks.addAll(renderContentBlock(contentBlock, rule, styleResolver, figureRenderingState));
+                blocks.addAll(renderContentBlock(
+                        contentBlock,
+                        rule,
+                        styleResolver,
+                        figureRenderingState,
+                        tableRenderingState
+                ));
                 previousRenderedTextWasBodyParagraph = true;
             }
         }
@@ -116,7 +127,8 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             BodyBlock contentBlock,
             BodyContentComponentRule rule,
             StyleResolver styleResolver,
-            FigureRenderingState figureRenderingState
+            DisplayObjectRenderingState<BodyFigure> figureRenderingState,
+            DisplayObjectRenderingState<BodyTable> tableRenderingState
     ) {
         return switch (contentBlock) {
             case BodyParagraph paragraph -> List.of(new DocxParagraph(
@@ -128,6 +140,7 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                     styleResolver.resolve(rule.styleMapping().styleIdForCitation(citation.type()))
             ));
             case BodyFigure figure -> renderFigure(figure, rule.figure(), styleResolver, figureRenderingState);
+            case BodyTable table -> renderTable(table, rule.table(), styleResolver, tableRenderingState);
         };
     }
 
@@ -135,9 +148,9 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             BodyFigure figure,
             FigureRule rule,
             StyleResolver styleResolver,
-            FigureRenderingState figureRenderingState
+            DisplayObjectRenderingState<BodyFigure> figureRenderingState
     ) {
-        FigurePart part = figureRenderingState.nextPart(figure, rule);
+        DisplayObjectContinuationPart part = figureRenderingState.nextPart(figure, rule.continuationLabels());
         ResolvedImage resolvedImage = resolveImage(figure.image(), rule);
         List<DocxBlock> blocks = new ArrayList<>();
 
@@ -177,10 +190,77 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
         return List.copyOf(blocks);
     }
 
-    private static String resolveCaptionText(BodyFigure figure, FigureRule rule, FigurePart part) {
-        String caption = rule.captionTemplate()
+    private static String resolveCaptionText(BodyFigure figure, FigureRule rule, DisplayObjectContinuationPart part) {
+        return resolveCaptionText(figure.caption(), rule.captionTemplate(), part);
+    }
+
+    private static boolean shouldRenderSource(
+            BodyFigure figure,
+            FigureRule rule,
+            DisplayObjectContinuationPart part,
+            DisplayObjectRenderingState<BodyFigure> figureRenderingState
+    ) {
+        if (figureRenderingState.sourceFor(figure).isEmpty()) {
+            return false;
+        }
+
+        return switch (rule.sourcePlacement()) {
+            case EVERY_PART -> true;
+            case LAST_PART_ONLY -> part.last();
+        };
+    }
+
+    private static List<DocxBlock> renderTable(
+            BodyTable table,
+            TableRule rule,
+            StyleResolver styleResolver,
+            DisplayObjectRenderingState<BodyTable> tableRenderingState
+    ) {
+        DisplayObjectContinuationPart part = tableRenderingState.nextPart(table, rule.continuationLabels());
+        boolean renderSource = shouldRenderSource(table, rule, part, tableRenderingState);
+        List<DocxBlock> blocks = new ArrayList<>();
+
+        blocks.add(new DocxParagraph(
+                resolveCaptionText(table.caption(), rule.captionTemplate(), part),
+                styleResolver.resolve(rule.captionStyleId()),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                true,
+                true
+        ));
+        blocks.add(new DocxTableBlock(
+                table.columns().stream().map(column -> column.header()).toList(),
+                table.rows().stream().map(row -> row.cells()).toList(),
+                styleResolver.resolve(rule.headerStyleId()),
+                styleResolver.resolve(rule.cellStyleId()),
+                rule.widthPercent(),
+                rule.tableAlignment(),
+                rule.repeatHeaderOnPageBreak(),
+                renderSource,
+                true
+        ));
+
+        if (renderSource) {
+            String source = tableRenderingState.sourceFor(table).orElseThrow();
+            blocks.add(new DocxParagraph(
+                    rule.sourceTemplate().replace("{source}", source),
+                    styleResolver.resolve(rule.sourceStyleId()),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    false,
+                    true
+            ));
+        }
+
+        return List.copyOf(blocks);
+    }
+
+    private static String resolveCaptionText(String captionText, String captionTemplate, DisplayObjectContinuationPart part) {
+        String caption = captionTemplate
                 .replace("{number}", String.valueOf(part.number()))
-                .replace("{caption}", figure.caption());
+                .replace("{caption}", captionText);
 
         return part.continuationLabel()
                 .map(label -> caption + " (" + label + ")")
@@ -188,12 +268,12 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
     }
 
     private static boolean shouldRenderSource(
-            BodyFigure figure,
-            FigureRule rule,
-            FigurePart part,
-            FigureRenderingState figureRenderingState
+            BodyTable table,
+            TableRule rule,
+            DisplayObjectContinuationPart part,
+            DisplayObjectRenderingState<BodyTable> tableRenderingState
     ) {
-        if (figureRenderingState.sourceFor(figure).isEmpty()) {
+        if (tableRenderingState.sourceFor(table).isEmpty()) {
             return false;
         }
 
@@ -342,78 +422,32 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
     private record ResolvedImage(byte[] bytes, String mimeType, BigDecimal widthCm, BigDecimal heightCm) {
     }
 
-    private record FigurePart(int number, int index, int count, Optional<String> continuationLabel) {
+    private static List<BodyFigure> figuresFrom(List<BodySection> sections) {
+        List<BodyFigure> figures = new ArrayList<>();
 
-        boolean last() {
-            return index == count;
-        }
-    }
-
-    private static final class FigureRenderingState {
-
-        private final Map<String, Integer> numbersByGroupKey = new LinkedHashMap<>();
-        private final Map<String, Integer> countsByGroupKey = new HashMap<>();
-        private final Map<String, Integer> currentIndexByGroupKey = new HashMap<>();
-        private final Map<String, String> sourceByGroupKey = new HashMap<>();
-
-        private FigureRenderingState(List<BodySection> sections) {
-            int nextNumber = 1;
-
-            for (BodySection section : sections) {
-                for (BodyBlock block : section.blocks()) {
-                    if (block instanceof BodyFigure figure) {
-                        String groupKey = figure.displayGroupKey();
-                        countsByGroupKey.merge(groupKey, 1, Integer::sum);
-
-                        if (!numbersByGroupKey.containsKey(groupKey)) {
-                            numbersByGroupKey.put(groupKey, nextNumber);
-                            nextNumber++;
-                        }
-
-                        figure.source().ifPresent(source -> registerSource(groupKey, source));
-                    }
+        for (BodySection section : sections) {
+            for (BodyBlock block : section.blocks()) {
+                if (block instanceof BodyFigure figure) {
+                    figures.add(figure);
                 }
             }
         }
 
-        private Optional<String> sourceFor(BodyFigure figure) {
-            return Optional.ofNullable(sourceByGroupKey.get(figure.displayGroupKey()));
-        }
+        return List.copyOf(figures);
+    }
 
-        private FigurePart nextPart(BodyFigure figure, FigureRule rule) {
-            String groupKey = figure.displayGroupKey();
-            int index = currentIndexByGroupKey.merge(groupKey, 1, Integer::sum);
-            int count = countsByGroupKey.get(groupKey);
-            int number = numbersByGroupKey.get(groupKey);
+    private static List<BodyTable> tablesFrom(List<BodySection> sections) {
+        List<BodyTable> tables = new ArrayList<>();
 
-            return new FigurePart(number, index, count, continuationLabel(index, count, rule));
-        }
-
-        private void registerSource(String groupKey, String source) {
-            String previousSource = sourceByGroupKey.putIfAbsent(groupKey, source);
-
-            if (previousSource != null && !previousSource.equals(source)) {
-                throw new IllegalArgumentException(
-                        "figure continuation group source must be consistent: " + groupKey
-                );
+        for (BodySection section : sections) {
+            for (BodyBlock block : section.blocks()) {
+                if (block instanceof BodyTable table) {
+                    tables.add(table);
+                }
             }
         }
 
-        private Optional<String> continuationLabel(int index, int count, FigureRule rule) {
-            if (count == 1) {
-                return Optional.empty();
-            }
-
-            if (index == 1) {
-                return Optional.of(rule.continuationLabels().first());
-            }
-
-            if (index == count) {
-                return Optional.of(rule.continuationLabels().last());
-            }
-
-            return Optional.of(rule.continuationLabels().middle());
-        }
+        return List.copyOf(tables);
     }
 
     private static final class SectionNumberingState {

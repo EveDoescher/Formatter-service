@@ -9,7 +9,8 @@ public record BodyContentComponentRule(
         BodyContentStyleMapping styleMapping,
         BodyContentNumberingRule numbering,
         BodyContentLayoutRule layout,
-        FigureRule figure
+        FigureRule figure,
+        TableRule table
 ) implements ComponentRule {
 
     public BodyContentComponentRule {
@@ -18,6 +19,7 @@ public record BodyContentComponentRule(
         Objects.requireNonNull(numbering, "numbering must not be null");
         Objects.requireNonNull(layout, "layout must not be null");
         Objects.requireNonNull(figure, "figure must not be null");
+        Objects.requireNonNull(table, "table must not be null");
     }
 
     private static void requireNonBlank(String value, String fieldName) {

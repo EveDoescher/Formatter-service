@@ -22,7 +22,11 @@ public record BodyContentComponentRuleRequest(
 
         @Valid
         @NotNull
-        FigureRuleRequest figure
+        FigureRuleRequest figure,
+
+        @Valid
+        @NotNull
+        TableRuleRequest table
 ) {
 
     public BodyContentComponentRule toDomain() {
@@ -31,7 +35,8 @@ public record BodyContentComponentRuleRequest(
                 styleMapping.toDomain(),
                 numbering.toDomain(),
                 layout.toDomain(),
-                figure.toDomain()
+                figure.toDomain(),
+                table.toDomain()
         );
     }
 }

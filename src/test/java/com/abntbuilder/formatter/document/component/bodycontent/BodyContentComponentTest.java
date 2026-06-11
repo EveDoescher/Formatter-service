@@ -72,6 +72,23 @@ class BodyContentComponentTest {
         assertEquals("bodyContent figure id must be unique: figura-teste", exception.getMessage());
     }
 
+    @Test
+    void shouldRejectDuplicatedTableId() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new BodyContentComponent(List.of(
+                        new BodySection(
+                                "tabelas",
+                                1,
+                                Optional.of("Tabelas"),
+                                List.of(table("tabela-teste"), table("tabela-teste"))
+                        )
+                ))
+        );
+
+        assertEquals("bodyContent table id must be unique: tabela-teste", exception.getMessage());
+    }
+
     private static BodyFigure figure(String id) {
         return new BodyFigure(
                 id,
@@ -83,6 +100,17 @@ class BodyContentComponentTest {
                         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
                         "Imagem teste"
                 )
+        );
+    }
+
+    private static BodyTable table(String id) {
+        return new BodyTable(
+                id,
+                Optional.of("grupo-tabela-teste"),
+                "Tabela teste",
+                Optional.empty(),
+                List.of(new BodyTableColumn("Cenario")),
+                List.of(new BodyTableRow(List.of("Teste A")))
         );
     }
 }

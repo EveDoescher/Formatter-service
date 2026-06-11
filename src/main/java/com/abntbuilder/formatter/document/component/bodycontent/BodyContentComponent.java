@@ -66,11 +66,15 @@ public record BodyContentComponent(
 
     private static void validateDisplayObjectIds(List<BodySection> sections) {
         Set<String> figureIds = new HashSet<>();
+        Set<String> tableIds = new HashSet<>();
 
         for (BodySection section : sections) {
             for (BodyBlock block : section.blocks()) {
                 if (block instanceof BodyFigure figure && !figureIds.add(figure.id())) {
                     throw new IllegalArgumentException("bodyContent figure id must be unique: " + figure.id());
+                }
+                if (block instanceof BodyTable table && !tableIds.add(table.id())) {
+                    throw new IllegalArgumentException("bodyContent table id must be unique: " + table.id());
                 }
             }
         }

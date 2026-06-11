@@ -1,4 +1,4 @@
 package com.abntbuilder.formatter.document.component.bodycontent;
 
-public sealed interface BodyBlock permits BodyParagraph, BodyCitation, BodyFigure {
+public sealed interface BodyBlock permits BodyParagraph, BodyCitation, NumberedDisplayObject {
 }

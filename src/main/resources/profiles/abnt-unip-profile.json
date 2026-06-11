@@ -506,6 +506,70 @@
       "bold": false,
       "italic": false,
       "uppercase": false
+    },
+    {
+      "id": "bodyContent.table.caption",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 10,
+      "alignment": "CENTER",
+      "lineSpacing": 1,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 6,
+      "spacingAfterPt": 3,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.table.source",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 10,
+      "alignment": "CENTER",
+      "lineSpacing": 1,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 3,
+      "spacingAfterPt": 6,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.table.header",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 10,
+      "alignment": "CENTER",
+      "lineSpacing": 1,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.table.cell",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 10,
+      "alignment": "CENTER",
+      "lineSpacing": 1,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
     }
   ],
   "componentRules": {
@@ -966,6 +1030,23 @@
         "maxImageBytes": 2000000,
         "urlFetchTimeoutSeconds": 10,
         "fitPolicy": "SCALE_DOWN_PRESERVE_ASPECT_RATIO"
+      },
+      "table": {
+        "captionStyleId": "bodyContent.table.caption",
+        "sourceStyleId": "bodyContent.table.source",
+        "headerStyleId": "bodyContent.table.header",
+        "cellStyleId": "bodyContent.table.cell",
+        "captionTemplate": "Tabela {number} - {caption}",
+        "sourceTemplate": "Fonte: {source}",
+        "continuationLabels": {
+          "first": "continua",
+          "middle": "continuação",
+          "last": "conclusão"
+        },
+        "sourcePlacement": "LAST_PART_ONLY",
+        "tableAlignment": "CENTER",
+        "widthPercent": 100,
+        "repeatHeaderOnPageBreak": true
       }
     }
   }

@@ -19,6 +19,7 @@ import org.docx4j.openpackaging.parts.WordprocessingML.StyleDefinitionsPart;
 import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.BooleanDefaultTrue;
 import org.docx4j.wml.CTPageNumber;
+import org.docx4j.wml.CTBorder;
 import org.docx4j.wml.FldChar;
 import org.docx4j.wml.FooterReference;
 import org.docx4j.wml.Ftr;
@@ -45,6 +46,15 @@ import org.docx4j.wml.Text;
 import org.docx4j.wml.Br;
 import org.docx4j.wml.Drawing;
 import org.docx4j.wml.STBrType;
+import org.docx4j.wml.STBorder;
+import org.docx4j.wml.Tbl;
+import org.docx4j.wml.TblBorders;
+import org.docx4j.wml.TblPr;
+import org.docx4j.wml.TblWidth;
+import org.docx4j.wml.Tc;
+import org.docx4j.wml.TcPr;
+import org.docx4j.wml.Tr;
+import org.docx4j.wml.TrPr;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
@@ -163,6 +173,7 @@ public class Docx4jWriter implements DocxWriter {
             case DocxPageBreak ignored -> writePageBreak(wordPackage);
             case DocxBlankLine blankLine -> writeBlankLine(wordPackage, blankLine);
             case DocxImageBlock imageBlock -> writeImage(wordPackage, imageBlock);
+            case DocxTableBlock tableBlock -> writeTable(wordPackage, tableBlock);
             case DocxSectionBreak ignored -> throw new IllegalArgumentException(
                     "Section breaks must be handled by the document section state."
             );
@@ -233,6 +244,123 @@ public class Docx4jWriter implements DocxWriter {
         } catch (Exception exception) {
             throw new DocxWriterException("Failed to write DOCX image.", exception);
         }
+    }
+
+    private void writeTable(WordprocessingMLPackage wordPackage, DocxTableBlock tableBlock) {
+        Tbl table = objectFactory.createTbl();
+        table.setTblPr(createTableProperties(tableBlock));
+
+        Tr headerRow = createTableRow(
+                tableBlock.headers(),
+                tableBlock.headerStyleRule(),
+                tableBlock.headers().size(),
+                tableBlock.repeatHeaderOnPageBreak()
+        );
+        table.getContent().add(headerRow);
+
+        for (List<String> row : tableBlock.rows()) {
+            table.getContent().add(createTableRow(
+                    row,
+                    tableBlock.cellStyleRule(),
+                    tableBlock.headers().size(),
+                    false
+            ));
+        }
+
+        wordPackage.getMainDocumentPart().addObject(table);
+    }
+
+    private TblPr createTableProperties(DocxTableBlock tableBlock) {
+        TblPr tableProperties = objectFactory.createTblPr();
+
+        TblWidth tableWidth = objectFactory.createTblWidth();
+        tableWidth.setType("pct");
+        tableWidth.setW(tableWidthPercentValue(tableBlock.widthPercent()));
+        tableProperties.setTblW(tableWidth);
+
+        Jc justification = objectFactory.createJc();
+        justification.setVal(mapTextAlignment(tableBlock.alignment()));
+        tableProperties.setJc(justification);
+
+        TblBorders borders = objectFactory.createTblBorders();
+        borders.setTop(createTableBorder());
+        borders.setLeft(createTableBorder());
+        borders.setBottom(createTableBorder());
+        borders.setRight(createTableBorder());
+        borders.setInsideH(createTableBorder());
+        borders.setInsideV(createTableBorder());
+        tableProperties.setTblBorders(borders);
+
+        return tableProperties;
+    }
+
+    private Tr createTableRow(
+            List<String> cells,
+            StyleRule styleRule,
+            int columnCount,
+            boolean repeatHeaderOnPageBreak
+    ) {
+        Tr row = objectFactory.createTr();
+
+        if (repeatHeaderOnPageBreak) {
+            TrPr rowProperties = objectFactory.createTrPr();
+            rowProperties.getCnfStyleOrDivIdOrGridBefore().add(
+                    objectFactory.createCTTrPrBaseTblHeader(objectFactory.createBooleanDefaultTrue())
+            );
+            row.setTrPr(rowProperties);
+        }
+
+        for (String cellText : cells) {
+            row.getContent().add(createTableCell(cellText, styleRule, columnCount));
+        }
+
+        return row;
+    }
+
+    private Tc createTableCell(String cellText, StyleRule styleRule, int columnCount) {
+        Tc cell = objectFactory.createTc();
+
+        TcPr cellProperties = objectFactory.createTcPr();
+        TblWidth cellWidth = objectFactory.createTblWidth();
+        cellWidth.setType("pct");
+        cellWidth.setW(BigInteger.valueOf(5000L / columnCount));
+        cellProperties.setTcW(cellWidth);
+        cell.setTcPr(cellProperties);
+
+        P paragraph = objectFactory.createP();
+        paragraph.setPPr(createParagraphProperties(
+                styleRule,
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty()
+        ));
+
+        R run = objectFactory.createR();
+        run.setRPr(createRunProperties(styleRule));
+
+        Text text = objectFactory.createText();
+        text.setValue(resolveText(cellText, styleRule));
+
+        run.getContent().add(text);
+        paragraph.getContent().add(run);
+        cell.getContent().add(paragraph);
+
+        return cell;
+    }
+
+    private CTBorder createTableBorder() {
+        CTBorder border = objectFactory.createCTBorder();
+        border.setVal(STBorder.SINGLE);
+        border.setSz(BigInteger.valueOf(4));
+        border.setColor("auto");
+        return border;
+    }
+
+    private BigInteger tableWidthPercentValue(BigDecimal widthPercent) {
+        return widthPercent
+                .multiply(BigDecimal.valueOf(50))
+                .setScale(0, java.math.RoundingMode.HALF_UP)
+                .toBigIntegerExact();
     }
 
     private void applyKeepOptions(PPr paragraphProperties, boolean keepWithNext, boolean keepLines) {

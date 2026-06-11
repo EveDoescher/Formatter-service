@@ -31,6 +31,7 @@ class BodyContentSampleValidationTest {
                 "body-content-short.json",
                 "body-content-citations.json",
                 "body-content-figures.json",
+                "body-content-tables.json",
                 "body-content-title-only-section.json"
         );
 
@@ -54,6 +55,7 @@ class BodyContentSampleValidationTest {
                 "body-content-section-hierarchy-invalid.json",
                 "body-content-citation-direct-missing-page-invalid.json",
                 "body-content-citation-manual-quotes-invalid.json",
+                "body-content-table-row-mismatch-invalid.json",
                 "body-content-selected-components-pagination-invalid.json"
         );
 

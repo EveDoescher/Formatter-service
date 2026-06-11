@@ -19,7 +19,8 @@ public record BodyBlockRequest(
         @Valid CitationSourceRequest source,
         @Valid CitationSourceRequest originalSource,
         @Valid CitationSourceRequest consultedSource,
-        @Valid BodyFigureRequest figure
+        @Valid BodyFigureRequest figure,
+        @Valid BodyTableRequest table
 ) {
 
     public BodyBlock toDomain() {
@@ -30,6 +31,7 @@ public record BodyBlockRequest(
             case INDIRECT_CITATION -> citation(BodyCitationType.INDIRECT);
             case CITATION_OF_CITATION -> citation(BodyCitationType.CITATION_OF_CITATION);
             case FIGURE -> figureBlock();
+            case TABLE -> tableBlock();
         };
     }
 
@@ -60,5 +62,13 @@ public record BodyBlockRequest(
         }
 
         return figure.toDomain();
+    }
+
+    private BodyBlock tableBlock() {
+        if (table == null) {
+            throw new IllegalArgumentException("table must be provided for TABLE block.");
+        }
+
+        return table.toDomain();
     }
 }

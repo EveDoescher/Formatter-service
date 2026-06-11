@@ -8,6 +8,9 @@ import com.abntbuilder.formatter.document.component.bodycontent.BodyFigure;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyImageSource;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyParagraph;
 import com.abntbuilder.formatter.document.component.bodycontent.BodySection;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyTable;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyTableColumn;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyTableRow;
 import com.abntbuilder.formatter.document.component.bodycontent.CitationAuthor;
 import com.abntbuilder.formatter.document.component.bodycontent.CitationSource;
 import com.abntbuilder.formatter.document.component.bodycontent.ImageSourceType;
@@ -16,6 +19,7 @@ import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxImageBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxPageBreak;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
+import com.abntbuilder.formatter.output.docx.api.DocxTableBlock;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
 import com.abntbuilder.formatter.profile.model.PageOrientation;
 import com.abntbuilder.formatter.profile.model.PageRule;
@@ -30,6 +34,7 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObje
 import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FigureRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.TableRule;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -229,6 +234,39 @@ class BodyContentRendererTest {
         assertEquals(true, images.getFirst().keepLines());
     }
 
+    @Test
+    void shouldRenderTableContinuationAsSingleNumberedDisplayObject() {
+        BodyContentComponent component = new BodyContentComponent(List.of(
+                new BodySection(
+                        "tabelas",
+                        1,
+                        Optional.of("Tabelas"),
+                        List.of(
+                                table("tabela-resultados-parte-1", "grupo-resultados", Optional.empty()),
+                                table("tabela-resultados-parte-2", "grupo-resultados", Optional.of("Elaboração teste"))
+                        )
+                )
+        ));
+
+        List<DocxBlock> blocks = renderer.render(component, profile());
+        List<DocxParagraph> paragraphs = blocks.stream()
+                .filter(DocxParagraph.class::isInstance)
+                .map(DocxParagraph.class::cast)
+                .toList();
+        List<DocxTableBlock> tables = blocks.stream()
+                .filter(DocxTableBlock.class::isInstance)
+                .map(DocxTableBlock.class::cast)
+                .toList();
+
+        assertEquals("Tabela 1 - Resultados de teste (continua)", paragraphs.get(1).text());
+        assertEquals("Tabela 1 - Resultados de teste (conclusão)", paragraphs.get(2).text());
+        assertEquals("Fonte: Elaboração teste", paragraphs.get(3).text());
+        assertEquals(2, tables.size());
+        assertEquals(List.of("Cenário", "Resultado"), tables.getFirst().headers());
+        assertEquals(true, tables.getFirst().repeatHeaderOnPageBreak());
+        assertEquals(true, paragraphs.get(1).keepWithNext());
+    }
+
     private static CitationSource source(String author, String year, String page) {
         return new CitationSource(
                 List.of(CitationAuthor.person(toDisplayName(author))),
@@ -244,6 +282,23 @@ class BodyContentRendererTest {
                 "Arquitetura de teste",
                 source,
                 new BodyImageSource(ImageSourceType.DATA_URI, ONE_PIXEL_PNG_DATA_URI, "Imagem teste")
+        );
+    }
+
+    private static BodyTable table(String id, String continuationGroupId, Optional<String> source) {
+        return new BodyTable(
+                id,
+                Optional.of(continuationGroupId),
+                "Resultados de teste",
+                source,
+                List.of(
+                        new BodyTableColumn("Cenário"),
+                        new BodyTableColumn("Resultado")
+                ),
+                List.of(
+                        new BodyTableRow(List.of("Teste A", "Aprovado")),
+                        new BodyTableRow(List.of("Teste B", "Aprovado"))
+                )
         );
     }
 
@@ -270,7 +325,11 @@ class BodyContentRendererTest {
                         style("bodyContent.indirectCitation", false, false),
                         style("bodyContent.citationOfCitation", false, false),
                         style("bodyContent.figure.caption", false, false),
-                        style("bodyContent.figure.source", false, false)
+                        style("bodyContent.figure.source", false, false),
+                        style("bodyContent.table.caption", false, false),
+                        style("bodyContent.table.source", false, false),
+                        style("bodyContent.table.header", true, false),
+                        style("bodyContent.table.cell", false, false)
                 ),
                 List.of(new BodyContentComponentRule(
                         "bodyContent",
@@ -284,7 +343,8 @@ class BodyContentRendererTest {
                         ),
                         new BodyContentNumberingRule(true, ".", ""),
                         new BodyContentLayoutRule(1, 1, false, "bodyContent.paragraph"),
-                        figureRule()
+                        figureRule(),
+                        tableRule()
                 )),
                 List.of("bodyContent")
         );
@@ -305,7 +365,11 @@ class BodyContentRendererTest {
                         style("bodyContent.indirectCitation", false, false),
                         style("bodyContent.citationOfCitation", false, false),
                         style("bodyContent.figure.caption", false, false),
-                        style("bodyContent.figure.source", false, false)
+                        style("bodyContent.figure.source", false, false),
+                        style("bodyContent.table.caption", false, false),
+                        style("bodyContent.table.source", false, false),
+                        style("bodyContent.table.header", true, false),
+                        style("bodyContent.table.cell", false, false)
                 ),
                 List.of(new BodyContentComponentRule(
                         "bodyContent",
@@ -319,7 +383,8 @@ class BodyContentRendererTest {
                         ),
                         new BodyContentNumberingRule(true, ".", ""),
                         new BodyContentLayoutRule(1, 1, true, "bodyContent.paragraph"),
-                        figureRule()
+                        figureRule(),
+                        tableRule()
                 )),
                 List.of("bodyContent")
         );
@@ -375,6 +440,22 @@ class BodyContentRendererTest {
                 2_000_000,
                 10,
                 ImageFitPolicy.SCALE_DOWN_PRESERVE_ASPECT_RATIO
+        );
+    }
+
+    private static TableRule tableRule() {
+        return new TableRule(
+                "bodyContent.table.caption",
+                "bodyContent.table.source",
+                "bodyContent.table.header",
+                "bodyContent.table.cell",
+                "Tabela {number} - {caption}",
+                "Fonte: {source}",
+                new DisplayObjectContinuationLabels("continua", "continuação", "conclusão"),
+                DisplayObjectSourcePlacement.LAST_PART_ONLY,
+                TextAlignment.CENTER,
+                BigDecimal.valueOf(100),
+                true
         );
     }
 }

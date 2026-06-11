@@ -1,0 +1,48 @@
+{
+  "fileName": "body-content-table-row-mismatch-invalid.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "bodyContent"
+    ]
+  },
+  "document": {
+    "bodyContent": {
+      "sections": [
+        {
+          "id": "tabela-invalida",
+          "level": 1,
+          "title": "Tabela inválida",
+          "blocks": [
+            {
+              "type": "TABLE",
+              "table": {
+                "id": "tabela-celulas-inconsistentes",
+                "caption": "Tabela com quantidade incorreta de células",
+                "source": "Elaboração teste",
+                "columns": [
+                  {
+                    "header": "Coluna A"
+                  },
+                  {
+                    "header": "Coluna B"
+                  }
+                ],
+                "rows": [
+                  {
+                    "cells": [
+                      "Valor A",
+                      "Valor B",
+                      "Valor excedente"
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "paragraphs": []
+}

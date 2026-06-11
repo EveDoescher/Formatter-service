@@ -53,6 +53,7 @@ class ComponentRulesRequestTest {
         assertEquals("bodyContent.heading1", rule.styleMapping().sectionTitleStyleIdForLevel(1));
         assertEquals("bodyContent.paragraph", rule.styleMapping().paragraphStyleId());
         assertEquals("", rule.numbering().primarySuffix());
+        assertEquals("bodyContent.table.caption", rule.table().captionStyleId());
     }
 
     private static TitlePageComponentRuleRequest titlePageRuleRequest() {
@@ -105,7 +106,8 @@ class ComponentRulesRequestTest {
                 ),
                 new BodyContentNumberingRuleRequest(true, ".", ""),
                 new BodyContentLayoutRuleRequest(1, 1, false, "bodyContent.paragraph"),
-                figureRuleRequest()
+                figureRuleRequest(),
+                tableRuleRequest()
         );
     }
 
@@ -124,6 +126,22 @@ class ComponentRulesRequestTest {
                 2_000_000,
                 10,
                 ImageFitPolicy.SCALE_DOWN_PRESERVE_ASPECT_RATIO
+        );
+    }
+
+    private static TableRuleRequest tableRuleRequest() {
+        return new TableRuleRequest(
+                "bodyContent.table.caption",
+                "bodyContent.table.source",
+                "bodyContent.table.header",
+                "bodyContent.table.cell",
+                "Tabela {number} - {caption}",
+                "Fonte: {source}",
+                new DisplayObjectContinuationLabelsRequest("continua", "continuação", "conclusão"),
+                DisplayObjectSourcePlacement.LAST_PART_ONLY,
+                TextAlignment.CENTER,
+                BigDecimal.valueOf(100),
+                true
         );
     }
 

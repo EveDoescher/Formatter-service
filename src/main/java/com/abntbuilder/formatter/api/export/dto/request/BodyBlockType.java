@@ -6,5 +6,6 @@ public enum BodyBlockType {
     DIRECT_LONG_QUOTE,
     INDIRECT_CITATION,
     CITATION_OF_CITATION,
-    FIGURE
+    FIGURE,
+    TABLE
 }

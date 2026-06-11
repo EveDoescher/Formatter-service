@@ -145,6 +145,38 @@ development and future storage integrations, such as Supabase public object
 URLs. URL fetching only accepts `http` and `https`, respects the profile timeout
 and rejects images larger than `maxImageBytes`.
 
+`TABLE` is also a numbered display object. It is rendered as one semantic block:
+
+```text
+caption
+table grid
+source
+```
+
+The table `id` must be unique. Do not repeat `id` to indicate continuation.
+Use `continuationGroupId` when one logical table is split into explicit parts.
+The renderer assigns one number to the continuation group and applies the
+continuation labels declared by the profile:
+
+```text
+Tabela 1 - Caption (continua)
+Tabela 1 - Caption (continuação)
+Tabela 1 - Caption (conclusão)
+```
+
+For two parts, the first receives `continua` and the second receives
+`conclusão`. For three or more parts, intermediate parts receive `continuação`.
+
+Tables are not split semantically by the formatter. If a table needs to continue
+on another page, the request must provide explicit table parts with the same
+`continuationGroupId`. Each part must provide its own columns and rows. The row
+cell count must match the column count.
+
+For continued tables, `source` belongs to the logical group. It may be provided
+in any part, but repeated values for the same `continuationGroupId` must be
+identical. The profile decides whether the source is rendered in every part or
+only in the last part.
+
 ## Profile Ownership
 
 The profile owns:
@@ -169,6 +201,17 @@ bodyContent.figure.defaultDpi
 bodyContent.figure.maxImageBytes
 bodyContent.figure.urlFetchTimeoutSeconds
 bodyContent.figure.fitPolicy
+bodyContent.table.captionStyleId
+bodyContent.table.sourceStyleId
+bodyContent.table.headerStyleId
+bodyContent.table.cellStyleId
+bodyContent.table.captionTemplate
+bodyContent.table.sourceTemplate
+bodyContent.table.continuationLabels
+bodyContent.table.sourcePlacement
+bodyContent.table.tableAlignment
+bodyContent.table.widthPercent
+bodyContent.table.repeatHeaderOnPageBreak
 bodyContent.numbering.enabled
 bodyContent.numbering.separator
 bodyContent.numbering.primarySuffix

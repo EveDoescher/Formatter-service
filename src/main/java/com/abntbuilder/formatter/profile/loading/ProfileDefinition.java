@@ -23,6 +23,7 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObje
 import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FigureRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.TableRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverStyleMapping;
@@ -405,20 +406,23 @@ public record ProfileDefinition(
             BodyContentStyleMappingDefinition styleMapping,
             BodyContentNumberingRuleDefinition numbering,
             BodyContentLayoutRuleDefinition layout,
-            FigureRuleDefinition figure
+            FigureRuleDefinition figure,
+            TableRuleDefinition table
     ) {
         BodyContentComponentRule toDomain() {
             requireNonNull(styleMapping, "bodyContent.styleMapping");
             requireNonNull(numbering, "bodyContent.numbering");
             requireNonNull(layout, "bodyContent.layout");
             requireNonNull(figure, "bodyContent.figure");
+            requireNonNull(table, "bodyContent.table");
 
             return new BodyContentComponentRule(
                     componentId,
                     styleMapping.toDomain(),
                     numbering.toDomain(),
                     layout.toDomain(),
-                    figure.toDomain()
+                    figure.toDomain(),
+                    table.toDomain()
             );
         }
     }
@@ -477,6 +481,38 @@ public record ProfileDefinition(
                     maxImageBytes,
                     urlFetchTimeoutSeconds,
                     fitPolicy
+            );
+        }
+    }
+
+    public record TableRuleDefinition(
+            String captionStyleId,
+            String sourceStyleId,
+            String headerStyleId,
+            String cellStyleId,
+            String captionTemplate,
+            String sourceTemplate,
+            DisplayObjectContinuationLabelsDefinition continuationLabels,
+            DisplayObjectSourcePlacement sourcePlacement,
+            TextAlignment tableAlignment,
+            BigDecimal widthPercent,
+            Boolean repeatHeaderOnPageBreak
+    ) {
+        TableRule toDomain() {
+            requireNonNull(continuationLabels, "bodyContent.table.continuationLabels");
+
+            return new TableRule(
+                    captionStyleId,
+                    sourceStyleId,
+                    headerStyleId,
+                    cellStyleId,
+                    captionTemplate,
+                    sourceTemplate,
+                    continuationLabels.toDomain(),
+                    sourcePlacement,
+                    tableAlignment,
+                    widthPercent,
+                    repeatHeaderOnPageBreak
             );
         }
     }
