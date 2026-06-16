@@ -7,6 +7,7 @@ import com.abntbuilder.formatter.document.component.bodycontent.BodyInline;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyQuoteText;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyQuoteType;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyText;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
@@ -33,6 +34,7 @@ public record BodyInlineRequest(
             case CITATION -> new BodyCitationCall(
                     requireCitationType(),
                     mode == null ? BodyCitationMode.PARENTHETICAL : mode,
+                    new CitationFormattingRule("p. ", "; ", "et al.", " apud "),
                     source == null ? Optional.empty() : Optional.of(source.toDomain()),
                     originalSource == null ? Optional.empty() : Optional.of(originalSource.toDomain()),
                     consultedSource == null ? Optional.empty() : Optional.of(consultedSource.toDomain())

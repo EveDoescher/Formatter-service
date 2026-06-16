@@ -73,7 +73,11 @@ public record BodyCitation(
     }
 
     private BodyCitationCall citationCall() {
-        return new BodyCitationCall(type, mode, source, originalSource, consultedSource);
+        com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule fmt =
+                new com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule(
+                        "p. ", "; ", "et al.", " apud "
+                );
+        return new BodyCitationCall(type, mode, fmt, source, originalSource, consultedSource);
     }
 
     private static void validateSources(

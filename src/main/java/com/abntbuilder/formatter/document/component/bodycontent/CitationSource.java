@@ -1,5 +1,7 @@
 package com.abntbuilder.formatter.document.component.bodycontent;
 
+import com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,30 +34,29 @@ public record CitationSource(
         }
     }
 
-    public String authorText() {
+    public String authorText(CitationFormattingRule formatting) {
         if (!authors.isEmpty()) {
             return switch (authors.size()) {
                 case 1 -> authors.getFirst().renderedName();
-                case 2 -> authors.get(0).renderedName() + "; " + authors.get(1).renderedName();
-                default -> authors.getFirst().renderedName() + " et al.";
+                case 2 -> authors.get(0).renderedName() + formatting.multiAuthorJoiner() + authors.get(1).renderedName();
+                default -> authors.getFirst().renderedName() + " " + formatting.etAl();
             };
         }
-
         throw new IllegalStateException("authors must not be empty.");
     }
 
-    public String yearAndPageText() {
+    public String yearAndPageText(CitationFormattingRule formatting) {
         return page
-                .map(value -> year + ", p. " + value)
+                .map(value -> year + ", " + formatting.pagePrefix() + value)
                 .orElse(year);
     }
 
-    public String parentheticalText() {
-        return authorText() + ", " + yearAndPageText();
+    public String parentheticalText(CitationFormattingRule formatting) {
+        return authorText(formatting) + ", " + yearAndPageText(formatting);
     }
 
-    public String narrativeReferenceText() {
-        return authorText() + " (" + yearAndPageText() + ")";
+    public String narrativeReferenceText(CitationFormattingRule formatting) {
+        return authorText(formatting) + " (" + yearAndPageText(formatting) + ")";
     }
 
     private static void requireNonBlank(String value, String fieldName) {

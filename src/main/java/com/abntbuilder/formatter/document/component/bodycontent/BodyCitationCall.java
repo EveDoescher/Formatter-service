@@ -1,11 +1,14 @@
 package com.abntbuilder.formatter.document.component.bodycontent;
 
+import com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule;
+
 import java.util.Objects;
 import java.util.Optional;
 
 public record BodyCitationCall(
         BodyCitationType citationType,
         BodyCitationMode mode,
+        CitationFormattingRule formatting,
         Optional<CitationSource> source,
         Optional<CitationSource> originalSource,
         Optional<CitationSource> consultedSource
@@ -14,6 +17,7 @@ public record BodyCitationCall(
     public BodyCitationCall {
         Objects.requireNonNull(citationType, "citationType must not be null");
         Objects.requireNonNull(mode, "mode must not be null");
+        Objects.requireNonNull(formatting, "formatting must not be null");
         Objects.requireNonNull(source, "source must not be null");
         Objects.requireNonNull(originalSource, "originalSource must not be null");
         Objects.requireNonNull(consultedSource, "consultedSource must not be null");
@@ -31,29 +35,28 @@ public record BodyCitationCall(
 
     private String renderRegularCitation() {
         CitationSource citationSource = source.orElseThrow();
-
         return switch (mode) {
-            case PARENTHETICAL -> "(" + citationSource.parentheticalText() + ")";
-            case NARRATIVE -> citationSource.narrativeReferenceText();
+            case PARENTHETICAL -> "(" + citationSource.parentheticalText(formatting) + ")";
+            case NARRATIVE -> citationSource.narrativeReferenceText(formatting);
         };
     }
 
     private String renderCitationOfCitation() {
         CitationSource original = originalSource.orElseThrow();
         CitationSource consulted = consultedSource.orElseThrow();
-        String apudReference = original.authorText()
+        String apudReference = original.authorText(formatting)
                 + ", "
                 + original.year()
-                + " apud "
-                + consulted.parentheticalText();
+                + formatting.apudConnector()
+                + consulted.parentheticalText(formatting);
 
         return switch (mode) {
             case PARENTHETICAL -> "(" + apudReference + ")";
-            case NARRATIVE -> original.authorText()
+            case NARRATIVE -> original.authorText(formatting)
                     + " ("
                     + original.year()
-                    + " apud "
-                    + consulted.parentheticalText()
+                    + formatting.apudConnector()
+                    + consulted.parentheticalText(formatting)
                     + ")";
         };
     }
