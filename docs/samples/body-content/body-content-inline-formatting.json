@@ -1,40 +1,63 @@
 {
+  "fileName": "body-content-inline-formatting.docx",
   "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "titlePage",
+      "bodyContent"
+    ]
+  },
+  "work": {
+    "authors": ["PESSOA AUTORA TESTE"],
+    "title": "TESTE DE FORMATAÇÃO INLINE",
+    "subtitle": null,
+    "nature": {
+      "workType": "Trabalho de conclusão de curso",
+      "degreeObjective": "obtenção do título de tecnólogo",
+      "courseName": "Análise e Desenvolvimento de Sistemas",
+      "institutionName": "Universidade Paulista - UNIP"
+    },
+    "advisor": {
+      "academicTitle": "Prof.",
+      "name": "Orientador Teste"
+    },
+    "city": "Limeira",
+    "year": "2026"
+  },
   "document": {
-    "components": {
-      "bodyContent": {
-        "sections": [
-          {
-            "id": "s1",
-            "level": 1,
-            "title": "Formatação Inline",
-            "blocks": [
-              {
-                "type": "PARAGRAPH",
-                "content": [
-                  { "type": "TEXT", "text": "Texto normal seguido de " },
-                  { "type": "TEXT", "text": "negrito", "formatting": { "bold": true } },
-                  { "type": "TEXT", "text": ", depois " },
-                  { "type": "TEXT", "text": "itálico", "formatting": { "italic": true } },
-                  { "type": "TEXT", "text": " e " },
-                  { "type": "TEXT", "text": "sublinhado", "formatting": { "underline": true } },
-                  { "type": "TEXT", "text": ". Em seguida uma citação inline: " },
-                  {
-                    "type": "CITATION",
-                    "citationType": "INDIRECT",
-                    "mode": "PARENTHETICAL",
-                    "source": {
-                      "authors": [{ "type": "PERSON", "surname": "Sobrenome Teste" }],
-                      "year": "2024"
-                    }
-                  },
-                  { "type": "TEXT", "text": "." }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+    "titlePage": {},
+    "bodyContent": {
+      "sections": [
+        {
+          "id": "s1",
+          "level": 1,
+          "title": "Formatação Inline",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                { "type": "TEXT", "text": "Texto normal seguido de " },
+                { "type": "TEXT", "text": "negrito", "formatting": { "bold": true } },
+                { "type": "TEXT", "text": ", depois " },
+                { "type": "TEXT", "text": "itálico", "formatting": { "italic": true } },
+                { "type": "TEXT", "text": " e " },
+                { "type": "TEXT", "text": "sublinhado", "formatting": { "underline": true } },
+                { "type": "TEXT", "text": ". Em seguida uma citação inline: " },
+                {
+                  "type": "CITATION",
+                  "citationType": "INDIRECT",
+                  "mode": "PARENTHETICAL",
+                  "source": {
+                    "authors": [{ "type": "PERSON", "surname": "Sobrenome Teste" }],
+                    "year": "2024"
+                  }
+                },
+                { "type": "TEXT", "text": "." }
+              ]
+            }
+          ]
+        }
+      ]
     }
   }
 }

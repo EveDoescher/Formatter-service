@@ -74,9 +74,9 @@ class BodyContentRendererDocxSanityTest {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
                 if (entryName.equals(entry.getName())) {
-                    return DocumentBuilderFactory.newInstance()
-                            .newDocumentBuilder()
-                            .parse(zip);
+                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                    dbf.setNamespaceAware(true);
+                    return dbf.newDocumentBuilder().parse(zip);
                 }
             }
         }
