@@ -1,0 +1,23 @@
+{
+  "fileName": "cover-no-subtitle.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "cover"
+    ]
+  },
+  "document": {
+    "cover": {
+      "institutionalLines": [
+        "Universidade Paulista"
+      ],
+      "authors": [
+        "Pessoa Autora Teste 01"
+      ],
+      "title": "Título do Trabalho sem Subtítulo",
+      "city": "Limeira",
+      "year": "2026"
+    }
+  },
+  "paragraphs": []
+}

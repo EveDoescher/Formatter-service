@@ -846,45 +846,6 @@ Figura 1 - Caption (conclusao)
 Para lista futura de figuras, o `continuationGroupId` gera uma unica entrada
 logica. As partes nao devem virar entradas separadas.
 
-Tabelas entram como `TABLE` dentro de `bodyContent.sections[].blocks[]` e usam
-a mesma base de display objects numerados das figuras.
-
-Regra para tabelas:
-
-```text
-id e unico;
-continuationGroupId agrupa partes da mesma tabela logica;
-caption, table grid e source formam um unico bloco semantico;
-caption, source, header e cell usam estilos proprios do perfil;
-o usuario nao digita "Tabela 1";
-o codigo calcula a numeracao;
-o perfil define templates, labels de continuacao, alinhamento, largura percentual
-e repeticao de cabecalho;
-tabela nao deve ser renderizada como texto com tabs;
-tabela deve virar tabela DOCX real;
-se houver continuacao, as partes devem ser explicitas no request;
-source pode aparecer em todas as partes ou somente na conclusao, conforme perfil.
-se source for informado em mais de uma parte do mesmo continuationGroupId, os
-valores devem ser identicos;
-cada linha deve ter a mesma quantidade de celulas que a quantidade de colunas.
-```
-
-Continuacao esperada:
-
-```text
-2 partes:
-Tabela 1 - Caption (continua)
-Tabela 1 - Caption (conclusao)
-
-3+ partes:
-Tabela 1 - Caption (continua)
-Tabela 1 - Caption (continuacao)
-Tabela 1 - Caption (conclusao)
-```
-
-Para lista futura de tabelas, o `continuationGroupId` gera uma unica entrada
-logica. As partes nao devem virar entradas separadas.
-
 ## Dados compartilhados do trabalho
 
 Dados repetidos entre componentes devem viver em `work`, nao duplicados em

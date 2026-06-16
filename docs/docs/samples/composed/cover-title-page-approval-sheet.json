@@ -1,0 +1,74 @@
+{
+  "fileName": "cover-title-page-approval-sheet.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "cover",
+      "titlePage",
+      "approvalSheet"
+    ]
+  },
+  "document": {
+    "cover": {
+      "institutionalLines": [
+        "UNIVERSIDADE PAULISTA",
+        "INSTITUTO DE CIÊNCIAS EXATAS E TECNOLOGIA",
+        "CURSO DE ANÁLISE E DESENVOLVIMENTO DE SISTEMAS"
+      ],
+      "authors": [
+        "PESSOA AUTORA TESTE 01"
+      ],
+      "title": "TÍTULO DO TRABALHO",
+      "subtitle": "Subtítulo do trabalho",
+      "city": "Limeira",
+      "year": "2026"
+    },
+    "titlePage": {
+      "authors": [
+        "Pessoa Autora Teste 01"
+      ],
+      "title": "Título do Trabalho",
+      "subtitle": "Subtítulo do trabalho",
+      "nature": {
+        "workType": "Trabalho de conclusão de curso",
+        "degreeObjective": "obtenção do título de tecnólogo",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Paulista - UNIP"
+      },
+      "advisor": {
+        "academicTitle": "Prof. Dr.",
+        "name": "Pessoa Orientadora Teste"
+      },
+      "city": "Limeira",
+      "year": "2026"
+    },
+    "approvalSheet": {
+      "authors": [
+        "Pessoa Autora Teste 01"
+      ],
+      "title": "Título do Trabalho",
+      "subtitle": "Subtítulo do trabalho",
+      "nature": {
+        "workType": "Trabalho de conclusão de curso",
+        "degreeObjective": "obtenção do título de tecnólogo",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Paulista - UNIP"
+      },
+      "committeeMembers": [
+        {
+          "name": "Pessoa Orientadora Teste",
+          "title": "Prof. Dr.",
+          "institutionName": "Universidade Paulista - UNIP",
+          "role": "Orientador"
+        },
+        {
+          "name": "Pessoa Examinadora Teste",
+          "title": "Profa. Dra.",
+          "institutionName": "Universidade Paulista - UNIP",
+          "role": "Examinadora"
+        }
+      ]
+    }
+  },
+  "paragraphs": []
+}

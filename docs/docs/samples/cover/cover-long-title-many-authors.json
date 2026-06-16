@@ -1,0 +1,30 @@
+{
+  "fileName": "cover-long-title-many-authors.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "cover"
+    ]
+  },
+  "document": {
+    "cover": {
+      "institutionalLines": [
+        "Universidade da Integracao Internacional da Lusofonia Afro-Brasileira",
+        "Centro de Ciencias Exatas Ambientais Biologicas e Tecnologicas",
+        "Curso de Engenharia Ambiental Sanitaria Ocupacional e Previdenciaria"
+      ],
+      "authors": [
+        "Pessoa Autora Teste Nome Longo",
+        "Pessoa Autora Teste 02",
+        "Pessoa Autora Teste 03",
+        "Fernando Augusto Pereira",
+        "Pessoa Autora Teste 04"
+      ],
+      "title": "Pneumoultramicroscopicossilicovulcanoconiotico: uma análise epidemiologica ocupacional e socioambiental",
+      "subtitle": "Estudo sobre exposicao prolongada a particulas silicovulcanicas e impactos em politicas de prevencao industrial",
+      "city": "Cidade Teste de Nome Extenso",
+      "year": "2026"
+    }
+  },
+  "paragraphs": []
+}

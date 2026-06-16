@@ -1,0 +1,111 @@
+{
+  "fileName": "full-document-with-work-bindings.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "cover",
+      "titlePage",
+      "approvalSheet",
+      "bodyContent"
+    ]
+  },
+  "work": {
+    "institutionalLines": [
+      "UNIVERSIDADE PAULISTA",
+      "INSTITUTO DE CIÊNCIAS EXATAS E TECNOLOGIA",
+      "CURSO SUPERIOR DE TECNOLOGIA EM ANÁLISE E DESENVOLVIMENTO DE SISTEMAS"
+    ],
+    "authors": [
+      "PESSOA AUTORA TESTE 01",
+      "PESSOA AUTORA TESTE 02"
+    ],
+    "title": "FORMATAÇÃO AUTOMÁTICA DE DOCUMENTOS ACADÊMICOS",
+    "subtitle": "Uma análise sobre dados compartilhados e componentes semânticos",
+    "nature": {
+      "workType": "Projeto integrado multidisciplinar",
+      "degreeObjective": "obtenção do título de tecnólogo",
+      "courseName": "Análise e Desenvolvimento de Sistemas",
+      "institutionName": "Universidade Paulista - UNIP"
+    },
+    "advisor": {
+      "academicTitle": "Prof. Dr.",
+      "name": "Pessoa Orientadora Teste"
+    },
+    "coadvisor": {
+      "academicTitle": "Profa. Ma.",
+      "name": "Pessoa Coorientadora Teste"
+    },
+    "city": "Limeira",
+    "year": "2026"
+  },
+  "document": {
+    "cover": {},
+    "titlePage": {},
+    "approvalSheet": {
+      "approvalEvent": {
+        "location": "Limeira",
+        "date": "10 de junho de 2026"
+      },
+      "committeeMembers": [
+        {
+          "title": "Prof. Dr.",
+          "name": "Pessoa Orientadora Teste",
+          "institutionName": "Universidade Paulista - UNIP",
+          "role": "Orientador"
+        },
+        {
+          "title": "Profa. Ma.",
+          "name": "Pessoa Coorientadora Teste",
+          "institutionName": "Universidade Paulista - UNIP",
+          "role": "Coorientadora"
+        },
+        {
+          "title": "Prof. Me.",
+          "name": "Pessoa Examinadora Teste",
+          "institutionName": "Universidade Paulista - UNIP",
+          "role": "Examinador"
+        }
+      ]
+    },
+    "bodyContent": {
+      "sections": [
+        {
+          "id": "introducao",
+          "level": 1,
+          "title": "Introdução",
+          "paragraphs": [
+            "A utilização de dados compartilhados reduz a repetição de informações comuns entre capa, folha de rosto e folha de aprovação. Com isso, autores, título, subtítulo e natureza do trabalho passam a ser informados uma única vez no bloco semântico do trabalho.",
+            "O perfil define quais campos de cada componente consomem esses dados. Dessa forma, a regra de reutilização não fica escondida no código nem depende de cópia automática entre componentes."
+          ]
+        },
+        {
+          "id": "perfil-e-bindings",
+          "level": 2,
+          "title": "Perfil e vínculos de conteúdo",
+          "paragraphs": [
+            "Os vínculos de conteúdo pertencem ao perfil porque representam decisões de montagem do documento. Um perfil pode decidir que a folha de rosto usa os mesmos autores da capa, enquanto outro perfil poderia exigir um campo específico ou permitir sobrescrita local.",
+            "Quando um componente declara um valor explicitamente, esse valor tem prioridade sobre o dado compartilhado. Essa regra permite exceções controladas sem comprometer o modelo principal."
+          ]
+        },
+        {
+          "id": "experiencia-montagem-perfil",
+          "level": 2,
+          "title": "Experiência de montagem do perfil",
+          "paragraphs": [
+            "A proposta também melhora a experiência de quem cria perfis de formatação. Em vez de configurar cada componente como se fosse uma ilha, o perfil pode expor campos reutilizáveis do trabalho e mapear esses campos para os componentes necessários.",
+            "Em uma interface futura, esses vínculos podem aparecer como seletores visuais, permitindo que a pessoa responsável pelo perfil escolha a origem de cada campo sem editar JSON manualmente."
+          ]
+        },
+        {
+          "id": "conclusao",
+          "level": 1,
+          "title": "Conclusão",
+          "paragraphs": [
+            "A separação entre dados do trabalho, regras do perfil e componentes do documento cria uma base mais coerente para evolução do sistema. O usuário informa dados comuns uma vez, o perfil declara como eles são reutilizados e os componentes permanecem responsáveis apenas por sua própria renderização."
+          ]
+        }
+      ]
+    }
+  },
+  "paragraphs": []
+}

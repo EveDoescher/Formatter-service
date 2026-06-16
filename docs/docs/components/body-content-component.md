@@ -31,7 +31,6 @@ DIRECT_LONG_QUOTE
 INDIRECT_CITATION
 CITATION_OF_CITATION
 FIGURE
-TABLE
 ```
 
 `content[]` and `paragraphs[]` are still accepted only as compatibility inputs.
@@ -310,7 +309,6 @@ block long direct citations
 inline indirect citations
 inline citation of citation / apud
 figure display objects with caption, image, source and continuation groups
-table display objects with caption, table grid, source and continuation groups
 profile-driven section numbering
 real Word heading paragraph styles
 ```
@@ -342,11 +340,9 @@ docs/samples/body-content/body-content-short.json
 docs/samples/body-content/body-content-citations.json
 docs/samples/body-content/body-content-figures.json
 docs/samples/body-content/body-content-figures-url-visual.json
-docs/samples/body-content/body-content-tables.json
 docs/samples/body-content/body-content-title-only-section.json
 docs/samples/body-content/body-content-section-hierarchy-invalid.json
 docs/samples/body-content/body-content-citation-direct-missing-page-invalid.json
 docs/samples/body-content/body-content-citation-manual-quotes-invalid.json
-docs/samples/body-content/body-content-table-row-mismatch-invalid.json
 docs/samples/body-content/body-content-selected-components-pagination-invalid.json
 ```

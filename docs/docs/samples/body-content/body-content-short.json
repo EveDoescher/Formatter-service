@@ -1,0 +1,91 @@
+{
+  "fileName": "body-content-short.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "titlePage",
+      "bodyContent"
+    ]
+  },
+  "work": {
+    "authors": [
+      "PESSOA AUTORA TESTE 01"
+    ],
+    "title": "FORMATAÇÃO AUTOMÁTICA DE DOCUMENTOS ACADÊMICOS",
+    "subtitle": "Uma proposta orientada por perfis institucionais",
+    "nature": {
+      "workType": "Trabalho de conclusão de curso",
+      "degreeObjective": "obtenção do título de tecnólogo",
+      "courseName": "Análise e Desenvolvimento de Sistemas",
+      "institutionName": "Universidade Paulista - UNIP"
+    },
+    "advisor": {
+      "academicTitle": "Prof. Dr.",
+      "name": "Pessoa Orientadora Teste"
+    },
+    "city": "Limeira",
+    "year": "2026"
+  },
+  "document": {
+    "titlePage": {},
+    "bodyContent": {
+      "sections": [
+        {
+          "id": "introducao",
+          "level": 1,
+          "title": "Introdução",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "text": "A presente pesquisa apresenta uma análise introdutória sobre a organização textual de trabalhos acadêmicos conforme regras institucionais e normas de apresentação."
+            },
+            {
+              "type": "PARAGRAPH",
+              "text": "O objetivo desta seção é demonstrar que o conteúdo textual pode fluir naturalmente no documento sem depender das regras de página única usadas nos elementos pré-textuais."
+            }
+          ]
+        },
+        {
+          "id": "desenvolvimento",
+          "level": 1,
+          "title": "Desenvolvimento",
+          "blocks": []
+        },
+        {
+          "id": "fundamentacao",
+          "level": 2,
+          "title": "Fundamentação do componente textual",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "text": "A fundamentação do componente textual depende da representação explícita dos níveis de título, permitindo que o documento preserve hierarquia sem transformar o conteúdo em texto solto."
+            }
+          ]
+        },
+        {
+          "id": "metadados",
+          "level": 3,
+          "title": "Metadados para navegação",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "text": "Os metadados de seção permitem que recursos futuros identifiquem títulos, níveis e ordem documental de forma estável."
+            }
+          ]
+        },
+        {
+          "id": "conclusao",
+          "level": 1,
+          "title": "Conclusão",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "text": "Conclui-se que a base textual deve ser tratada como componente próprio, reutilizável e orientado por perfil, preparando o sistema para sumário, listas e elementos posteriores."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "paragraphs": []
+}

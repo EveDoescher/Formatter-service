@@ -1,0 +1,39 @@
+{
+  "fileName": "folha-aprovacao-long-title.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "approvalSheet"
+    ]
+  },
+  "document": {
+    "approvalSheet": {
+      "authors": [
+        "Pessoa Autora Teste 01"
+      ],
+      "title": "Desenvolvimento de um Sistema Web para Gestão Acadêmica com Ênfase em Automação de Documentos Institucionais",
+      "subtitle": "Uma análise aplicada à padronização de documentos acadêmicos",
+      "nature": {
+        "workType": "Trabalho de conclusão de curso",
+        "degreeObjective": "obtenção do título de tecnólogo",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Paulista - UNIP"
+      },
+      "committeeMembers": [
+        {
+          "name": "Pessoa Orientadora Teste",
+          "title": "Prof. Dr.",
+          "institutionName": "Universidade Paulista - UNIP",
+          "role": "Orientador"
+        },
+        {
+          "name": "Pessoa Examinadora Teste",
+          "title": "Profa. Dra.",
+          "institutionName": "Universidade Paulista - UNIP",
+          "role": "Examinadora"
+        }
+      ]
+    }
+  },
+  "paragraphs": []
+}
