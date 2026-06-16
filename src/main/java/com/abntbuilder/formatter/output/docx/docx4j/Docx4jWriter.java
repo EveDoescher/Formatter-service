@@ -192,17 +192,19 @@ public class Docx4jWriter implements DocxWriter {
                 ));
         applyKeepOptions(docxParagraph.getPPr(), paragraph.keepWithNext(), paragraph.keepLines());
 
-        R run = objectFactory.createR();
+        for (DocxRun docxRun : paragraph.runs()) {
+            R run = objectFactory.createR();
 
-        if (!isHeadingStyle(paragraph.styleRule())) {
-            run.setRPr(createRunProperties(paragraph.styleRule()));
+            if (!isHeadingStyle(paragraph.styleRule())) {
+                run.setRPr(createRunProperties(docxRun.baseStyle()));
+            }
+
+            Text text = objectFactory.createText();
+            text.setValue(resolveText(docxRun.text(), docxRun.baseStyle()));
+            text.setSpace("preserve");
+            run.getContent().add(text);
+            docxParagraph.getContent().add(run);
         }
-
-        Text text = objectFactory.createText();
-        text.setValue(resolveText(paragraph.text(), paragraph.styleRule()));
-
-        run.getContent().add(text);
-        docxParagraph.getContent().add(run);
 
         wordPackage.getMainDocumentPart().addObject(docxParagraph);
     }

@@ -14,6 +14,7 @@ import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxImageBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxPageBreak;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
+import com.abntbuilder.formatter.output.docx.api.DocxRun;
 import com.abntbuilder.formatter.output.docx.api.DocxTableBlock;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
 import com.abntbuilder.formatter.profile.model.StyleRule;
@@ -89,9 +90,10 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                     );
                 }
 
+                StyleRule titleStyle = styleResolver.resolve(rule.styleMapping().sectionTitleStyleIdForLevel(section.level()));
                 blocks.add(new DocxParagraph(
-                        numberingState.resolveTitle(section.level(), section.title().orElseThrow()),
-                        styleResolver.resolve(rule.styleMapping().sectionTitleStyleIdForLevel(section.level()))
+                        List.of(DocxRun.of(numberingState.resolveTitle(section.level(), section.title().orElseThrow()), titleStyle)),
+                        titleStyle
                 ));
                 previousRenderedTextWasBodyParagraph = false;
 
@@ -131,14 +133,20 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             DisplayObjectRenderingState<BodyTable> tableRenderingState
     ) {
         return switch (contentBlock) {
-            case BodyParagraph paragraph -> List.of(new DocxParagraph(
-                    paragraph.text(),
-                    styleResolver.resolve(rule.styleMapping().paragraphStyleId())
-            ));
-            case BodyCitation citation -> List.of(new DocxParagraph(
-                    citation.renderedText(),
-                    styleResolver.resolve(rule.styleMapping().styleIdForCitation(citation.type()))
-            ));
+            case BodyParagraph paragraph -> {
+                StyleRule paragraphStyle = styleResolver.resolve(rule.styleMapping().paragraphStyleId());
+                yield List.of(new DocxParagraph(
+                        List.of(DocxRun.of(paragraph.text(), paragraphStyle)),
+                        paragraphStyle
+                ));
+            }
+            case BodyCitation citation -> {
+                StyleRule citationStyle = styleResolver.resolve(rule.styleMapping().styleIdForCitation(citation.type()));
+                yield List.of(new DocxParagraph(
+                        List.of(DocxRun.of(citation.renderedText(), citationStyle)),
+                        citationStyle
+                ));
+            }
             case BodyFigure figure -> renderFigure(figure, rule.figure(), styleResolver, figureRenderingState);
             case BodyTable table -> renderTable(table, rule.table(), styleResolver, tableRenderingState);
         };
@@ -154,9 +162,10 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
         ResolvedImage resolvedImage = resolveImage(figure.image(), rule);
         List<DocxBlock> blocks = new ArrayList<>();
 
+        StyleRule figureCaptionStyle = styleResolver.resolve(rule.captionStyleId());
         blocks.add(new DocxParagraph(
-                resolveCaptionText(figure, rule, part),
-                styleResolver.resolve(rule.captionStyleId()),
+                List.of(DocxRun.of(resolveCaptionText(figure, rule, part), figureCaptionStyle)),
+                figureCaptionStyle,
                 java.util.Optional.empty(),
                 java.util.Optional.empty(),
                 java.util.Optional.empty(),
@@ -176,9 +185,10 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
 
         if (shouldRenderSource(figure, rule, part, figureRenderingState)) {
             String source = figureRenderingState.sourceFor(figure).orElseThrow();
+            StyleRule figureSourceStyle = styleResolver.resolve(rule.sourceStyleId());
             blocks.add(new DocxParagraph(
-                    rule.sourceTemplate().replace("{source}", source),
-                    styleResolver.resolve(rule.sourceStyleId()),
+                    List.of(DocxRun.of(rule.sourceTemplate().replace("{source}", source), figureSourceStyle)),
+                    figureSourceStyle,
                     java.util.Optional.empty(),
                     java.util.Optional.empty(),
                     java.util.Optional.empty(),
@@ -220,9 +230,10 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
         boolean renderSource = shouldRenderSource(table, rule, part, tableRenderingState);
         List<DocxBlock> blocks = new ArrayList<>();
 
+        StyleRule tableCaptionStyle = styleResolver.resolve(rule.captionStyleId());
         blocks.add(new DocxParagraph(
-                resolveCaptionText(table.caption(), rule.captionTemplate(), part),
-                styleResolver.resolve(rule.captionStyleId()),
+                List.of(DocxRun.of(resolveCaptionText(table.caption(), rule.captionTemplate(), part), tableCaptionStyle)),
+                tableCaptionStyle,
                 Optional.empty(),
                 Optional.empty(),
                 Optional.empty(),
@@ -243,9 +254,10 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
 
         if (renderSource) {
             String source = tableRenderingState.sourceFor(table).orElseThrow();
+            StyleRule tableSourceStyle = styleResolver.resolve(rule.sourceStyleId());
             blocks.add(new DocxParagraph(
-                    rule.sourceTemplate().replace("{source}", source),
-                    styleResolver.resolve(rule.sourceStyleId()),
+                    List.of(DocxRun.of(rule.sourceTemplate().replace("{source}", source), tableSourceStyle)),
+                    tableSourceStyle,
                     Optional.empty(),
                     Optional.empty(),
                     Optional.empty(),

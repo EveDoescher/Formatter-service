@@ -7,6 +7,7 @@ import com.abntbuilder.formatter.output.docx.api.DocxDocument;
 import com.abntbuilder.formatter.output.docx.api.DocxPageNumbering;
 import com.abntbuilder.formatter.output.docx.api.DocxPageBreak;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
+import com.abntbuilder.formatter.output.docx.api.DocxRun;
 import com.abntbuilder.formatter.output.docx.api.DocxSectionBreak;
 import com.abntbuilder.formatter.profile.model.PageNumberingRule;
 import com.abntbuilder.formatter.profile.resolution.StyleResolver;
@@ -70,7 +71,7 @@ public final class DocumentRenderer {
                     addBlocks(blocks, pageNumbering, command.paragraphs()
                             .stream()
                             .map(paragraph -> new DocxParagraph(
-                                    paragraph.text(),
+                                    List.of(DocxRun.of(paragraph.text(), styleResolver.resolve(paragraph.styleId()))),
                                     styleResolver.resolve(paragraph.styleId())
                             ))
                             .map(DocxBlock.class::cast)

@@ -3,6 +3,7 @@ package com.abntbuilder.formatter.rendering.layout.singlepage;
 import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
+import com.abntbuilder.formatter.output.docx.api.DocxRun;
 import com.abntbuilder.formatter.shared.measurement.MeasurementConverter;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public final class SinglePageLayoutRenderer {
             SinglePageTextLines textLines
     ) {
         blocks.add(new DocxParagraph(
-                textLines.paragraphText(),
+                List.of(DocxRun.of(textLines.paragraphText(), textLines.styleRule())),
                 textLines.styleRule(),
                 Optional.empty(),
                 Optional.of(textLines.exactLineHeightPt()),

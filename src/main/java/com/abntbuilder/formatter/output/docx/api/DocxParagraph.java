@@ -3,11 +3,12 @@ package com.abntbuilder.formatter.output.docx.api;
 import com.abntbuilder.formatter.profile.model.StyleRule;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 public record DocxParagraph(
-        String text,
+        List<DocxRun> runs,
         StyleRule styleRule,
         Optional<BigDecimal> spacingBeforeOverridePt,
         Optional<BigDecimal> exactLineHeightPt,
@@ -16,38 +17,39 @@ public record DocxParagraph(
         boolean keepLines
 ) implements DocxBlock {
 
-    public DocxParagraph(String text, StyleRule styleRule) {
-        this(text, styleRule, Optional.empty(), Optional.empty(), Optional.empty(), false, false);
+    public DocxParagraph(List<DocxRun> runs, StyleRule styleRule) {
+        this(runs, styleRule, Optional.empty(), Optional.empty(), Optional.empty(), false, false);
     }
 
-    public DocxParagraph(String text, StyleRule styleRule, Optional<BigDecimal> spacingBeforeOverridePt) {
-        this(text, styleRule, spacingBeforeOverridePt, Optional.empty(), Optional.empty(), false, false);
+    public DocxParagraph(List<DocxRun> runs, StyleRule styleRule, Optional<BigDecimal> spacingBeforeOverridePt) {
+        this(runs, styleRule, spacingBeforeOverridePt, Optional.empty(), Optional.empty(), false, false);
     }
 
     public DocxParagraph(
-            String text,
+            List<DocxRun> runs,
             StyleRule styleRule,
             Optional<BigDecimal> spacingBeforeOverridePt,
             Optional<BigDecimal> exactLineHeightPt
     ) {
-        this(text, styleRule, spacingBeforeOverridePt, exactLineHeightPt, Optional.empty(), false, false);
+        this(runs, styleRule, spacingBeforeOverridePt, exactLineHeightPt, Optional.empty(), false, false);
     }
 
     public DocxParagraph(
-            String text,
+            List<DocxRun> runs,
             StyleRule styleRule,
             Optional<BigDecimal> spacingBeforeOverridePt,
             Optional<BigDecimal> exactLineHeightPt,
             Optional<ParagraphLayoutOverride> layoutOverride
     ) {
-        this(text, styleRule, spacingBeforeOverridePt, exactLineHeightPt, layoutOverride, false, false);
+        this(runs, styleRule, spacingBeforeOverridePt, exactLineHeightPt, layoutOverride, false, false);
     }
 
     public DocxParagraph {
-        if (text == null || text.isBlank()) {
-            throw new IllegalArgumentException("text must not be blank.");
+        Objects.requireNonNull(runs, "runs must not be null");
+        if (runs.isEmpty()) {
+            throw new IllegalArgumentException("runs must not be empty.");
         }
-
+        runs = List.copyOf(runs);
         Objects.requireNonNull(styleRule, "styleRule must not be null");
         Objects.requireNonNull(spacingBeforeOverridePt, "spacingBeforeOverridePt must not be null");
         Objects.requireNonNull(exactLineHeightPt, "exactLineHeightPt must not be null");
