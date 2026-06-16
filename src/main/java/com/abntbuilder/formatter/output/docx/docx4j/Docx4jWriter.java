@@ -17,7 +17,10 @@ import org.docx4j.openpackaging.parts.WordprocessingML.FooterPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.StyleDefinitionsPart;
 import org.docx4j.relationships.Relationship;
+import com.abntbuilder.formatter.document.component.bodycontent.InlineFormatting;
 import org.docx4j.wml.BooleanDefaultTrue;
+import org.docx4j.wml.U;
+import org.docx4j.wml.UnderlineEnumeration;
 import org.docx4j.wml.CTPageNumber;
 import org.docx4j.wml.CTBorder;
 import org.docx4j.wml.FldChar;
@@ -196,7 +199,7 @@ public class Docx4jWriter implements DocxWriter {
             R run = objectFactory.createR();
 
             if (!isHeadingStyle(paragraph.styleRule())) {
-                run.setRPr(createRunProperties(docxRun.baseStyle()));
+                run.setRPr(buildRunProperties(docxRun.baseStyle(), docxRun.formatting()));
             }
 
             Text text = objectFactory.createText();
@@ -437,6 +440,10 @@ public class Docx4jWriter implements DocxWriter {
         name.setVal(resolveHeadingStyleName(styleRule.type()));
         style.setName(name);
 
+        Style.BasedOn basedOn = objectFactory.createStyleBasedOn();
+        basedOn.setVal("Normal");
+        style.setBasedOn(basedOn);
+
         style.setPPr(createStyleParagraphProperties(styleRule));
         style.setRPr(createRunProperties(styleRule));
         style.setQFormat(objectFactory.createBooleanDefaultTrue());
@@ -541,6 +548,36 @@ public class Docx4jWriter implements DocxWriter {
         }
 
         return runProperties;
+    }
+
+    private RPr buildRunProperties(StyleRule baseStyle, InlineFormatting formatting) {
+        RPr rPr = createRunProperties(baseStyle);
+
+        formatting.bold().ifPresent(bold -> {
+            if (bold) {
+                rPr.setB(objectFactory.createBooleanDefaultTrue());
+            } else {
+                rPr.setB(null);
+            }
+        });
+
+        formatting.italic().ifPresent(italic -> {
+            if (italic) {
+                rPr.setI(objectFactory.createBooleanDefaultTrue());
+            } else {
+                rPr.setI(null);
+            }
+        });
+
+        formatting.underline().ifPresent(underline -> {
+            if (underline) {
+                U u = objectFactory.createU();
+                u.setVal(UnderlineEnumeration.SINGLE);
+                rPr.setU(u);
+            }
+        });
+
+        return rPr;
     }
 
     private String resolveText(String text, StyleRule styleRule) {

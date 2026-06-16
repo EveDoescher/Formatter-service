@@ -3,6 +3,7 @@ package com.abntbuilder.formatter.rendering.layout.singlepage;
 import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
+import com.abntbuilder.formatter.output.docx.api.DocxRun;
 import com.abntbuilder.formatter.profile.model.StyleRule;
 import com.abntbuilder.formatter.profile.model.StyleType;
 import com.abntbuilder.formatter.profile.model.TextAlignment;
@@ -55,7 +56,7 @@ class SinglePageLayoutRendererTest {
                         .map(DocxParagraph.class::cast)
                         .findFirst()
                         .orElseThrow()
-                        .text()
+                        .runs().get(0).text()
         );
         assertTrue(blocks.stream()
                 .filter(DocxParagraph.class::isInstance)

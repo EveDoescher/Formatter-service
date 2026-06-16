@@ -34,7 +34,7 @@ class ApprovalSheetRendererTest {
         List<DocxBlock> blocks = renderer.render(validApprovalSheet(), profile);
 
         List<String> paragraphTexts = paragraphs(blocks).stream()
-                .map(DocxParagraph::text)
+                .map(p -> p.runs().get(0).text())
                 .toList();
         String fullText = String.join(" ", paragraphTexts);
 

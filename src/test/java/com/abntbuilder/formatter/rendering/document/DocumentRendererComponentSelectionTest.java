@@ -10,6 +10,7 @@ import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxDocument;
 import com.abntbuilder.formatter.output.docx.api.DocxPageBreak;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
+import com.abntbuilder.formatter.output.docx.api.DocxRun;
 import com.abntbuilder.formatter.output.docx.api.DocxSectionBreak;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
 import com.abntbuilder.formatter.profile.model.PageNumberingPlacement;
@@ -215,7 +216,7 @@ class DocumentRendererComponentSelectionTest {
                 .stream()
                 .filter(DocxParagraph.class::isInstance)
                 .map(DocxParagraph.class::cast)
-                .map(DocxParagraph::text)
+                .map(p -> p.runs().get(0).text())
                 .toList();
     }
 
@@ -390,7 +391,7 @@ class DocumentRendererComponentSelectionTest {
 
         @Override
         public List<DocxBlock> render(CoverComponent component, DocumentProfile profile) {
-            return List.of(new DocxParagraph("COVER", style("body")));
+            StyleRule s = style("body"); return List.of(new DocxParagraph(List.of(DocxRun.of("COVER", s)), s));
         }
     }
 
@@ -408,7 +409,7 @@ class DocumentRendererComponentSelectionTest {
 
         @Override
         public List<DocxBlock> render(TitlePageComponent component, DocumentProfile profile) {
-            return List.of(new DocxParagraph("TITLE_PAGE", style("body")));
+            StyleRule s = style("body"); return List.of(new DocxParagraph(List.of(DocxRun.of("TITLE_PAGE", s)), s));
         }
     }
 
@@ -426,7 +427,7 @@ class DocumentRendererComponentSelectionTest {
 
         @Override
         public List<DocxBlock> render(ApprovalSheetComponent component, DocumentProfile profile) {
-            return List.of(new DocxParagraph("APPROVAL_SHEET", style("body")));
+            StyleRule s = style("body"); return List.of(new DocxParagraph(List.of(DocxRun.of("APPROVAL_SHEET", s)), s));
         }
     }
 

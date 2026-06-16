@@ -36,7 +36,7 @@ class TitlePageRendererTest {
 
         List<DocxParagraph> paragraphs = paragraphs(blocks);
         List<String> paragraphTexts = paragraphs.stream()
-                .map(DocxParagraph::text)
+                .map(p -> p.runs().get(0).text())
                 .toList();
 
         assertTrue(paragraphTexts.contains("PESSOA AUTORA TESTE 01"));
@@ -48,7 +48,7 @@ class TitlePageRendererTest {
         assertTrue(paragraphTexts.contains("2026"));
 
         DocxParagraph nature = paragraphs.stream()
-                .filter(paragraph -> paragraph.text().contains("Trabalho de conclusao de curso"))
+                .filter(paragraph -> paragraph.runs().get(0).text().contains("Trabalho de conclusao de curso"))
                 .findFirst()
                 .orElseThrow();
 
@@ -74,7 +74,7 @@ class TitlePageRendererTest {
 
         List<String> paragraphTexts = paragraphs(renderer.render(titlePage, profile))
                 .stream()
-                .map(DocxParagraph::text)
+                .map(p -> p.runs().get(0).text())
                 .toList();
 
         assertTrue(paragraphTexts.contains("PESSOA AUTORA TESTE 01"));

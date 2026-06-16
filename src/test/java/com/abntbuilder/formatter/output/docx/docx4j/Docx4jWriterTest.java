@@ -2,6 +2,7 @@ package com.abntbuilder.formatter.output.docx.docx4j;
 
 import com.abntbuilder.formatter.output.docx.api.DocxDocument;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
+import com.abntbuilder.formatter.output.docx.api.DocxRun;
 import com.abntbuilder.formatter.output.docx.api.DocxSectionBreak;
 import com.abntbuilder.formatter.output.docx.api.ParagraphLayoutOverride;
 import com.abntbuilder.formatter.profile.model.PageOrientation;
@@ -27,9 +28,10 @@ class Docx4jWriterTest {
 
     @Test
     void shouldWriteMinimalDocxDocument() throws IOException {
+        StyleRule style = validStyleRule();
         DocxDocument document = new DocxDocument(
                 validPageRule(),
-                List.of(new DocxParagraph("Hello formatter", validStyleRule()))
+                List.of(new DocxParagraph(List.of(DocxRun.of("Hello formatter", style)), style))
         );
 
         byte[] bytes = new Docx4jWriter().write(document);
@@ -65,7 +67,7 @@ class Docx4jWriterTest {
 
         DocxDocument document = new DocxDocument(
                 validPageRule(),
-                List.of(new DocxParagraph("Title example", uppercaseStyle))
+                List.of(new DocxParagraph(List.of(DocxRun.of("Title example", uppercaseStyle)), uppercaseStyle))
         );
 
         byte[] bytes = new Docx4jWriter().write(document);
@@ -78,11 +80,12 @@ class Docx4jWriterTest {
     @Test
     void shouldApplyParagraphLayoutOverrideWhenWritingParagraph() throws IOException {
         BigDecimal leftIndentCm = BigDecimal.valueOf(8);
+        StyleRule style = validStyleRule();
         DocxDocument document = new DocxDocument(
                 validPageRule(),
                 List.of(new DocxParagraph(
-                        "Nature block",
-                        validStyleRule(),
+                        List.of(DocxRun.of("Nature block", style)),
+                        style,
                         Optional.empty(),
                         Optional.empty(),
                         Optional.of(new ParagraphLayoutOverride(
@@ -123,7 +126,7 @@ class Docx4jWriterTest {
         );
         DocxDocument document = new DocxDocument(
                 validPageRule(),
-                List.of(new DocxParagraph("1 Introducao", headingStyle))
+                List.of(new DocxParagraph(List.of(DocxRun.of("1 Introducao", headingStyle)), headingStyle))
         );
 
         byte[] bytes = new Docx4jWriter().write(document);
@@ -144,17 +147,18 @@ class Docx4jWriterTest {
 
     @Test
     void shouldWritePageNumberingHeaderWhenInitialPageNumberingIsPresent() throws IOException {
+        StyleRule style = validStyleRule();
         DocxDocument document = new DocxDocument(
                 validPageRule(),
                 Optional.of(new com.abntbuilder.formatter.output.docx.api.DocxPageNumbering(
-                        validStyleRule(),
+                        style,
                         com.abntbuilder.formatter.profile.model.PageNumberingPlacement.HEADER_RIGHT,
                         true,
                         true,
                         BigDecimal.valueOf(2),
                         BigDecimal.valueOf(2)
                 )),
-                List.of(new DocxParagraph("Body text", validStyleRule()))
+                List.of(new DocxParagraph(List.of(DocxRun.of("Body text", style)), style))
         );
 
         byte[] bytes = new Docx4jWriter().write(document);
@@ -172,28 +176,29 @@ class Docx4jWriterTest {
 
     @Test
     void shouldApplyPageNumberingOnlyToSectionAfterSectionBreak() throws IOException {
+        StyleRule style = validStyleRule();
         DocxDocument document = new DocxDocument(
                 validPageRule(),
                 List.of(
-                        new DocxParagraph("Pre textual content", validStyleRule()),
+                        new DocxParagraph(List.of(DocxRun.of("Pre textual content", style)), style),
                         new DocxSectionBreak(new com.abntbuilder.formatter.output.docx.api.DocxPageNumbering(
-                                validStyleRule(),
+                                style,
                                 com.abntbuilder.formatter.profile.model.PageNumberingPlacement.HEADER_RIGHT,
                                 true,
                                 false,
                                 BigDecimal.valueOf(2),
                                 BigDecimal.valueOf(2)
                         )),
-                        new DocxParagraph("Hidden counted content", validStyleRule()),
+                        new DocxParagraph(List.of(DocxRun.of("Hidden counted content", style)), style),
                         new DocxSectionBreak(new com.abntbuilder.formatter.output.docx.api.DocxPageNumbering(
-                                validStyleRule(),
+                                style,
                                 com.abntbuilder.formatter.profile.model.PageNumberingPlacement.HEADER_RIGHT,
                                 false,
                                 true,
                                 BigDecimal.valueOf(2),
                                 BigDecimal.valueOf(2)
                         )),
-                        new DocxParagraph("Body content", validStyleRule())
+                        new DocxParagraph(List.of(DocxRun.of("Body content", style)), style)
                 )
         );
 

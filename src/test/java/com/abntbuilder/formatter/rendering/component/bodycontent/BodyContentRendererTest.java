@@ -89,7 +89,7 @@ class BodyContentRendererTest {
                         "1.1.1 Detalhe",
                         "Paragrafo de detalhe."
                 ),
-                paragraphs.stream().map(DocxParagraph::text).toList()
+                paragraphs.stream().map(p -> p.runs().get(0).text()).toList()
         );
         assertEquals("bodyContent.heading1", paragraphs.get(0).styleRule().id());
         assertEquals("bodyContent.paragraph", paragraphs.get(1).styleRule().id());
@@ -106,7 +106,7 @@ class BodyContentRendererTest {
         List<DocxBlock> blocks = renderer.render(component, profile());
 
         assertEquals(1, blocks.size());
-        assertEquals("Paragrafo sem titulo.", ((DocxParagraph) blocks.getFirst()).text());
+        assertEquals("Paragrafo sem titulo.", ((DocxParagraph) blocks.getFirst()).runs().get(0).text());
     }
 
     @Test
@@ -137,7 +137,7 @@ class BodyContentRendererTest {
         List<DocxBlock> blocks = renderer.render(component, profileWithPrimarySectionPageBreak());
 
         assertEquals(DocxPageBreak.class, blocks.get(3).getClass());
-        assertEquals("2 Desenvolvimento", ((DocxParagraph) blocks.get(4)).text());
+        assertEquals("2 Desenvolvimento", ((DocxParagraph) blocks.get(4)).runs().get(0).text());
     }
 
     @Test
@@ -198,7 +198,7 @@ class BodyContentRendererTest {
         assertEquals("bodyContent.citationOfCitation", paragraphs.get(5).styleRule().id());
         assertEquals(
                 "Texto de citacao de citacao (Sobrenome Teste Um, 1990 apud Sobrenome Teste Dois, 2020, p. 3).",
-                paragraphs.get(5).text()
+                paragraphs.get(5).runs().get(0).text()
         );
     }
 
@@ -226,9 +226,9 @@ class BodyContentRendererTest {
                 .map(DocxImageBlock.class::cast)
                 .toList();
 
-        assertEquals("Figura 1 - Arquitetura de teste (continua)", paragraphs.get(1).text());
-        assertEquals("Figura 1 - Arquitetura de teste (conclusão)", paragraphs.get(2).text());
-        assertEquals("Fonte: Elaboração teste", paragraphs.get(3).text());
+        assertEquals("Figura 1 - Arquitetura de teste (continua)", paragraphs.get(1).runs().get(0).text());
+        assertEquals("Figura 1 - Arquitetura de teste (conclusão)", paragraphs.get(2).runs().get(0).text());
+        assertEquals("Fonte: Elaboração teste", paragraphs.get(3).runs().get(0).text());
         assertEquals(2, images.size());
         assertEquals(true, paragraphs.get(1).keepWithNext());
         assertEquals(true, images.getFirst().keepLines());
@@ -258,9 +258,9 @@ class BodyContentRendererTest {
                 .map(DocxTableBlock.class::cast)
                 .toList();
 
-        assertEquals("Tabela 1 - Resultados de teste (continua)", paragraphs.get(1).text());
-        assertEquals("Tabela 1 - Resultados de teste (conclusão)", paragraphs.get(2).text());
-        assertEquals("Fonte: Elaboração teste", paragraphs.get(3).text());
+        assertEquals("Tabela 1 - Resultados de teste (continua)", paragraphs.get(1).runs().get(0).text());
+        assertEquals("Tabela 1 - Resultados de teste (conclusão)", paragraphs.get(2).runs().get(0).text());
+        assertEquals("Fonte: Elaboração teste", paragraphs.get(3).runs().get(0).text());
         assertEquals(2, tables.size());
         assertEquals(List.of("Cenário", "Resultado"), tables.getFirst().headers());
         assertEquals(true, tables.getFirst().repeatHeaderOnPageBreak());

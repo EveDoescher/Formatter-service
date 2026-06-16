@@ -50,12 +50,12 @@ class CoverRendererTest {
 
         assertEquals(6, paragraphs.size());
 
-        assertEquals("UNIVERSIDADE PAULISTA", paragraphs.get(0).text());
-        assertEquals("NOME DO ALUNO", paragraphs.get(1).text());
-        assertEquals("TÍTULO DO TRABALHO", paragraphs.get(2).text());
-        assertEquals("Subtítulo do trabalho", paragraphs.get(3).text());
-        assertEquals("Limeira", paragraphs.get(4).text());
-        assertEquals("2026", paragraphs.get(5).text());
+        assertEquals("UNIVERSIDADE PAULISTA", paragraphs.get(0).runs().get(0).text());
+        assertEquals("NOME DO ALUNO", paragraphs.get(1).runs().get(0).text());
+        assertEquals("TÍTULO DO TRABALHO", paragraphs.get(2).runs().get(0).text());
+        assertEquals("Subtítulo do trabalho", paragraphs.get(3).runs().get(0).text());
+        assertEquals("Limeira", paragraphs.get(4).runs().get(0).text());
+        assertEquals("2026", paragraphs.get(5).runs().get(0).text());
 
         assertTrue(blocks.stream().anyMatch(DocxBlankLine.class::isInstance));
         assertTrue(paragraphs.stream().allMatch(paragraph -> paragraph.spacingBeforeOverridePt().isEmpty()));
@@ -81,7 +81,7 @@ class CoverRendererTest {
                 .toList();
 
         assertEquals(5, paragraphs.size());
-        assertEquals("TÍTULO DO TRABALHO", paragraphs.get(2).text());
+        assertEquals("TÍTULO DO TRABALHO", paragraphs.get(2).runs().get(0).text());
         assertTrue(blocks.stream().anyMatch(DocxBlankLine.class::isInstance));
     }
 
