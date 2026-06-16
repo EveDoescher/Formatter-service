@@ -4,12 +4,18 @@ import java.util.Objects;
 
 public record BodyQuoteText(
         BodyQuoteType type,
-        String text
+        String text,
+        InlineFormatting formatting
 ) implements BodyInline {
+
+    public BodyQuoteText(BodyQuoteType type, String text) {
+        this(type, text, InlineFormatting.none());
+    }
 
     public BodyQuoteText {
         Objects.requireNonNull(type, "type must not be null");
         requireNonBlank(text, "text");
+        Objects.requireNonNull(formatting, "formatting must not be null");
     }
 
     @Override
@@ -21,7 +27,6 @@ public record BodyQuoteText(
 
     private static void requireNoBoundaryQuotes(String value) {
         String trimmed = value.trim();
-
         if (trimmed.length() >= 2 && trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
             throw new IllegalArgumentException(
                     "manual boundary quotation marks must not be provided for SHORT quote text."
