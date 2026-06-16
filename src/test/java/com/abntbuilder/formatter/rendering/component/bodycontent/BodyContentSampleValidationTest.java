@@ -32,7 +32,8 @@ class BodyContentSampleValidationTest {
                 "body-content-citations.json",
                 "body-content-figures.json",
                 "body-content-tables.json",
-                "body-content-title-only-section.json"
+                "body-content-title-only-section.json",
+                "body-content-inline-formatting.json"
         );
 
         for (String sampleName : sampleNames) {
@@ -56,7 +57,8 @@ class BodyContentSampleValidationTest {
                 "body-content-citation-direct-missing-page-invalid.json",
                 "body-content-citation-manual-quotes-invalid.json",
                 "body-content-table-row-mismatch-invalid.json",
-                "body-content-selected-components-pagination-invalid.json"
+                "body-content-selected-components-pagination-invalid.json",
+                "body-content-inline-formatting-invalid.json"
         );
 
         for (String sampleName : sampleNames) {

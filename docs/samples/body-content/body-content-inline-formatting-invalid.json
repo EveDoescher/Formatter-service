@@ -1,0 +1,22 @@
+{
+  "profileId": "abnt-unip-profile",
+  "document": {
+    "components": {
+      "bodyContent": {
+        "sections": [
+          {
+            "id": "s1",
+            "level": 1,
+            "title": "Citação Inválida Como Bloco",
+            "blocks": [
+              {
+                "type": "DIRECT_SHORT_QUOTE",
+                "text": "texto que não pode ser bloco"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
