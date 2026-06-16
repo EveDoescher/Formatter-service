@@ -107,7 +107,8 @@ class ComponentRulesRequestTest {
                 new BodyContentNumberingRuleRequest(true, ".", ""),
                 new BodyContentLayoutRuleRequest(1, 1, false, "bodyContent.paragraph"),
                 figureRuleRequest(),
-                tableRuleRequest()
+                tableRuleRequest(),
+                new CitationFormattingRuleRequest("p. ", "; ", "et al.", " apud ")
         );
     }
 

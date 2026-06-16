@@ -26,6 +26,7 @@ import com.abntbuilder.formatter.profile.model.StyleRule;
 import com.abntbuilder.formatter.profile.model.StyleType;
 import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentComponentRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentNumberingRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentStyleMapping;
@@ -311,7 +312,8 @@ class BodyContentRendererTest {
                         new BodyContentNumberingRule(true, ".", ""),
                         new BodyContentLayoutRule(1, 1, false, "bodyContent.paragraph"),
                         figureRule(),
-                        tableRule()
+                        tableRule(),
+                        new CitationFormattingRule("p. ", "; ", "et al.", " apud ")
                 )),
                 List.of("bodyContent")
         );
@@ -351,7 +353,8 @@ class BodyContentRendererTest {
                         new BodyContentNumberingRule(true, ".", ""),
                         new BodyContentLayoutRule(1, 1, true, "bodyContent.paragraph"),
                         figureRule(),
-                        tableRule()
+                        tableRule(),
+                        new CitationFormattingRule("p. ", "; ", "et al.", " apud ")
                 )),
                 List.of("bodyContent")
         );
