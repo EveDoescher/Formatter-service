@@ -2,11 +2,17 @@ package com.abntbuilder.formatter.rendering.component.bodycontent;
 
 import com.abntbuilder.formatter.document.component.bodycontent.BodyContentComponent;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyBlock;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationCall;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationType;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyFigure;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyInline;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyLongQuote;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyImageSource;
 import com.abntbuilder.formatter.document.component.bodycontent.ImageSourceType;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyParagraph;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyQuoteText;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyText;
+import com.abntbuilder.formatter.document.component.bodycontent.InlineFormatting;
 import com.abntbuilder.formatter.document.component.bodycontent.BodySection;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyTable;
 import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
@@ -70,7 +76,7 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
         List<DocxBlock> blocks = new ArrayList<>();
         SectionNumberingState numberingState = new SectionNumberingState(rule.numbering());
         StyleRule blankLineStyle = styleResolver.resolve(rule.layout().blankLineStyleId());
-        boolean previousRenderedTextWasBodyParagraph = false;
+        boolean previousBlockWasTextualContent = false;
         DisplayObjectRenderingState<BodyFigure> figureRenderingState = new DisplayObjectRenderingState<>(
                 figuresFrom(component.sections())
         );
@@ -82,7 +88,7 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             if (section.title().isPresent()) {
                 if (rule.layout().pageBreakBeforePrimarySection() && section.level() == 1 && !blocks.isEmpty()) {
                     blocks.add(new DocxPageBreak());
-                } else if (previousRenderedTextWasBodyParagraph) {
+                } else if (previousBlockWasTextualContent) {
                     addBlankLines(
                             blocks,
                             blankLineStyle,
@@ -95,7 +101,7 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                         List.of(DocxRun.of(numberingState.resolveTitle(section.level(), section.title().orElseThrow()), titleStyle)),
                         titleStyle
                 ));
-                previousRenderedTextWasBodyParagraph = false;
+                previousBlockWasTextualContent = false;
 
                 addBlankLines(blocks, blankLineStyle, rule.layout().blankLinesAfterSectionTitle());
             }
@@ -108,7 +114,8 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                         figureRenderingState,
                         tableRenderingState
                 ));
-                previousRenderedTextWasBodyParagraph = true;
+                previousBlockWasTextualContent = contentBlock instanceof BodyParagraph
+                        || contentBlock instanceof BodyLongQuote;
             }
         }
 
@@ -135,10 +142,10 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
         return switch (contentBlock) {
             case BodyParagraph paragraph -> {
                 StyleRule paragraphStyle = styleResolver.resolve(rule.styleMapping().paragraphStyleId());
-                yield List.of(new DocxParagraph(
-                        List.of(DocxRun.of(paragraph.text(), paragraphStyle)),
-                        paragraphStyle
-                ));
+                List<DocxRun> runs = paragraph.content().stream()
+                        .map(inline -> toDocxRun(inline, paragraphStyle, rule, styleResolver))
+                        .toList();
+                yield List.of(new DocxParagraph(runs, paragraphStyle));
             }
             case BodyLongQuote longQuote -> {
                 StyleRule longQuoteStyle = styleResolver.resolve(rule.styleMapping().directLongQuoteStyleId());
@@ -149,6 +156,24 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             }
             case BodyFigure figure -> renderFigure(figure, rule.figure(), styleResolver, figureRenderingState);
             case BodyTable table -> renderTable(table, rule.table(), styleResolver, tableRenderingState);
+        };
+    }
+
+    private static DocxRun toDocxRun(
+            BodyInline inline,
+            StyleRule baseStyle,
+            BodyContentComponentRule rule,
+            StyleResolver styleResolver
+    ) {
+        return switch (inline) {
+            case BodyText text -> new DocxRun(text.text(), baseStyle, text.formatting());
+            case BodyQuoteText quote -> new DocxRun(quote.renderedText(), baseStyle, quote.formatting());
+            case BodyCitationCall call -> {
+                StyleRule citationStyle = styleResolver.resolve(
+                        rule.styleMapping().styleIdForCitation(call.citationType())
+                );
+                yield new DocxRun(call.renderedText(), citationStyle, InlineFormatting.none());
+            }
         };
     }
 
