@@ -2,8 +2,8 @@ package com.abntbuilder.formatter.rendering.component.bodycontent;
 
 import com.abntbuilder.formatter.document.component.bodycontent.BodyContentComponent;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyBlock;
-import com.abntbuilder.formatter.document.component.bodycontent.BodyCitation;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyFigure;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyLongQuote;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyImageSource;
 import com.abntbuilder.formatter.document.component.bodycontent.ImageSourceType;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyParagraph;
@@ -140,11 +140,15 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                         paragraphStyle
                 ));
             }
-            case BodyCitation citation -> {
-                StyleRule citationStyle = styleResolver.resolve(rule.styleMapping().styleIdForCitation(citation.type()));
+            case BodyLongQuote longQuote -> {
+                StyleRule longQuoteStyle = styleResolver.resolve(rule.styleMapping().directLongQuoteStyleId());
+                com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule fmt =
+                        new com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule(
+                                "p. ", "; ", "et al.", " apud "
+                        );
                 yield List.of(new DocxParagraph(
-                        List.of(DocxRun.of(citation.renderedText(), citationStyle)),
-                        citationStyle
+                        List.of(DocxRun.of(longQuote.renderedText(fmt), longQuoteStyle)),
+                        longQuoteStyle
                 ));
             }
             case BodyFigure figure -> renderFigure(figure, rule.figure(), styleResolver, figureRenderingState);

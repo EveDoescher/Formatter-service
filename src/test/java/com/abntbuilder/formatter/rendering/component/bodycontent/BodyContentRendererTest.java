@@ -1,7 +1,6 @@
 package com.abntbuilder.formatter.rendering.component.bodycontent;
 
 import com.abntbuilder.formatter.document.component.bodycontent.BodyContentComponent;
-import com.abntbuilder.formatter.document.component.bodycontent.BodyCitation;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationMode;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationType;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyFigure;
@@ -141,7 +140,7 @@ class BodyContentRendererTest {
     }
 
     @Test
-    void shouldRenderCitationBlocksWithProfileMappedStyles() {
+    void shouldRenderLongQuoteBlockWithProfileMappedStyle() {
         BodyContentComponent component = new BodyContentComponent(List.of(
                 new BodySection(
                         "citacoes",
@@ -149,37 +148,12 @@ class BodyContentRendererTest {
                         Optional.of("Citacoes"),
                         List.of(
                                 new BodyParagraph("Paragrafo comum."),
-                                new BodyCitation(
-                                        BodyCitationType.DIRECT_SHORT,
+                                new com.abntbuilder.formatter.document.component.bodycontent.BodyLongQuote(
+                                        "Citacao direta longa com mais de tres linhas.",
                                         BodyCitationMode.PARENTHETICAL,
-                                        "Citacao direta curta.",
-                                        Optional.of(source("SOBRENOME TESTE UM", "2020", "10")),
-                                        Optional.empty(),
-                                        Optional.empty()
-                                ),
-                                new BodyCitation(
-                                        BodyCitationType.DIRECT_LONG,
-                                        BodyCitationMode.PARENTHETICAL,
-                                        "Citacao direta longa com mais de tres linhas representada em bloco proprio.",
                                         Optional.of(source("SOBRENOME TESTE UM", "2020", "11")),
                                         Optional.empty(),
                                         Optional.empty()
-                                ),
-                                new BodyCitation(
-                                        BodyCitationType.INDIRECT,
-                                        BodyCitationMode.PARENTHETICAL,
-                                        "Texto de citacao indireta.",
-                                        Optional.of(source("SOBRENOME TESTE UM", "2020", null)),
-                                        Optional.empty(),
-                                        Optional.empty()
-                                ),
-                                new BodyCitation(
-                                        BodyCitationType.CITATION_OF_CITATION,
-                                        BodyCitationMode.PARENTHETICAL,
-                                        "Texto de citacao de citacao.",
-                                        Optional.empty(),
-                                        Optional.of(source("SOBRENOME TESTE UM", "1990", null)),
-                                        Optional.of(source("SOBRENOME TESTE DOIS", "2020", "3"))
                                 )
                         )
                 )
@@ -192,14 +166,7 @@ class BodyContentRendererTest {
                 .toList();
 
         assertEquals("bodyContent.paragraph", paragraphs.get(1).styleRule().id());
-        assertEquals("bodyContent.directShortQuote", paragraphs.get(2).styleRule().id());
-        assertEquals("bodyContent.directLongQuote", paragraphs.get(3).styleRule().id());
-        assertEquals("bodyContent.indirectCitation", paragraphs.get(4).styleRule().id());
-        assertEquals("bodyContent.citationOfCitation", paragraphs.get(5).styleRule().id());
-        assertEquals(
-                "Texto de citacao de citacao (Sobrenome Teste Um, 1990 apud Sobrenome Teste Dois, 2020, p. 3).",
-                paragraphs.get(5).runs().get(0).text()
-        );
+        assertEquals("bodyContent.directLongQuote", paragraphs.get(2).styleRule().id());
     }
 
     @Test

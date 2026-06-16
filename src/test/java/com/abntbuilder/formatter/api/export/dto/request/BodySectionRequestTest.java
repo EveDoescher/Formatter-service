@@ -1,7 +1,7 @@
 package com.abntbuilder.formatter.api.export.dto.request;
 
-import com.abntbuilder.formatter.document.component.bodycontent.BodyCitation;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationType;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyLongQuote;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyFigure;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyParagraph;
 import com.abntbuilder.formatter.document.component.bodycontent.BodySection;
@@ -53,11 +53,10 @@ class BodySectionRequestTest {
         BodySection section = request.toDomain();
 
         BodyParagraph paragraph = assertInstanceOf(BodyParagraph.class, section.content().get(0));
-        BodyCitation citation = assertInstanceOf(BodyCitation.class, section.content().get(1));
+        BodyLongQuote longQuote = assertInstanceOf(BodyLongQuote.class, section.content().get(1));
 
         assertEquals("Paragrafo comum.", paragraph.text());
-        assertEquals(BodyCitationType.DIRECT_LONG, citation.type());
-        assertEquals("Citacao direta longa (Sobrenome Teste Um, 2020, p. 10).", citation.renderedText());
+        assertEquals("Citacao direta longa.", longQuote.text());
     }
 
     @Test
