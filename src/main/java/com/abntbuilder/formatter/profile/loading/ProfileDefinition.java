@@ -407,7 +407,8 @@ public record ProfileDefinition(
             BodyContentNumberingRuleDefinition numbering,
             BodyContentLayoutRuleDefinition layout,
             FigureRuleDefinition figure,
-            TableRuleDefinition table
+            TableRuleDefinition table,
+            CitationFormattingRuleDefinition citationFormatting
     ) {
         BodyContentComponentRule toDomain() {
             requireNonNull(styleMapping, "bodyContent.styleMapping");
@@ -415,6 +416,7 @@ public record ProfileDefinition(
             requireNonNull(layout, "bodyContent.layout");
             requireNonNull(figure, "bodyContent.figure");
             requireNonNull(table, "bodyContent.table");
+            requireNonNull(citationFormatting, "bodyContent.citationFormatting");
 
             return new BodyContentComponentRule(
                     componentId,
@@ -422,7 +424,21 @@ public record ProfileDefinition(
                     numbering.toDomain(),
                     layout.toDomain(),
                     figure.toDomain(),
-                    table.toDomain()
+                    table.toDomain(),
+                    citationFormatting.toDomain()
+            );
+        }
+    }
+
+    public record CitationFormattingRuleDefinition(
+            String pagePrefix,
+            String multiAuthorJoiner,
+            String etAl,
+            String apudConnector
+    ) {
+        com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule toDomain() {
+            return new com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule(
+                    pagePrefix, multiAuthorJoiner, etAl, apudConnector
             );
         }
     }

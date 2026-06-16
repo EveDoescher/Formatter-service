@@ -1047,6 +1047,12 @@
         "tableAlignment": "CENTER",
         "widthPercent": 100,
         "repeatHeaderOnPageBreak": true
+      },
+      "citationFormatting": {
+        "pagePrefix": "p. ",
+        "multiAuthorJoiner": "; ",
+        "etAl": "et al.",
+        "apudConnector": " apud "
       }
     }
   }

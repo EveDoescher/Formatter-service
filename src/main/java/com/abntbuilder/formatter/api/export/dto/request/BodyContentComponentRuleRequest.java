@@ -26,7 +26,11 @@ public record BodyContentComponentRuleRequest(
 
         @Valid
         @NotNull
-        TableRuleRequest table
+        TableRuleRequest table,
+
+        @Valid
+        @NotNull
+        CitationFormattingRuleRequest citationFormatting
 ) {
 
     public BodyContentComponentRule toDomain() {
@@ -36,7 +40,8 @@ public record BodyContentComponentRuleRequest(
                 numbering.toDomain(),
                 layout.toDomain(),
                 figure.toDomain(),
-                table.toDomain()
+                table.toDomain(),
+                citationFormatting.toDomain()
         );
     }
 }

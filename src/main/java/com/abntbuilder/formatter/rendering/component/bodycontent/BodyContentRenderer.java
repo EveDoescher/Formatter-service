@@ -142,12 +142,8 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             }
             case BodyLongQuote longQuote -> {
                 StyleRule longQuoteStyle = styleResolver.resolve(rule.styleMapping().directLongQuoteStyleId());
-                com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule fmt =
-                        new com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule(
-                                "p. ", "; ", "et al.", " apud "
-                        );
                 yield List.of(new DocxParagraph(
-                        List.of(DocxRun.of(longQuote.renderedText(fmt), longQuoteStyle)),
+                        List.of(DocxRun.of(longQuote.renderedText(rule.citationFormatting()), longQuoteStyle)),
                         longQuoteStyle
                 ));
             }
