@@ -5,24 +5,25 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObje
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FigureRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
 public record FigureRuleRequest(
-        String captionStyleId,
-        String sourceStyleId,
-        String captionTemplate,
-        String sourceTemplate,
+        @NotBlank String captionStyleId,
+        @NotBlank String sourceStyleId,
+        @NotBlank String captionTemplate,
+        @NotBlank String sourceTemplate,
         @Valid @NotNull DisplayObjectContinuationLabelsRequest continuationLabels,
-        DisplayObjectSourcePlacement sourcePlacement,
-        TextAlignment imageAlignment,
-        BigDecimal maxWidthCm,
-        BigDecimal maxHeightCm,
-        BigDecimal defaultDpi,
-        Integer maxImageBytes,
-        Integer urlFetchTimeoutSeconds,
-        ImageFitPolicy fitPolicy
+        @NotNull DisplayObjectSourcePlacement sourcePlacement,
+        @NotNull TextAlignment imageAlignment,
+        @NotNull BigDecimal maxWidthCm,
+        @NotNull BigDecimal maxHeightCm,
+        @NotNull BigDecimal defaultDpi,
+        @NotNull Integer maxImageBytes,
+        @NotNull Integer urlFetchTimeoutSeconds,
+        @NotNull ImageFitPolicy fitPolicy
 ) {
 
     FigureRule toDomain() {
