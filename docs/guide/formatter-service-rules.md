@@ -416,6 +416,18 @@ The profile must define:
 
 The layout engine calculates real positioning from page dimensions, margins, styles, font sizes, line spacing, and actual content.
 
+## 18.1 No Large Spacing on Single Elements
+
+Never use a single element with a large `spacingBeforePt` or `spacingAfterPt` to simulate vertical distance.
+
+This produces a fragile invisible block: if the user deletes or edits that element in Word, all spacing disappears at once and the document layout breaks silently.
+
+Vertical spacing between content areas must always be represented as a sequence of standardized blank lines (`DocxBlankLine`), each carrying the same style and line height as the surrounding content. The number of blank lines is declared in the profile rule — not hardcoded, and not embedded in a single element's spacing.
+
+This rule applies everywhere without exception: cover groups, title page groups, element positioning near the bottom of a page, spacing between reference entries, or any other context requiring visual separation. A single paragraph carrying hundreds of points of `spacingBefore` is always an architectural mistake.
+
+This was a real problem encountered in the cover and title page implementations, where the system attempted to create large monolithic spacing blocks instead of distributing the space as standardized blank lines.
+
 ---
 
 # 19. Single-Page Layout Components

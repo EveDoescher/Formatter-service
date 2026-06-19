@@ -150,9 +150,17 @@ Fields used by multiple components (authors, title, advisor, city, year) must no
 
 ## Layout
 
-No `addSpacing(N)`. No fixed blank lines. Layout is calculated from content + rules.
+No `addSpacing(N)`. Layout is calculated from content + rules.
 
 Single-page components (cover, title page) use semantic groups: top, center, bottom (anchored). If content does not fit, fail clearly.
+
+**Never use a single element with large `spacingBeforePt` or `spacingAfterPt` to simulate vertical distance.**
+
+This pattern creates a fragile invisible block: if the user deletes or edits that element in Word, all the spacing disappears at once. The document becomes uneditable.
+
+Vertical spacing between content areas must always be a sequence of standardized blank lines (`DocxBlankLine`), each with the same style and line height as the surrounding content. The number of blank lines is declared in the profile rule, not hardcoded.
+
+This applies everywhere: between cover groups, between title page groups, between a dedication and the bottom of the page, between reference entries, between any elements that need separation. There is no exception. A single paragraph with `spacingBefore = 400pt` is always wrong.
 
 ---
 
