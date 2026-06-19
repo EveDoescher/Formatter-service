@@ -158,9 +158,14 @@ Single-page components (cover, title page) use semantic groups: top, center, bot
 
 This pattern creates a fragile invisible block: if the user deletes or edits that element in Word, all the spacing disappears at once. The document becomes uneditable.
 
-Vertical spacing between content areas must always be a sequence of standardized blank lines (`DocxBlankLine`), each with the same style and line height as the surrounding content. The number of blank lines is declared in the profile rule, not hardcoded.
+Vertical spacing between content areas must always be a sequence of standardized blank lines (`DocxBlankLine`), each with the same style and line height as the surrounding content.
 
-This applies everywhere: between cover groups, between title page groups, between a dedication and the bottom of the page, between reference entries, between any elements that need separation. There is no exception. A single paragraph with `spacingBefore = 400pt` is always wrong.
+There are two kinds of spacing and they are handled differently:
+
+- **Semantic spacing** — small, fixed, declared in the profile. Examples: "skip one blank line after a section heading", "one blank line between reference entries". The profile knows these because they do not depend on content size.
+- **Positional spacing** — how much space separates content groups on a page when anchoring is involved (bottom of page, center of page, etc.). The profile does not know content size, so it cannot declare "skip 48 lines before the dedication". The layout engine calculates this dynamically from usable page height, content height, and anchor rules — the same way the cover and title page work.
+
+A single paragraph with `spacingBefore = 400pt` is always wrong. If the answer to "how much space?" depends on content size or page dimensions, it must be calculated, not declared.
 
 ---
 

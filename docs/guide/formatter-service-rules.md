@@ -422,11 +422,15 @@ Never use a single element with a large `spacingBeforePt` or `spacingAfterPt` to
 
 This produces a fragile invisible block: if the user deletes or edits that element in Word, all spacing disappears at once and the document layout breaks silently.
 
-Vertical spacing between content areas must always be represented as a sequence of standardized blank lines (`DocxBlankLine`), each carrying the same style and line height as the surrounding content. The number of blank lines is declared in the profile rule — not hardcoded, and not embedded in a single element's spacing.
+Vertical spacing between content areas must always be represented as a sequence of standardized blank lines (`DocxBlankLine`), each carrying the same style and line height as the surrounding content.
 
-This rule applies everywhere without exception: cover groups, title page groups, element positioning near the bottom of a page, spacing between reference entries, or any other context requiring visual separation. A single paragraph carrying hundreds of points of `spacingBefore` is always an architectural mistake.
+There are two kinds of vertical spacing and they are handled differently:
 
-This was a real problem encountered in the cover and title page implementations, where the system attempted to create large monolithic spacing blocks instead of distributing the space as standardized blank lines.
+**Semantic spacing** — small, fixed, declared in the profile. The profile may say "skip one blank line after a section heading" or "one blank line between reference entries" because these values do not depend on content size. The profile declares a count; the renderer emits that many `DocxBlankLine` blocks.
+
+**Positional spacing** — how much space separates content groups when anchoring is involved (bottom of page, center of page, vertical distribution). The profile does not know content size or how many lines a dedication or any other component will occupy, so it cannot declare "skip 48 lines before the dedication". The layout engine calculates this dynamically from usable page height, content height, and anchor rules — the same mechanism used by the cover and title page.
+
+A single paragraph carrying hundreds of points of `spacingBefore` or `spacingAfterPt` is always an architectural mistake. If the answer to "how much space?" depends on content size or page dimensions, the layout engine calculates it. The profile only declares what does not depend on content size.
 
 ---
 
