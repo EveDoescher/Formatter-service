@@ -1,4 +1,4 @@
-package com.abntbuilder.formatter.profile.resolution;
+package com.abntbuilder.formatter.config;
 
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetComponentRule;

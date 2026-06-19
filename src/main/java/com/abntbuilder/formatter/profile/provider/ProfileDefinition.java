@@ -1,4 +1,4 @@
-package com.abntbuilder.formatter.profile.loading;
+package com.abntbuilder.formatter.profile.provider;
 
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
 import com.abntbuilder.formatter.profile.model.PageOrientation;

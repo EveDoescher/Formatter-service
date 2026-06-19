@@ -1,7 +1,8 @@
-package com.abntbuilder.formatter.profile.resolution;
+package com.abntbuilder.formatter.config;
 
-import com.abntbuilder.formatter.profile.loading.ProfileDefinition;
+import com.abntbuilder.formatter.profile.provider.ProfileDefinition;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
+import com.abntbuilder.formatter.profile.resolution.ProfileProvider;
 import com.abntbuilder.formatter.shared.exception.MissingProfileException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.Resource;

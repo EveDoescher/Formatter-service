@@ -3,6 +3,8 @@ package com.abntbuilder.formatter.api.export.dto.request;
 import com.abntbuilder.formatter.document.component.DocumentComponent;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetComponentRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentComponentRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageComponentRule;
 import com.abntbuilder.formatter.profile.resolution.ComponentRuleResolver;
@@ -53,7 +55,9 @@ public record DocumentContentRequest(
         }
 
         if (bodyContent != null) {
-            components.add(bodyContent.toDomain());
+            CitationFormattingRule citationFormatting = ruleResolver == null ? null
+                    : ruleResolver.resolve("bodyContent", BodyContentComponentRule.class).citationFormatting();
+            components.add(bodyContent.toDomain(citationFormatting));
         }
 
         return List.copyOf(components);

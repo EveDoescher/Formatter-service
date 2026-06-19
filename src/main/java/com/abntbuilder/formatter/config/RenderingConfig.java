@@ -1,6 +1,5 @@
 package com.abntbuilder.formatter.config;
 
-import com.abntbuilder.formatter.profile.resolution.ClasspathJsonProfileProvider;
 import com.abntbuilder.formatter.profile.resolution.ProfileProvider;
 import com.abntbuilder.formatter.rendering.component.ComponentRenderer;
 import com.abntbuilder.formatter.rendering.component.ComponentRendererRegistry;
@@ -19,8 +18,8 @@ import com.abntbuilder.formatter.rendering.component.titlepage.TitlePageLayoutCa
 import com.abntbuilder.formatter.rendering.component.titlepage.TitlePageProfileContentValidator;
 import com.abntbuilder.formatter.rendering.component.titlepage.TitlePageRenderer;
 import com.abntbuilder.formatter.rendering.component.titlepage.TitlePageTextTemplateResolver;
-import com.abntbuilder.formatter.rendering.document.ComponentSelectionResolver;
-import com.abntbuilder.formatter.rendering.document.DocumentRenderer;
+import com.abntbuilder.formatter.rendering.orchestration.ComponentSelectionResolver;
+import com.abntbuilder.formatter.rendering.orchestration.DocumentRenderer;
 import com.abntbuilder.formatter.rendering.layout.singlepage.HorizontalPlacementResolver;
 import com.abntbuilder.formatter.rendering.layout.singlepage.MarginBasedSinglePageSafetyPolicy;
 import com.abntbuilder.formatter.rendering.layout.singlepage.OrderedLayoutGapResolver;

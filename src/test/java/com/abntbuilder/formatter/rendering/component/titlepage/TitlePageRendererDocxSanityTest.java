@@ -7,7 +7,7 @@ import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxDocument;
 import com.abntbuilder.formatter.output.docx.docx4j.Docx4jWriter;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
-import com.abntbuilder.formatter.profile.resolution.ClasspathJsonProfileProvider;
+import com.abntbuilder.formatter.config.ClasspathJsonProfileProvider;
 import com.abntbuilder.formatter.rendering.layout.singlepage.HorizontalPlacementResolver;
 import com.abntbuilder.formatter.rendering.layout.singlepage.MarginBasedSinglePageSafetyPolicy;
 import com.abntbuilder.formatter.rendering.layout.singlepage.OrderedLayoutGapResolver;

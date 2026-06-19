@@ -4,6 +4,7 @@ import com.abntbuilder.formatter.document.component.bodycontent.BodyBlock;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationMode;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyLongQuote;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyParagraph;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule;
 import com.abntbuilder.formatter.shared.exception.InvalidBodyContentException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -22,19 +23,23 @@ public record BodyBlockRequest(
         @Valid BodyTableRequest table
 ) {
 
-    public BodyBlock toDomain() {
+    public BodyBlock toDomain(CitationFormattingRule citationFormatting) {
         return switch (type) {
-            case PARAGRAPH -> paragraph();
+            case PARAGRAPH -> paragraph(citationFormatting);
             case DIRECT_LONG_QUOTE -> longQuote();
             case FIGURE -> figureBlock();
             case TABLE -> tableBlock();
         };
     }
 
-    private BodyParagraph paragraph() {
+    public BodyBlock toDomain() {
+        return toDomain(null);
+    }
+
+    private BodyParagraph paragraph(CitationFormattingRule citationFormatting) {
         if (content != null) {
             return new BodyParagraph(content.stream()
-                    .map(BodyInlineRequest::toDomain)
+                    .map(inline -> inline.toDomain(citationFormatting))
                     .toList());
         }
         if (text != null) {
@@ -47,9 +52,12 @@ public record BodyBlockRequest(
         if (text == null || text.isBlank()) {
             throw new InvalidBodyContentException("DIRECT_LONG_QUOTE block requires text.");
         }
+        if (mode == null) {
+            throw new InvalidBodyContentException("mode must be provided for DIRECT_LONG_QUOTE block.");
+        }
         return new BodyLongQuote(
                 text,
-                mode == null ? BodyCitationMode.PARENTHETICAL : mode,
+                mode,
                 source == null ? Optional.empty() : Optional.of(source.toDomain()),
                 originalSource == null ? Optional.empty() : Optional.of(originalSource.toDomain()),
                 consultedSource == null ? Optional.empty() : Optional.of(consultedSource.toDomain())

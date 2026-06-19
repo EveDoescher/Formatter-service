@@ -3,6 +3,7 @@ package com.abntbuilder.formatter.api.export.dto.request;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyBlock;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyParagraph;
 import com.abntbuilder.formatter.document.component.bodycontent.BodySection;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -21,25 +22,29 @@ public record BodySectionRequest(
         @Valid List<BodyBlockRequest> blocks
 ) {
 
-    public BodySection toDomain() {
+    public BodySection toDomain(CitationFormattingRule citationFormatting) {
         return new BodySection(
                 id,
                 level,
                 title == null ? Optional.empty() : Optional.of(title),
-                resolveContent()
+                resolveContent(citationFormatting)
         );
     }
 
-    private List<BodyBlock> resolveContent() {
+    public BodySection toDomain() {
+        return toDomain(null);
+    }
+
+    private List<BodyBlock> resolveContent(CitationFormattingRule citationFormatting) {
         if (blocks != null) {
             return blocks.stream()
-                    .map(BodyBlockRequest::toDomain)
+                    .map(b -> b.toDomain(citationFormatting))
                     .toList();
         }
 
         if (content != null) {
             return content.stream()
-                    .map(BodyBlockRequest::toDomain)
+                    .map(b -> b.toDomain(citationFormatting))
                     .toList();
         }
 

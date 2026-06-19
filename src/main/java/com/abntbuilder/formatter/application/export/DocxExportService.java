@@ -2,7 +2,7 @@ package com.abntbuilder.formatter.application.export;
 
 import com.abntbuilder.formatter.output.docx.api.DocxDocument;
 import com.abntbuilder.formatter.output.docx.api.DocxWriter;
-import com.abntbuilder.formatter.rendering.document.DocumentRenderer;
+import com.abntbuilder.formatter.rendering.orchestration.DocumentRenderer;
 import com.abntbuilder.formatter.shared.exception.MissingGeneratedDocxExportException;
 import org.springframework.stereotype.Service;
 

@@ -1,12 +1,15 @@
 package com.abntbuilder.formatter.api.export.dto.request;
 
+import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationMode;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationType;
-import com.abntbuilder.formatter.document.component.bodycontent.BodyLongQuote;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyFigure;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyLongQuote;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyParagraph;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyQuoteType;
 import com.abntbuilder.formatter.document.component.bodycontent.BodySection;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyTable;
 import com.abntbuilder.formatter.document.component.bodycontent.ImageSourceType;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -15,6 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 class BodySectionRequestTest {
+
+    private static final CitationFormattingRule CITATION_FORMATTING =
+            new CitationFormattingRule("p. ", "; ", "et al.", " apud ");
 
     @Test
     void shouldConvertSemanticContentBlocksToDomain() {
@@ -38,7 +44,7 @@ class BodySectionRequestTest {
                         ),
                         new BodyBlockRequest(
                                 BodyBlockType.DIRECT_LONG_QUOTE,
-                                null,
+                                BodyCitationMode.PARENTHETICAL,
                                 "Citacao direta longa.",
                                 null,
                                 new CitationSourceRequest(List.of(author("Sobrenome Teste Um")), "2020", "10"),
@@ -50,7 +56,7 @@ class BodySectionRequestTest {
                 )
         );
 
-        BodySection section = request.toDomain();
+        BodySection section = request.toDomain(CITATION_FORMATTING);
 
         BodyParagraph paragraph = assertInstanceOf(BodyParagraph.class, section.content().get(0));
         BodyLongQuote longQuote = assertInstanceOf(BodyLongQuote.class, section.content().get(1));
@@ -88,7 +94,7 @@ class BodySectionRequestTest {
                                         null,
                                         null,
                                         BodyCitationType.DIRECT_SHORT,
-                                        com.abntbuilder.formatter.document.component.bodycontent.BodyCitationMode.NARRATIVE,
+                                        BodyCitationMode.NARRATIVE,
                                         new CitationSourceRequest(List.of(author("Sobrenome Teste Um")), "2020", "10"),
                                         null,
                                         null,
@@ -108,7 +114,7 @@ class BodySectionRequestTest {
                                 new BodyInlineRequest(
                                         BodyInlineType.QUOTE_TEXT,
                                         "a organizacao documental depende de criterios formais",
-                                        null,
+                                        BodyQuoteType.SHORT,
                                         null,
                                         null,
                                         null,
@@ -125,7 +131,7 @@ class BodySectionRequestTest {
                 ))
         );
 
-        BodySection section = request.toDomain();
+        BodySection section = request.toDomain(CITATION_FORMATTING);
 
         BodyParagraph paragraph = assertInstanceOf(BodyParagraph.class, section.content().getFirst());
 

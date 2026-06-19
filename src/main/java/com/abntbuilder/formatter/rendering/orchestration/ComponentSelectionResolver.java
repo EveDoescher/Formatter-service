@@ -1,4 +1,4 @@
-package com.abntbuilder.formatter.rendering.document;
+package com.abntbuilder.formatter.rendering.orchestration;
 
 import java.util.List;
 import java.util.Objects;

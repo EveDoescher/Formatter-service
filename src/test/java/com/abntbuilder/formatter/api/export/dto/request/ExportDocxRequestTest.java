@@ -3,7 +3,7 @@ package com.abntbuilder.formatter.api.export.dto.request;
 import com.abntbuilder.formatter.application.export.ExportDocxCommand;
 import com.abntbuilder.formatter.document.component.cover.CoverComponent;
 import com.abntbuilder.formatter.document.component.titlepage.TitlePageComponent;
-import com.abntbuilder.formatter.profile.resolution.ClasspathJsonProfileProvider;
+import com.abntbuilder.formatter.config.ClasspathJsonProfileProvider;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

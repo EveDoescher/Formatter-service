@@ -6,7 +6,7 @@ import com.abntbuilder.formatter.document.component.titlepage.TitlePageNature;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
 import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageComponentRule;
 import com.abntbuilder.formatter.profile.resolution.ComponentRuleResolver;
-import com.abntbuilder.formatter.profile.resolution.ClasspathJsonProfileProvider;
+import com.abntbuilder.formatter.config.ClasspathJsonProfileProvider;
 import com.abntbuilder.formatter.rendering.layout.singlepage.HorizontalPlacementResolver;
 import com.abntbuilder.formatter.rendering.layout.singlepage.OrderedLayoutGapResolver;
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutGroup;

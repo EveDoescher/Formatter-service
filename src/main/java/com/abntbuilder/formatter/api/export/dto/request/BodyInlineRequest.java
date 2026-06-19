@@ -30,15 +30,11 @@ public record BodyInlineRequest(
         InlineFormatting fmt = formatting != null ? formatting.toDomain() : InlineFormatting.none();
         return switch (type) {
             case TEXT -> new BodyText(text, fmt);
-            case QUOTE_TEXT -> new BodyQuoteText(
-                    quoteType == null ? BodyQuoteType.SHORT : quoteType,
-                    text,
-                    fmt
-            );
+            case QUOTE_TEXT -> new BodyQuoteText(requireQuoteType(), text, fmt);
             case CITATION -> new BodyCitationCall(
                     requireCitationType(),
-                    mode == null ? BodyCitationMode.PARENTHETICAL : mode,
-                    citationFormatting,
+                    requireMode(),
+                    requireCitationFormatting(citationFormatting),
                     source == null ? Optional.empty() : Optional.of(source.toDomain()),
                     originalSource == null ? Optional.empty() : Optional.of(originalSource.toDomain()),
                     consultedSource == null ? Optional.empty() : Optional.of(consultedSource.toDomain())
@@ -46,8 +42,11 @@ public record BodyInlineRequest(
         };
     }
 
-    BodyInline toDomain() {
-        return toDomain(new CitationFormattingRule("p. ", "; ", "et al.", " apud "));
+    private BodyQuoteType requireQuoteType() {
+        if (quoteType == null) {
+            throw new IllegalArgumentException("quoteType must be provided for QUOTE_TEXT inline content.");
+        }
+        return quoteType;
     }
 
     private BodyCitationType requireCitationType() {
@@ -55,5 +54,22 @@ public record BodyInlineRequest(
             throw new IllegalArgumentException("citationType must be provided for CITATION inline content.");
         }
         return citationType;
+    }
+
+    private BodyCitationMode requireMode() {
+        if (mode == null) {
+            throw new IllegalArgumentException("mode must be provided for CITATION inline content.");
+        }
+        return mode;
+    }
+
+    private static CitationFormattingRule requireCitationFormatting(CitationFormattingRule citationFormatting) {
+        if (citationFormatting == null) {
+            throw new IllegalArgumentException(
+                    "citationFormatting must be provided for CITATION inline content. "
+                            + "Ensure the request includes a profile with bodyContent.citationFormatting."
+            );
+        }
+        return citationFormatting;
     }
 }

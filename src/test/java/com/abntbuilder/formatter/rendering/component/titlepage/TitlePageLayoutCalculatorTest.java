@@ -4,7 +4,7 @@ import com.abntbuilder.formatter.document.component.titlepage.AcademicPerson;
 import com.abntbuilder.formatter.document.component.titlepage.TitlePageComponent;
 import com.abntbuilder.formatter.document.component.titlepage.TitlePageNature;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
-import com.abntbuilder.formatter.profile.resolution.ClasspathJsonProfileProvider;
+import com.abntbuilder.formatter.config.ClasspathJsonProfileProvider;
 import com.abntbuilder.formatter.rendering.layout.singlepage.HorizontalPlacementResolver;
 import com.abntbuilder.formatter.rendering.layout.singlepage.MarginBasedSinglePageSafetyPolicy;
 import com.abntbuilder.formatter.rendering.layout.singlepage.OrderedLayoutGapResolver;

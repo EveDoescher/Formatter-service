@@ -1,4 +1,4 @@
-package com.abntbuilder.formatter.rendering.document;
+package com.abntbuilder.formatter.rendering.orchestration;
 
 import com.abntbuilder.formatter.application.export.ExportDocxCommand;
 import com.abntbuilder.formatter.document.component.approvalsheet.ApprovalSheetComponent;
