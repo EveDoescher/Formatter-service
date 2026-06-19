@@ -1667,7 +1667,12 @@ public enum BodyCitationType {
 }
 ```
 
-Atualizar `BodyCitationCall.renderedText()` para o caso VERBAL: renderiza como nota de rodapé de informação verbal — tipicamente o renderer trata VERBAL como um run especial ou incluindo `(informação verbal)` após a chamada. Por ora, renderizar o texto do author + "informação verbal" entre parênteses.
+Atualizar `CitationFormattingRule` para incluir o campo `verbalCitationLabel` (ex: `"informação verbal"`). O label NÃO pode estar hardcoded no domínio ou no renderer — vem do perfil. O renderer acessa `rule.citationFormatting().verbalCitationLabel()` para montar o texto `"(informação verbal)"` após a chamada de citação.
+
+No perfil JSON, adicionar em `citationFormatting`:
+```json
+"verbalCitationLabel": "informação verbal"
+```
 
 - [ ] **Step 5: Atualizar `BodyInlineType` e `BodyInlineRequest`**
 

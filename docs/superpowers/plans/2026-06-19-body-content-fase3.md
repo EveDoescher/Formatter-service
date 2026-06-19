@@ -51,12 +51,14 @@ package com.abntbuilder.formatter.rendering.component.bodycontent;
 public record BodySectionMetadata(
         String id,
         int level,
-        String renderedTitle  // com prefixo numérico já aplicado, ex: "1 Introdução"
+        String renderedTitle,   // com prefixo numérico já aplicado, ex: "1 Introdução"
+        String renderedNumber   // apenas o número, ex: "1", "1.2" — armazenado separado para evitar split frágil
 ) {
     public BodySectionMetadata {
         if (id == null || id.isBlank()) throw new IllegalArgumentException("id must not be blank.");
         if (level < 1 || level > 6) throw new IllegalArgumentException("level must be between 1 and 6.");
         if (renderedTitle == null || renderedTitle.isBlank()) throw new IllegalArgumentException("renderedTitle must not be blank.");
+        if (renderedNumber == null || renderedNumber.isBlank()) throw new IllegalArgumentException("renderedNumber must not be blank.");
     }
 }
 ```
@@ -321,9 +323,10 @@ List<BodyAbbreviationMetadata> abbreviationMetas = new ArrayList<>();
 Após calcular o título renderizado da seção:
 
 ```java
+String renderedNumber = numberingState.resolveNumber(section.level());  // ex: "1", "1.2"
 String renderedTitle = numberingState.resolveTitle(section.level(), section.title().orElseThrow());
 // ...
-sectionMetas.add(new BodySectionMetadata(section.id(), section.level(), renderedTitle));
+sectionMetas.add(new BodySectionMetadata(section.id(), section.level(), renderedTitle, renderedNumber));
 ```
 
 - [ ] **Step 3: Capturar metadados de display objects no caller (não nos métodos privados estáticos)**
@@ -942,7 +945,7 @@ private record CrossReferenceIndex(
                 BodySectionMetadata m = sections.get(targetId);
                 if (m == null) throw new InvalidBodyContentException(
                         "CROSS_REFERENCE targetId not found: '" + targetId + "' (type: SECTION).");
-                yield m.renderedTitle().split(" ")[0];  // pega só o número "1", "1.2" etc.
+                yield m.renderedNumber();  // número da seção, ex: "1", "1.2" — armazenado separado em BodySectionMetadata
             }
             case FIGURE -> resolveDisplayObjectNumber(targetId, figures, "FIGURE");
             case TABLE -> resolveDisplayObjectNumber(targetId, tables, "TABLE");
@@ -1017,8 +1020,9 @@ private static CrossReferenceIndex buildCrossReferenceIndex(
 
     for (BodySection section : component.sections()) {
         if (section.title().isPresent()) {
+            String renderedNumber = prepassNumbering.resolveNumber(section.level());  // ex: "1", "1.2"
             String renderedTitle = prepassNumbering.resolveTitle(section.level(), section.title().orElseThrow());
-            sectionIndex.put(section.id(), new BodySectionMetadata(section.id(), section.level(), renderedTitle));
+            sectionIndex.put(section.id(), new BodySectionMetadata(section.id(), section.level(), renderedTitle, renderedNumber));
         }
         for (BodyBlock block : section.blocks()) {
             if (block instanceof BodyFigure figure) {

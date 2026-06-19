@@ -521,19 +521,27 @@ Todos os cinco seguem o mesmo padrão — diferem apenas no tipo de metadado con
 package com.abntbuilder.formatter.profile.model.component.indexlist;
 
 import com.abntbuilder.formatter.profile.model.component.ComponentRule;
+import com.abntbuilder.formatter.shared.exception.InvalidProfileStructureException;
 import java.util.Map;
 
 public record IndexListComponentRule(
         String componentId,
         String headingStyleId,
         String headingText,
-        String entryStyleId
+        String entryStyleId,
+        String entryTemplate  // ex: "{number} — {caption}" — declarado no perfil
 ) implements ComponentRule {
     public IndexListComponentRule {
         requireNonBlank(componentId, "componentId");
         requireNonBlank(headingStyleId, "headingStyleId");
         requireNonBlank(headingText, "headingText");
         requireNonBlank(entryStyleId, "entryStyleId");
+        requireNonBlank(entryTemplate, "entryTemplate");
+        if (!entryTemplate.contains("{number}") || !entryTemplate.contains("{caption}")) {
+            throw new InvalidProfileStructureException(
+                    "indexList.entryTemplate must contain {number} and {caption}."
+            );
+        }
     }
     @Override public Map<String, String> contentBindings() { return Map.of(); }
     private static void requireNonBlank(String v, String f) {
@@ -661,8 +669,10 @@ public abstract class AbstractIndexListRenderer<T extends DocumentComponent>
 
         List<BodyDisplayObjectMetadata> items = metadataExtractor().apply(metadata);
         for (BodyDisplayObjectMetadata item : items) {
-            // Formato: "Figura 1 - Caption" (sem número de página nesta fase)
-            String text = item.number() + " - " + item.caption();
+            // Formato declarado no perfil via entryTemplate, ex: "{number} — {caption}"
+            String text = rule.entryTemplate()
+                    .replace("{number}", String.valueOf(item.number()))
+                    .replace("{caption}", item.caption());
             blocks.add(new DocxParagraph(List.of(DocxRun.of(text, entryStyle)), entryStyle));
         }
 
@@ -809,10 +819,11 @@ import jakarta.validation.constraints.NotBlank;
 public record IndexListComponentRuleRequest(
         @NotBlank String headingStyleId,
         @NotBlank String headingText,
-        @NotBlank String entryStyleId
+        @NotBlank String entryStyleId,
+        @NotBlank String entryTemplate  // ex: "{number} — {caption}"
 ) {
     public IndexListComponentRule toDomain(String componentId) {
-        return new IndexListComponentRule(componentId, headingStyleId, headingText, entryStyleId);
+        return new IndexListComponentRule(componentId, headingStyleId, headingText, entryStyleId, entryTemplate);
     }
 }
 ```
@@ -826,26 +837,31 @@ public record IndexListComponentRuleRequest(
   "componentId": "listOfFigures",
   "headingStyleId": "list.heading",
   "headingText": "LISTA DE ILUSTRAÇÕES",
-  "entryStyleId": "list.entry"
+  "entryStyleId": "list.entry",
+  "entryTemplate": "{number} — {caption}"
 },
 "listOfTables": {
   "componentId": "listOfTables",
   "headingText": "LISTA DE TABELAS",
+  "entryTemplate": "{number} — {caption}",
   ...
 },
 "listOfFrames": {
   "componentId": "listOfFrames",
   "headingText": "LISTA DE QUADROS",
+  "entryTemplate": "{number} — {caption}",
   ...
 },
 "listOfCharts": {
   "componentId": "listOfCharts",
   "headingText": "LISTA DE GRÁFICOS",
+  "entryTemplate": "{number} — {caption}",
   ...
 },
 "listOfCodeListings": {
   "componentId": "listOfCodeListings",
   "headingText": "LISTA DE LISTAGENS",
+  "entryTemplate": "{number} — {caption}",
   ...
 }
 ```

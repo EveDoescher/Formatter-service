@@ -285,7 +285,9 @@ git commit -m "feat: add Errata component (renderer, rule, request, sample)"
 
 ## Task 2 — Dedicatória
 
-Componente `flow-content` com página própria. O renderer emite `DocxPageBreak` como primeiro bloco para garantir que a dedicatória sempre comece em nova página. O texto é alinhado à direita na metade inferior — simulado com `indentLeftCm` de aproximadamente metade da largura útil (≈9cm).
+Componente `flow-content` com página própria. O renderer emite `DocxPageBreak` como primeiro bloco para garantir que a dedicatória sempre comece em nova página. O texto é alinhado à direita na metade inferior da página — o número de linhas em branco antes do texto é declarado no perfil via `blankLinesBefore`, evitando valores físicos hardcoded derivados de dimensões específicas de página.
+
+> **Nota arquitetural:** A abordagem anterior usava `indentLeftCm: 9` para simular posicionamento na metade inferior direita — esse é o mesmo anti-padrão do `spacingBefore` grande: valor derivado de dimensões físicas de página específicas, hardcoded, frágil. O posicionamento exato via layout engine dinâmico é refinamento futuro. A abordagem atual usa `blankLinesBefore` padronizado no perfil (valor sugerido: `10`) em vez de um único bloco de espaçamento gigante. O perfil pode ajustar esse valor sem alterar código. O estilo `dedication.text` usa alinhamento RIGHT sem `indentLeftCm`.
 
 **Files:**
 - Create: `DedicationComponent.java`, `DedicationComponentRule.java`, `DedicationRenderer.java`
@@ -326,13 +328,13 @@ import java.util.Map;
 
 public record DedicationComponentRule(
         String componentId,
-        String textStyleId
-        // A posição (metade inferior direita) é declarada no perfil via SinglePageLayoutRule
-        // Nesta fase, renderizar como parágrafo alinhado à direita sem engine single-page
+        String textStyleId,
+        int blankLinesBefore  // número de linhas em branco antes do texto (espaçamento semântico)
 ) implements ComponentRule {
     public DedicationComponentRule {
         requireNonBlank(componentId, "componentId");
         requireNonBlank(textStyleId, "textStyleId");
+        if (blankLinesBefore < 0) throw new IllegalArgumentException("blankLinesBefore must be >= 0.");
     }
     @Override public Map<String, String> contentBindings() { return Map.of(); }
     private static void requireNonBlank(String v, String f) {
@@ -341,8 +343,6 @@ public record DedicationComponentRule(
 }
 ```
 
-> Nota: a dedicatória ABNT deve ficar na metade inferior direita. Nesta fase, renderizar como parágrafo alinhado à direita com `indentLeftCm: 9` (aprox. metade da largura útil de 16cm em A4 com margens 3/2). O posicionamento exato via `SinglePageLayoutEngine` pode ser refinado em fase futura.
-
 - [ ] **Step 3: Criar `DedicationRenderer`**
 
 ```java
@@ -350,6 +350,7 @@ public record DedicationComponentRule(
 package com.abntbuilder.formatter.rendering.component.dedication;
 
 import com.abntbuilder.formatter.document.component.dedication.DedicationComponent;
+import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxPageBreak;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
@@ -361,6 +362,7 @@ import com.abntbuilder.formatter.profile.resolution.ComponentRuleResolver;
 import com.abntbuilder.formatter.profile.resolution.StyleResolver;
 import com.abntbuilder.formatter.rendering.component.ComponentRenderer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class DedicationRenderer implements ComponentRenderer<DedicationComponent> {
@@ -376,10 +378,16 @@ public final class DedicationRenderer implements ComponentRenderer<DedicationCom
                 .resolve(COMPONENT_ID, DedicationComponentRule.class);
         StyleResolver styleResolver = new StyleResolver(profile);
         StyleRule textStyle = styleResolver.resolve(rule.textStyleId());
-        return List.of(
-                new DocxPageBreak(),  // garante página nova
-                new DocxParagraph(List.of(DocxRun.of(component.text(), textStyle)), textStyle)
-        );
+
+        List<DocxBlock> blocks = new ArrayList<>();
+        blocks.add(new DocxPageBreak());  // garante página nova
+        // N linhas em branco antes do texto (declarado no perfil via blankLinesBefore)
+        for (int i = 0; i < rule.blankLinesBefore(); i++) {
+            blocks.add(new DocxBlankLine(textStyle));
+        }
+        // Parágrafo com alinhamento RIGHT (sem indentLeftCm — o alinhamento vem do estilo)
+        blocks.add(new DocxParagraph(List.of(DocxRun.of(component.text(), textStyle)), textStyle));
+        return List.copyOf(blocks);
     }
 }
 ```
@@ -390,7 +398,7 @@ Seguir o mesmo padrão da Errata (Steps 5 e 6 da Task 1).
 
 - [ ] **Step 6: Criar request, adicionar ao perfil, ao `componentOrder`, criar sample, compilar, commit**
 
-Estilo `dedication.text`: Times New Roman 12pt, alinhamento RIGHT, `indentLeftCm: 9`, espaçamento 1.5.
+Estilo `dedication.text`: Times New Roman 12pt, alinhamento RIGHT (sem `indentLeftCm`), espaçamento 1.5. No perfil JSON, declarar `blankLinesBefore: 10` (valor ajustável pelo perfil sem alterar código).
 
 ```bash
 git commit -m "feat: add Dedication component"
@@ -1086,8 +1094,14 @@ public record AbstractComponentRuleRequest(
 Em `DocumentContentRequest` adicionar:
 ```java
 @Valid ResumoRequest resumo,
-@Valid AbstractRequest abstractEn,
+@JsonProperty("abstract") @Valid AbstractRequest abstractEn,
 ```
+
+> **⚠️ `@JsonProperty` obrigatório:** O campo Java se chama `abstractEn` para evitar conflito com a keyword `abstract`, mas o JSON da API deve usar `"abstract"`. Adicionar `@JsonProperty("abstract")` no campo em `DocumentContentRequest`:
+> ```java
+> @JsonProperty("abstract") @Valid AbstractRequest abstractEn,
+> ```
+> Sem isso o campo nunca é deserializado e o componente Abstract silenciosamente não aparece no documento.
 
 No método `toComponents()`:
 ```java
@@ -1168,15 +1182,10 @@ public record ReferenceAuthor(
         if (surname == null || surname.isBlank()) throw new IllegalArgumentException("surname must not be blank.");
         Objects.requireNonNull(givenNames, "givenNames must not be null");
     }
-
-    // Renderização ABNT: SOBRENOME, Nome. ou SOBRENOME.
-    public String renderedAbnt() {
-        return givenNames
-                .map(given -> surname.toUpperCase() + ", " + given + ".")
-                .orElse(surname.toUpperCase() + ".");
-    }
 }
 ```
+
+> **Nota arquitetural:** `ReferenceAuthor` é um valor de domínio puro — não deve conter lógica de formatação. A renderização de nomes de autores no formato ABNT (SOBRENOME, Nome.) pertence ao `ReferencesEntryFormatter`, que acessa os campos da `ReferencesFormattingRule` do perfil (ver Step 5). Isso mantém o domínio livre de dependências de perfil e permite que diferentes perfis usem convenções distintas de formatação de autores sem alterar o domínio.
 
 - [ ] **Step 3: Criar `ReferenceEntry`**
 
@@ -1220,7 +1229,50 @@ public record ReferencesComponent(List<ReferenceEntry> entries) implements Docum
 }
 ```
 
-- [ ] **Step 5: Criar `ReferencesEntryFormatter`**
+- [ ] **Step 5: Criar `ReferencesFormattingRule`, `ReferenceSegment` e `ReferencesEntryFormatter`**
+
+> **Nota arquitetural:** `ReferencesFormattingRule` é um record de perfil que deve ser criado em `profile/model/component/references/` e adicionado ao perfil JSON (ver Step 6). Ele encapsula todos os labels e separadores de formatação de referências, eliminando strings hardcoded do formatter.
+
+```java
+// src/main/java/com/abntbuilder/formatter/profile/model/component/references/ReferencesFormattingRule.java
+package com.abntbuilder.formatter.profile.model.component.references;
+
+public record ReferencesFormattingRule(
+        String availableAtLabel,           // ex: "Disponível em: "
+        String accessedAtLabel,            // ex: "Acesso em: "
+        String etAlLabel,                  // ex: "et al."
+        String inLabel,                    // ex: "In: "
+        String authorSurnameGivenSeparator, // ex: ", "
+        String authorNameTerminator,       // ex: "."
+        String multiAuthorJoiner,          // ex: "; "
+        boolean authorSurnameUppercase     // ex: true
+) {
+    public ReferencesFormattingRule {
+        requireNonBlank(availableAtLabel, "availableAtLabel");
+        requireNonBlank(accessedAtLabel, "accessedAtLabel");
+        requireNonBlank(etAlLabel, "etAlLabel");
+        requireNonBlank(inLabel, "inLabel");
+        requireNonBlank(authorSurnameGivenSeparator, "authorSurnameGivenSeparator");
+        requireNonBlank(authorNameTerminator, "authorNameTerminator");
+        requireNonBlank(multiAuthorJoiner, "multiAuthorJoiner");
+    }
+    private static void requireNonBlank(String v, String f) {
+        if (v == null || v.isBlank()) throw new IllegalArgumentException(f + " must not be blank.");
+    }
+}
+```
+
+```java
+// src/main/java/com/abntbuilder/formatter/rendering/component/references/ReferenceSegment.java
+package com.abntbuilder.formatter.rendering.component.references;
+
+// Em vez de buildReferenceRuns que parseia strings com marcadores "**...**":
+// ReferencesEntryFormatter.format() retorna List<ReferenceSegment>.
+// O renderer itera os segmentos e emite um DocxRun por segmento,
+// com bold=true nos segmentos marcados como bold.
+// Isso substitui o método buildReferenceRuns que parseia strings.
+public record ReferenceSegment(String text, boolean bold) {}
+```
 
 Formata o texto de cada entrada por tipo, seguindo as regras da ABNT NBR 6023:
 
@@ -1228,7 +1280,13 @@ Formata o texto de cada entrada por tipo, seguindo as regras da ABNT NBR 6023:
 // src/main/java/com/abntbuilder/formatter/rendering/component/references/ReferencesEntryFormatter.java
 public final class ReferencesEntryFormatter {
 
-    public String format(ReferenceEntry entry) {
+    private final ReferencesFormattingRule rule;
+
+    public ReferencesEntryFormatter(ReferencesFormattingRule rule) {
+        this.rule = Objects.requireNonNull(rule, "rule must not be null");
+    }
+
+    public List<ReferenceSegment> format(ReferenceEntry entry) {
         return switch (entry.type()) {
             case BOOK -> formatBook(entry);
             case BOOK_CHAPTER -> formatBookChapter(entry);
@@ -1239,70 +1297,72 @@ public final class ReferencesEntryFormatter {
         };
     }
 
-    private String formatBook(ReferenceEntry e) {
+    private List<ReferenceSegment> formatBook(ReferenceEntry e) {
         // AUTOR(ES). Título: subtítulo. Edição. Cidade: Editora, Ano.
-        StringBuilder sb = new StringBuilder();
-        sb.append(renderAuthors(e.authors()));
-        sb.append(renderTitle(e.title(), e.subtitle()));
-        e.edition().ifPresent(ed -> sb.append(" ").append(ed).append(" ed."));
-        sb.append(". ");
-        e.city().ifPresent(c -> sb.append(c).append(": "));
-        e.publisher().ifPresent(p -> sb.append(p).append(", "));
-        sb.append(e.year()).append(".");
-        return sb.toString();
+        List<ReferenceSegment> segments = new ArrayList<>();
+        segments.add(new ReferenceSegment(renderAuthors(e.authors()), false));
+        segments.addAll(renderTitle(e.title(), e.subtitle()));
+        e.edition().ifPresent(ed -> segments.add(new ReferenceSegment(" " + ed + " ed.", false)));
+        segments.add(new ReferenceSegment(". ", false));
+        e.city().ifPresent(c -> segments.add(new ReferenceSegment(c + ": ", false)));
+        e.publisher().ifPresent(p -> segments.add(new ReferenceSegment(p + ", ", false)));
+        segments.add(new ReferenceSegment(e.year() + ".", false));
+        return List.copyOf(segments);
     }
 
-    private String formatWebsite(ReferenceEntry e) {
+    private List<ReferenceSegment> formatWebsite(ReferenceEntry e) {
         // AUTOR(ES). Título. Disponível em: URL. Acesso em: DATA.
-        StringBuilder sb = new StringBuilder();
-        sb.append(renderAuthors(e.authors()));
-        sb.append(renderTitle(e.title(), e.subtitle()));
-        e.url().ifPresent(u -> sb.append(" Disponível em: ").append(u).append("."));
-        e.accessDate().ifPresent(d -> sb.append(" Acesso em: ").append(d).append("."));
-        return sb.toString();
+        List<ReferenceSegment> segments = new ArrayList<>();
+        segments.add(new ReferenceSegment(renderAuthors(e.authors()), false));
+        segments.addAll(renderTitle(e.title(), e.subtitle()));
+        e.url().ifPresent(u -> segments.add(new ReferenceSegment(" " + rule.availableAtLabel() + u + ".", false)));
+        e.accessDate().ifPresent(d -> segments.add(new ReferenceSegment(" " + rule.accessedAtLabel() + d + ".", false)));
+        return List.copyOf(segments);
     }
 
-    private String formatThesis(ReferenceEntry e) {
+    private List<ReferenceSegment> formatThesis(ReferenceEntry e) {
         // AUTOR. Título. Ano. Dissertação/Tese (grau) — Instituição, Cidade, Ano.
-        StringBuilder sb = new StringBuilder();
-        sb.append(renderAuthors(e.authors()));
-        sb.append(renderTitle(e.title(), e.subtitle()));
-        sb.append(". ").append(e.year()).append(".");
+        List<ReferenceSegment> segments = new ArrayList<>();
+        segments.add(new ReferenceSegment(renderAuthors(e.authors()), false));
+        segments.addAll(renderTitle(e.title(), e.subtitle()));
+        segments.add(new ReferenceSegment(". " + e.year() + ".", false));
         // institution, degree — podem vir de campos adicionais (subtitle reutilizado aqui por ora)
-        return sb.toString();
+        return List.copyOf(segments);
     }
 
-    private String formatJournal(ReferenceEntry e) {
+    private List<ReferenceSegment> formatJournal(ReferenceEntry e) {
         // AUTOR. Título do artigo. Nome do periódico, v., n., p., ano.
         // (publisher = nome do periódico, pages = p.)
-        StringBuilder sb = new StringBuilder();
-        sb.append(renderAuthors(e.authors()));
-        sb.append(renderTitle(e.title(), e.subtitle()));
-        e.publisher().ifPresent(journal -> sb.append(" ").append(journal));
-        e.pages().ifPresent(p -> sb.append(", p. ").append(p));
-        sb.append(", ").append(e.year()).append(".");
-        return sb.toString();
+        List<ReferenceSegment> segments = new ArrayList<>();
+        segments.add(new ReferenceSegment(renderAuthors(e.authors()), false));
+        segments.addAll(renderTitle(e.title(), e.subtitle()));
+        e.publisher().ifPresent(journal -> segments.add(new ReferenceSegment(" " + journal, false)));
+        e.pages().ifPresent(p -> segments.add(new ReferenceSegment(", p. " + p, false)));
+        segments.add(new ReferenceSegment(", " + e.year() + ".", false));
+        return List.copyOf(segments);
     }
 
-    private String formatBookChapter(ReferenceEntry e) {
+    private List<ReferenceSegment> formatBookChapter(ReferenceEntry e) {
         // ABNT NBR 6023: AUTOR DO CAPÍTULO. Título do capítulo. In: AUTOR DO LIVRO. Título do livro. ed. Cidade: Editora, Ano. p. XX-XX.
         // ReferenceEntry reutiliza campos: title = título do capítulo, subtitle = título do livro, publisher = editora, pages = páginas
         // Para capítulo: o campo `url` é reutilizado para armazenar o autor do livro (ou adicionar campo específico em ReferenceEntry)
-        StringBuilder sb = new StringBuilder();
-        sb.append(renderAuthors(e.authors()));
-        // título do capítulo em negrito — marcador para o renderer
-        sb.append(renderTitle(e.title(), Optional.empty()));
-        sb.append(" In: ");
+        List<ReferenceSegment> segments = new ArrayList<>();
+        segments.add(new ReferenceSegment(renderAuthors(e.authors()), false));
+        segments.addAll(renderTitle(e.title(), Optional.empty()));
+        segments.add(new ReferenceSegment(" " + rule.inLabel(), false));
         // autor do livro: reutilizar campo url para armazenar — ou adicionar campo bookAuthor em ReferenceEntry
-        e.url().ifPresent(bookAuthor -> sb.append(bookAuthor.toUpperCase()).append(". "));
+        e.url().ifPresent(bookAuthor -> segments.add(new ReferenceSegment(bookAuthor.toUpperCase() + ". ", false)));
         // título do livro: reutilizar subtitle para armazenar título do livro
-        e.subtitle().ifPresent(bookTitle -> sb.append("**").append(bookTitle).append("**. "));
-        e.edition().ifPresent(ed -> sb.append(ed).append(" ed. "));
-        e.city().ifPresent(c -> sb.append(c).append(": "));
-        e.publisher().ifPresent(p -> sb.append(p).append(", "));
-        sb.append(e.year()).append(".");
-        e.pages().ifPresent(p -> sb.append(" p. ").append(p).append("."));
-        return sb.toString();
+        e.subtitle().ifPresent(bookTitle -> {
+            segments.add(new ReferenceSegment(bookTitle, true));   // bold
+            segments.add(new ReferenceSegment(". ", false));
+        });
+        e.edition().ifPresent(ed -> segments.add(new ReferenceSegment(ed + " ed. ", false)));
+        e.city().ifPresent(c -> segments.add(new ReferenceSegment(c + ": ", false)));
+        e.publisher().ifPresent(p -> segments.add(new ReferenceSegment(p + ", ", false)));
+        segments.add(new ReferenceSegment(e.year() + ".", false));
+        e.pages().ifPresent(p -> segments.add(new ReferenceSegment(" p. " + p + ".", false)));
+        return List.copyOf(segments);
     }
 
     // Nota para quem implementar: ReferenceEntry pode precisar de campos adicionais
@@ -1310,62 +1370,62 @@ public final class ReferencesEntryFormatter {
     // A alternativa mais limpa é adicionar Optional<String> bookTitle e
     // Optional<List<ReferenceAuthor>> bookAuthors em ReferenceEntry antes da Task 6.
 
-    private String formatLegislation(ReferenceEntry e) {
+    private List<ReferenceSegment> formatLegislation(ReferenceEntry e) {
         // título, ementa, data. url.
-        StringBuilder sb = new StringBuilder();
-        sb.append(e.title());
-        e.subtitle().ifPresent(s -> sb.append(". ").append(s));
-        sb.append(". ").append(e.year()).append(".");
-        e.url().ifPresent(u -> sb.append(" Disponível em: ").append(u).append("."));
-        return sb.toString();
+        List<ReferenceSegment> segments = new ArrayList<>();
+        segments.add(new ReferenceSegment(e.title(), false));
+        e.subtitle().ifPresent(s -> segments.add(new ReferenceSegment(". " + s, false)));
+        segments.add(new ReferenceSegment(". " + e.year() + ".", false));
+        e.url().ifPresent(u -> segments.add(new ReferenceSegment(" " + rule.availableAtLabel() + u + ".", false)));
+        return List.copyOf(segments);
     }
 
     private String renderAuthors(List<ReferenceAuthor> authors) {
         if (authors.isEmpty()) return "";
-        if (authors.size() == 1) return authors.get(0).renderedAbnt() + " ";
-        if (authors.size() <= 3) {
-            return authors.stream()
-                    .map(ReferenceAuthor::renderedAbnt)
-                    .collect(java.util.stream.Collectors.joining("; ")) + " ";
+        if (authors.size() > 3) {
+            return formatAuthor(authors.get(0)) + " " + rule.etAlLabel() + " ";
         }
-        return authors.get(0).renderedAbnt() + " et al. ";
+        return authors.stream()
+                .map(this::formatAuthor)
+                .collect(java.util.stream.Collectors.joining(rule.multiAuthorJoiner())) + " ";
     }
 
-    private String renderTitle(String title, Optional<String> subtitle) {
-        // Retorna o título entre marcadores "**" para que o renderer identifique o trecho em negrito
-        return subtitle.map(s -> "**" + title + "**" + ": " + s)
-                       .orElse("**" + title + "**");
+    private String formatAuthor(ReferenceAuthor author) {
+        String surname = rule.authorSurnameUppercase()
+                ? author.surname().toUpperCase() : author.surname();
+        return author.givenNames()
+                .map(given -> surname + rule.authorSurnameGivenSeparator() + given + rule.authorNameTerminator())
+                .orElse(surname + rule.authorNameTerminator());
+    }
+
+    private List<ReferenceSegment> renderTitle(String title, Optional<String> subtitle) {
+        List<ReferenceSegment> segments = new ArrayList<>();
+        segments.add(new ReferenceSegment(title, true));  // título em bold
+        subtitle.ifPresent(s -> segments.add(new ReferenceSegment(": " + s, false)));
+        return segments;
     }
 }
 ```
 
 > **Negrito do título em referências — implementação concreta:**
 >
-> O `ReferencesEntryFormatter.format()` retorna strings com marcadores `**título**`. O `ReferencesRenderer` deve dividir cada string por esses marcadores e emitir múltiplos `DocxRun`:
+> `ReferencesEntryFormatter.format()` retorna `List<ReferenceSegment>`. O `ReferencesRenderer` itera os segmentos e emite um `DocxRun` por segmento, com `bold=true` nos segmentos marcados como bold:
 >
 > ```java
-> // Em ReferencesRenderer.render(), substituir:
-> //   blocks.add(new DocxParagraph(List.of(DocxRun.of(text, entryStyle)), entryStyle));
-> // por:
-> blocks.add(new DocxParagraph(buildReferenceRuns(text, entryStyle), entryStyle));
->
-> private static List<DocxRun> buildReferenceRuns(String text, StyleRule baseStyle) {
->     List<DocxRun> runs = new ArrayList<>();
->     // Dividir em segmentos: texto normal e trechos entre **...**
->     String[] parts = text.split("\\*\\*", -1);
->     boolean bold = false;
->     for (String part : parts) {
->         if (!part.isEmpty()) {
->             InlineFormatting formatting = bold
+> // Em ReferencesRenderer.render():
+> List<ReferenceSegment> segments = formatter.format(entry);
+> List<DocxRun> runs = segments.stream()
+>         .map(seg -> {
+>             InlineFormatting fmt = seg.bold()
 >                     ? new InlineFormatting(Optional.of(true), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty())
 >                     : InlineFormatting.none();
->             runs.add(new DocxRun(part, baseStyle, formatting));
->         }
->         bold = !bold;
->     }
->     return runs;
-> }
+>             return new DocxRun(seg.text(), entryStyle, fmt);
+>         })
+>         .toList();
+> blocks.add(new DocxParagraph(runs, entryStyle));
 > ```
+>
+> Isso substitui completamente o método `buildReferenceRuns` que parseia strings com marcadores `**...**`.
 
 - [ ] **Step 6: Criar `ReferencesComponentRule`**
 
@@ -1381,7 +1441,8 @@ public record ReferencesComponentRule(
         String headingStyleId,
         String headingText,
         String entryStyleId,
-        int blankLinesBetweenEntries
+        int blankLinesBetweenEntries,
+        ReferencesFormattingRule formattingRule
 ) implements ComponentRule {
     public ReferencesComponentRule {
         requireNonBlank(componentId, "componentId");
@@ -1389,6 +1450,7 @@ public record ReferencesComponentRule(
         requireNonBlank(headingText, "headingText");
         requireNonBlank(entryStyleId, "entryStyleId");
         if (blankLinesBetweenEntries < 0) throw new IllegalArgumentException("blankLinesBetweenEntries must be >= 0.");
+        Objects.requireNonNull(formattingRule, "formattingRule must not be null");
     }
     @Override public Map<String, String> contentBindings() { return Map.of(); }
     private static void requireNonBlank(String v, String f) {
@@ -1422,7 +1484,6 @@ import java.util.List;
 public final class ReferencesRenderer implements ComponentRenderer<ReferencesComponent> {
 
     public static final String COMPONENT_ID = "references";
-    private final ReferencesEntryFormatter formatter = new ReferencesEntryFormatter();
 
     @Override public String componentId() { return COMPONENT_ID; }
     @Override public Class<ReferencesComponent> componentType() { return ReferencesComponent.class; }
@@ -1431,6 +1492,8 @@ public final class ReferencesRenderer implements ComponentRenderer<ReferencesCom
     public List<DocxBlock> render(ReferencesComponent component, DocumentProfile profile) {
         ReferencesComponentRule rule = new ComponentRuleResolver(profile)
                 .resolve(COMPONENT_ID, ReferencesComponentRule.class);
+        ReferencesFormattingRule formattingRule = rule.formattingRule();
+        ReferencesEntryFormatter formatter = new ReferencesEntryFormatter(formattingRule);
         StyleResolver styleResolver = new StyleResolver(profile);
         StyleRule headingStyle = styleResolver.resolve(rule.headingStyleId());
         StyleRule entryStyle = styleResolver.resolve(rule.entryStyleId());
@@ -1448,8 +1511,16 @@ public final class ReferencesRenderer implements ComponentRenderer<ReferencesCom
                     blocks.add(new DocxBlankLine(blankStyle));
                 }
             }
-            String text = formatter.format(entry);
-            blocks.add(new DocxParagraph(buildReferenceRuns(text, entryStyle), entryStyle));
+            List<ReferenceSegment> segments = formatter.format(entry);
+            List<DocxRun> runs = segments.stream()
+                    .map(seg -> {
+                        InlineFormatting fmt = seg.bold()
+                                ? new InlineFormatting(Optional.of(true), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty())
+                                : InlineFormatting.none();
+                        return new DocxRun(seg.text(), entryStyle, fmt);
+                    })
+                    .toList();
+            blocks.add(new DocxParagraph(runs, entryStyle));
             first = false;
         }
 
@@ -1482,7 +1553,11 @@ docs/samples/references/references-empty-invalid.json
 
 ```java
 class ReferencesEntryFormatterTest {
-    private final ReferencesEntryFormatter formatter = new ReferencesEntryFormatter();
+    private final ReferencesFormattingRule abntRule = new ReferencesFormattingRule(
+            "Disponível em: ", "Acesso em: ", "et al.", "In: ",
+            ", ", ".", "; ", true
+    );
+    private final ReferencesEntryFormatter formatter = new ReferencesEntryFormatter(abntRule);
 
     @Test void shouldFormatBookWithOneAuthor() { ... }
     @Test void shouldFormatBookWithThreeAuthors() { ... }
