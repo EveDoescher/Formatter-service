@@ -301,12 +301,18 @@ public class Docx4jWriter implements DocxWriter {
         tableProperties.setJc(justification);
 
         TblBorders borders = objectFactory.createTblBorders();
-        borders.setTop(createTableBorder());
-        borders.setLeft(createTableBorder());
-        borders.setBottom(createTableBorder());
-        borders.setRight(createTableBorder());
-        borders.setInsideH(createTableBorder());
-        borders.setInsideV(createTableBorder());
+        if (tableBlock.borderStyle() == com.abntbuilder.formatter.output.docx.api.TableBorderStyle.CLOSED) {
+            borders.setTop(createTableBorder());
+            borders.setBottom(createTableBorder());
+            borders.setLeft(createTableBorder());
+            borders.setRight(createTableBorder());
+            borders.setInsideH(createTableBorder());
+            borders.setInsideV(createTableBorder());
+        } else {
+            borders.setTop(createTableBorder());
+            borders.setBottom(createTableBorder());
+            borders.setInsideH(createTableBorder());
+        }
         tableProperties.setTblBorders(borders);
 
         return tableProperties;

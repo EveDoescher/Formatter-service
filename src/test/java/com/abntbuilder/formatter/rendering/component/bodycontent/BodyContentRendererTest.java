@@ -33,6 +33,7 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContent
 import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectContinuationLabels;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FigureRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.FrameRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.TableRule;
 import org.junit.jupiter.api.Test;

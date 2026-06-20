@@ -32,8 +32,10 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContent
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentNumberingRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FigureRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.FrameRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.TableRule;
+import com.abntbuilder.formatter.output.docx.api.TableBorderStyle;
 import com.abntbuilder.formatter.profile.resolution.ComponentRuleResolver;
 import com.abntbuilder.formatter.profile.resolution.StyleResolver;
 import com.abntbuilder.formatter.rendering.component.ComponentRenderer;
@@ -87,6 +89,9 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
         DisplayObjectRenderingState<BodyTable> tableRenderingState = new DisplayObjectRenderingState<>(
                 tablesFrom(component.sections())
         );
+        DisplayObjectRenderingState<BodyFrame> frameRenderingState = new DisplayObjectRenderingState<>(
+                framesFrom(component.sections())
+        );
 
         for (BodySection section : component.sections()) {
             if (section.title().isPresent()) {
@@ -116,7 +121,8 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                         rule,
                         styleResolver,
                         figureRenderingState,
-                        tableRenderingState
+                        tableRenderingState,
+                        frameRenderingState
                 ));
                 previousBlockWasTextualContent = contentBlock instanceof BodyParagraph
                         || contentBlock instanceof BodyLongQuote;
@@ -141,7 +147,8 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             BodyContentComponentRule rule,
             StyleResolver styleResolver,
             DisplayObjectRenderingState<BodyFigure> figureRenderingState,
-            DisplayObjectRenderingState<BodyTable> tableRenderingState
+            DisplayObjectRenderingState<BodyTable> tableRenderingState,
+            DisplayObjectRenderingState<BodyFrame> frameRenderingState
     ) {
         return switch (contentBlock) {
             case BodyParagraph paragraph -> {
@@ -175,7 +182,7 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                         })
                         .toList();
             }
-            case BodyFrame frame -> throw new UnsupportedOperationException("Rendering BodyFrame is not supported yet");
+            case BodyFrame frame -> renderFrame(frame, rule.frame(), styleResolver, frameRenderingState);
         };
     }
 
@@ -294,7 +301,8 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                 rule.tableAlignment(),
                 rule.repeatHeaderOnPageBreak(),
                 renderSource,
-                true
+                true,
+                TableBorderStyle.OPEN
         ));
 
         if (renderSource) {
@@ -503,8 +511,85 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                 }
             }
         }
-
         return List.copyOf(tables);
+    }
+
+    private static List<BodyFrame> framesFrom(List<BodySection> sections) {
+        List<BodyFrame> frames = new ArrayList<>();
+        for (BodySection section : sections) {
+            for (BodyBlock block : section.blocks()) {
+                if (block instanceof BodyFrame frame) {
+                    frames.add(frame);
+                }
+            }
+        }
+        return List.copyOf(frames);
+    }
+
+    private static boolean shouldRenderSource(
+            BodyFrame frame,
+            FrameRule rule,
+            DisplayObjectContinuationPart part,
+            DisplayObjectRenderingState<BodyFrame> frameRenderingState
+    ) {
+        if (frameRenderingState.sourceFor(frame).isEmpty()) {
+            return false;
+        }
+
+        return switch (rule.sourcePlacement()) {
+            case EVERY_PART -> true;
+            case LAST_PART_ONLY -> part.last();
+        };
+    }
+
+    private static List<DocxBlock> renderFrame(
+            BodyFrame frame,
+            FrameRule rule,
+            StyleResolver styleResolver,
+            DisplayObjectRenderingState<BodyFrame> frameRenderingState
+    ) {
+        DisplayObjectContinuationPart part = frameRenderingState.nextPart(frame, rule.continuationLabels());
+        boolean renderSource = shouldRenderSource(frame, rule, part, frameRenderingState);
+        List<DocxBlock> blocks = new ArrayList<>();
+
+        StyleRule captionStyle = styleResolver.resolve(rule.captionStyleId());
+        blocks.add(new DocxParagraph(
+                List.of(DocxRun.of(resolveCaptionText(frame.caption(), rule.captionTemplate(), part), captionStyle)),
+                captionStyle,
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                true,
+                true
+        ));
+        blocks.add(new DocxTableBlock(
+                frame.columns().stream().map(column -> column.header()).toList(),
+                frame.rows().stream().map(row -> row.cells()).toList(),
+                styleResolver.resolve(rule.headerStyleId()),
+                styleResolver.resolve(rule.cellStyleId()),
+                rule.widthPercent(),
+                rule.tableAlignment(),
+                rule.repeatHeaderOnPageBreak(),
+                renderSource,
+                true,
+                TableBorderStyle.CLOSED
+        ));
+
+        if (renderSource) {
+            String source = frameRenderingState.sourceFor(frame).orElseThrow();
+            StyleRule sourceStyle = styleResolver.resolve(rule.sourceStyleId());
+            blocks.add(new DocxParagraph(
+                    List.of(DocxRun.of(rule.sourceTemplate().replace("{source}", source), sourceStyle)),
+                    sourceStyle,
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    false,
+                    true
+            ));
+        }
+
+        return List.copyOf(blocks);
     }
 
     private static final class SectionNumberingState {

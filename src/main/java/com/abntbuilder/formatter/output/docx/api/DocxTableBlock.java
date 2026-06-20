@@ -16,7 +16,8 @@ public record DocxTableBlock(
         TextAlignment alignment,
         boolean repeatHeaderOnPageBreak,
         boolean keepWithNext,
-        boolean keepLines
+        boolean keepLines,
+        TableBorderStyle borderStyle
 ) implements DocxBlock {
 
     public DocxTableBlock {
@@ -26,6 +27,7 @@ public record DocxTableBlock(
         Objects.requireNonNull(cellStyleRule, "cellStyleRule must not be null");
         requirePositive(widthPercent, "widthPercent");
         Objects.requireNonNull(alignment, "alignment must not be null");
+        Objects.requireNonNull(borderStyle, "borderStyle must not be null");
 
         List<String> resolvedHeaders = List.copyOf(headers);
         List<List<String>> resolvedRows = rows.stream()
