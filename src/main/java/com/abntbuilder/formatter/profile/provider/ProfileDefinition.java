@@ -22,6 +22,7 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContent
 import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectContinuationLabels;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FigureRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.FrameRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.TableRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
@@ -408,6 +409,7 @@ public record ProfileDefinition(
             BodyContentLayoutRuleDefinition layout,
             FigureRuleDefinition figure,
             TableRuleDefinition table,
+            FrameRuleDefinition frame,
             CitationFormattingRuleDefinition citationFormatting
     ) {
         BodyContentComponentRule toDomain() {
@@ -416,6 +418,7 @@ public record ProfileDefinition(
             requireNonNull(layout, "bodyContent.layout");
             requireNonNull(figure, "bodyContent.figure");
             requireNonNull(table, "bodyContent.table");
+            requireNonNull(frame, "bodyContent.frame");
             requireNonNull(citationFormatting, "bodyContent.citationFormatting");
 
             return new BodyContentComponentRule(
@@ -425,6 +428,7 @@ public record ProfileDefinition(
                     layout.toDomain(),
                     figure.toDomain(),
                     table.toDomain(),
+                    frame.toDomain(),
                     citationFormatting.toDomain()
             );
         }
@@ -522,6 +526,38 @@ public record ProfileDefinition(
             requireNonNull(continuationLabels, "bodyContent.table.continuationLabels");
 
             return new TableRule(
+                    captionStyleId,
+                    sourceStyleId,
+                    headerStyleId,
+                    cellStyleId,
+                    captionTemplate,
+                    sourceTemplate,
+                    continuationLabels.toDomain(),
+                    sourcePlacement,
+                    tableAlignment,
+                    widthPercent,
+                    repeatHeaderOnPageBreak
+            );
+        }
+    }
+
+    public record FrameRuleDefinition(
+            String captionStyleId,
+            String sourceStyleId,
+            String headerStyleId,
+            String cellStyleId,
+            String captionTemplate,
+            String sourceTemplate,
+            DisplayObjectContinuationLabelsDefinition continuationLabels,
+            DisplayObjectSourcePlacement sourcePlacement,
+            TextAlignment tableAlignment,
+            BigDecimal widthPercent,
+            Boolean repeatHeaderOnPageBreak
+    ) {
+        FrameRule toDomain() {
+            requireNonNull(continuationLabels, "bodyContent.frame.continuationLabels");
+
+            return new FrameRule(
                     captionStyleId,
                     sourceStyleId,
                     headerStyleId,

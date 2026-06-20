@@ -299,7 +299,11 @@ class BodyContentRendererTest {
                         style("bodyContent.table.header", true, false),
                         style("bodyContent.table.cell", false, false),
                         style("bodyContent.list.ordered", false, false),
-                        style("bodyContent.list.unordered", false, false)
+                        style("bodyContent.list.unordered", false, false),
+                        style("bodyContent.frame.caption", false, false),
+                        style("bodyContent.frame.source", false, false),
+                        style("bodyContent.frame.header", true, false),
+                        style("bodyContent.frame.cell", false, false)
                 ),
                 List.of(new BodyContentComponentRule(
                         "bodyContent",
@@ -317,6 +321,7 @@ class BodyContentRendererTest {
                         new BodyContentLayoutRule(1, 1, false, "bodyContent.paragraph"),
                         figureRule(),
                         tableRule(),
+                        frameRule(),
                         new CitationFormattingRule("p. ", "; ", "et al.", " apud ")
                 )),
                 List.of("bodyContent")
@@ -344,7 +349,11 @@ class BodyContentRendererTest {
                         style("bodyContent.table.header", true, false),
                         style("bodyContent.table.cell", false, false),
                         style("bodyContent.list.ordered", false, false),
-                        style("bodyContent.list.unordered", false, false)
+                        style("bodyContent.list.unordered", false, false),
+                        style("bodyContent.frame.caption", false, false),
+                        style("bodyContent.frame.source", false, false),
+                        style("bodyContent.frame.header", true, false),
+                        style("bodyContent.frame.cell", false, false)
                 ),
                 List.of(new BodyContentComponentRule(
                         "bodyContent",
@@ -362,6 +371,7 @@ class BodyContentRendererTest {
                         new BodyContentLayoutRule(1, 1, true, "bodyContent.paragraph"),
                         figureRule(),
                         tableRule(),
+                        frameRule(),
                         new CitationFormattingRule("p. ", "; ", "et al.", " apud ")
                 )),
                 List.of("bodyContent")
@@ -428,6 +438,22 @@ class BodyContentRendererTest {
                 "bodyContent.table.header",
                 "bodyContent.table.cell",
                 "Tabela {number} - {caption}",
+                "Fonte: {source}",
+                new DisplayObjectContinuationLabels("continua", "continuação", "conclusão"),
+                DisplayObjectSourcePlacement.LAST_PART_ONLY,
+                TextAlignment.CENTER,
+                BigDecimal.valueOf(100),
+                true
+        );
+    }
+
+    private static FrameRule frameRule() {
+        return new FrameRule(
+                "bodyContent.frame.caption",
+                "bodyContent.frame.source",
+                "bodyContent.frame.header",
+                "bodyContent.frame.cell",
+                "Quadro {number} - {caption}",
                 "Fonte: {source}",
                 new DisplayObjectContinuationLabels("continua", "continuação", "conclusão"),
                 DisplayObjectSourcePlacement.LAST_PART_ONLY,

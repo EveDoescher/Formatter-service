@@ -110,6 +110,7 @@ class ComponentRulesRequestTest {
                 new BodyContentLayoutRuleRequest(1, 1, false, "bodyContent.paragraph"),
                 figureRuleRequest(),
                 tableRuleRequest(),
+                frameRuleRequest(),
                 new CitationFormattingRuleRequest("p. ", "; ", "et al.", " apud ")
         );
     }
@@ -139,6 +140,22 @@ class ComponentRulesRequestTest {
                 "bodyContent.table.header",
                 "bodyContent.table.cell",
                 "Tabela {number} - {caption}",
+                "Fonte: {source}",
+                new DisplayObjectContinuationLabelsRequest("continua", "continuação", "conclusão"),
+                DisplayObjectSourcePlacement.LAST_PART_ONLY,
+                TextAlignment.CENTER,
+                BigDecimal.valueOf(100),
+                true
+        );
+    }
+
+    private static FrameRuleRequest frameRuleRequest() {
+        return new FrameRuleRequest(
+                "bodyContent.frame.caption",
+                "bodyContent.frame.source",
+                "bodyContent.frame.header",
+                "bodyContent.frame.cell",
+                "Quadro {number} - {caption}",
                 "Fonte: {source}",
                 new DisplayObjectContinuationLabelsRequest("continua", "continuação", "conclusão"),
                 DisplayObjectSourcePlacement.LAST_PART_ONLY,

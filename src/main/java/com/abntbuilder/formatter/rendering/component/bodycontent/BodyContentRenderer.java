@@ -5,6 +5,7 @@ import com.abntbuilder.formatter.document.component.bodycontent.BodyBlock;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationCall;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationType;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyFigure;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyFrame;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyInline;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyLongQuote;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyImageSource;
@@ -174,6 +175,7 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                         })
                         .toList();
             }
+            case BodyFrame frame -> throw new UnsupportedOperationException("Rendering BodyFrame is not supported yet");
         };
     }
 
