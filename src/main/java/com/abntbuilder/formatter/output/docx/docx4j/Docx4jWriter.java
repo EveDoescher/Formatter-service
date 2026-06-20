@@ -21,6 +21,8 @@ import com.abntbuilder.formatter.document.component.bodycontent.InlineFormatting
 import org.docx4j.wml.BooleanDefaultTrue;
 import org.docx4j.wml.U;
 import org.docx4j.wml.UnderlineEnumeration;
+import org.docx4j.wml.CTVerticalAlignRun;
+import org.docx4j.wml.STVerticalAlignRun;
 import org.docx4j.wml.CTPageNumber;
 import org.docx4j.wml.CTBorder;
 import org.docx4j.wml.FldChar;
@@ -574,6 +576,22 @@ public class Docx4jWriter implements DocxWriter {
                 U u = objectFactory.createU();
                 u.setVal(UnderlineEnumeration.SINGLE);
                 rPr.setU(u);
+            }
+        });
+
+        formatting.superscript().ifPresent(sup -> {
+            if (sup) {
+                CTVerticalAlignRun vertAlign = objectFactory.createCTVerticalAlignRun();
+                vertAlign.setVal(STVerticalAlignRun.SUPERSCRIPT);
+                rPr.setVertAlign(vertAlign);
+            }
+        });
+
+        formatting.subscript().ifPresent(sub -> {
+            if (sub) {
+                CTVerticalAlignRun vertAlign = objectFactory.createCTVerticalAlignRun();
+                vertAlign.setVal(STVerticalAlignRun.SUBSCRIPT);
+                rPr.setVertAlign(vertAlign);
             }
         });
 
