@@ -570,6 +570,38 @@
       "bold": false,
       "italic": false,
       "uppercase": false
+    },
+    {
+      "id": "bodyContent.list.ordered",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "JUSTIFIED",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 1.25,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "type": "PARAGRAPH"
+    },
+    {
+      "id": "bodyContent.list.unordered",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "JUSTIFIED",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 1.25,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "type": "PARAGRAPH"
     }
   ],
   "componentRules": {
@@ -999,7 +1031,9 @@
         "directShortQuoteStyleId": "bodyContent.paragraph",
         "directLongQuoteStyleId": "bodyContent.longQuote",
         "indirectCitationStyleId": "bodyContent.paragraph",
-        "citationOfCitationStyleId": "bodyContent.paragraph"
+        "citationOfCitationStyleId": "bodyContent.paragraph",
+        "listOrderedStyleId": "bodyContent.list.ordered",
+        "listUnorderedStyleId": "bodyContent.list.unordered"
       },
       "numbering": {
         "enabled": true,

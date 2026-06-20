@@ -297,7 +297,9 @@ class BodyContentRendererTest {
                         style("bodyContent.table.caption", false, false),
                         style("bodyContent.table.source", false, false),
                         style("bodyContent.table.header", true, false),
-                        style("bodyContent.table.cell", false, false)
+                        style("bodyContent.table.cell", false, false),
+                        style("bodyContent.list.ordered", false, false),
+                        style("bodyContent.list.unordered", false, false)
                 ),
                 List.of(new BodyContentComponentRule(
                         "bodyContent",
@@ -307,7 +309,9 @@ class BodyContentRendererTest {
                                 "bodyContent.directShortQuote",
                                 "bodyContent.directLongQuote",
                                 "bodyContent.indirectCitation",
-                                "bodyContent.citationOfCitation"
+                                "bodyContent.citationOfCitation",
+                                "bodyContent.list.ordered",
+                                "bodyContent.list.unordered"
                         ),
                         new BodyContentNumberingRule(true, ".", ""),
                         new BodyContentLayoutRule(1, 1, false, "bodyContent.paragraph"),
@@ -338,7 +342,9 @@ class BodyContentRendererTest {
                         style("bodyContent.table.caption", false, false),
                         style("bodyContent.table.source", false, false),
                         style("bodyContent.table.header", true, false),
-                        style("bodyContent.table.cell", false, false)
+                        style("bodyContent.table.cell", false, false),
+                        style("bodyContent.list.ordered", false, false),
+                        style("bodyContent.list.unordered", false, false)
                 ),
                 List.of(new BodyContentComponentRule(
                         "bodyContent",
@@ -348,7 +354,9 @@ class BodyContentRendererTest {
                                 "bodyContent.directShortQuote",
                                 "bodyContent.directLongQuote",
                                 "bodyContent.indirectCitation",
-                                "bodyContent.citationOfCitation"
+                                "bodyContent.citationOfCitation",
+                                "bodyContent.list.ordered",
+                                "bodyContent.list.unordered"
                         ),
                         new BodyContentNumberingRule(true, ".", ""),
                         new BodyContentLayoutRule(1, 1, true, "bodyContent.paragraph"),

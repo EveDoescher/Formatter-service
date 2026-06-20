@@ -12,7 +12,9 @@ public record BodyContentStyleMapping(
         String directShortQuoteStyleId,
         String directLongQuoteStyleId,
         String indirectCitationStyleId,
-        String citationOfCitationStyleId
+        String citationOfCitationStyleId,
+        String listOrderedStyleId,
+        String listUnorderedStyleId
 ) {
 
     public BodyContentStyleMapping {
@@ -33,6 +35,8 @@ public record BodyContentStyleMapping(
         requireNonBlank(directLongQuoteStyleId, "directLongQuoteStyleId");
         requireNonBlank(indirectCitationStyleId, "indirectCitationStyleId");
         requireNonBlank(citationOfCitationStyleId, "citationOfCitationStyleId");
+        requireNonBlank(listOrderedStyleId, "listOrderedStyleId");
+        requireNonBlank(listUnorderedStyleId, "listUnorderedStyleId");
     }
 
     public String sectionTitleStyleIdForLevel(int level) {

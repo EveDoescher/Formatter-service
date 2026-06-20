@@ -12,7 +12,9 @@ public record BodyContentStyleMappingRequest(
         @NotBlank String directShortQuoteStyleId,
         @NotBlank String directLongQuoteStyleId,
         @NotBlank String indirectCitationStyleId,
-        @NotBlank String citationOfCitationStyleId
+        @NotBlank String citationOfCitationStyleId,
+        @NotBlank String listOrderedStyleId,
+        @NotBlank String listUnorderedStyleId
 ) {
 
     public BodyContentStyleMapping toDomain() {
@@ -22,7 +24,9 @@ public record BodyContentStyleMappingRequest(
                 directShortQuoteStyleId,
                 directLongQuoteStyleId,
                 indirectCitationStyleId,
-                citationOfCitationStyleId
+                citationOfCitationStyleId,
+                listOrderedStyleId,
+                listUnorderedStyleId
         );
     }
 }

@@ -102,7 +102,9 @@ class ComponentRulesRequestTest {
                         "bodyContent.paragraph",
                         "bodyContent.longQuote",
                         "bodyContent.paragraph",
-                        "bodyContent.paragraph"
+                        "bodyContent.paragraph",
+                        "bodyContent.list.ordered",
+                        "bodyContent.list.unordered"
                 ),
                 new BodyContentNumberingRuleRequest(true, ".", ""),
                 new BodyContentLayoutRuleRequest(1, 1, false, "bodyContent.paragraph"),

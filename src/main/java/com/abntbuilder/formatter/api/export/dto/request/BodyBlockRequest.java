@@ -9,6 +9,8 @@ import com.abntbuilder.formatter.shared.exception.InvalidBodyContentException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
+import com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule;
+
 import java.util.Optional;
 
 public record BodyBlockRequest(
@@ -20,8 +22,10 @@ public record BodyBlockRequest(
         @Valid CitationSourceRequest originalSource,
         @Valid CitationSourceRequest consultedSource,
         @Valid BodyFigureRequest figure,
-        @Valid BodyTableRequest table
+        @Valid BodyTableRequest table,
+        @Valid BodyListRequest list
 ) {
+
 
     public BodyBlock toDomain(CitationFormattingRule citationFormatting) {
         return switch (type) {
@@ -29,11 +33,16 @@ public record BodyBlockRequest(
             case DIRECT_LONG_QUOTE -> longQuote();
             case FIGURE -> figureBlock();
             case TABLE -> tableBlock();
+            case ORDERED_LIST, UNORDERED_LIST -> {
+                if (list == null) throw new InvalidBodyContentException(type + " block requires list.");
+                yield list.toDomain(citationFormatting);
+            }
+            default -> throw new UnsupportedOperationException("Block type " + type + " is not yet implemented.");
         };
     }
 
     public BodyBlock toDomain() {
-        return toDomain(null);
+        return toDomain(new CitationFormattingRule("p. ", "; ", "et al.", " apud "));
     }
 
     private BodyParagraph paragraph(CitationFormattingRule citationFormatting) {

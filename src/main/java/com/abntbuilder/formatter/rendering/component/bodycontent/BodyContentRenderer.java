@@ -23,6 +23,8 @@ import com.abntbuilder.formatter.output.docx.api.DocxPageBreak;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
 import com.abntbuilder.formatter.output.docx.api.DocxRun;
 import com.abntbuilder.formatter.output.docx.api.DocxTableBlock;
+import com.abntbuilder.formatter.output.docx.api.DocxListItemParagraph;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyListType;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
 import com.abntbuilder.formatter.profile.model.StyleRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentComponentRule;
@@ -157,7 +159,21 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             }
             case BodyFigure figure -> renderFigure(figure, rule.figure(), styleResolver, figureRenderingState);
             case BodyTable table -> renderTable(table, rule.table(), styleResolver, tableRenderingState);
-            case BodyList list -> throw new UnsupportedOperationException("BodyList rendering not implemented yet");
+            case BodyList list -> {
+                StyleRule itemStyle = styleResolver.resolve(
+                        list.type() == BodyListType.ORDERED
+                                ? rule.styleMapping().listOrderedStyleId()
+                                : rule.styleMapping().listUnorderedStyleId()
+                );
+                yield list.items().stream()
+                        .map(item -> {
+                            List<DocxRun> runs = item.content().stream()
+                                    .map(inline -> toDocxRun(inline, itemStyle, rule, styleResolver))
+                                    .toList();
+                            return (DocxBlock) new DocxListItemParagraph(runs, itemStyle, list.type(), 0);
+                        })
+                        .toList();
+            }
         };
     }
 

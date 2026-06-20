@@ -4,5 +4,11 @@ public enum BodyBlockType {
     PARAGRAPH,
     DIRECT_LONG_QUOTE,
     FIGURE,
-    TABLE
+    TABLE,
+    ORDERED_LIST,
+    UNORDERED_LIST,
+    FRAME,
+    CODE_LISTING,
+    CHART,
+    EQUATION
 }

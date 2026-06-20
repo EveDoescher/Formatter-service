@@ -449,7 +449,9 @@ public record ProfileDefinition(
             String directShortQuoteStyleId,
             String directLongQuoteStyleId,
             String indirectCitationStyleId,
-            String citationOfCitationStyleId
+            String citationOfCitationStyleId,
+            String listOrderedStyleId,
+            String listUnorderedStyleId
     ) {
         BodyContentStyleMapping toDomain() {
             requireNonEmpty(sectionTitleStyleIdsByLevel, "bodyContent.styleMapping.sectionTitleStyleIdsByLevel");
@@ -460,7 +462,9 @@ public record ProfileDefinition(
                     directShortQuoteStyleId,
                     directLongQuoteStyleId,
                     indirectCitationStyleId,
-                    citationOfCitationStyleId
+                    citationOfCitationStyleId,
+                    listOrderedStyleId,
+                    listUnorderedStyleId
             );
         }
     }

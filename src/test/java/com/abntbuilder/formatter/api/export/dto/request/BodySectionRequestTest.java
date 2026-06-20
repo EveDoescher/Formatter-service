@@ -40,6 +40,7 @@ class BodySectionRequestTest {
                                 null,
                                 null,
                                 null,
+                                null,
                                 null
                         ),
                         new BodyBlockRequest(
@@ -48,6 +49,7 @@ class BodySectionRequestTest {
                                 "Citacao direta longa.",
                                 null,
                                 new CitationSourceRequest(List.of(author("Sobrenome Teste Um")), "2020", "10"),
+                                null,
                                 null,
                                 null,
                                 null,
@@ -127,6 +129,7 @@ class BodySectionRequestTest {
                         null,
                         null,
                         null,
+                        null,
                         null
                 ))
         );
@@ -187,6 +190,7 @@ class BodySectionRequestTest {
                                         null
                                 )
                         ),
+                        null,
                         null
                 ))
         );
@@ -227,7 +231,8 @@ class BodySectionRequestTest {
                                         new BodyTableColumnRequest("Resultado")
                                 ),
                                 List.of(new BodyTableRowRequest(List.of("Teste A", "Aprovado")))
-                        )
+                        ),
+                        null
                 ))
         );
 
