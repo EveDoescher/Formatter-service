@@ -17,6 +17,12 @@ import org.docx4j.openpackaging.parts.WordprocessingML.FooterPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.StyleDefinitionsPart;
 import org.docx4j.relationships.Relationship;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyListType;
+import org.docx4j.openpackaging.parts.WordprocessingML.NumberingDefinitionsPart;
+import org.docx4j.wml.Numbering;
+import org.docx4j.wml.Lvl;
+import org.docx4j.wml.NumFmt;
+import org.docx4j.wml.NumberFormat;
 import com.abntbuilder.formatter.document.component.bodycontent.InlineFormatting;
 import org.docx4j.wml.BooleanDefaultTrue;
 import org.docx4j.wml.U;
@@ -87,6 +93,10 @@ public class Docx4jWriter implements DocxWriter {
 
             Optional<DocxPageNumbering> currentSectionPageNumbering = document.initialPageNumbering();
 
+            boolean hasLists = document.blocks().stream()
+                    .anyMatch(b -> b instanceof DocxListItemParagraph);
+            ListNumIds listNumIds = hasLists ? createListNumIds(wordPackage) : null;
+
             for (DocxBlock block : document.blocks()) {
                 if (block instanceof DocxSectionBreak sectionBreak) {
                     writeSectionBreak(wordPackage, document.pageRule(), currentSectionPageNumbering);
@@ -94,7 +104,7 @@ public class Docx4jWriter implements DocxWriter {
                     continue;
                 }
 
-                writeBlock(wordPackage, block);
+                writeBlock(wordPackage, block, listNumIds);
             }
 
             applyPageRule(wordPackage, document.pageRule(), currentSectionPageNumbering);
@@ -172,13 +182,14 @@ public class Docx4jWriter implements DocxWriter {
         return sectionProperties;
     }
 
-    private void writeBlock(WordprocessingMLPackage wordPackage, DocxBlock block) {
+    private void writeBlock(WordprocessingMLPackage wordPackage, DocxBlock block, ListNumIds listNumIds) {
         switch (block) {
             case DocxParagraph paragraph -> writeParagraph(wordPackage, paragraph);
             case DocxPageBreak ignored -> writePageBreak(wordPackage);
             case DocxBlankLine blankLine -> writeBlankLine(wordPackage, blankLine);
             case DocxImageBlock imageBlock -> writeImage(wordPackage, imageBlock);
             case DocxTableBlock tableBlock -> writeTable(wordPackage, tableBlock);
+            case DocxListItemParagraph listItem -> writeListItem(wordPackage, listItem, listNumIds);
             case DocxSectionBreak ignored -> throw new IllegalArgumentException(
                     "Section breaks must be handled by the document section state."
             );
@@ -799,17 +810,21 @@ public class Docx4jWriter implements DocxWriter {
             Optional<DocxPageNumbering> currentSectionPageNumbering
     ) {
         try {
+            SectPr sectionProperties = createSectionProperties(wordPackage, pageRule, currentSectionPageNumbering);
+
             P paragraph = objectFactory.createP();
             PPr paragraphProperties = objectFactory.createPPr();
-            SectPr sectionProperties = createSectionProperties(
-                    wordPackage,
-                    pageRule,
-                    currentSectionPageNumbering
-            );
-            SectPr.Type sectionType = objectFactory.createSectPrType();
-            sectionType.setVal("nextPage");
-            sectionProperties.setType(sectionType);
-            paragraphProperties.setSectPr(sectionProperties);
+
+            SectPr sectionBreak = objectFactory.createSectPr();
+            sectionBreak.setPgSz(sectionProperties.getPgSz());
+            sectionBreak.setPgMar(sectionProperties.getPgMar());
+            sectionBreak.getEGHdrFtrReferences().addAll(sectionProperties.getEGHdrFtrReferences());
+
+            SectPr.Type sectionBreakType = objectFactory.createSectPrType();
+            sectionBreakType.setVal("nextPage");
+            sectionBreak.setType(sectionBreakType);
+
+            paragraphProperties.setSectPr(sectionBreak);
             paragraph.setPPr(paragraphProperties);
 
             wordPackage.getMainDocumentPart().addObject(paragraph);
@@ -817,6 +832,102 @@ public class Docx4jWriter implements DocxWriter {
             throw new DocxWriterException("Failed to write DOCX section break.", exception);
         }
     }
+
+    private ListNumIds createListNumIds(WordprocessingMLPackage wordPackage) {
+        NumberingDefinitionsPart ndp;
+        try {
+            ndp = new NumberingDefinitionsPart();
+            wordPackage.getMainDocumentPart().addTargetPart(ndp);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create NumberingDefinitionsPart", e);
+        }
+        Numbering numbering = objectFactory.createNumbering();
+        ndp.setJaxbElement(numbering);
+
+        // AbstractNum ordered (decimal)
+        Numbering.AbstractNum abstractOrdered = objectFactory.createNumberingAbstractNum();
+        abstractOrdered.setAbstractNumId(BigInteger.ZERO);
+        Lvl lvlOrdered = objectFactory.createLvl();
+        lvlOrdered.setIlvl(BigInteger.ZERO);
+        NumFmt fmtOrdered = objectFactory.createNumFmt();
+        fmtOrdered.setVal(NumberFormat.DECIMAL);
+        lvlOrdered.setNumFmt(fmtOrdered);
+        Lvl.LvlText lvlTextOrdered = objectFactory.createLvlLvlText();
+        lvlTextOrdered.setVal("%1.");
+        lvlOrdered.setLvlText(lvlTextOrdered);
+        Lvl.Start startOrdered = objectFactory.createLvlStart();
+        startOrdered.setVal(BigInteger.ONE);
+        lvlOrdered.setStart(startOrdered);
+        abstractOrdered.getLvl().add(lvlOrdered);
+        numbering.getAbstractNum().add(abstractOrdered);
+
+        // AbstractNum unordered (bullet)
+        Numbering.AbstractNum abstractUnordered = objectFactory.createNumberingAbstractNum();
+        abstractUnordered.setAbstractNumId(BigInteger.ONE);
+        Lvl lvlUnordered = objectFactory.createLvl();
+        lvlUnordered.setIlvl(BigInteger.ZERO);
+        NumFmt fmtUnordered = objectFactory.createNumFmt();
+        fmtUnordered.setVal(NumberFormat.BULLET);
+        lvlUnordered.setNumFmt(fmtUnordered);
+        Lvl.LvlText lvlTextUnordered = objectFactory.createLvlLvlText();
+        lvlTextUnordered.setVal("•");
+        lvlUnordered.setLvlText(lvlTextUnordered);
+        abstractUnordered.getLvl().add(lvlUnordered);
+        numbering.getAbstractNum().add(abstractUnordered);
+
+        // Num ordered — numId 1
+        Numbering.Num numOrdered = objectFactory.createNumberingNum();
+        numOrdered.setNumId(BigInteger.ONE);
+        Numbering.Num.AbstractNumId aoidOrdered = objectFactory.createNumberingNumAbstractNumId();
+        aoidOrdered.setVal(BigInteger.ZERO);
+        numOrdered.setAbstractNumId(aoidOrdered);
+        numbering.getNum().add(numOrdered);
+
+        // Num unordered — numId 2
+        Numbering.Num numUnordered = objectFactory.createNumberingNum();
+        numUnordered.setNumId(BigInteger.TWO);
+        Numbering.Num.AbstractNumId aoidUnordered = objectFactory.createNumberingNumAbstractNumId();
+        aoidUnordered.setVal(BigInteger.ONE);
+        numUnordered.setAbstractNumId(aoidUnordered);
+        numbering.getNum().add(numUnordered);
+
+        return new ListNumIds(1, 2);
+    }
+
+    private void writeListItem(
+            WordprocessingMLPackage wordPackage,
+            DocxListItemParagraph listItem,
+            ListNumIds listNumIds
+    ) {
+        P p = objectFactory.createP();
+        PPr pPr = createParagraphProperties(
+                listItem.styleRule(), Optional.empty(), Optional.empty(), Optional.empty()
+        );
+        PPrBase.NumPr numPr = objectFactory.createPPrBaseNumPr();
+        PPrBase.NumPr.Ilvl ilvl = objectFactory.createPPrBaseNumPrIlvl();
+        ilvl.setVal(BigInteger.valueOf(listItem.listLevel()));
+        numPr.setIlvl(ilvl);
+        PPrBase.NumPr.NumId numId = objectFactory.createPPrBaseNumPrNumId();
+        int id = listItem.listType() == BodyListType.ORDERED
+                ? listNumIds.orderedNumId()
+                : listNumIds.unorderedNumId();
+        numId.setVal(BigInteger.valueOf(id));
+        numPr.setNumId(numId);
+        pPr.setNumPr(numPr);
+        p.setPPr(pPr);
+        for (DocxRun run : listItem.runs()) {
+            R r = objectFactory.createR();
+            r.setRPr(buildRunProperties(run.baseStyle(), run.formatting()));
+            Text t = objectFactory.createText();
+            t.setValue(resolveText(run.text(), run.baseStyle()));
+            t.setSpace("preserve");
+            r.getContent().add(t);
+            p.getContent().add(r);
+        }
+        wordPackage.getMainDocumentPart().addObject(p);
+    }
+
+    private record ListNumIds(int orderedNumId, int unorderedNumId) {}
 
     private void writeBlankLine(WordprocessingMLPackage wordPackage, DocxBlankLine blankLine) {
         P paragraph = objectFactory.createP();
