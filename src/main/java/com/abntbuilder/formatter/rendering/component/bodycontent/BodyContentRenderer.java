@@ -15,6 +15,7 @@ import com.abntbuilder.formatter.document.component.bodycontent.BodyText;
 import com.abntbuilder.formatter.document.component.bodycontent.InlineFormatting;
 import com.abntbuilder.formatter.document.component.bodycontent.BodySection;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyTable;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyList;
 import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxImageBlock;
@@ -156,6 +157,7 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             }
             case BodyFigure figure -> renderFigure(figure, rule.figure(), styleResolver, figureRenderingState);
             case BodyTable table -> renderTable(table, rule.table(), styleResolver, tableRenderingState);
+            case BodyList list -> throw new UnsupportedOperationException("BodyList rendering not implemented yet");
         };
     }
 
