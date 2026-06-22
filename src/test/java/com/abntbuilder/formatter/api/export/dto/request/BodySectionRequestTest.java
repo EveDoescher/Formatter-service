@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 class BodySectionRequestTest {
 
     private static final CitationFormattingRule CITATION_FORMATTING =
-            new CitationFormattingRule("p. ", "; ", "et al.", " apud ");
+            new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor", "informação verbal");
 
     @Test
     void shouldConvertSemanticContentBlocksToDomain() {
@@ -135,8 +135,8 @@ class BodySectionRequestTest {
                                 new BodyInlineRequest(
                                         BodyInlineType.QUOTE_TEXT,
                                         "a organizacao documental depende de criterios formais",
-                                        BodyQuoteType.SHORT,
                                         null,
+                                        BodyQuoteType.SHORT,
                                         null,
                                         null,
                                         null,
@@ -182,7 +182,7 @@ class BodySectionRequestTest {
                 null
         );
 
-        BodySection section = request.toDomain();
+        BodySection section = request.toDomain(CITATION_FORMATTING);
 
         BodyParagraph paragraph = assertInstanceOf(BodyParagraph.class, section.content().getFirst());
 
@@ -227,7 +227,7 @@ class BodySectionRequestTest {
                 ))
         );
 
-        BodySection section = request.toDomain();
+        BodySection section = request.toDomain(CITATION_FORMATTING);
 
         BodyFigure figure = assertInstanceOf(BodyFigure.class, section.content().getFirst());
 
@@ -273,7 +273,7 @@ class BodySectionRequestTest {
                 ))
         );
 
-        BodySection section = request.toDomain();
+        BodySection section = request.toDomain(CITATION_FORMATTING);
 
         BodyTable table = assertInstanceOf(BodyTable.class, section.content().getFirst());
 

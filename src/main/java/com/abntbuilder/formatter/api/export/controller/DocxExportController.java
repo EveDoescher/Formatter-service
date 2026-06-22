@@ -95,6 +95,10 @@ public class DocxExportController {
                 .replace("\n", "")
                 .replace("\"", "");
 
+        if (!safeFileName.toLowerCase().endsWith(".docx")) {
+            safeFileName = safeFileName + ".docx";
+        }
+
         return ContentDisposition.attachment()
                 .filename(safeFileName)
                 .build()

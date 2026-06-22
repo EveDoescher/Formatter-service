@@ -27,6 +27,11 @@ public record BodyContentComponentRuleRequest(
 ) {
 
     public BodyContentComponentRule toDomain() {
+        if (citationFormatting == null) {
+            throw new com.abntbuilder.formatter.shared.exception.InvalidBodyContentException(
+                    "bodyContent.citationFormatting must not be null."
+            );
+        }
         return new BodyContentComponentRule(
                 componentId,
                 styleMapping.toDomain(),
@@ -37,7 +42,7 @@ public record BodyContentComponentRuleRequest(
                 frame.toDomain(),
                 codeListing.toDomain(),
                 chart.toDomain(),
-                citationFormatting != null ? citationFormatting.toDomain() : new com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor")
+                citationFormatting.toDomain()
         );
     }
 }

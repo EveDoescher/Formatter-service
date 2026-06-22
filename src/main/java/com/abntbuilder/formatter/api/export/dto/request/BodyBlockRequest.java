@@ -9,8 +9,6 @@ import com.abntbuilder.formatter.shared.exception.InvalidBodyContentException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
-import com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule;
-
 import java.util.Optional;
 
 public record BodyBlockRequest(
@@ -48,10 +46,6 @@ public record BodyBlockRequest(
             }
             default -> throw new UnsupportedOperationException("Block type " + type + " is not yet implemented.");
         };
-    }
-
-    public BodyBlock toDomain() {
-        return toDomain(new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor"));
     }
 
     private BodyParagraph paragraph(CitationFormattingRule citationFormatting) {

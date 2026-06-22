@@ -666,6 +666,54 @@
       "spacingBeforePt": 0,
       "spacingAfterPt": 0,
       "type": "PARAGRAPH"
+    },
+    {
+      "id": "bodyContent.codeListing.code",
+      "fontFamily": "Courier New",
+      "fontSizePt": 10,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "LEFT",
+      "lineSpacing": 1.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "type": "PARAGRAPH"
+    },
+    {
+      "id": "bodyContent.footnoteCall",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 10,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "JUSTIFIED",
+      "lineSpacing": 1.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "type": "PARAGRAPH"
+    },
+    {
+      "id": "bodyContent.footnoteText",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 10,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "JUSTIFIED",
+      "lineSpacing": 1.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "type": "PARAGRAPH"
     }
   ],
   "componentRules": {
@@ -1169,7 +1217,7 @@
       "codeListing": {
         "captionStyleId": "bodyContent.figure.caption",
         "sourceStyleId": "bodyContent.figure.source",
-        "codeStyleId": "bodyContent.paragraph",
+        "codeStyleId": "bodyContent.codeListing.code",
         "captionTemplate": "Código-fonte {number} - {caption}",
         "sourceTemplate": "Fonte: {source}",
         "continuationLabels": {
@@ -1217,7 +1265,8 @@
         "apudConnector": " apud ",
         "suppressionMarker": "[...]",
         "emphasisOursLabel": "grifo nosso",
-        "emphasisAuthorLabel": "grifo do autor"
+        "emphasisAuthorLabel": "grifo do autor",
+        "verbalCitationLabel": "informação verbal"
       }
     }
   }

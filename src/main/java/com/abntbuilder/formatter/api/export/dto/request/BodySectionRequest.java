@@ -32,7 +32,9 @@ public record BodySectionRequest(
     }
 
     public BodySection toDomain() {
-        return toDomain(null);
+        throw new UnsupportedOperationException(
+                "toDomain() requires a CitationFormattingRule. Use toDomain(CitationFormattingRule) instead."
+        );
     }
 
     private List<BodyBlock> resolveContent(CitationFormattingRule citationFormatting) {

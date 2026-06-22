@@ -67,10 +67,6 @@ public record BodyInlineRequest(
         };
     }
 
-    BodyInline toDomain() {
-        return toDomain(new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor"));
-    }
-
     private BodyCitationType requireCitationType() {
         if (citationType == null) {
             throw new IllegalArgumentException("citationType must be provided for CITATION inline content.");

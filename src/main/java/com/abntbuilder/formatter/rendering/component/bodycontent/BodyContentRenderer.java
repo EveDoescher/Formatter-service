@@ -2,6 +2,7 @@ package com.abntbuilder.formatter.rendering.component.bodycontent;
 
 import com.abntbuilder.formatter.document.component.bodycontent.BodyContentComponent;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyBlock;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyAbbreviation;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationCall;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationType;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyChart;
@@ -14,6 +15,8 @@ import com.abntbuilder.formatter.document.component.bodycontent.BodyLongQuote;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyImageSource;
 import com.abntbuilder.formatter.document.component.bodycontent.ImageSourceType;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyParagraph;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyFootnote;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyQuoteMarkerType;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyQuoteText;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyText;
 import com.abntbuilder.formatter.document.component.bodycontent.InlineFormatting;
@@ -174,7 +177,7 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                 StyleRule paragraphStyle = styleResolver.resolve(rule.styleMapping().paragraphStyleId());
                 java.util.List<com.abntbuilder.formatter.output.docx.api.DocxFootnoteContent> footnoteAccumulator = new java.util.ArrayList<>();
                 List<DocxRun> runs = paragraph.content().stream()
-                        .map(inline -> toDocxRun(inline, paragraphStyle, rule, styleResolver, footnoteAccumulator, footnoteCounter))
+                        .flatMap(inline -> toDocxRun(inline, paragraphStyle, rule, styleResolver, footnoteAccumulator, footnoteCounter).stream())
                         .toList();
                 DocxParagraph docxParagraph = new DocxParagraph(runs, paragraphStyle);
                 if (!footnoteAccumulator.isEmpty()) {
@@ -201,7 +204,7 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                         .map(item -> {
                             java.util.List<com.abntbuilder.formatter.output.docx.api.DocxFootnoteContent> footnoteAccumulator = new java.util.ArrayList<>();
                             List<DocxRun> runs = item.content().stream()
-                                    .map(inline -> toDocxRun(inline, itemStyle, rule, styleResolver, footnoteAccumulator, footnoteCounter))
+                                    .flatMap(inline -> toDocxRun(inline, itemStyle, rule, styleResolver, footnoteAccumulator, footnoteCounter).stream())
                                     .toList();
                             com.abntbuilder.formatter.output.docx.api.DocxBlock listItem = new DocxListItemParagraph(runs, itemStyle, list.type(), 0);
                             if (!footnoteAccumulator.isEmpty()) {
@@ -224,7 +227,7 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
         };
     }
 
-    private static DocxRun toDocxRun(
+    private static List<DocxRun> toDocxRun(
             BodyInline inline,
             StyleRule baseStyle,
             BodyContentComponentRule rule,
@@ -233,24 +236,45 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             int[] footnoteCounter
     ) {
         return switch (inline) {
-            case BodyText text -> new DocxRun(text.text(), baseStyle, text.formatting());
-            case BodyQuoteText quote -> new DocxRun(quote.renderedText(), baseStyle, quote.formatting());
+            case BodyText text -> List.of(new DocxRun(text.text(), baseStyle, text.formatting()));
+            case BodyQuoteText quote -> {
+                List<DocxRun> runs = new ArrayList<>();
+                runs.add(new DocxRun(quote.renderedText(), baseStyle, quote.formatting()));
+                boolean hasEmphasisOurs = quote.markers().stream()
+                        .anyMatch(m -> m.type() == BodyQuoteMarkerType.EMPHASIS_OURS);
+                boolean hasEmphasisAuthor = quote.markers().stream()
+                        .anyMatch(m -> m.type() == BodyQuoteMarkerType.EMPHASIS_AUTHOR);
+                if (hasEmphasisOurs) {
+                    runs.add(new DocxRun(
+                            " (" + rule.citationFormatting().emphasisOursLabel() + ")",
+                            baseStyle,
+                            InlineFormatting.none()
+                    ));
+                } else if (hasEmphasisAuthor) {
+                    runs.add(new DocxRun(
+                            " (" + rule.citationFormatting().emphasisAuthorLabel() + ")",
+                            baseStyle,
+                            InlineFormatting.none()
+                    ));
+                }
+                yield List.copyOf(runs);
+            }
             case BodyCitationCall call -> {
                 StyleRule citationStyle = styleResolver.resolve(
                         rule.styleMapping().styleIdForCitation(call.citationType())
                 );
-                yield new DocxRun(call.renderedText(), citationStyle, InlineFormatting.none());
+                yield List.of(new DocxRun(call.renderedText(), citationStyle, InlineFormatting.none()));
             }
-            case com.abntbuilder.formatter.document.component.bodycontent.BodyAbbreviation abbr -> {
-                yield new DocxRun(abbr.renderedText(), baseStyle, InlineFormatting.none());
-            }
-            case com.abntbuilder.formatter.document.component.bodycontent.BodyFootnote footnote -> {
+            case BodyAbbreviation abbr -> List.of(new DocxRun(abbr.renderedText(), baseStyle, InlineFormatting.none()));
+            case BodyFootnote footnote -> {
                 int fnId = ++footnoteCounter[0];
+                StyleRule footnoteTextStyle = styleResolver.resolve(rule.styleMapping().footnoteTextStyleId());
                 List<DocxRun> fnRuns = footnote.content().stream()
-                        .map(fi -> toDocxRun(fi, baseStyle, rule, styleResolver, footnoteAccumulator, footnoteCounter))
+                        .flatMap(fi -> toDocxRun(fi, footnoteTextStyle, rule, styleResolver, footnoteAccumulator, footnoteCounter).stream())
                         .toList();
                 footnoteAccumulator.add(new com.abntbuilder.formatter.output.docx.api.DocxFootnoteContent(fnId, fnRuns));
-                yield new DocxRun("[FN:" + fnId + "]", baseStyle, InlineFormatting.none());
+                StyleRule footnoteCallStyle = styleResolver.resolve(rule.styleMapping().footnoteCallStyleId());
+                yield List.of(new DocxRun("[FN:" + fnId + "]", footnoteCallStyle, InlineFormatting.none()));
             }
         };
     }
