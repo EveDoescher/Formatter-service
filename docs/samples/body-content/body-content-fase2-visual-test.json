@@ -80,6 +80,7 @@
             },
             {
               "type": "DIRECT_LONG_QUOTE",
+              "mode": "PARENTHETICAL",
               "text": "Este texto tem uma supressão aqui e um destaque nosso, além de um comentário do autor.",
               "markers": [
                 { "type": "SUPPRESSION", "position": 36 },
@@ -160,8 +161,8 @@
                 "caption": "Distribuição de uso de linguagens",
                 "source": "Pesquisa 2024",
                 "image": {
-                  "sourceType": "URL",
-                  "url": "https://dummyimage.com/600x400/000/fff.png&text=Grafico+Simulado",
+                  "sourceType": "DATA_URI",
+                  "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
                   "altText": "Gráfico de barras"
                 }
               }

@@ -10,7 +10,8 @@ public record CitationFormattingRuleRequest(
         @NotBlank String apudConnector,
         @NotBlank String suppressionMarker,
         @NotBlank String emphasisOursLabel,
-        @NotBlank String emphasisAuthorLabel
+        @NotBlank String emphasisAuthorLabel,
+        @NotBlank String verbalCitationLabel
 ) {
 
     public CitationFormattingRule toDomain() {
@@ -21,7 +22,8 @@ public record CitationFormattingRuleRequest(
                 apudConnector,
                 suppressionMarker,
                 emphasisOursLabel,
-                emphasisAuthorLabel
+                emphasisAuthorLabel,
+                verbalCitationLabel
         );
     }
 }

@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class BodyLongQuoteTest {
 
     private static final CitationFormattingRule FORMATTING =
-            new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor");
+            new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor", "informação verbal");
 
     private static final CitationSource SOURCE = new CitationSource(
             List.of(CitationAuthor.person("Sobrenome")),

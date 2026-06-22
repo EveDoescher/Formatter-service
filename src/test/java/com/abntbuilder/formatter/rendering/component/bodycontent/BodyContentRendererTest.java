@@ -236,6 +236,66 @@ class BodyContentRendererTest {
         assertEquals(true, paragraphs.get(1).keepWithNext());
     }
 
+    @Test
+    void shouldEmitEmphasisSuffixRunForQuoteTextWithEmphasisOursMarker() {
+        BodyContentComponent component = new BodyContentComponent(List.of(
+                new BodySection(
+                        "sec",
+                        1,
+                        Optional.empty(),
+                        List.of(new com.abntbuilder.formatter.document.component.bodycontent.BodyParagraph(
+                                List.of(new com.abntbuilder.formatter.document.component.bodycontent.BodyQuoteText(
+                                        com.abntbuilder.formatter.document.component.bodycontent.BodyQuoteType.SHORT,
+                                        "texto citado",
+                                        com.abntbuilder.formatter.document.component.bodycontent.InlineFormatting.none(),
+                                        List.of(com.abntbuilder.formatter.document.component.bodycontent.BodyQuoteMarker.emphasisOurs())
+                                ))
+                        ))
+                )
+        ));
+
+        List<DocxParagraph> paragraphs = renderer.render(component, profile())
+                .stream()
+                .filter(DocxParagraph.class::isInstance)
+                .map(DocxParagraph.class::cast)
+                .toList();
+
+        DocxParagraph paragraph = paragraphs.getFirst();
+        assertEquals(2, paragraph.runs().size());
+        assertEquals("\"texto citado\"", paragraph.runs().get(0).text());
+        assertEquals(" (grifo nosso)", paragraph.runs().get(1).text());
+    }
+
+    @Test
+    void shouldEmitEmphasisSuffixRunForQuoteTextWithEmphasisAuthorMarker() {
+        BodyContentComponent component = new BodyContentComponent(List.of(
+                new BodySection(
+                        "sec",
+                        1,
+                        Optional.empty(),
+                        List.of(new com.abntbuilder.formatter.document.component.bodycontent.BodyParagraph(
+                                List.of(new com.abntbuilder.formatter.document.component.bodycontent.BodyQuoteText(
+                                        com.abntbuilder.formatter.document.component.bodycontent.BodyQuoteType.SHORT,
+                                        "texto citado",
+                                        com.abntbuilder.formatter.document.component.bodycontent.InlineFormatting.none(),
+                                        List.of(com.abntbuilder.formatter.document.component.bodycontent.BodyQuoteMarker.emphasisAuthor())
+                                ))
+                        ))
+                )
+        ));
+
+        List<DocxParagraph> paragraphs = renderer.render(component, profile())
+                .stream()
+                .filter(DocxParagraph.class::isInstance)
+                .map(DocxParagraph.class::cast)
+                .toList();
+
+        DocxParagraph paragraph = paragraphs.getFirst();
+        assertEquals(2, paragraph.runs().size());
+        assertEquals("\"texto citado\"", paragraph.runs().get(0).text());
+        assertEquals(" (grifo do autor)", paragraph.runs().get(1).text());
+    }
+
     private static CitationSource source(String author, String year, String page) {
         return new CitationSource(
                 List.of(CitationAuthor.person(toDisplayName(author))),
@@ -328,7 +388,7 @@ class BodyContentRendererTest {
                         frameRule(),
                         codeListingRule(),
                         chartRule(),
-                        new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor")
+                        new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor", "informação verbal")
                 )),
                 List.of("bodyContent")
         );
@@ -383,7 +443,7 @@ class BodyContentRendererTest {
                         frameRule(),
                         codeListingRule(),
                         chartRule(),
-                        new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor")
+                        new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor", "informação verbal")
                 )),
                 List.of("bodyContent")
         );

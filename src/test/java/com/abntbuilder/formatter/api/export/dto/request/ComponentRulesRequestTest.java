@@ -132,7 +132,7 @@ class ComponentRulesRequestTest {
                         DisplayObjectSourcePlacement.LAST_PART_ONLY,
                         figureRuleRequest()
                 ),
-                new CitationFormattingRuleRequest("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor")
+                new CitationFormattingRuleRequest("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor", "informação verbal")
         );
     }
 

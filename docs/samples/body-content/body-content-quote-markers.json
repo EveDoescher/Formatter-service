@@ -34,6 +34,7 @@
           "blocks": [
             {
               "type": "DIRECT_LONG_QUOTE",
+              "mode": "PARENTHETICAL",
               "text": "A metodologia foi aplicada com sucesso em contextos variados.",
               "markers": [
                 { "type": "SUPPRESSION", "position": 15 },

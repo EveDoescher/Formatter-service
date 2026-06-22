@@ -33,8 +33,8 @@
         "id": "grf-1", "caption": "Distribuição por faixa etária",
         "source": "O autor",
         "image": {
-          "sourceType": "URL",
-          "url": "https://picsum.photos/400/300",
+          "sourceType": "DATA_URI",
+          "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
           "altText": "Gráfico de distribuição"
         }
       }

@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class BodyCitationCallTest {
 
     private static final CitationFormattingRule FORMATTING =
-            new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor");
+            new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor", "informação verbal");
 
     private static final CitationSource INDIRECT_SOURCE = new CitationSource(
             List.of(CitationAuthor.person("Sobrenome")),
@@ -84,6 +84,42 @@ class BodyCitationCallTest {
                 Optional.of(consulted)
         );
         assertThat(call.renderedText()).isEqualTo("(Original, 1990 apud Consultado, 2020, p. 10)");
+    }
+
+    @Test
+    void shouldRenderVerbalCitationParentheticalFromProfile() {
+        CitationSource source = new CitationSource(
+                List.of(CitationAuthor.person("LIMA")),
+                "2023",
+                Optional.empty()
+        );
+        BodyCitationCall call = new BodyCitationCall(
+                BodyCitationType.VERBAL,
+                BodyCitationMode.PARENTHETICAL,
+                FORMATTING,
+                Optional.of(source),
+                Optional.empty(),
+                Optional.empty()
+        );
+        assertThat(call.renderedText()).isEqualTo("(LIMA, informação verbal)");
+    }
+
+    @Test
+    void shouldRenderVerbalCitationNarrativeFromProfile() {
+        CitationSource source = new CitationSource(
+                List.of(CitationAuthor.person("LIMA")),
+                "2023",
+                Optional.empty()
+        );
+        BodyCitationCall call = new BodyCitationCall(
+                BodyCitationType.VERBAL,
+                BodyCitationMode.NARRATIVE,
+                FORMATTING,
+                Optional.of(source),
+                Optional.empty(),
+                Optional.empty()
+        );
+        assertThat(call.renderedText()).isEqualTo("LIMA (informação verbal)");
     }
 
     @Test

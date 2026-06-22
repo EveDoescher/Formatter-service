@@ -449,7 +449,8 @@ public record ProfileDefinition(
             String apudConnector,
             String suppressionMarker,
             String emphasisOursLabel,
-            String emphasisAuthorLabel
+            String emphasisAuthorLabel,
+            String verbalCitationLabel
     ) {
         com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule toDomain() {
             return new com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule(
@@ -459,7 +460,8 @@ public record ProfileDefinition(
                     apudConnector,
                     suppressionMarker,
                     emphasisOursLabel,
-                    emphasisAuthorLabel
+                    emphasisAuthorLabel,
+                    verbalCitationLabel
             );
         }
     }

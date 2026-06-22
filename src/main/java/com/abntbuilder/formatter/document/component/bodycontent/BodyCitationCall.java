@@ -69,9 +69,10 @@ public record BodyCitationCall(
 
     private String renderVerbalCitation() {
         CitationSource citationSource = source.orElseThrow();
+        String label = formatting.verbalCitationLabel();
         return switch (mode) {
-            case PARENTHETICAL -> "(" + citationSource.authorText(formatting) + ", informação verbal)";
-            case NARRATIVE -> citationSource.authorText(formatting) + " (informação verbal)";
+            case PARENTHETICAL -> "(" + citationSource.authorText(formatting) + ", " + label + ")";
+            case NARRATIVE -> citationSource.authorText(formatting) + " (" + label + ")";
         };
     }
 

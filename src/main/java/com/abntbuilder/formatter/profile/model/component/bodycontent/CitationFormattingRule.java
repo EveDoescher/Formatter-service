@@ -7,7 +7,8 @@ public record CitationFormattingRule(
         String apudConnector,
         String suppressionMarker,
         String emphasisOursLabel,
-        String emphasisAuthorLabel
+        String emphasisAuthorLabel,
+        String verbalCitationLabel
 ) {
 
     public CitationFormattingRule {
@@ -18,6 +19,7 @@ public record CitationFormattingRule(
         requireNonBlank(suppressionMarker, "suppressionMarker");
         requireNonBlank(emphasisOursLabel, "emphasisOursLabel");
         requireNonBlank(emphasisAuthorLabel, "emphasisAuthorLabel");
+        requireNonBlank(verbalCitationLabel, "verbalCitationLabel");
     }
 
     private static void requireNonBlank(String value, String fieldName) {

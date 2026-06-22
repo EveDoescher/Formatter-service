@@ -104,10 +104,12 @@
                   "type": "CITATION",
                   "citationType": "INDIRECT",
                   "mode": "NARRATIVE",
-                  "authors": [
-                    { "type": "PERSON", "surname": "SOUZA" }
-                  ],
-                  "year": "2021"
+                  "source": {
+                    "authors": [
+                      { "type": "PERSON", "surname": "SOUZA" }
+                    ],
+                    "year": "2021"
+                  }
                 },
                 {
                   "type": "TEXT",
@@ -117,6 +119,7 @@
             },
             {
               "type": "DIRECT_LONG_QUOTE",
+              "mode": "PARENTHETICAL",
               "text": "As citações longas (com mais de três linhas) devem ter um recuo de 4 cm da margem esquerda, tamanho de fonte reduzido e espaçamento simples.",
               "source": {
                 "authors": [
@@ -133,8 +136,8 @@
                 "caption": "Figura de Exemplo (Fase 1)",
                 "source": "Arquivo digital interno",
                 "image": {
-                  "sourceType": "URL",
-                  "url": "https://dummyimage.com/600x400/000/fff.png&text=Figura+Teste",
+                  "sourceType": "DATA_URI",
+                  "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
                   "altText": "Figura de teste representativa"
                 }
               }
@@ -249,8 +252,8 @@
                 "caption": "Gráfico de Desempenho",
                 "source": "Resultados Internos",
                 "image": {
-                  "sourceType": "URL",
-                  "url": "https://dummyimage.com/600x400/000/fff.png&text=Grafico+Simulado",
+                  "sourceType": "DATA_URI",
+                  "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
                   "altText": "Gráfico simulado"
                 }
               }
