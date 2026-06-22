@@ -1,0 +1,42 @@
+{
+  "fileName": "test",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "titlePage",
+      "bodyContent"
+    ]
+  },
+  "work": {
+    "authors": ["Autor Teste"],
+    "title": "Documento Teste",
+    "nature": {
+      "workType": "Trabalho",
+      "degreeObjective": "Grau",
+      "courseName": "Curso",
+      "institutionName": "Instituição"
+    },
+    "advisor": {
+      "name": "Orientador"
+    },
+    "city": "Cidade",
+    "year": "2026"
+  },
+  "document": {
+    "titlePage": {},
+    "bodyContent": {
+      "sections": [{
+    "id": "s1", "level": 1, "title": "Listagens",
+    "blocks": [{
+      "type": "CODE_LISTING",
+      "codeListing": {
+        "id": "lst-1", "caption": "Algoritmo de ordenação",
+        "language": "java",
+        "code": "public void sort(int[] arr) {\n    Arrays.sort(arr);\n}",
+        "source": "O autor"
+      }
+    }]
+      }]
+    }
+  }
+}

@@ -10,8 +10,19 @@ public record BodyLongQuote(
         BodyCitationMode mode,
         Optional<CitationSource> source,
         Optional<CitationSource> originalSource,
-        Optional<CitationSource> consultedSource
+        Optional<CitationSource> consultedSource,
+        java.util.List<BodyQuoteMarker> markers
 ) implements BodyBlock {
+
+    public BodyLongQuote(
+            String text,
+            BodyCitationMode mode,
+            Optional<CitationSource> source,
+            Optional<CitationSource> originalSource,
+            Optional<CitationSource> consultedSource
+    ) {
+        this(text, mode, source, originalSource, consultedSource, java.util.List.of());
+    }
 
     public BodyLongQuote {
         requireNonBlank(text, "text");
@@ -24,16 +35,47 @@ public record BodyLongQuote(
                 new IllegalArgumentException("DIRECT_LONG citation source must be provided.")
         );
         citationSource.requirePage("DIRECT_LONG");
+        Objects.requireNonNull(markers, "markers must not be null");
     }
 
     public String renderedText(CitationFormattingRule formatting) {
+        boolean emphasisOurs = markers.stream().anyMatch(m -> m.type() == BodyQuoteMarkerType.EMPHASIS_OURS);
+        boolean emphasisAuthor = markers.stream().anyMatch(m -> m.type() == BodyQuoteMarkerType.EMPHASIS_AUTHOR);
         BodyCitationCall call = new BodyCitationCall(
-                BodyCitationType.DIRECT_LONG, mode, formatting, source, originalSource, consultedSource
+                BodyCitationType.DIRECT_LONG, mode, formatting, source, originalSource, consultedSource, emphasisOurs, emphasisAuthor
         );
+        String processedText = applyMarkers(text, markers);
         return switch (mode) {
-            case PARENTHETICAL -> ensureNoFinalPeriod(text) + " " + call.renderedText() + ".";
-            case NARRATIVE -> call.renderedText() + ": " + ensureFinalPeriod(text);
+            case PARENTHETICAL -> ensureNoFinalPeriod(processedText) + " " + call.renderedText() + ".";
+            case NARRATIVE -> call.renderedText() + ": " + ensureFinalPeriod(processedText);
         };
+    }
+
+    private static String applyMarkers(String text, java.util.List<BodyQuoteMarker> markers) {
+        java.util.List<BodyQuoteMarker> positionMarkers = markers.stream()
+                .filter(m -> m.type() == BodyQuoteMarkerType.SUPPRESSION
+                        || m.type() == BodyQuoteMarkerType.INTERPOLATION)
+                .sorted(java.util.Comparator.comparingInt(BodyQuoteMarker::position).reversed())
+                .toList();
+
+        StringBuilder sb = new StringBuilder(text);
+        for (BodyQuoteMarker marker : positionMarkers) {
+            switch (marker.type()) {
+                case SUPPRESSION -> {
+                    int pos = Math.min(marker.position(), sb.length());
+                    sb.insert(pos, "[...]");
+                }
+                case INTERPOLATION -> {
+                    int start = Math.min(marker.position(), sb.length());
+                    int end = Math.min(marker.endPosition().orElse(start), sb.length());
+                    if (end < start) break;
+                    sb.insert(end, "]");
+                    sb.insert(start, "[");
+                }
+                default -> { }
+            }
+        }
+        return sb.toString();
     }
 
     private static String ensureNoFinalPeriod(String value) {

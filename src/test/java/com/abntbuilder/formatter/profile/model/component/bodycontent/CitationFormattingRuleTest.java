@@ -8,7 +8,7 @@ class CitationFormattingRuleTest {
 
     @Test
     void shouldCreateWithValidValues() {
-        CitationFormattingRule rule = new CitationFormattingRule("p. ", "; ", "et al.", " apud ");
+        CitationFormattingRule rule = new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor");
         assertThat(rule.pagePrefix()).isEqualTo("p. ");
         assertThat(rule.multiAuthorJoiner()).isEqualTo("; ");
         assertThat(rule.etAl()).isEqualTo("et al.");
@@ -17,7 +17,7 @@ class CitationFormattingRuleTest {
 
     @Test
     void shouldRejectBlankPagePrefix() {
-        assertThatThrownBy(() -> new CitationFormattingRule("", "; ", "et al.", " apud "))
+        assertThatThrownBy(() -> new CitationFormattingRule("", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

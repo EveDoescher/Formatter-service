@@ -1,0 +1,57 @@
+{
+  "fileName": "test",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "titlePage",
+      "bodyContent"
+    ]
+  },
+  "work": {
+    "authors": ["Autor Teste"],
+    "title": "Documento Teste",
+    "nature": {
+      "workType": "Trabalho",
+      "degreeObjective": "Grau",
+      "courseName": "Curso",
+      "institutionName": "Instituição"
+    },
+    "advisor": {
+      "name": "Orientador"
+    },
+    "city": "Cidade",
+    "year": "2026"
+  },
+  "document": {
+    "titlePage": {},
+    "bodyContent": {
+      "sections": [{
+          "id": "s1", "level": 1, "title": "Listas",
+          "blocks": [
+            {
+              "type": "ORDERED_LIST",
+              "list": {
+                "type": "ORDERED",
+                "items": [
+                  { "content": [{ "type": "TEXT", "text": "Primeiro item." }] },
+                  { "content": [{ "type": "TEXT", "text": "Segundo item com " },
+                    { "type": "TEXT", "text": "negrito", "formatting": { "bold": true } },
+                    { "type": "TEXT", "text": "." }] }
+                ]
+              }
+            },
+            {
+              "type": "UNORDERED_LIST",
+              "list": {
+                "type": "UNORDERED",
+                "items": [
+                  { "content": [{ "type": "TEXT", "text": "Item não ordenado A." }] },
+                  { "content": [{ "type": "TEXT", "text": "Item não ordenado B." }] }
+                ]
+              }
+            }
+          ]
+        }]
+    }
+  }
+}

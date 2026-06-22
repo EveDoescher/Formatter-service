@@ -1,0 +1,43 @@
+{
+  "fileName": "test",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "titlePage",
+      "bodyContent"
+    ]
+  },
+  "work": {
+    "authors": ["Autor Teste"],
+    "title": "Documento Teste",
+    "nature": {
+      "workType": "Trabalho",
+      "degreeObjective": "Grau",
+      "courseName": "Curso",
+      "institutionName": "Instituição"
+    },
+    "advisor": {
+      "name": "Orientador"
+    },
+    "city": "Cidade",
+    "year": "2026"
+  },
+  "document": {
+    "titlePage": {},
+    "bodyContent": {
+      "sections": [{
+    "id": "s1", "level": 1, "title": "Notas",
+    "blocks": [{
+      "type": "PARAGRAPH",
+      "content": [
+        { "type": "TEXT", "text": "Conforme afirma o autor" },
+        { "type": "FOOTNOTE", "content": [
+          { "type": "TEXT", "text": "SILVA, João. Comunicação pessoal, 2023." }
+        ]},
+        { "type": "TEXT", "text": ", o método é eficaz." }
+      ]
+    }]
+      }]
+    }
+  }
+}

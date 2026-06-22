@@ -23,6 +23,8 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObje
 import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FigureRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FrameRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.CodeListingRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.ChartRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.TableRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
@@ -410,6 +412,8 @@ public record ProfileDefinition(
             FigureRuleDefinition figure,
             TableRuleDefinition table,
             FrameRuleDefinition frame,
+            CodeListingRuleDefinition codeListing,
+            ChartRuleDefinition chart,
             CitationFormattingRuleDefinition citationFormatting
     ) {
         BodyContentComponentRule toDomain() {
@@ -419,6 +423,8 @@ public record ProfileDefinition(
             requireNonNull(figure, "bodyContent.figure");
             requireNonNull(table, "bodyContent.table");
             requireNonNull(frame, "bodyContent.frame");
+            requireNonNull(codeListing, "bodyContent.codeListing");
+            requireNonNull(chart, "bodyContent.chart");
             requireNonNull(citationFormatting, "bodyContent.citationFormatting");
 
             return new BodyContentComponentRule(
@@ -429,6 +435,8 @@ public record ProfileDefinition(
                     figure.toDomain(),
                     table.toDomain(),
                     frame.toDomain(),
+                    codeListing.toDomain(),
+                    chart.toDomain(),
                     citationFormatting.toDomain()
             );
         }
@@ -438,11 +446,20 @@ public record ProfileDefinition(
             String pagePrefix,
             String multiAuthorJoiner,
             String etAl,
-            String apudConnector
+            String apudConnector,
+            String suppressionMarker,
+            String emphasisOursLabel,
+            String emphasisAuthorLabel
     ) {
         com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule toDomain() {
             return new com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule(
-                    pagePrefix, multiAuthorJoiner, etAl, apudConnector
+                    pagePrefix,
+                    multiAuthorJoiner,
+                    etAl,
+                    apudConnector,
+                    suppressionMarker,
+                    emphasisOursLabel,
+                    emphasisAuthorLabel
             );
         }
     }
@@ -455,7 +472,10 @@ public record ProfileDefinition(
             String indirectCitationStyleId,
             String citationOfCitationStyleId,
             String listOrderedStyleId,
-            String listUnorderedStyleId
+            String listUnorderedStyleId,
+            String equationStyleId,
+            String footnoteCallStyleId,
+            String footnoteTextStyleId
     ) {
         BodyContentStyleMapping toDomain() {
             requireNonEmpty(sectionTitleStyleIdsByLevel, "bodyContent.styleMapping.sectionTitleStyleIdsByLevel");
@@ -468,7 +488,10 @@ public record ProfileDefinition(
                     indirectCitationStyleId,
                     citationOfCitationStyleId,
                     listOrderedStyleId,
-                    listUnorderedStyleId
+                    listUnorderedStyleId,
+                    equationStyleId,
+                    footnoteCallStyleId,
+                    footnoteTextStyleId
             );
         }
     }
@@ -569,6 +592,55 @@ public record ProfileDefinition(
                     tableAlignment,
                     widthPercent,
                     repeatHeaderOnPageBreak
+            );
+        }
+    }
+
+    public record CodeListingRuleDefinition(
+            String captionStyleId,
+            String sourceStyleId,
+            String codeStyleId,
+            String captionTemplate,
+            String sourceTemplate,
+            DisplayObjectContinuationLabelsDefinition continuationLabels,
+            DisplayObjectSourcePlacement sourcePlacement
+    ) {
+        CodeListingRule toDomain() {
+            requireNonNull(continuationLabels, "bodyContent.codeListing.continuationLabels");
+
+            return new CodeListingRule(
+                    captionStyleId,
+                    sourceStyleId,
+                    codeStyleId,
+                    captionTemplate,
+                    sourceTemplate,
+                    continuationLabels.toDomain(),
+                    sourcePlacement
+            );
+        }
+    }
+
+    public record ChartRuleDefinition(
+            String captionStyleId,
+            String sourceStyleId,
+            String captionTemplate,
+            String sourceTemplate,
+            DisplayObjectContinuationLabelsDefinition continuationLabels,
+            DisplayObjectSourcePlacement sourcePlacement,
+            FigureRuleDefinition imageRule
+    ) {
+        ChartRule toDomain() {
+            requireNonNull(continuationLabels, "bodyContent.chart.continuationLabels");
+            requireNonNull(imageRule, "bodyContent.chart.imageRule");
+
+            return new ChartRule(
+                    captionStyleId,
+                    sourceStyleId,
+                    captionTemplate,
+                    sourceTemplate,
+                    continuationLabels.toDomain(),
+                    sourcePlacement,
+                    imageRule.toDomain()
             );
         }
     }

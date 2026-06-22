@@ -14,7 +14,10 @@ public record BodyContentStyleMappingRequest(
         @NotBlank String indirectCitationStyleId,
         @NotBlank String citationOfCitationStyleId,
         @NotBlank String listOrderedStyleId,
-        @NotBlank String listUnorderedStyleId
+        @NotBlank String listUnorderedStyleId,
+        @NotBlank String equationStyleId,
+        @NotBlank String footnoteCallStyleId,
+        @NotBlank String footnoteTextStyleId
 ) {
 
     public BodyContentStyleMapping toDomain() {
@@ -26,7 +29,10 @@ public record BodyContentStyleMappingRequest(
                 indirectCitationStyleId,
                 citationOfCitationStyleId,
                 listOrderedStyleId,
-                listUnorderedStyleId
+                listUnorderedStyleId,
+                equationStyleId,
+                footnoteCallStyleId,
+                footnoteTextStyleId
         );
     }
 }

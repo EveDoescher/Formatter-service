@@ -7,10 +7,21 @@ public record CitationFormattingRuleRequest(
         @NotBlank String pagePrefix,
         @NotBlank String multiAuthorJoiner,
         @NotBlank String etAl,
-        @NotBlank String apudConnector
+        @NotBlank String apudConnector,
+        @NotBlank String suppressionMarker,
+        @NotBlank String emphasisOursLabel,
+        @NotBlank String emphasisAuthorLabel
 ) {
 
     public CitationFormattingRule toDomain() {
-        return new CitationFormattingRule(pagePrefix, multiAuthorJoiner, etAl, apudConnector);
+        return new CitationFormattingRule(
+                pagePrefix,
+                multiAuthorJoiner,
+                etAl,
+                apudConnector,
+                suppressionMarker,
+                emphasisOursLabel,
+                emphasisAuthorLabel
+        );
     }
 }

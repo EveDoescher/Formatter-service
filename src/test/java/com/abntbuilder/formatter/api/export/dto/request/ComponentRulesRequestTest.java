@@ -104,14 +104,35 @@ class ComponentRulesRequestTest {
                         "bodyContent.paragraph",
                         "bodyContent.paragraph",
                         "bodyContent.list.ordered",
-                        "bodyContent.list.unordered"
+                        "bodyContent.list.unordered",
+                        "bodyContent.paragraph",
+                        "bodyContent.footnoteCall",
+                        "bodyContent.footnoteText"
                 ),
                 new BodyContentNumberingRuleRequest(true, ".", ""),
                 new BodyContentLayoutRuleRequest(1, 1, false, "bodyContent.paragraph"),
                 figureRuleRequest(),
                 tableRuleRequest(),
                 frameRuleRequest(),
-                new CitationFormattingRuleRequest("p. ", "; ", "et al.", " apud ")
+                new CodeListingRuleRequest(
+                        "bodyContent.codeListing.caption",
+                        "bodyContent.codeListing.source",
+                        "codeStyle",
+                        "Código {number} - {caption}",
+                        "Fonte: {source}",
+                        new DisplayObjectContinuationLabelsRequest("continua", "continuação", "conclusão"),
+                        DisplayObjectSourcePlacement.LAST_PART_ONLY
+                ),
+                new ChartRuleRequest(
+                        "bodyContent.chart.caption",
+                        "bodyContent.chart.source",
+                        "Gráfico {number} - {caption}",
+                        "Fonte: {source}",
+                        new DisplayObjectContinuationLabelsRequest("continua", "continuação", "conclusão"),
+                        DisplayObjectSourcePlacement.LAST_PART_ONLY,
+                        figureRuleRequest()
+                ),
+                new CitationFormattingRuleRequest("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor")
         );
     }
 

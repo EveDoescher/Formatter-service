@@ -316,14 +316,19 @@ class BodyContentRendererTest {
                                 "bodyContent.indirectCitation",
                                 "bodyContent.citationOfCitation",
                                 "bodyContent.list.ordered",
-                                "bodyContent.list.unordered"
+                                "bodyContent.list.unordered",
+                                "bodyContent.paragraph",
+                                "bodyContent.footnoteCall",
+                                "bodyContent.footnoteText"
                         ),
                         new BodyContentNumberingRule(true, ".", ""),
                         new BodyContentLayoutRule(1, 1, false, "bodyContent.paragraph"),
                         figureRule(),
                         tableRule(),
                         frameRule(),
-                        new CitationFormattingRule("p. ", "; ", "et al.", " apud ")
+                        codeListingRule(),
+                        chartRule(),
+                        new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor")
                 )),
                 List.of("bodyContent")
         );
@@ -366,14 +371,19 @@ class BodyContentRendererTest {
                                 "bodyContent.indirectCitation",
                                 "bodyContent.citationOfCitation",
                                 "bodyContent.list.ordered",
-                                "bodyContent.list.unordered"
+                                "bodyContent.list.unordered",
+                                "bodyContent.paragraph",
+                                "bodyContent.footnoteCall",
+                                "bodyContent.footnoteText"
                         ),
                         new BodyContentNumberingRule(true, ".", ""),
                         new BodyContentLayoutRule(1, 1, true, "bodyContent.paragraph"),
                         figureRule(),
                         tableRule(),
                         frameRule(),
-                        new CitationFormattingRule("p. ", "; ", "et al.", " apud ")
+                        codeListingRule(),
+                        chartRule(),
+                        new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor")
                 )),
                 List.of("bodyContent")
         );
@@ -461,6 +471,30 @@ class BodyContentRendererTest {
                 TextAlignment.CENTER,
                 BigDecimal.valueOf(100),
                 true
+        );
+    }
+
+    private static com.abntbuilder.formatter.profile.model.component.bodycontent.CodeListingRule codeListingRule() {
+        return new com.abntbuilder.formatter.profile.model.component.bodycontent.CodeListingRule(
+                "bodyContent.figure.caption",
+                "bodyContent.figure.source",
+                "bodyContent.paragraph",
+                "Código-fonte {number} - {caption}",
+                "Fonte: {source}",
+                new DisplayObjectContinuationLabels("continua", "continuação", "conclusão"),
+                DisplayObjectSourcePlacement.LAST_PART_ONLY
+        );
+    }
+
+    private static com.abntbuilder.formatter.profile.model.component.bodycontent.ChartRule chartRule() {
+        return new com.abntbuilder.formatter.profile.model.component.bodycontent.ChartRule(
+                "bodyContent.figure.caption",
+                "bodyContent.figure.source",
+                "Gráfico {number} - {caption}",
+                "Fonte: {source}",
+                new DisplayObjectContinuationLabels("continua", "continuação", "conclusão"),
+                DisplayObjectSourcePlacement.LAST_PART_ONLY,
+                figureRule()
         );
     }
 }

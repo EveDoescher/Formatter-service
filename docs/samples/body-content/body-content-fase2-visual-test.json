@@ -1,0 +1,181 @@
+{
+  "fileName": "teste-visual-fase2",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "titlePage",
+      "bodyContent"
+    ]
+  },
+  "work": {
+    "authors": ["Pessoa Autora Teste 01"],
+    "title": "Teste Visual da Fase 2",
+    "nature": {
+      "workType": "Trabalho de conclusão de curso",
+      "degreeObjective": "obtenção do título de tecnólogo",
+      "courseName": "Análise e Desenvolvimento de Sistemas",
+      "institutionName": "Universidade Paulista - UNIP"
+    },
+    "advisor": {
+      "name": "Pessoa Orientadora Teste"
+    },
+    "city": "Limeira",
+    "year": "2026"
+  },
+  "document": {
+    "titlePage": {
+      "authors": ["Pessoa Autora Teste 01"],
+      "title": "Teste Visual da Fase 2",
+      "subtitle": "Validação dos componentes da Fase 2",
+      "nature": {
+        "workType": "Trabalho de conclusão de curso",
+        "degreeObjective": "obtenção do título de tecnólogo",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Paulista - UNIP"
+      },
+      "advisor": {
+        "academicTitle": "Prof. Dr.",
+        "name": "Pessoa Orientadora Teste"
+      },
+      "city": "Limeira",
+      "year": "2026"
+    },
+    "bodyContent": {
+      "sections": [
+        {
+          "id": "s1",
+          "level": 1,
+          "title": "Elementos da Fase 2",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "TEXT",
+                  "text": "Este parágrafo testa a formatação inline como "
+                },
+                {
+                  "type": "TEXT",
+                  "text": "sobrescrito",
+                  "formatting": {
+                    "superscript": true
+                  }
+                },
+                {
+                  "type": "TEXT",
+                  "text": " e "
+                },
+                {
+                  "type": "TEXT",
+                  "text": "subscrito",
+                  "formatting": {
+                    "subscript": true
+                  }
+                },
+                {
+                  "type": "TEXT",
+                  "text": ". Também testamos as citações."
+                }
+              ]
+            },
+            {
+              "type": "DIRECT_LONG_QUOTE",
+              "text": "Este texto tem uma supressão aqui e um destaque nosso, além de um comentário do autor.",
+              "markers": [
+                { "type": "SUPPRESSION", "position": 36 },
+                { "type": "EMPHASIS_OURS", "position": 0 }
+              ],
+              "source": {
+                "authors": [{ "type": "PERSON", "surname": "SILVA" }],
+                "year": "2023",
+                "page": "12"
+              }
+            },
+            {
+              "type": "UNORDERED_LIST",
+              "list": {
+                "type": "UNORDERED",
+                "items": [
+                  {
+                    "content": [
+                      { "type": "TEXT", "text": "Item não-ordenado 1" }
+                    ]
+                  },
+                  {
+                    "content": [
+                      { "type": "TEXT", "text": "Item não-ordenado 2" }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "ORDERED_LIST",
+              "list": {
+                "type": "ORDERED",
+                "items": [
+                  {
+                    "content": [
+                      { "type": "TEXT", "text": "Primeiro passo ordenado" }
+                    ]
+                  },
+                  {
+                    "content": [
+                      { "type": "TEXT", "text": "Segundo passo ordenado" }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "FRAME",
+              "frame": {
+                "id": "qdr-1",
+                "caption": "Comparação de metodologias",
+                "source": "Elaborado pelo autor",
+                "columns": [
+                  { "header": "Método" },
+                  { "header": "Vantagem" }
+                ],
+                "rows": [
+                  { "cells": ["Quantitativo", "Reprodutibilidade"] },
+                  { "cells": ["Qualitativo", "Profundidade"] }
+                ]
+              }
+            },
+            {
+              "type": "CODE_LISTING",
+              "codeListing": {
+                "id": "lst-1",
+                "caption": "Algoritmo de ordenação",
+                "source": "Autoria própria",
+                "language": "java",
+                "code": "public void sort(int[] arr) {\n    Arrays.sort(arr);\n}"
+              }
+            },
+            {
+              "type": "CHART",
+              "chart": {
+                "id": "grf-1",
+                "caption": "Distribuição de uso de linguagens",
+                "source": "Pesquisa 2024",
+                "image": {
+                  "sourceType": "URL",
+                  "url": "https://dummyimage.com/600x400/000/fff.png&text=Grafico+Simulado",
+                  "altText": "Gráfico de barras"
+                }
+              }
+            },
+            {
+              "type": "EQUATION",
+              "equation": {
+                "text": "E = mc²",
+                "label": "1"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

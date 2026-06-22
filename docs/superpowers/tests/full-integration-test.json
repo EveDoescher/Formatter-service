@@ -1,0 +1,173 @@
+{
+  "profileId": "abnt-unip",
+  "document": {
+    "sections": [
+      {
+        "type": "TITLE_PAGE",
+        "title": "Integração Completa",
+        "subtitle": "Validação de Todos os Elementos",
+        "authors": [
+          {
+            "name": "Evelynn Doescher",
+            "qualifications": "Desenvolvedora"
+          }
+        ],
+        "institution": {
+          "name": "Universidade de Testes",
+          "hierarchy": ["Faculdade de Tecnologia"]
+        },
+        "location": "São Paulo",
+        "year": "2026",
+        "nature": "Trabalho de Conclusão de Curso apresentado como requisito para obtenção do grau de Bacharel em Sistemas de Informação."
+      },
+      {
+        "type": "BODY_SECTION",
+        "title": "Introdução e Elementos Básicos",
+        "level": 1,
+        "blocks": [
+          {
+            "type": "PARAGRAPH",
+            "content": [
+              {
+                "type": "TEXT",
+                "text": "Este documento testa todos os elementos suportados. Aqui temos um texto normal, seguido de "
+              },
+              {
+                "type": "TEXT",
+                "text": "texto em negrito",
+                "formatting": {
+                  "bold": true
+                }
+              },
+              {
+                "type": "TEXT",
+                "text": " e "
+              },
+              {
+                "type": "TEXT",
+                "text": "itálico",
+                "formatting": {
+                  "italic": true
+                }
+              },
+              {
+                "type": "TEXT",
+                "text": "."
+              }
+            ]
+          },
+          {
+            "type": "PARAGRAPH",
+            "content": [
+              {
+                "type": "TEXT",
+                "text": "Aqui testamos siglas como "
+              },
+              {
+                "type": "ABBREVIATION",
+                "text": "ONU",
+                "expansion": "Organização das Nações Unidas"
+              },
+              {
+                "type": "TEXT",
+                "text": ", notas de rodapé"
+              },
+              {
+                "type": "FOOTNOTE",
+                "content": [
+                  {
+                    "type": "TEXT",
+                    "text": "Nota de rodapé de teste."
+                  }
+                ]
+              },
+              {
+                "type": "TEXT",
+                "text": " e citações diretas curtas: "
+              },
+              {
+                "type": "QUOTE_TEXT",
+                "quoteType": "SHORT",
+                "text": "um texto citado",
+                "markers": [
+                  {
+                    "type": "EMPHASIS_OURS",
+                    "position": 0
+                  }
+                ]
+              },
+              {
+                "type": "TEXT",
+                "text": " "
+              },
+              {
+                "type": "CITATION",
+                "citationType": "DIRECT_SHORT",
+                "mode": "PARENTHETICAL",
+                "source": {
+                  "authors": [
+                    { "type": "PERSON", "name": "Silva" }
+                  ],
+                  "year": "2020",
+                  "page": "10"
+                }
+              },
+              {
+                "type": "TEXT",
+                "text": "."
+              }
+            ]
+          },
+          {
+            "type": "DIRECT_LONG_QUOTE",
+            "text": "Esta é uma citação longa que deve ter recuo de 4cm, fonte menor e espaçamento simples, testando a integração com o Docx4jWriter.",
+            "mode": "NARRATIVE",
+            "source": {
+              "authors": [
+                { "type": "PERSON", "name": "Almeida" }
+              ],
+              "year": "2019",
+              "page": "45"
+            },
+            "markers": [
+              {
+                "type": "SUPPRESSION",
+                "position": 50
+              }
+            ]
+          },
+          {
+            "type": "LIST",
+            "ordered": true,
+            "items": [
+              {
+                "content": [
+                  {
+                    "type": "TEXT",
+                    "text": "Primeiro item da lista ordenada"
+                  }
+                ]
+              },
+              {
+                "content": [
+                  {
+                    "type": "TEXT",
+                    "text": "Segundo item da lista ordenada"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "FIGURE",
+            "figure": {
+              "title": "Exemplo de Figura",
+              "source": "Autoria própria (2026)",
+              "imageUrl": "https://dummyimage.com/600x400/000/fff.png&text=Exemplo+Figura"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

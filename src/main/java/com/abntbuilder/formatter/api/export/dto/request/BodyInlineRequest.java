@@ -17,20 +17,28 @@ import java.util.Optional;
 public record BodyInlineRequest(
         @NotNull BodyInlineType type,
         String text,
+        String expansion,
         BodyQuoteType quoteType,
         BodyCitationType citationType,
         BodyCitationMode mode,
         @Valid CitationSourceRequest source,
         @Valid CitationSourceRequest originalSource,
         @Valid CitationSourceRequest consultedSource,
-        InlineFormattingRequest formatting
+        InlineFormattingRequest formatting,
+        @Valid java.util.List<BodyQuoteMarkerRequest> markers,
+        @Valid java.util.List<BodyInlineRequest> content
 ) {
 
     BodyInline toDomain(CitationFormattingRule citationFormatting) {
         InlineFormatting fmt = formatting != null ? formatting.toDomain() : InlineFormatting.none();
         return switch (type) {
             case TEXT -> new BodyText(text, fmt);
-            case QUOTE_TEXT -> new BodyQuoteText(requireQuoteType(), text, fmt);
+            case QUOTE_TEXT -> new BodyQuoteText(
+                    quoteType == null ? BodyQuoteType.SHORT : quoteType,
+                    text,
+                    fmt,
+                    markers == null ? java.util.List.of() : markers.stream().map(BodyQuoteMarkerRequest::toDomain).toList()
+            );
             case CITATION -> new BodyCitationCall(
                     requireCitationType(),
                     requireMode(),
@@ -39,14 +47,28 @@ public record BodyInlineRequest(
                     originalSource == null ? Optional.empty() : Optional.of(originalSource.toDomain()),
                     consultedSource == null ? Optional.empty() : Optional.of(consultedSource.toDomain())
             );
+            case ABBREVIATION -> {
+                if (text == null || text.isBlank()) {
+                    throw new IllegalArgumentException("ABBREVIATION.text must not be blank.");
+                }
+                if (expansion == null || expansion.isBlank()) {
+                    throw new IllegalArgumentException("ABBREVIATION.expansion must not be blank.");
+                }
+                yield new com.abntbuilder.formatter.document.component.bodycontent.BodyAbbreviation(text, expansion);
+            }
+            case FOOTNOTE -> {
+                if (content == null || content.isEmpty()) {
+                    throw new IllegalArgumentException("FOOTNOTE.content must not be empty.");
+                }
+                yield new com.abntbuilder.formatter.document.component.bodycontent.BodyFootnote(
+                        content.stream().map(inline -> inline.toDomain(citationFormatting)).toList()
+                );
+            }
         };
     }
 
-    private BodyQuoteType requireQuoteType() {
-        if (quoteType == null) {
-            throw new IllegalArgumentException("quoteType must be provided for QUOTE_TEXT inline content.");
-        }
-        return quoteType;
+    BodyInline toDomain() {
+        return toDomain(new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor"));
     }
 
     private BodyCitationType requireCitationType() {

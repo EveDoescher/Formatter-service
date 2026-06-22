@@ -1,0 +1,53 @@
+{
+  "fileName": "test-quote-markers",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "titlePage",
+      "bodyContent"
+    ]
+  },
+  "work": {
+    "authors": ["Autor Teste"],
+    "title": "Documento Teste",
+    "nature": {
+      "workType": "Trabalho de conclusão de curso",
+      "degreeObjective": "obtenção do título de tecnólogo",
+      "courseName": "Análise e Desenvolvimento de Sistemas",
+      "institutionName": "Universidade Paulista - UNIP"
+    },
+    "advisor": {
+      "academicTitle": "Prof. Dr.",
+      "name": "Orientador"
+    },
+    "city": "Cidade",
+    "year": "2026"
+  },
+  "document": {
+    "titlePage": {},
+    "bodyContent": {
+      "sections": [
+        {
+          "id": "s1",
+          "level": 1,
+          "title": "Marcadores de Citação",
+          "blocks": [
+            {
+              "type": "DIRECT_LONG_QUOTE",
+              "text": "A metodologia foi aplicada com sucesso em contextos variados.",
+              "markers": [
+                { "type": "SUPPRESSION", "position": 15 },
+                { "type": "EMPHASIS_OURS", "position": 0 }
+              ],
+              "source": {
+                "authors": [{ "type": "PERSON", "surname": "FERREIRA" }],
+                "year": "2020",
+                "page": "45"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -41,6 +41,11 @@ class BodySectionRequestTest {
                                 null,
                                 null,
                                 null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
                                 null
                         ),
                         new BodyBlockRequest(
@@ -49,6 +54,11 @@ class BodySectionRequestTest {
                                 "Citacao direta longa.",
                                 null,
                                 new CitationSourceRequest(List.of(author("Sobrenome Teste Um")), "2020", "10"),
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
                                 null,
                                 null,
                                 null,
@@ -89,10 +99,14 @@ class BodySectionRequestTest {
                                         null,
                                         null,
                                         null,
+                                        null,
+                                        null,
+                                        null,
                                         null
                                 ),
                                 new BodyInlineRequest(
                                         BodyInlineType.CITATION,
+                                        null,
                                         null,
                                         null,
                                         BodyCitationType.DIRECT_SHORT,
@@ -100,11 +114,16 @@ class BodySectionRequestTest {
                                         new CitationSourceRequest(List.of(author("Sobrenome Teste Um")), "2020", "10"),
                                         null,
                                         null,
+                                        null,
+                                        null,
                                         null
                                 ),
                                 new BodyInlineRequest(
                                         BodyInlineType.TEXT,
                                         ", ",
+                                        null,
+                                        null,
+                                        null,
                                         null,
                                         null,
                                         null,
@@ -122,9 +141,17 @@ class BodySectionRequestTest {
                                         null,
                                         null,
                                         null,
+                                        null,
+                                        null,
+                                        null,
                                         null
                                 )
                         ),
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
                         null,
                         null,
                         null,
@@ -191,6 +218,11 @@ class BodySectionRequestTest {
                                 )
                         ),
                         null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
                         null
                 ))
         );
@@ -232,6 +264,11 @@ class BodySectionRequestTest {
                                 ),
                                 List.of(new BodyTableRowRequest(List.of("Teste A", "Aprovado")))
                         ),
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
                         null
                 ))
         );

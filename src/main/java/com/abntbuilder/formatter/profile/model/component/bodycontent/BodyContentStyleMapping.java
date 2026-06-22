@@ -14,7 +14,10 @@ public record BodyContentStyleMapping(
         String indirectCitationStyleId,
         String citationOfCitationStyleId,
         String listOrderedStyleId,
-        String listUnorderedStyleId
+        String listUnorderedStyleId,
+        String equationStyleId,
+        String footnoteCallStyleId,
+        String footnoteTextStyleId
 ) {
 
     public BodyContentStyleMapping {
@@ -37,6 +40,9 @@ public record BodyContentStyleMapping(
         requireNonBlank(citationOfCitationStyleId, "citationOfCitationStyleId");
         requireNonBlank(listOrderedStyleId, "listOrderedStyleId");
         requireNonBlank(listUnorderedStyleId, "listUnorderedStyleId");
+        requireNonBlank(equationStyleId, "equationStyleId");
+        requireNonBlank(footnoteCallStyleId, "footnoteCallStyleId");
+        requireNonBlank(footnoteTextStyleId, "footnoteTextStyleId");
     }
 
     public String sectionTitleStyleIdForLevel(int level) {
@@ -53,7 +59,7 @@ public record BodyContentStyleMapping(
         return switch (type) {
             case DIRECT_SHORT -> directShortQuoteStyleId;
             case DIRECT_LONG -> directLongQuoteStyleId;
-            case INDIRECT -> indirectCitationStyleId;
+            case INDIRECT, VERBAL -> indirectCitationStyleId;
             case CITATION_OF_CITATION -> citationOfCitationStyleId;
         };
     }

@@ -4,7 +4,10 @@ public record CitationFormattingRule(
         String pagePrefix,
         String multiAuthorJoiner,
         String etAl,
-        String apudConnector
+        String apudConnector,
+        String suppressionMarker,
+        String emphasisOursLabel,
+        String emphasisAuthorLabel
 ) {
 
     public CitationFormattingRule {
@@ -12,6 +15,9 @@ public record CitationFormattingRule(
         requireNonBlank(multiAuthorJoiner, "multiAuthorJoiner");
         requireNonBlank(etAl, "etAl");
         requireNonBlank(apudConnector, "apudConnector");
+        requireNonBlank(suppressionMarker, "suppressionMarker");
+        requireNonBlank(emphasisOursLabel, "emphasisOursLabel");
+        requireNonBlank(emphasisAuthorLabel, "emphasisAuthorLabel");
     }
 
     private static void requireNonBlank(String value, String fieldName) {

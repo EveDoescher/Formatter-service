@@ -11,8 +11,21 @@ public record BodyCitationCall(
         CitationFormattingRule formatting,
         Optional<CitationSource> source,
         Optional<CitationSource> originalSource,
-        Optional<CitationSource> consultedSource
+        Optional<CitationSource> consultedSource,
+        boolean emphasisOurs,
+        boolean emphasisAuthor
 ) implements BodyInline {
+
+    public BodyCitationCall(
+            BodyCitationType citationType,
+            BodyCitationMode mode,
+            CitationFormattingRule formatting,
+            Optional<CitationSource> source,
+            Optional<CitationSource> originalSource,
+            Optional<CitationSource> consultedSource
+    ) {
+        this(citationType, mode, formatting, source, originalSource, consultedSource, false, false);
+    }
 
     public BodyCitationCall {
         Objects.requireNonNull(citationType, "citationType must not be null");
@@ -30,14 +43,35 @@ public record BodyCitationCall(
         return switch (citationType) {
             case DIRECT_SHORT, DIRECT_LONG, INDIRECT -> renderRegularCitation();
             case CITATION_OF_CITATION -> renderCitationOfCitation();
+            case VERBAL -> renderVerbalCitation();
         };
     }
 
     private String renderRegularCitation() {
         CitationSource citationSource = source.orElseThrow();
         return switch (mode) {
-            case PARENTHETICAL -> "(" + citationSource.parentheticalText(formatting) + ")";
-            case NARRATIVE -> citationSource.narrativeReferenceText(formatting);
+            case PARENTHETICAL -> "(" + citationSource.parentheticalText(formatting) + renderEmphasis() + ")";
+            case NARRATIVE -> citationSource.narrativeReferenceText(formatting) + renderNarrativeEmphasis();
+        };
+    }
+
+    private String renderEmphasis() {
+        if (emphasisOurs) return ", " + formatting.emphasisOursLabel();
+        if (emphasisAuthor) return ", " + formatting.emphasisAuthorLabel();
+        return "";
+    }
+
+    private String renderNarrativeEmphasis() {
+        if (emphasisOurs) return " (" + formatting.emphasisOursLabel() + ")";
+        if (emphasisAuthor) return " (" + formatting.emphasisAuthorLabel() + ")";
+        return "";
+    }
+
+    private String renderVerbalCitation() {
+        CitationSource citationSource = source.orElseThrow();
+        return switch (mode) {
+            case PARENTHETICAL -> "(" + citationSource.authorText(formatting) + ", informação verbal)";
+            case NARRATIVE -> citationSource.authorText(formatting) + " (informação verbal)";
         };
     }
 
@@ -51,12 +85,13 @@ public record BodyCitationCall(
                 + consulted.parentheticalText(formatting);
 
         return switch (mode) {
-            case PARENTHETICAL -> "(" + apudReference + ")";
+            case PARENTHETICAL -> "(" + apudReference + renderEmphasis() + ")";
             case NARRATIVE -> original.authorText(formatting)
                     + " ("
                     + original.year()
                     + formatting.apudConnector()
                     + consulted.parentheticalText(formatting)
+                    + renderEmphasis()
                     + ")";
         };
     }
@@ -76,9 +111,9 @@ public record BodyCitationCall(
                 requireAbsent(originalSource, "originalSource");
                 requireAbsent(consultedSource, "consultedSource");
             }
-            case INDIRECT -> {
+            case INDIRECT, VERBAL -> {
                 if (source.isEmpty()) {
-                    throw new IllegalArgumentException("INDIRECT citation source must be provided.");
+                    throw new IllegalArgumentException(citationType + " citation source must be provided.");
                 }
                 requireAbsent(originalSource, "originalSource");
                 requireAbsent(consultedSource, "consultedSource");

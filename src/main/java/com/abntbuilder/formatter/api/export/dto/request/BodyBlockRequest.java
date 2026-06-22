@@ -23,7 +23,12 @@ public record BodyBlockRequest(
         @Valid CitationSourceRequest consultedSource,
         @Valid BodyFigureRequest figure,
         @Valid BodyTableRequest table,
-        @Valid BodyListRequest list
+        @Valid BodyFrameRequest frame,
+        @Valid BodyCodeListingRequest codeListing,
+        @Valid BodyChartRequest chart,
+        @Valid BodyEquationRequest equation,
+        @Valid BodyListRequest list,
+        @Valid java.util.List<BodyQuoteMarkerRequest> markers
 ) {
 
 
@@ -33,6 +38,10 @@ public record BodyBlockRequest(
             case DIRECT_LONG_QUOTE -> longQuote();
             case FIGURE -> figureBlock();
             case TABLE -> tableBlock();
+            case FRAME -> frameBlock();
+            case CODE_LISTING -> codeListingBlock();
+            case CHART -> chartBlock();
+            case EQUATION -> equationBlock();
             case ORDERED_LIST, UNORDERED_LIST -> {
                 if (list == null) throw new InvalidBodyContentException(type + " block requires list.");
                 yield list.toDomain(citationFormatting);
@@ -42,7 +51,7 @@ public record BodyBlockRequest(
     }
 
     public BodyBlock toDomain() {
-        return toDomain(new CitationFormattingRule("p. ", "; ", "et al.", " apud "));
+        return toDomain(new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor"));
     }
 
     private BodyParagraph paragraph(CitationFormattingRule citationFormatting) {
@@ -69,7 +78,8 @@ public record BodyBlockRequest(
                 mode,
                 source == null ? Optional.empty() : Optional.of(source.toDomain()),
                 originalSource == null ? Optional.empty() : Optional.of(originalSource.toDomain()),
-                consultedSource == null ? Optional.empty() : Optional.of(consultedSource.toDomain())
+                consultedSource == null ? Optional.empty() : Optional.of(consultedSource.toDomain()),
+                markers == null ? java.util.List.of() : markers.stream().map(BodyQuoteMarkerRequest::toDomain).toList()
         );
     }
 
@@ -85,5 +95,33 @@ public record BodyBlockRequest(
             throw new InvalidBodyContentException("table must be provided for TABLE block.");
         }
         return table.toDomain();
+    }
+
+    private BodyBlock frameBlock() {
+        if (frame == null) {
+            throw new InvalidBodyContentException("frame must be provided for FRAME block.");
+        }
+        return frame.toDomain();
+    }
+
+    private BodyBlock codeListingBlock() {
+        if (codeListing == null) {
+            throw new InvalidBodyContentException("codeListing must be provided for CODE_LISTING block.");
+        }
+        return codeListing.toDomain();
+    }
+
+    private BodyBlock chartBlock() {
+        if (chart == null) {
+            throw new InvalidBodyContentException("chart must be provided for CHART block.");
+        }
+        return chart.toDomain();
+    }
+
+    private BodyBlock equationBlock() {
+        if (equation == null) {
+            throw new InvalidBodyContentException("equation must be provided for EQUATION block.");
+        }
+        return equation.toDomain();
     }
 }

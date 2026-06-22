@@ -1,0 +1,140 @@
+{
+  "profileId": "abnt-unip",
+  "document": {
+    "sections": [
+      {
+        "type": "BODY_SECTION",
+        "title": "Testes da Fase 2",
+        "level": 1,
+        "blocks": [
+          {
+            "type": "PARAGRAPH",
+            "content": [
+              {
+                "type": "TEXT",
+                "text": "Este parágrafo contém uma nota de rodapé "
+              },
+              {
+                "type": "FOOTNOTE",
+                "content": [
+                  {
+                    "type": "TEXT",
+                    "text": "Esta é a primeira nota de rodapé, que pode conter citações "
+                  },
+                  {
+                    "type": "CITATION",
+                    "citationType": "INDIRECT",
+                    "mode": "PARENTHETICAL",
+                    "source": {
+                      "authors": [
+                        { "type": "PERSON", "name": "Silva" }
+                      ],
+                      "year": "2023"
+                    }
+                  },
+                  {
+                    "type": "TEXT",
+                    "text": "."
+                  }
+                ]
+              },
+              {
+                "type": "TEXT",
+                "text": " e uma sigla como a "
+              },
+              {
+                "type": "ABBREVIATION",
+                "text": "ABNT",
+                "expansion": "Associação Brasileira de Normas Técnicas"
+              },
+              {
+                "type": "TEXT",
+                "text": "."
+              }
+            ]
+          },
+          {
+            "type": "PARAGRAPH",
+            "content": [
+              {
+                "type": "TEXT",
+                "text": "Aqui temos uma citação direta curta com supressão e interpolação: "
+              },
+              {
+                "type": "QUOTE_TEXT",
+                "quoteType": "SHORT",
+                "text": "o design de software é uma arte complexa para sistemas",
+                "markers": [
+                  {
+                    "type": "SUPPRESSION",
+                    "position": 35
+                  },
+                  {
+                    "type": "INTERPOLATION",
+                    "position": 0,
+                    "endPosition": 1
+                  },
+                  {
+                    "type": "EMPHASIS_OURS",
+                    "position": 0
+                  }
+                ]
+              },
+              {
+                "type": "TEXT",
+                "text": " "
+              },
+              {
+                "type": "CITATION",
+                "citationType": "DIRECT_SHORT",
+                "mode": "PARENTHETICAL",
+                "source": {
+                  "authors": [
+                    { "type": "PERSON", "name": "Mendes" }
+                  ],
+                  "year": "2021",
+                  "page": "15"
+                }
+              },
+              {
+                "type": "TEXT",
+                "text": "."
+              }
+            ]
+          },
+          {
+            "type": "PARAGRAPH",
+            "content": [
+              {
+                "type": "TEXT",
+                "text": "Abaixo vemos uma citação direta longa contendo ênfase do autor e supressão:"
+              }
+            ]
+          },
+          {
+            "type": "DIRECT_LONG_QUOTE",
+            "text": "A arquitetura de microsserviços permite escalar partes do sistema de forma independente, mas introduz desafios significativos na consistência de dados.",
+            "mode": "PARENTHETICAL",
+            "source": {
+              "authors": [
+                { "type": "PERSON", "name": "Fowler" }
+              ],
+              "year": "2014",
+              "page": "42"
+            },
+            "markers": [
+              {
+                "type": "SUPPRESSION",
+                "position": 73
+              },
+              {
+                "type": "EMPHASIS_AUTHOR",
+                "position": 0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

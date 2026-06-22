@@ -1,0 +1,45 @@
+{
+  "fileName": "test",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "titlePage",
+      "bodyContent"
+    ]
+  },
+  "work": {
+    "authors": ["Autor Teste"],
+    "title": "Documento Teste",
+    "nature": {
+      "workType": "Trabalho",
+      "degreeObjective": "Grau",
+      "courseName": "Curso",
+      "institutionName": "Instituição"
+    },
+    "advisor": {
+      "name": "Orientador"
+    },
+    "city": "Cidade",
+    "year": "2026"
+  },
+  "document": {
+    "titlePage": {},
+    "bodyContent": {
+      "sections": [{
+    "id": "s1", "level": 1, "title": "Gráficos",
+    "blocks": [{
+      "type": "CHART",
+      "chart": {
+        "id": "grf-1", "caption": "Distribuição por faixa etária",
+        "source": "O autor",
+        "image": {
+          "sourceType": "URL",
+          "url": "https://picsum.photos/400/300",
+          "altText": "Gráfico de distribuição"
+        }
+      }
+    }]
+      }]
+    }
+  }
+}

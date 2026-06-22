@@ -1,0 +1,49 @@
+{
+  "fileName": "test",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "titlePage",
+      "bodyContent"
+    ]
+  },
+  "work": {
+    "authors": ["Autor Teste"],
+    "title": "Documento Teste",
+    "nature": {
+      "workType": "Trabalho",
+      "degreeObjective": "Grau",
+      "courseName": "Curso",
+      "institutionName": "Instituição"
+    },
+    "advisor": {
+      "name": "Orientador"
+    },
+    "city": "Cidade",
+    "year": "2026"
+  },
+  "document": {
+    "titlePage": {},
+    "bodyContent": {
+      "sections": [{
+          "id": "s1", "level": 1, "title": "Listas Invalidas",
+          "blocks": [
+            {
+              "type": "ORDERED_LIST",
+              "list": {
+                "type": "ORDERED",
+                "items": [
+                  { 
+                    "content": [
+                      { "type": "TEXT", "text": "Primeiro item." },
+                      { "type": "ORDERED_LIST", "list": { "type": "ORDERED", "items": [{"content": [{"type": "TEXT", "text": "sub"}]}] } }
+                    ] 
+                  }
+                ]
+              }
+            }
+          ]
+        }]
+    }
+  }
+}

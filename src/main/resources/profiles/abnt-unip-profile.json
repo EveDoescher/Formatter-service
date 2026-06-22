@@ -1097,7 +1097,10 @@
         "indirectCitationStyleId": "bodyContent.paragraph",
         "citationOfCitationStyleId": "bodyContent.paragraph",
         "listOrderedStyleId": "bodyContent.list.ordered",
-        "listUnorderedStyleId": "bodyContent.list.unordered"
+        "listUnorderedStyleId": "bodyContent.list.unordered",
+        "equationStyleId": "bodyContent.paragraph",
+        "footnoteCallStyleId": "bodyContent.footnoteCall",
+        "footnoteTextStyleId": "bodyContent.footnoteText"
       },
       "numbering": {
         "enabled": true,
@@ -1163,11 +1166,58 @@
         "widthPercent": 100,
         "repeatHeaderOnPageBreak": true
       },
+      "codeListing": {
+        "captionStyleId": "bodyContent.figure.caption",
+        "sourceStyleId": "bodyContent.figure.source",
+        "codeStyleId": "bodyContent.paragraph",
+        "captionTemplate": "Código-fonte {number} - {caption}",
+        "sourceTemplate": "Fonte: {source}",
+        "continuationLabels": {
+          "first": "continua",
+          "middle": "continuação",
+          "last": "conclusão"
+        },
+        "sourcePlacement": "LAST_PART_ONLY"
+      },
+      "chart": {
+        "captionStyleId": "bodyContent.figure.caption",
+        "sourceStyleId": "bodyContent.figure.source",
+        "captionTemplate": "Gráfico {number} - {caption}",
+        "sourceTemplate": "Fonte: {source}",
+        "continuationLabels": {
+          "first": "continua",
+          "middle": "continuação",
+          "last": "conclusão"
+        },
+        "sourcePlacement": "LAST_PART_ONLY",
+        "imageRule": {
+          "captionStyleId": "bodyContent.figure.caption",
+          "sourceStyleId": "bodyContent.figure.source",
+          "captionTemplate": "Gráfico {number} - {caption}",
+          "sourceTemplate": "Fonte: {source}",
+          "continuationLabels": {
+            "first": "continua",
+            "middle": "continuação",
+            "last": "conclusão"
+          },
+          "sourcePlacement": "LAST_PART_ONLY",
+          "imageAlignment": "CENTER",
+          "maxWidthCm": 16,
+          "maxHeightCm": 18,
+          "defaultDpi": 96,
+          "maxImageBytes": 2000000,
+          "urlFetchTimeoutSeconds": 10,
+          "fitPolicy": "SCALE_DOWN_PRESERVE_ASPECT_RATIO"
+        }
+      },
       "citationFormatting": {
-        "pagePrefix": "p. ",
+        "pagePrefix": "p.",
         "multiAuthorJoiner": "; ",
-        "etAl": "et al.",
-        "apudConnector": " apud "
+        "etAl": " et al.",
+        "apudConnector": " apud ",
+        "suppressionMarker": "[...]",
+        "emphasisOursLabel": "grifo nosso",
+        "emphasisAuthorLabel": "grifo do autor"
       }
     }
   }

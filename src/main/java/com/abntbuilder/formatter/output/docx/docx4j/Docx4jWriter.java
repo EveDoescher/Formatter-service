@@ -190,6 +190,7 @@ public class Docx4jWriter implements DocxWriter {
             case DocxImageBlock imageBlock -> writeImage(wordPackage, imageBlock);
             case DocxTableBlock tableBlock -> writeTable(wordPackage, tableBlock);
             case DocxListItemParagraph listItem -> writeListItem(wordPackage, listItem, listNumIds);
+            case com.abntbuilder.formatter.output.docx.api.DocxFootnoteReferenceBlock fnBlock -> writeFootnoteReferenceBlock(wordPackage, fnBlock, listNumIds);
             case DocxSectionBreak ignored -> throw new IllegalArgumentException(
                     "Section breaks must be handled by the document section state."
             );
@@ -209,17 +210,27 @@ public class Docx4jWriter implements DocxWriter {
         applyKeepOptions(docxParagraph.getPPr(), paragraph.keepWithNext(), paragraph.keepLines());
 
         for (DocxRun docxRun : paragraph.runs()) {
-            R run = objectFactory.createR();
+            String text = docxRun.text();
+            if (text.startsWith("[FN:") && text.endsWith("]")) {
+                int fnId = Integer.parseInt(text.substring(4, text.length() - 1));
+                R refRun = objectFactory.createR();
+                org.docx4j.wml.CTFtnEdnRef ref = objectFactory.createCTFtnEdnRef();
+                ref.setId(java.math.BigInteger.valueOf(fnId));
+                refRun.getContent().add(objectFactory.createRFootnoteReference(ref));
+                docxParagraph.getContent().add(refRun);
+            } else {
+                R run = objectFactory.createR();
 
-            if (!isHeadingStyle(paragraph.styleRule())) {
-                run.setRPr(buildRunProperties(docxRun.baseStyle(), docxRun.formatting()));
+                if (!isHeadingStyle(paragraph.styleRule())) {
+                    run.setRPr(buildRunProperties(docxRun.baseStyle(), docxRun.formatting()));
+                }
+
+                Text t = objectFactory.createText();
+                t.setValue(resolveText(text, docxRun.baseStyle()));
+                t.setSpace("preserve");
+                run.getContent().add(t);
+                docxParagraph.getContent().add(run);
             }
-
-            Text text = objectFactory.createText();
-            text.setValue(resolveText(docxRun.text(), docxRun.baseStyle()));
-            text.setSpace("preserve");
-            run.getContent().add(text);
-            docxParagraph.getContent().add(run);
         }
 
         wordPackage.getMainDocumentPart().addObject(docxParagraph);
@@ -672,6 +683,41 @@ public class Docx4jWriter implements DocxWriter {
         };
     }
 
+    private void writeFootnoteReferenceBlock(WordprocessingMLPackage wordPackage, com.abntbuilder.formatter.output.docx.api.DocxFootnoteReferenceBlock fnBlock, ListNumIds listNumIds) {
+        try {
+            org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart fnPart = wordPackage.getMainDocumentPart().getFootnotesPart();
+            if (fnPart == null) {
+                fnPart = new org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart();
+                wordPackage.getMainDocumentPart().addTargetPart(fnPart);
+                org.docx4j.wml.CTFootnotes footnotes = objectFactory.createCTFootnotes();
+                fnPart.setJaxbElement(footnotes);
+            }
+            org.docx4j.wml.CTFootnotes ctFootnotes = fnPart.getJaxbElement();
+
+            for (com.abntbuilder.formatter.output.docx.api.DocxFootnoteContent fn : fnBlock.footnotes()) {
+                org.docx4j.wml.CTFtnEdn footnote = objectFactory.createCTFtnEdn();
+                footnote.setId(java.math.BigInteger.valueOf(fn.id()));
+                
+                P fnParagraph = objectFactory.createP();
+                for (com.abntbuilder.formatter.output.docx.api.DocxRun docxRun : fn.contentRuns()) {
+                    R run = objectFactory.createR();
+                    run.setRPr(buildRunProperties(docxRun.baseStyle(), docxRun.formatting()));
+                    Text t = objectFactory.createText();
+                    t.setValue(docxRun.text());
+                    t.setSpace("preserve");
+                    run.getContent().add(t);
+                    fnParagraph.getContent().add(run);
+                }
+                footnote.getContent().add(fnParagraph);
+                ctFootnotes.getFootnote().add(footnote);
+            }
+        } catch (org.docx4j.openpackaging.exceptions.InvalidFormatException e) {
+            throw new RuntimeException("Failed to add FootnotesPart", e);
+        }
+
+        writeBlock(wordPackage, fnBlock.hostBlock(), listNumIds);
+    }
+
     private JcEnumeration mapTextAlignment(TextAlignment alignment) {
         return switch (alignment) {
             case LEFT -> JcEnumeration.LEFT;
@@ -922,13 +968,23 @@ public class Docx4jWriter implements DocxWriter {
         pPr.setNumPr(numPr);
         p.setPPr(pPr);
         for (DocxRun run : listItem.runs()) {
-            R r = objectFactory.createR();
-            r.setRPr(buildRunProperties(run.baseStyle(), run.formatting()));
-            Text t = objectFactory.createText();
-            t.setValue(resolveText(run.text(), run.baseStyle()));
-            t.setSpace("preserve");
-            r.getContent().add(t);
-            p.getContent().add(r);
+            String text = run.text();
+            if (text.startsWith("[FN:") && text.endsWith("]")) {
+                int fnId = Integer.parseInt(text.substring(4, text.length() - 1));
+                R refRun = objectFactory.createR();
+                org.docx4j.wml.CTFtnEdnRef ref = objectFactory.createCTFtnEdnRef();
+                ref.setId(java.math.BigInteger.valueOf(fnId));
+                refRun.getContent().add(objectFactory.createRFootnoteReference(ref));
+                p.getContent().add(refRun);
+            } else {
+                R r = objectFactory.createR();
+                r.setRPr(buildRunProperties(run.baseStyle(), run.formatting()));
+                Text t = objectFactory.createText();
+                t.setValue(resolveText(text, run.baseStyle()));
+                t.setSpace("preserve");
+                r.getContent().add(t);
+                p.getContent().add(r);
+            }
         }
         wordPackage.getMainDocumentPart().addObject(p);
     }

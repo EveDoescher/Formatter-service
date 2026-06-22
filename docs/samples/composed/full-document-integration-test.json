@@ -1,0 +1,270 @@
+{
+  "fileName": "teste-integracao-completo",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "cover",
+      "titlePage",
+      "approvalSheet",
+      "bodyContent"
+    ]
+  },
+  "document": {
+    "cover": {
+      "institutionalLines": [
+        "UNIVERSIDADE PAULISTA",
+        "INSTITUTO DE CIÊNCIAS EXATAS E TECNOLOGIA",
+        "CURSO DE ANÁLISE E DESENVOLVIMENTO DE SISTEMAS"
+      ],
+      "authors": [
+        "AUTOR UM DA SILVA",
+        "AUTORA DOIS COSTA"
+      ],
+      "title": "DOCUMENTO DE TESTE DE INTEGRAÇÃO COMPLETO: TODAS AS FASES",
+      "subtitle": "Uma validação massiva dos componentes do sistema",
+      "city": "São Paulo",
+      "year": "2026"
+    },
+    "titlePage": {
+      "authors": [
+        "Autor Um da Silva",
+        "Autora Dois Costa"
+      ],
+      "title": "Documento de Teste de Integração Completo: Todas as Fases",
+      "subtitle": "Uma validação massiva dos componentes do sistema",
+      "nature": {
+        "workType": "Trabalho de Conclusão de Curso",
+        "degreeObjective": "obtenção do título de tecnólogo",
+        "courseName": "Sistemas de Informação",
+        "institutionName": "Universidade Paulista - UNIP"
+      },
+      "advisor": {
+        "academicTitle": "Prof. Dr.",
+        "name": "Orientador Silva"
+      },
+      "coadvisor": {
+        "academicTitle": "Prof. Me.",
+        "name": "Co-orientador Costa"
+      },
+      "city": "São Paulo",
+      "year": "2026"
+    },
+    "approvalSheet": {
+      "authors": [
+        "Autor Um da Silva",
+        "Autora Dois Costa"
+      ],
+      "title": "Documento de Teste de Integração Completo: Todas as Fases",
+      "subtitle": "Uma validação massiva dos componentes do sistema",
+      "nature": {
+        "workType": "Trabalho de Conclusão de Curso",
+        "degreeObjective": "obtenção do título de tecnólogo",
+        "courseName": "Sistemas de Informação",
+        "institutionName": "Universidade Paulista - UNIP"
+      },
+      "committeeMembers": [
+        {
+          "name": "Orientador Silva",
+          "title": "Prof. Dr.",
+          "institutionName": "Universidade Paulista",
+          "role": "Orientador"
+        },
+        {
+          "name": "Examinadora Um",
+          "title": "Prof. Dra.",
+          "institutionName": "Universidade de São Paulo",
+          "role": "Convidada"
+        }
+      ]
+    },
+    "bodyContent": {
+      "sections": [
+        {
+          "id": "s1",
+          "level": 1,
+          "title": "Introdução (Fase 1)",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "TEXT",
+                  "text": "Este documento serve como um teste de integração massivo contendo todas as estruturas mapeadas pela formatação do sistema."
+                }
+              ]
+            },
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "TEXT",
+                  "text": "Aqui testamos a citação indireta. Segundo "
+                },
+                {
+                  "type": "CITATION",
+                  "citationType": "INDIRECT",
+                  "mode": "NARRATIVE",
+                  "authors": [
+                    { "type": "PERSON", "surname": "SOUZA" }
+                  ],
+                  "year": "2021"
+                },
+                {
+                  "type": "TEXT",
+                  "text": ", o sistema deve integrar blocos textuais."
+                }
+              ]
+            },
+            {
+              "type": "DIRECT_LONG_QUOTE",
+              "text": "As citações longas (com mais de três linhas) devem ter um recuo de 4 cm da margem esquerda, tamanho de fonte reduzido e espaçamento simples.",
+              "source": {
+                "authors": [
+                  { "type": "PERSON", "surname": "ABNT" }
+                ],
+                "year": "2002",
+                "page": "2"
+              }
+            },
+            {
+              "type": "FIGURE",
+              "figure": {
+                "id": "fig-1",
+                "caption": "Figura de Exemplo (Fase 1)",
+                "source": "Arquivo digital interno",
+                "image": {
+                  "sourceType": "URL",
+                  "url": "https://dummyimage.com/600x400/000/fff.png&text=Figura+Teste",
+                  "altText": "Figura de teste representativa"
+                }
+              }
+            },
+            {
+              "type": "TABLE",
+              "table": {
+                "id": "tab-1",
+                "caption": "Tabela Demonstrativa",
+                "source": "Os autores",
+                "columns": [
+                  { "header": "Item" },
+                  { "header": "Quantidade" }
+                ],
+                "rows": [
+                  { "cells": ["Lápis", "10"] },
+                  { "cells": ["Caderno", "5"] }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "s2",
+          "level": 1,
+          "title": "Novos Componentes (Fase 2)",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "TEXT",
+                  "text": "Agora, testaremos a formatação inline como "
+                },
+                {
+                  "type": "TEXT",
+                  "text": "negrito",
+                  "formatting": { "bold": true }
+                },
+                {
+                  "type": "TEXT",
+                  "text": " e "
+                },
+                {
+                  "type": "TEXT",
+                  "text": "itálico",
+                  "formatting": { "italic": true }
+                },
+                {
+                  "type": "TEXT",
+                  "text": ", além do "
+                },
+                {
+                  "type": "TEXT",
+                  "text": "sobrescrito",
+                  "formatting": { "superscript": true }
+                },
+                {
+                  "type": "TEXT",
+                  "text": ". Também testamos as citações."
+                }
+              ]
+            },
+            {
+              "type": "ORDERED_LIST",
+              "list": {
+                "type": "ORDERED",
+                "items": [
+                  {
+                    "content": [
+                      { "type": "TEXT", "text": "Coleta de dados" }
+                    ]
+                  },
+                  {
+                    "content": [
+                      { "type": "TEXT", "text": "Análise" }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "FRAME",
+              "frame": {
+                "id": "qdr-2",
+                "caption": "Quadro de Atividades",
+                "source": "Os autores",
+                "columns": [
+                  { "header": "Atividade" },
+                  { "header": "Prazo" }
+                ],
+                "rows": [
+                  { "cells": ["Desenvolvimento", "Junho/2026"] },
+                  { "cells": ["Testes", "Julho/2026"] }
+                ]
+              }
+            },
+            {
+              "type": "CODE_LISTING",
+              "codeListing": {
+                "id": "lst-2",
+                "caption": "Exemplo de Código",
+                "source": "Próprio",
+                "language": "javascript",
+                "code": "function helloWorld() {\n  console.log('Olá, Fase 2!');\n}"
+              }
+            },
+            {
+              "type": "CHART",
+              "chart": {
+                "id": "grf-2",
+                "caption": "Gráfico de Desempenho",
+                "source": "Resultados Internos",
+                "image": {
+                  "sourceType": "URL",
+                  "url": "https://dummyimage.com/600x400/000/fff.png&text=Grafico+Simulado",
+                  "altText": "Gráfico simulado"
+                }
+              }
+            },
+            {
+              "type": "EQUATION",
+              "equation": {
+                "text": "x = (-b ± √(b²-4ac)) / 2a",
+                "label": "2"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -33,7 +33,16 @@ class BodyContentSampleValidationTest {
                 "body-content-figures.json",
                 "body-content-tables.json",
                 "body-content-title-only-section.json",
-                "body-content-inline-formatting.json"
+                "body-content-inline-formatting.json",
+                "body-content-lists.json",
+                "body-content-frames.json",
+                "body-content-code-listings.json",
+                "body-content-charts.json",
+                "body-content-equations.json",
+                "body-content-abbreviations.json",
+                "body-content-footnotes.json",
+                "body-content-quote-markers.json",
+                "body-content-fase2-visual-test.json"
         );
 
         for (String sampleName : sampleNames) {
@@ -58,7 +67,8 @@ class BodyContentSampleValidationTest {
                 "body-content-citation-manual-quotes-invalid.json",
                 "body-content-table-row-mismatch-invalid.json",
                 "body-content-selected-components-pagination-invalid.json",
-                "body-content-inline-formatting-invalid.json"
+                "body-content-inline-formatting-invalid.json",
+                "body-content-lists-nested-invalid.json"
         );
 
         for (String sampleName : sampleNames) {
@@ -73,7 +83,8 @@ class BodyContentSampleValidationTest {
     void shouldGenerateComposedFullDocumentWithBodyContentSampleFromOfficialJsonFile() throws Exception {
         List<String> sampleNames = List.of(
                 "full-document-with-body-content.json",
-                "full-document-with-work-bindings.json"
+                "full-document-with-work-bindings.json",
+                "full-document-integration-test.json"
         );
 
         for (String sampleName : sampleNames) {

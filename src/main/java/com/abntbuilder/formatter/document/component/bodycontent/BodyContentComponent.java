@@ -68,6 +68,8 @@ public record BodyContentComponent(
         Set<String> figureIds = new HashSet<>();
         Set<String> tableIds = new HashSet<>();
         Set<String> frameIds = new HashSet<>();
+        Set<String> codeListingIds = new HashSet<>();
+        Set<String> chartIds = new HashSet<>();
 
         for (BodySection section : sections) {
             for (BodyBlock block : section.blocks()) {
@@ -79,6 +81,12 @@ public record BodyContentComponent(
                 }
                 if (block instanceof BodyFrame frame && !frameIds.add(frame.id())) {
                     throw new IllegalArgumentException("bodyContent frame id must be unique: " + frame.id());
+                }
+                if (block instanceof BodyCodeListing codeListing && !codeListingIds.add(codeListing.id())) {
+                    throw new IllegalArgumentException("bodyContent codeListing id must be unique: " + codeListing.id());
+                }
+                if (block instanceof BodyChart chart && !chartIds.add(chart.id())) {
+                    throw new IllegalArgumentException("bodyContent chart id must be unique: " + chart.id());
                 }
             }
         }

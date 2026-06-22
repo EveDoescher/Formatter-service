@@ -13,6 +13,8 @@ public record BodyContentComponentRule(
         FigureRule figure,
         TableRule table,
         FrameRule frame,
+        CodeListingRule codeListing,
+        ChartRule chart,
         CitationFormattingRule citationFormatting
 ) implements ComponentRule {
 
@@ -24,6 +26,8 @@ public record BodyContentComponentRule(
         Objects.requireNonNull(figure, "figure must not be null");
         Objects.requireNonNull(table, "table must not be null");
         Objects.requireNonNull(frame, "frame must not be null");
+        Objects.requireNonNull(codeListing, "codeListing must not be null");
+        Objects.requireNonNull(chart, "chart must not be null");
         Objects.requireNonNull(citationFormatting, "citationFormatting must not be null");
     }
 

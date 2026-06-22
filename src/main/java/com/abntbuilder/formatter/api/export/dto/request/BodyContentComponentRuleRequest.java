@@ -21,6 +21,8 @@ public record BodyContentComponentRuleRequest(
         @Valid @NotNull FigureRuleRequest figure,
         @Valid @NotNull TableRuleRequest table,
         @Valid @NotNull FrameRuleRequest frame,
+        @Valid @NotNull CodeListingRuleRequest codeListing,
+        @Valid @NotNull ChartRuleRequest chart,
         @Valid CitationFormattingRuleRequest citationFormatting
 ) {
 
@@ -33,7 +35,9 @@ public record BodyContentComponentRuleRequest(
                 figure.toDomain(),
                 table.toDomain(),
                 frame.toDomain(),
-                citationFormatting != null ? citationFormatting.toDomain() : new CitationFormattingRule("p. ", "; ", "et al.", " apud ")
+                codeListing.toDomain(),
+                chart.toDomain(),
+                citationFormatting != null ? citationFormatting.toDomain() : new com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor")
         );
     }
 }

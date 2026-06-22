@@ -4,6 +4,9 @@ import com.abntbuilder.formatter.document.component.bodycontent.BodyContentCompo
 import com.abntbuilder.formatter.document.component.bodycontent.BodyBlock;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationCall;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationType;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyChart;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyCodeListing;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyEquation;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyFigure;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyFrame;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyInline;
@@ -30,6 +33,8 @@ import com.abntbuilder.formatter.profile.model.DocumentProfile;
 import com.abntbuilder.formatter.profile.model.StyleRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentComponentRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentNumberingRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.ChartRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.CodeListingRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FigureRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FrameRule;
@@ -92,6 +97,14 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
         DisplayObjectRenderingState<BodyFrame> frameRenderingState = new DisplayObjectRenderingState<>(
                 framesFrom(component.sections())
         );
+        DisplayObjectRenderingState<BodyCodeListing> codeListingRenderingState = new DisplayObjectRenderingState<>(
+                codeListingsFrom(component.sections())
+        );
+        DisplayObjectRenderingState<BodyChart> chartRenderingState = new DisplayObjectRenderingState<>(
+                chartsFrom(component.sections())
+        );
+
+        int[] footnoteCounter = new int[1];
 
         for (BodySection section : component.sections()) {
             if (section.title().isPresent()) {
@@ -122,7 +135,10 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                         styleResolver,
                         figureRenderingState,
                         tableRenderingState,
-                        frameRenderingState
+                        frameRenderingState,
+                        codeListingRenderingState,
+                        chartRenderingState,
+                        footnoteCounter
                 ));
                 previousBlockWasTextualContent = contentBlock instanceof BodyParagraph
                         || contentBlock instanceof BodyLongQuote;
@@ -148,15 +164,23 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             StyleResolver styleResolver,
             DisplayObjectRenderingState<BodyFigure> figureRenderingState,
             DisplayObjectRenderingState<BodyTable> tableRenderingState,
-            DisplayObjectRenderingState<BodyFrame> frameRenderingState
+            DisplayObjectRenderingState<BodyFrame> frameRenderingState,
+            DisplayObjectRenderingState<BodyCodeListing> codeListingRenderingState,
+            DisplayObjectRenderingState<BodyChart> chartRenderingState,
+            int[] footnoteCounter
     ) {
         return switch (contentBlock) {
             case BodyParagraph paragraph -> {
                 StyleRule paragraphStyle = styleResolver.resolve(rule.styleMapping().paragraphStyleId());
+                java.util.List<com.abntbuilder.formatter.output.docx.api.DocxFootnoteContent> footnoteAccumulator = new java.util.ArrayList<>();
                 List<DocxRun> runs = paragraph.content().stream()
-                        .map(inline -> toDocxRun(inline, paragraphStyle, rule, styleResolver))
+                        .map(inline -> toDocxRun(inline, paragraphStyle, rule, styleResolver, footnoteAccumulator, footnoteCounter))
                         .toList();
-                yield List.of(new DocxParagraph(runs, paragraphStyle));
+                DocxParagraph docxParagraph = new DocxParagraph(runs, paragraphStyle);
+                if (!footnoteAccumulator.isEmpty()) {
+                    yield List.of(new com.abntbuilder.formatter.output.docx.api.DocxFootnoteReferenceBlock(docxParagraph, footnoteAccumulator));
+                }
+                yield List.of(docxParagraph);
             }
             case BodyLongQuote longQuote -> {
                 StyleRule longQuoteStyle = styleResolver.resolve(rule.styleMapping().directLongQuoteStyleId());
@@ -175,14 +199,28 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                 );
                 yield list.items().stream()
                         .map(item -> {
+                            java.util.List<com.abntbuilder.formatter.output.docx.api.DocxFootnoteContent> footnoteAccumulator = new java.util.ArrayList<>();
                             List<DocxRun> runs = item.content().stream()
-                                    .map(inline -> toDocxRun(inline, itemStyle, rule, styleResolver))
+                                    .map(inline -> toDocxRun(inline, itemStyle, rule, styleResolver, footnoteAccumulator, footnoteCounter))
                                     .toList();
-                            return (DocxBlock) new DocxListItemParagraph(runs, itemStyle, list.type(), 0);
+                            com.abntbuilder.formatter.output.docx.api.DocxBlock listItem = new DocxListItemParagraph(runs, itemStyle, list.type(), 0);
+                            if (!footnoteAccumulator.isEmpty()) {
+                                return new com.abntbuilder.formatter.output.docx.api.DocxFootnoteReferenceBlock(listItem, footnoteAccumulator);
+                            }
+                            return listItem;
                         })
                         .toList();
             }
             case BodyFrame frame -> renderFrame(frame, rule.frame(), styleResolver, frameRenderingState);
+            case BodyCodeListing codeListing -> renderCodeListing(codeListing, rule.codeListing(), styleResolver, codeListingRenderingState);
+            case BodyChart chart -> renderChart(chart, rule.chart(), styleResolver, chartRenderingState);
+            case BodyEquation equation -> {
+                StyleRule equationStyle = styleResolver.resolve(rule.styleMapping().equationStyleId());
+                yield List.of(new DocxParagraph(
+                        List.of(DocxRun.of(equation.text(), equationStyle)),
+                        equationStyle
+                ));
+            }
         };
     }
 
@@ -190,7 +228,9 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             BodyInline inline,
             StyleRule baseStyle,
             BodyContentComponentRule rule,
-            StyleResolver styleResolver
+            StyleResolver styleResolver,
+            java.util.List<com.abntbuilder.formatter.output.docx.api.DocxFootnoteContent> footnoteAccumulator,
+            int[] footnoteCounter
     ) {
         return switch (inline) {
             case BodyText text -> new DocxRun(text.text(), baseStyle, text.formatting());
@@ -200,6 +240,17 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                         rule.styleMapping().styleIdForCitation(call.citationType())
                 );
                 yield new DocxRun(call.renderedText(), citationStyle, InlineFormatting.none());
+            }
+            case com.abntbuilder.formatter.document.component.bodycontent.BodyAbbreviation abbr -> {
+                yield new DocxRun(abbr.renderedText(), baseStyle, InlineFormatting.none());
+            }
+            case com.abntbuilder.formatter.document.component.bodycontent.BodyFootnote footnote -> {
+                int fnId = ++footnoteCounter[0];
+                List<DocxRun> fnRuns = footnote.content().stream()
+                        .map(fi -> toDocxRun(fi, baseStyle, rule, styleResolver, footnoteAccumulator, footnoteCounter))
+                        .toList();
+                footnoteAccumulator.add(new com.abntbuilder.formatter.output.docx.api.DocxFootnoteContent(fnId, fnRuns));
+                yield new DocxRun("[FN:" + fnId + "]", baseStyle, InlineFormatting.none());
             }
         };
     }
@@ -224,15 +275,10 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                 true,
                 true
         ));
-        blocks.add(new DocxImageBlock(
-                resolvedImage.bytes(),
-                resolvedImage.mimeType(),
-                figure.image().altText(),
-                resolvedImage.widthCm(),
-                resolvedImage.heightCm(),
-                rule.imageAlignment(),
-                shouldRenderSource(figure, rule, part, figureRenderingState),
-                true
+        blocks.add(renderImageDisplayObject(
+                figure.image(),
+                rule,
+                shouldRenderSource(figure, rule, part, figureRenderingState)
         ));
 
         if (shouldRenderSource(figure, rule, part, figureRenderingState)) {
@@ -526,6 +572,30 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
         return List.copyOf(frames);
     }
 
+    private static List<BodyCodeListing> codeListingsFrom(List<BodySection> sections) {
+        List<BodyCodeListing> codeListings = new ArrayList<>();
+        for (BodySection section : sections) {
+            for (BodyBlock block : section.blocks()) {
+                if (block instanceof BodyCodeListing codeListing) {
+                    codeListings.add(codeListing);
+                }
+            }
+        }
+        return List.copyOf(codeListings);
+    }
+
+    private static List<BodyChart> chartsFrom(List<BodySection> sections) {
+        List<BodyChart> charts = new ArrayList<>();
+        for (BodySection section : sections) {
+            for (BodyBlock block : section.blocks()) {
+                if (block instanceof BodyChart chart) {
+                    charts.add(chart);
+                }
+            }
+        }
+        return List.copyOf(charts);
+    }
+
     private static boolean shouldRenderSource(
             BodyFrame frame,
             FrameRule rule,
@@ -590,6 +660,115 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
         }
 
         return List.copyOf(blocks);
+    }
+
+    private static DocxImageBlock renderImageDisplayObject(
+            BodyImageSource imageSource,
+            FigureRule figureRule,
+            boolean renderSource
+    ) {
+        ResolvedImage resolved = resolveImage(imageSource, figureRule);
+        return new DocxImageBlock(
+                resolved.bytes(),
+                resolved.mimeType(),
+                imageSource.altText(),
+                resolved.widthCm(),
+                resolved.heightCm(),
+                figureRule.imageAlignment(),
+                renderSource,
+                true
+        );
+    }
+
+    private static List<DocxBlock> renderCodeListing(
+            BodyCodeListing codeListing,
+            CodeListingRule rule,
+            StyleResolver styleResolver,
+            DisplayObjectRenderingState<BodyCodeListing> codeListingRenderingState
+    ) {
+        DisplayObjectContinuationPart part = codeListingRenderingState.nextPart(codeListing, rule.continuationLabels());
+        List<DocxBlock> blocks = new ArrayList<>();
+        StyleRule captionStyle = styleResolver.resolve(rule.captionStyleId());
+        blocks.add(new DocxParagraph(
+                List.of(DocxRun.of(resolveCaptionText(codeListing.caption(), rule.captionTemplate(), part), captionStyle)),
+                captionStyle, java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.empty(), true, true
+        ));
+        StyleRule codeStyle = styleResolver.resolve(rule.codeStyleId());
+        String[] lines = codeListing.code().split("\n", -1);
+        for (String line : lines) {
+            String rendered = line.isEmpty() ? " " : line;
+            blocks.add(new DocxParagraph(List.of(DocxRun.of(rendered, codeStyle)), codeStyle));
+        }
+        if (shouldRenderSource(codeListing, rule, part, codeListingRenderingState)) {
+            String source = codeListingRenderingState.sourceFor(codeListing).orElseThrow();
+            StyleRule sourceStyle = styleResolver.resolve(rule.sourceStyleId());
+            blocks.add(new DocxParagraph(
+                    List.of(DocxRun.of(rule.sourceTemplate().replace("{source}", source), sourceStyle)),
+                    sourceStyle, java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.empty(), false, true
+            ));
+        }
+        return List.copyOf(blocks);
+    }
+
+    private static boolean shouldRenderSource(
+            BodyCodeListing codeListing,
+            CodeListingRule rule,
+            DisplayObjectContinuationPart part,
+            DisplayObjectRenderingState<BodyCodeListing> codeListingRenderingState
+    ) {
+        if (codeListingRenderingState.sourceFor(codeListing).isEmpty()) {
+            return false;
+        }
+        return switch (rule.sourcePlacement()) {
+            case EVERY_PART -> true;
+            case LAST_PART_ONLY -> part.last();
+        };
+    }
+
+    private static List<DocxBlock> renderChart(
+            BodyChart chart,
+            ChartRule rule,
+            StyleResolver styleResolver,
+            DisplayObjectRenderingState<BodyChart> chartRenderingState
+    ) {
+        DisplayObjectContinuationPart part = chartRenderingState.nextPart(chart, rule.continuationLabels());
+        List<DocxBlock> blocks = new ArrayList<>();
+        StyleRule captionStyle = styleResolver.resolve(rule.captionStyleId());
+        blocks.add(new DocxParagraph(
+                List.of(DocxRun.of(resolveCaptionText(chart.caption(), rule.captionTemplate(), part), captionStyle)),
+                captionStyle, java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.empty(), true, true
+        ));
+        boolean renderSource = shouldRenderSource(chart, rule, part, chartRenderingState);
+        blocks.add(renderImageDisplayObject(
+                chart.image(),
+                rule.imageRule(),
+                renderSource
+        ));
+
+        if (renderSource) {
+            String source = chartRenderingState.sourceFor(chart).orElseThrow();
+            StyleRule sourceStyle = styleResolver.resolve(rule.sourceStyleId());
+            blocks.add(new DocxParagraph(
+                    List.of(DocxRun.of(rule.sourceTemplate().replace("{source}", source), sourceStyle)),
+                    sourceStyle, java.util.Optional.empty(), java.util.Optional.empty(), java.util.Optional.empty(), false, true
+            ));
+        }
+        return List.copyOf(blocks);
+    }
+
+    private static boolean shouldRenderSource(
+            BodyChart chart,
+            ChartRule rule,
+            DisplayObjectContinuationPart part,
+            DisplayObjectRenderingState<BodyChart> chartRenderingState
+    ) {
+        if (chartRenderingState.sourceFor(chart).isEmpty()) {
+            return false;
+        }
+        return switch (rule.sourcePlacement()) {
+            case EVERY_PART -> true;
+            case LAST_PART_ONLY -> part.last();
+        };
     }
 
     private static final class SectionNumberingState {

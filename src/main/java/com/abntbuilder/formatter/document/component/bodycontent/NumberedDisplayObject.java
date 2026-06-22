@@ -2,7 +2,7 @@ package com.abntbuilder.formatter.document.component.bodycontent;
 
 import java.util.Optional;
 
-public sealed interface NumberedDisplayObject extends BodyBlock permits BodyFigure, BodyTable, BodyFrame {
+public sealed interface NumberedDisplayObject extends BodyBlock permits BodyFigure, BodyTable, BodyFrame, BodyCodeListing, BodyChart {
 
     String id();
 
