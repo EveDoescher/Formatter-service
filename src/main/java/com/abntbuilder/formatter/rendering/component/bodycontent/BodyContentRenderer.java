@@ -2,6 +2,8 @@ package com.abntbuilder.formatter.rendering.component.bodycontent;
 
 import com.abntbuilder.formatter.document.component.bodycontent.BodyContentComponent;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCrossReference;
+import com.abntbuilder.formatter.document.component.bodycontent.CrossReferenceDisplayMode;
+import com.abntbuilder.formatter.document.component.bodycontent.CrossReferenceTargetType;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyBlock;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyAbbreviation;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationCall;
@@ -43,8 +45,10 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObje
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FigureRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FrameRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.CrossReferenceLabelsRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.TableRule;
 import com.abntbuilder.formatter.output.docx.api.TableBorderStyle;
+import com.abntbuilder.formatter.shared.exception.InvalidBodyContentException;
 import com.abntbuilder.formatter.profile.resolution.ComponentRuleResolver;
 import com.abntbuilder.formatter.profile.resolution.StyleResolver;
 import com.abntbuilder.formatter.rendering.component.ComponentRenderer;
@@ -64,7 +68,9 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -89,6 +95,7 @@ public final class BodyContentRenderer
         Objects.requireNonNull(profile, "profile must not be null");
 
         BodyContentComponentRule rule = bodyContentRule(profile);
+        CrossReferenceIndex crossRefIndex = buildCrossReferenceIndex(component, rule);
         StyleResolver styleResolver = new StyleResolver(profile);
         SectionNumberingState numberingState = new SectionNumberingState(rule.numbering());
         StyleRule blankLineStyle = styleResolver.resolve(rule.layout().blankLineStyleId());
@@ -162,7 +169,8 @@ public final class BodyContentRenderer
                         frameMetas,
                         chartMetas,
                         codeListingMetas,
-                        footnoteCounter
+                        footnoteCounter,
+                        crossRefIndex
                 ));
                 previousBlockWasTextualContent = contentBlock instanceof BodyParagraph
                         || contentBlock instanceof BodyLongQuote;
@@ -206,14 +214,15 @@ public final class BodyContentRenderer
             List<BodyDisplayObjectMetadata> frameMetas,
             List<BodyDisplayObjectMetadata> chartMetas,
             List<BodyDisplayObjectMetadata> codeListingMetas,
-            int[] footnoteCounter
+            int[] footnoteCounter,
+            CrossReferenceIndex crossRefIndex
     ) {
         return switch (contentBlock) {
             case BodyParagraph paragraph -> {
                 StyleRule paragraphStyle = styleResolver.resolve(rule.styleMapping().paragraphStyleId());
                 java.util.List<com.abntbuilder.formatter.output.docx.api.DocxFootnoteContent> footnoteAccumulator = new java.util.ArrayList<>();
                 List<DocxRun> runs = paragraph.content().stream()
-                        .flatMap(inline -> toDocxRun(inline, paragraphStyle, rule, styleResolver, abbreviationMetas, footnoteAccumulator, footnoteCounter).stream())
+                        .flatMap(inline -> toDocxRun(inline, paragraphStyle, rule, styleResolver, abbreviationMetas, footnoteAccumulator, footnoteCounter, crossRefIndex).stream())
                         .toList();
                 DocxParagraph docxParagraph = new DocxParagraph(runs, paragraphStyle);
                 if (!footnoteAccumulator.isEmpty()) {
@@ -252,7 +261,7 @@ public final class BodyContentRenderer
                         .map(item -> {
                             java.util.List<com.abntbuilder.formatter.output.docx.api.DocxFootnoteContent> footnoteAccumulator = new java.util.ArrayList<>();
                             List<DocxRun> runs = item.content().stream()
-                                    .flatMap(inline -> toDocxRun(inline, itemStyle, rule, styleResolver, abbreviationMetas, footnoteAccumulator, footnoteCounter).stream())
+                                    .flatMap(inline -> toDocxRun(inline, itemStyle, rule, styleResolver, abbreviationMetas, footnoteAccumulator, footnoteCounter, crossRefIndex).stream())
                                     .toList();
                             com.abntbuilder.formatter.output.docx.api.DocxBlock listItem = new DocxListItemParagraph(runs, itemStyle, list.type(), 0);
                             if (!footnoteAccumulator.isEmpty()) {
@@ -300,7 +309,8 @@ public final class BodyContentRenderer
             StyleResolver styleResolver,
             List<BodyAbbreviationMetadata> abbreviationMetas,
             java.util.List<com.abntbuilder.formatter.output.docx.api.DocxFootnoteContent> footnoteAccumulator,
-            int[] footnoteCounter
+            int[] footnoteCounter,
+            CrossReferenceIndex crossRefIndex
     ) {
         return switch (inline) {
             case BodyText text -> List.of(new DocxRun(text.text(), baseStyle, text.formatting()));
@@ -342,14 +352,21 @@ public final class BodyContentRenderer
                 int fnId = ++footnoteCounter[0];
                 StyleRule footnoteTextStyle = styleResolver.resolve(rule.styleMapping().footnoteTextStyleId());
                 List<DocxRun> fnRuns = footnote.content().stream()
-                        .flatMap(fi -> toDocxRun(fi, footnoteTextStyle, rule, styleResolver, abbreviationMetas, footnoteAccumulator, footnoteCounter).stream())
+                        .flatMap(fi -> toDocxRun(fi, footnoteTextStyle, rule, styleResolver, abbreviationMetas, footnoteAccumulator, footnoteCounter, crossRefIndex).stream())
                         .toList();
                 footnoteAccumulator.add(new com.abntbuilder.formatter.output.docx.api.DocxFootnoteContent(fnId, fnRuns));
                 StyleRule footnoteCallStyle = styleResolver.resolve(rule.styleMapping().footnoteCallStyleId());
                 yield List.of(new DocxRun("[FN:" + fnId + "]", footnoteCallStyle, InlineFormatting.none()));
             }
-            case BodyCrossReference ref ->
-                    List.of(new DocxRun(ref.renderedText(), baseStyle, InlineFormatting.none()));
+            case BodyCrossReference ref -> {
+                String resolved = crossRefIndex.resolve(
+                        ref.targetId(),
+                        ref.targetType(),
+                        ref.displayMode(),
+                        rule.crossReferenceLabels()
+                );
+                yield List.of(new DocxRun(resolved, baseStyle, InlineFormatting.none()));
+            }
         };
     }
 
@@ -867,6 +884,144 @@ public final class BodyContentRenderer
             case EVERY_PART -> true;
             case LAST_PART_ONLY -> part.last();
         };
+    }
+
+    private static CrossReferenceIndex buildCrossReferenceIndex(
+            BodyContentComponent component, BodyContentComponentRule rule) {
+
+        SectionNumberingState prepassNumbering = new SectionNumberingState(rule.numbering());
+        DisplayObjectRenderingState<BodyFigure> preFigures = new DisplayObjectRenderingState<>(
+                figuresFrom(component.sections()));
+        DisplayObjectRenderingState<BodyTable> preTables = new DisplayObjectRenderingState<>(
+                tablesFrom(component.sections()));
+        DisplayObjectRenderingState<BodyFrame> preFrames = new DisplayObjectRenderingState<>(
+                framesFrom(component.sections()));
+        DisplayObjectRenderingState<BodyChart> preCharts = new DisplayObjectRenderingState<>(
+                chartsFrom(component.sections()));
+        DisplayObjectRenderingState<BodyCodeListing> preCodeListings = new DisplayObjectRenderingState<>(
+                codeListingsFrom(component.sections()));
+
+        Map<String, BodySectionMetadata> sectionIndex = new LinkedHashMap<>();
+        Map<String, BodyDisplayObjectMetadata> figureIndex = new LinkedHashMap<>();
+        Map<String, BodyDisplayObjectMetadata> tableIndex = new LinkedHashMap<>();
+        Map<String, BodyDisplayObjectMetadata> frameIndex = new LinkedHashMap<>();
+        Map<String, BodyDisplayObjectMetadata> chartIndex = new LinkedHashMap<>();
+        Map<String, BodyDisplayObjectMetadata> codeListingIndex = new LinkedHashMap<>();
+
+        for (BodySection section : component.sections()) {
+            if (section.title().isPresent()) {
+                String renderedTitle = prepassNumbering.resolveTitle(section.level(), section.title().orElseThrow());
+                String renderedNumber = prepassNumbering.resolveNumber(section.level());
+                sectionIndex.put(section.id(), new BodySectionMetadata(section.id(), section.level(), renderedTitle, renderedNumber));
+            }
+            for (BodyBlock block : section.blocks()) {
+                if (block instanceof BodyFigure figure) {
+                    DisplayObjectContinuationPart part = preFigures.nextPart(figure, rule.figure().continuationLabels());
+                    if (part.continuationLabel().isEmpty()) {
+                        figureIndex.put(figure.id(), new BodyDisplayObjectMetadata(figure.id(), part.number(), figure.caption()));
+                    }
+                } else if (block instanceof BodyTable table) {
+                    DisplayObjectContinuationPart part = preTables.nextPart(table, rule.table().continuationLabels());
+                    if (part.continuationLabel().isEmpty()) {
+                        tableIndex.put(table.id(), new BodyDisplayObjectMetadata(table.id(), part.number(), table.caption()));
+                    }
+                } else if (block instanceof BodyFrame frame) {
+                    DisplayObjectContinuationPart part = preFrames.nextPart(frame, rule.frame().continuationLabels());
+                    if (part.continuationLabel().isEmpty()) {
+                        frameIndex.put(frame.id(), new BodyDisplayObjectMetadata(frame.id(), part.number(), frame.caption()));
+                    }
+                } else if (block instanceof BodyChart chart) {
+                    DisplayObjectContinuationPart part = preCharts.nextPart(chart, rule.chart().continuationLabels());
+                    if (part.continuationLabel().isEmpty()) {
+                        chartIndex.put(chart.id(), new BodyDisplayObjectMetadata(chart.id(), part.number(), chart.caption()));
+                    }
+                } else if (block instanceof BodyCodeListing codeListing) {
+                    DisplayObjectContinuationPart part = preCodeListings.nextPart(codeListing, rule.codeListing().continuationLabels());
+                    if (part.continuationLabel().isEmpty()) {
+                        codeListingIndex.put(codeListing.id(), new BodyDisplayObjectMetadata(codeListing.id(), part.number(), codeListing.caption()));
+                    }
+                }
+            }
+        }
+
+        return new CrossReferenceIndex(
+                Map.copyOf(sectionIndex),
+                Map.copyOf(figureIndex),
+                Map.copyOf(tableIndex),
+                Map.copyOf(frameIndex),
+                Map.copyOf(chartIndex),
+                Map.copyOf(codeListingIndex)
+        );
+    }
+
+    private record CrossReferenceIndex(
+            Map<String, BodySectionMetadata> sections,
+            Map<String, BodyDisplayObjectMetadata> figures,
+            Map<String, BodyDisplayObjectMetadata> tables,
+            Map<String, BodyDisplayObjectMetadata> frames,
+            Map<String, BodyDisplayObjectMetadata> charts,
+            Map<String, BodyDisplayObjectMetadata> codeListings
+    ) {
+        String resolve(String targetId, CrossReferenceTargetType targetType,
+                       CrossReferenceDisplayMode displayMode, CrossReferenceLabelsRule labels) {
+            return switch (displayMode) {
+                case NUMBER_ONLY -> resolveNumber(targetId, targetType);
+                case LABEL_AND_NUMBER -> labels.labelFor(targetType) + " " + resolveNumber(targetId, targetType);
+                case CAPTION -> resolveCaption(targetId, targetType);
+            };
+        }
+
+        private String resolveNumber(String targetId, CrossReferenceTargetType targetType) {
+            return switch (targetType) {
+                case SECTION -> {
+                    BodySectionMetadata m = sections.get(targetId);
+                    if (m == null) throw new InvalidBodyContentException(
+                            "CROSS_REFERENCE targetId not found: '" + targetId + "' (type: SECTION).");
+                    yield m.renderedNumber();
+                }
+                case FIGURE -> resolveDisplayObjectNumber(targetId, figures, "FIGURE");
+                case TABLE -> resolveDisplayObjectNumber(targetId, tables, "TABLE");
+                case FRAME -> resolveDisplayObjectNumber(targetId, frames, "FRAME");
+                case CHART -> resolveDisplayObjectNumber(targetId, charts, "CHART");
+                case CODE_LISTING -> resolveDisplayObjectNumber(targetId, codeListings, "CODE_LISTING");
+                case EQUATION -> throw new InvalidBodyContentException(
+                        "CROSS_REFERENCE to EQUATION is not yet supported.");
+            };
+        }
+
+        private String resolveDisplayObjectNumber(String targetId,
+                Map<String, BodyDisplayObjectMetadata> index, String typeName) {
+            BodyDisplayObjectMetadata m = index.get(targetId);
+            if (m == null) throw new InvalidBodyContentException(
+                    "CROSS_REFERENCE targetId not found: '" + targetId + "' (type: " + typeName + ").");
+            return String.valueOf(m.number());
+        }
+
+        private String resolveCaption(String targetId, CrossReferenceTargetType targetType) {
+            return switch (targetType) {
+                case SECTION -> {
+                    BodySectionMetadata m = sections.get(targetId);
+                    if (m == null) throw new InvalidBodyContentException(
+                            "CROSS_REFERENCE targetId not found: '" + targetId + "' (type: SECTION).");
+                    yield m.renderedTitle();
+                }
+                case FIGURE -> resolveDisplayObjectCaption(targetId, figures, "FIGURE");
+                case TABLE -> resolveDisplayObjectCaption(targetId, tables, "TABLE");
+                case FRAME -> resolveDisplayObjectCaption(targetId, frames, "FRAME");
+                case CHART -> resolveDisplayObjectCaption(targetId, charts, "CHART");
+                case CODE_LISTING -> resolveDisplayObjectCaption(targetId, codeListings, "CODE_LISTING");
+                case EQUATION -> throw new InvalidBodyContentException(
+                        "CROSS_REFERENCE to EQUATION is not yet supported.");
+            };
+        }
+
+        private String resolveDisplayObjectCaption(String targetId,
+                Map<String, BodyDisplayObjectMetadata> index, String typeName) {
+            BodyDisplayObjectMetadata m = index.get(targetId);
+            if (m == null) throw new InvalidBodyContentException(
+                    "CROSS_REFERENCE targetId not found: '" + targetId + "' (type: " + typeName + ").");
+            return m.caption();
+        }
     }
 
     private static final class SectionNumberingState {
