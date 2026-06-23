@@ -11,7 +11,11 @@ import com.abntbuilder.formatter.output.docx.api.DocxRun;
 import com.abntbuilder.formatter.output.docx.api.DocxSectionBreak;
 import com.abntbuilder.formatter.profile.model.PageNumberingRule;
 import com.abntbuilder.formatter.profile.resolution.StyleResolver;
+import com.abntbuilder.formatter.rendering.component.ComponentRenderResult;
 import com.abntbuilder.formatter.rendering.component.ComponentRendererRegistry;
+import com.abntbuilder.formatter.rendering.component.MetadataEmittingRenderer;
+import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentMetadata;
+import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentRenderResult;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -56,6 +60,8 @@ public final class DocumentRenderer {
         validateSelectedContent(command, documentComponentsById);
         validateSelectedPageNumberingComponents(command.selectedComponents(), componentOrder, pageNumberingRule);
 
+        BodyContentMetadata bodyContentMetadata = BodyContentMetadata.empty();
+
         for (String componentId : componentOrder) {
             if (!selectionResolver.shouldRender(componentId, command.selectedComponents())) {
                 continue;
@@ -89,11 +95,20 @@ public final class DocumentRenderer {
                     initialPageNumbering = pageNumbering;
                 }
 
-                addBlocks(
-                        blocks,
-                        pageNumbering,
-                        rendererRegistry.get(componentId).renderComponent(component, command.profile())
-                );
+                var renderer = rendererRegistry.get(componentId);
+                List<DocxBlock> componentBlocks;
+
+                if (renderer instanceof MetadataEmittingRenderer<?,?> emitting) {
+                    ComponentRenderResult result = emitting.renderComponentWithMetadata(component, command.profile());
+                    componentBlocks = result.blocks();
+                    if (result instanceof BodyContentRenderResult bcr) {
+                        bodyContentMetadata = bcr.metadata();
+                    }
+                } else {
+                    componentBlocks = renderer.renderComponent(component, command.profile());
+                }
+
+                addBlocks(blocks, pageNumbering, componentBlocks);
                 pageNumberingState.afterRendering();
             }
         }
