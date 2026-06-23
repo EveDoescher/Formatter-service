@@ -47,6 +47,7 @@ import com.abntbuilder.formatter.output.docx.api.TableBorderStyle;
 import com.abntbuilder.formatter.profile.resolution.ComponentRuleResolver;
 import com.abntbuilder.formatter.profile.resolution.StyleResolver;
 import com.abntbuilder.formatter.rendering.component.ComponentRenderer;
+import com.abntbuilder.formatter.rendering.component.MetadataEmittingRenderer;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -66,7 +67,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public final class BodyContentRenderer implements ComponentRenderer<BodyContentComponent> {
+public final class BodyContentRenderer
+        implements MetadataEmittingRenderer<BodyContentComponent, BodyContentRenderResult> {
 
     public static final String COMPONENT_ID = "bodyContent";
 
@@ -81,13 +83,12 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
     }
 
     @Override
-    public List<DocxBlock> render(BodyContentComponent component, DocumentProfile profile) {
+    public BodyContentRenderResult renderWithMetadata(BodyContentComponent component, DocumentProfile profile) {
         Objects.requireNonNull(component, "component must not be null");
         Objects.requireNonNull(profile, "profile must not be null");
 
         BodyContentComponentRule rule = bodyContentRule(profile);
         StyleResolver styleResolver = new StyleResolver(profile);
-        List<DocxBlock> blocks = new ArrayList<>();
         SectionNumberingState numberingState = new SectionNumberingState(rule.numbering());
         StyleRule blankLineStyle = styleResolver.resolve(rule.layout().blankLineStyleId());
         boolean previousBlockWasTextualContent = false;
@@ -109,6 +110,16 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
 
         int[] footnoteCounter = new int[1];
 
+        List<BodySectionMetadata> sectionMetas = new ArrayList<>();
+        List<BodyDisplayObjectMetadata> figureMetas = new ArrayList<>();
+        List<BodyDisplayObjectMetadata> tableMetas = new ArrayList<>();
+        List<BodyDisplayObjectMetadata> frameMetas = new ArrayList<>();
+        List<BodyDisplayObjectMetadata> chartMetas = new ArrayList<>();
+        List<BodyDisplayObjectMetadata> codeListingMetas = new ArrayList<>();
+        List<BodyAbbreviationMetadata> abbreviationMetas = new ArrayList<>();
+
+        List<DocxBlock> blocks = new ArrayList<>();
+
         for (BodySection section : component.sections()) {
             if (section.title().isPresent()) {
                 if (rule.layout().pageBreakBeforePrimarySection() && section.level() == 1 && !blocks.isEmpty()) {
@@ -122,10 +133,13 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                 }
 
                 StyleRule titleStyle = styleResolver.resolve(rule.styleMapping().sectionTitleStyleIdForLevel(section.level()));
+                String renderedTitle = numberingState.resolveTitle(section.level(), section.title().orElseThrow());
+                String renderedNumber = numberingState.resolveNumber(section.level());
                 blocks.add(new DocxParagraph(
-                        List.of(DocxRun.of(numberingState.resolveTitle(section.level(), section.title().orElseThrow()), titleStyle)),
+                        List.of(DocxRun.of(renderedTitle, titleStyle)),
                         titleStyle
                 ));
+                sectionMetas.add(new BodySectionMetadata(section.id(), section.level(), renderedTitle, renderedNumber));
                 previousBlockWasTextualContent = false;
 
                 addBlankLines(blocks, blankLineStyle, rule.layout().blankLinesAfterSectionTitle());
@@ -141,6 +155,12 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                         frameRenderingState,
                         codeListingRenderingState,
                         chartRenderingState,
+                        abbreviationMetas,
+                        figureMetas,
+                        tableMetas,
+                        frameMetas,
+                        chartMetas,
+                        codeListingMetas,
                         footnoteCounter
                 ));
                 previousBlockWasTextualContent = contentBlock instanceof BodyParagraph
@@ -148,7 +168,16 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             }
         }
 
-        return List.copyOf(blocks);
+        BodyContentMetadata metadata = new BodyContentMetadata(
+                List.copyOf(sectionMetas),
+                List.copyOf(figureMetas),
+                List.copyOf(tableMetas),
+                List.copyOf(frameMetas),
+                List.copyOf(chartMetas),
+                List.copyOf(codeListingMetas),
+                List.copyOf(abbreviationMetas)
+        );
+        return new BodyContentRenderResult(List.copyOf(blocks), metadata);
     }
 
     private static BodyContentComponentRule bodyContentRule(DocumentProfile profile) {
@@ -170,6 +199,12 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             DisplayObjectRenderingState<BodyFrame> frameRenderingState,
             DisplayObjectRenderingState<BodyCodeListing> codeListingRenderingState,
             DisplayObjectRenderingState<BodyChart> chartRenderingState,
+            List<BodyAbbreviationMetadata> abbreviationMetas,
+            List<BodyDisplayObjectMetadata> figureMetas,
+            List<BodyDisplayObjectMetadata> tableMetas,
+            List<BodyDisplayObjectMetadata> frameMetas,
+            List<BodyDisplayObjectMetadata> chartMetas,
+            List<BodyDisplayObjectMetadata> codeListingMetas,
             int[] footnoteCounter
     ) {
         return switch (contentBlock) {
@@ -177,7 +212,7 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                 StyleRule paragraphStyle = styleResolver.resolve(rule.styleMapping().paragraphStyleId());
                 java.util.List<com.abntbuilder.formatter.output.docx.api.DocxFootnoteContent> footnoteAccumulator = new java.util.ArrayList<>();
                 List<DocxRun> runs = paragraph.content().stream()
-                        .flatMap(inline -> toDocxRun(inline, paragraphStyle, rule, styleResolver, footnoteAccumulator, footnoteCounter).stream())
+                        .flatMap(inline -> toDocxRun(inline, paragraphStyle, rule, styleResolver, abbreviationMetas, footnoteAccumulator, footnoteCounter).stream())
                         .toList();
                 DocxParagraph docxParagraph = new DocxParagraph(runs, paragraphStyle);
                 if (!footnoteAccumulator.isEmpty()) {
@@ -192,8 +227,20 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                         longQuoteStyle
                 ));
             }
-            case BodyFigure figure -> renderFigure(figure, rule.figure(), styleResolver, figureRenderingState);
-            case BodyTable table -> renderTable(table, rule.table(), styleResolver, tableRenderingState);
+            case BodyFigure figure -> {
+                DisplayObjectContinuationPart part = figureRenderingState.nextPart(figure, rule.figure().continuationLabels());
+                if (part.continuationLabel().isEmpty()) {
+                    figureMetas.add(new BodyDisplayObjectMetadata(figure.id(), part.number(), figure.caption()));
+                }
+                yield renderFigure(figure, rule.figure(), styleResolver, figureRenderingState, part);
+            }
+            case BodyTable table -> {
+                DisplayObjectContinuationPart part = tableRenderingState.nextPart(table, rule.table().continuationLabels());
+                if (part.continuationLabel().isEmpty()) {
+                    tableMetas.add(new BodyDisplayObjectMetadata(table.id(), part.number(), table.caption()));
+                }
+                yield renderTable(table, rule.table(), styleResolver, tableRenderingState, part);
+            }
             case BodyList list -> {
                 StyleRule itemStyle = styleResolver.resolve(
                         list.type() == BodyListType.ORDERED
@@ -204,7 +251,7 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                         .map(item -> {
                             java.util.List<com.abntbuilder.formatter.output.docx.api.DocxFootnoteContent> footnoteAccumulator = new java.util.ArrayList<>();
                             List<DocxRun> runs = item.content().stream()
-                                    .flatMap(inline -> toDocxRun(inline, itemStyle, rule, styleResolver, footnoteAccumulator, footnoteCounter).stream())
+                                    .flatMap(inline -> toDocxRun(inline, itemStyle, rule, styleResolver, abbreviationMetas, footnoteAccumulator, footnoteCounter).stream())
                                     .toList();
                             com.abntbuilder.formatter.output.docx.api.DocxBlock listItem = new DocxListItemParagraph(runs, itemStyle, list.type(), 0);
                             if (!footnoteAccumulator.isEmpty()) {
@@ -214,9 +261,27 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                         })
                         .toList();
             }
-            case BodyFrame frame -> renderFrame(frame, rule.frame(), styleResolver, frameRenderingState);
-            case BodyCodeListing codeListing -> renderCodeListing(codeListing, rule.codeListing(), styleResolver, codeListingRenderingState);
-            case BodyChart chart -> renderChart(chart, rule.chart(), styleResolver, chartRenderingState);
+            case BodyFrame frame -> {
+                DisplayObjectContinuationPart part = frameRenderingState.nextPart(frame, rule.frame().continuationLabels());
+                if (part.continuationLabel().isEmpty()) {
+                    frameMetas.add(new BodyDisplayObjectMetadata(frame.id(), part.number(), frame.caption()));
+                }
+                yield renderFrame(frame, rule.frame(), styleResolver, frameRenderingState, part);
+            }
+            case BodyCodeListing codeListing -> {
+                DisplayObjectContinuationPart part = codeListingRenderingState.nextPart(codeListing, rule.codeListing().continuationLabels());
+                if (part.continuationLabel().isEmpty()) {
+                    codeListingMetas.add(new BodyDisplayObjectMetadata(codeListing.id(), part.number(), codeListing.caption()));
+                }
+                yield renderCodeListing(codeListing, rule.codeListing(), styleResolver, codeListingRenderingState, part);
+            }
+            case BodyChart chart -> {
+                DisplayObjectContinuationPart part = chartRenderingState.nextPart(chart, rule.chart().continuationLabels());
+                if (part.continuationLabel().isEmpty()) {
+                    chartMetas.add(new BodyDisplayObjectMetadata(chart.id(), part.number(), chart.caption()));
+                }
+                yield renderChart(chart, rule.chart(), styleResolver, chartRenderingState, part);
+            }
             case BodyEquation equation -> {
                 StyleRule equationStyle = styleResolver.resolve(rule.styleMapping().equationStyleId());
                 yield List.of(new DocxParagraph(
@@ -232,6 +297,7 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             StyleRule baseStyle,
             BodyContentComponentRule rule,
             StyleResolver styleResolver,
+            List<BodyAbbreviationMetadata> abbreviationMetas,
             java.util.List<com.abntbuilder.formatter.output.docx.api.DocxFootnoteContent> footnoteAccumulator,
             int[] footnoteCounter
     ) {
@@ -265,12 +331,17 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
                 );
                 yield List.of(new DocxRun(call.renderedText(), citationStyle, InlineFormatting.none()));
             }
-            case BodyAbbreviation abbr -> List.of(new DocxRun(abbr.renderedText(), baseStyle, InlineFormatting.none()));
+            case BodyAbbreviation abbr -> {
+                if (abbreviationMetas.stream().noneMatch(m -> m.abbreviation().equals(abbr.abbreviation()))) {
+                    abbreviationMetas.add(new BodyAbbreviationMetadata(abbr.abbreviation(), abbr.expansion()));
+                }
+                yield List.of(new DocxRun(abbr.renderedText(), baseStyle, InlineFormatting.none()));
+            }
             case BodyFootnote footnote -> {
                 int fnId = ++footnoteCounter[0];
                 StyleRule footnoteTextStyle = styleResolver.resolve(rule.styleMapping().footnoteTextStyleId());
                 List<DocxRun> fnRuns = footnote.content().stream()
-                        .flatMap(fi -> toDocxRun(fi, footnoteTextStyle, rule, styleResolver, footnoteAccumulator, footnoteCounter).stream())
+                        .flatMap(fi -> toDocxRun(fi, footnoteTextStyle, rule, styleResolver, abbreviationMetas, footnoteAccumulator, footnoteCounter).stream())
                         .toList();
                 footnoteAccumulator.add(new com.abntbuilder.formatter.output.docx.api.DocxFootnoteContent(fnId, fnRuns));
                 StyleRule footnoteCallStyle = styleResolver.resolve(rule.styleMapping().footnoteCallStyleId());
@@ -283,9 +354,9 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             BodyFigure figure,
             FigureRule rule,
             StyleResolver styleResolver,
-            DisplayObjectRenderingState<BodyFigure> figureRenderingState
+            DisplayObjectRenderingState<BodyFigure> figureRenderingState,
+            DisplayObjectContinuationPart part
     ) {
-        DisplayObjectContinuationPart part = figureRenderingState.nextPart(figure, rule.continuationLabels());
         ResolvedImage resolvedImage = resolveImage(figure.image(), rule);
         List<DocxBlock> blocks = new ArrayList<>();
 
@@ -346,9 +417,9 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             BodyTable table,
             TableRule rule,
             StyleResolver styleResolver,
-            DisplayObjectRenderingState<BodyTable> tableRenderingState
+            DisplayObjectRenderingState<BodyTable> tableRenderingState,
+            DisplayObjectContinuationPart part
     ) {
-        DisplayObjectContinuationPart part = tableRenderingState.nextPart(table, rule.continuationLabels());
         boolean renderSource = shouldRenderSource(table, rule, part, tableRenderingState);
         List<DocxBlock> blocks = new ArrayList<>();
 
@@ -640,9 +711,9 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             BodyFrame frame,
             FrameRule rule,
             StyleResolver styleResolver,
-            DisplayObjectRenderingState<BodyFrame> frameRenderingState
+            DisplayObjectRenderingState<BodyFrame> frameRenderingState,
+            DisplayObjectContinuationPart part
     ) {
-        DisplayObjectContinuationPart part = frameRenderingState.nextPart(frame, rule.continuationLabels());
         boolean renderSource = shouldRenderSource(frame, rule, part, frameRenderingState);
         List<DocxBlock> blocks = new ArrayList<>();
 
@@ -708,9 +779,9 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             BodyCodeListing codeListing,
             CodeListingRule rule,
             StyleResolver styleResolver,
-            DisplayObjectRenderingState<BodyCodeListing> codeListingRenderingState
+            DisplayObjectRenderingState<BodyCodeListing> codeListingRenderingState,
+            DisplayObjectContinuationPart part
     ) {
-        DisplayObjectContinuationPart part = codeListingRenderingState.nextPart(codeListing, rule.continuationLabels());
         List<DocxBlock> blocks = new ArrayList<>();
         StyleRule captionStyle = styleResolver.resolve(rule.captionStyleId());
         blocks.add(new DocxParagraph(
@@ -753,9 +824,9 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             BodyChart chart,
             ChartRule rule,
             StyleResolver styleResolver,
-            DisplayObjectRenderingState<BodyChart> chartRenderingState
+            DisplayObjectRenderingState<BodyChart> chartRenderingState,
+            DisplayObjectContinuationPart part
     ) {
-        DisplayObjectContinuationPart part = chartRenderingState.nextPart(chart, rule.continuationLabels());
         List<DocxBlock> blocks = new ArrayList<>();
         StyleRule captionStyle = styleResolver.resolve(rule.captionStyleId());
         blocks.add(new DocxParagraph(
@@ -814,6 +885,13 @@ public final class BodyContentRenderer implements ComponentRenderer<BodyContentC
             increment(level);
 
             return sectionNumber(level) + " " + title;
+        }
+
+        String resolveNumber(int level) {
+            if (!numberingRule.enabled()) {
+                return String.valueOf(level);
+            }
+            return sectionNumber(level);
         }
 
         private void increment(int level) {
