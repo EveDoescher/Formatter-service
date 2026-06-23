@@ -8,8 +8,18 @@ import com.abntbuilder.formatter.rendering.component.approvalsheet.ApprovalSheet
 import com.abntbuilder.formatter.rendering.component.approvalsheet.ApprovalSheetProfileContentValidator;
 import com.abntbuilder.formatter.rendering.component.approvalsheet.ApprovalSheetRenderer;
 import com.abntbuilder.formatter.rendering.component.approvalsheet.ApprovalSheetTextTemplateResolver;
+import com.abntbuilder.formatter.rendering.component.abstracten.AbstractRenderer;
+import com.abntbuilder.formatter.rendering.component.acknowledgments.AcknowledgmentsRenderer;
+import com.abntbuilder.formatter.rendering.component.annex.AnnexRenderer;
+import com.abntbuilder.formatter.rendering.component.appendix.AppendixRenderer;
 import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentRenderer;
 import com.abntbuilder.formatter.rendering.component.cover.CoverRenderer;
+import com.abntbuilder.formatter.rendering.component.dedication.DedicationRenderer;
+import com.abntbuilder.formatter.rendering.component.epigraph.EpigraphRenderer;
+import com.abntbuilder.formatter.rendering.component.errata.ErrataRenderer;
+import com.abntbuilder.formatter.rendering.component.glossary.GlossaryRenderer;
+import com.abntbuilder.formatter.rendering.component.references.ReferencesRenderer;
+import com.abntbuilder.formatter.rendering.component.resumo.ResumoRenderer;
 import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutAssembler;
 import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutCalculator;
 import com.abntbuilder.formatter.rendering.component.cover.layout.CoverProfileContentValidator;
@@ -209,6 +219,56 @@ public class RenderingConfig {
     @Bean
     public BodyContentRenderer bodyContentRenderer() {
         return new BodyContentRenderer();
+    }
+
+    @Bean
+    public ErrataRenderer errataRenderer() {
+        return new ErrataRenderer();
+    }
+
+    @Bean
+    public DedicationRenderer dedicationRenderer() {
+        return new DedicationRenderer();
+    }
+
+    @Bean
+    public EpigraphRenderer epigraphRenderer() {
+        return new EpigraphRenderer();
+    }
+
+    @Bean
+    public AcknowledgmentsRenderer acknowledgmentsRenderer() {
+        return new AcknowledgmentsRenderer();
+    }
+
+    @Bean
+    public ResumoRenderer resumoRenderer() {
+        return new ResumoRenderer();
+    }
+
+    @Bean
+    public AbstractRenderer abstractRenderer() {
+        return new AbstractRenderer();
+    }
+
+    @Bean
+    public ReferencesRenderer referencesRenderer() {
+        return new ReferencesRenderer();
+    }
+
+    @Bean
+    public AppendixRenderer appendixRenderer() {
+        return new AppendixRenderer();
+    }
+
+    @Bean
+    public AnnexRenderer annexRenderer() {
+        return new AnnexRenderer();
+    }
+
+    @Bean
+    public GlossaryRenderer glossaryRenderer() {
+        return new GlossaryRenderer();
     }
 
     @Bean

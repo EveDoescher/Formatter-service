@@ -1,0 +1,22 @@
+{
+  "document": {
+    "appendix": {
+      "items": [
+        {
+          "title": "Questionário Aplicado",
+          "sections": [
+            {
+              "id": "apx-s1",
+              "level": 1,
+              "title": "Parte I — Perfil do respondente",
+              "paragraphs": [
+                "Esta seção apresenta as questões relativas ao perfil sociodemográfico dos participantes.",
+                "Questão 1: Qual é o seu nível de escolaridade?"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

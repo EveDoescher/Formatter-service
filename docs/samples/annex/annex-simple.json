@@ -1,0 +1,19 @@
+{
+  "document": {
+    "annex": {
+      "items": [
+        {
+          "title": "Resolução CNE/CES 1/2021",
+          "sections": [
+            {
+              "id": "anx-s1",
+              "level": 1,
+              "title": "Art. 1º",
+              "paragraphs": ["Institui as Diretrizes Curriculares Nacionais dos Cursos de Graduação da área do conhecimento de Computação."]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

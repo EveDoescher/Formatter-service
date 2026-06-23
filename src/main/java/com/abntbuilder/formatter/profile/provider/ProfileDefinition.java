@@ -15,6 +15,10 @@ import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalS
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetSignatureLineRule;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetStyleMapping;
 import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetTextTemplateRule;
+import com.abntbuilder.formatter.profile.model.component.abstracten.AbstractComponentRule;
+import com.abntbuilder.formatter.profile.model.component.acknowledgments.AcknowledgmentsComponentRule;
+import com.abntbuilder.formatter.profile.model.component.annex.AnnexComponentRule;
+import com.abntbuilder.formatter.profile.model.component.appendix.AppendixComponentRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentComponentRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentNumberingRule;
@@ -30,6 +34,13 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.TableRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverStyleMapping;
+import com.abntbuilder.formatter.profile.model.component.dedication.DedicationComponentRule;
+import com.abntbuilder.formatter.profile.model.component.epigraph.EpigraphComponentRule;
+import com.abntbuilder.formatter.profile.model.component.errata.ErrataComponentRule;
+import com.abntbuilder.formatter.profile.model.component.glossary.GlossaryComponentRule;
+import com.abntbuilder.formatter.profile.model.component.references.ReferencesComponentRule;
+import com.abntbuilder.formatter.profile.model.component.references.ReferencesFormattingRule;
+import com.abntbuilder.formatter.profile.model.component.resumo.ResumoComponentRule;
 import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageComponentRule;
 import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageStyleMapping;
 import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageTextTemplateRule;
@@ -45,6 +56,8 @@ import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageLineH
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageSafetyPolicyId;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SpacerStylePolicy;
 import com.abntbuilder.formatter.shared.exception.InvalidProfileStructureException;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -173,26 +186,35 @@ public record ProfileDefinition(
             CoverComponentRuleDefinition cover,
             TitlePageComponentRuleDefinition titlePage,
             ApprovalSheetComponentRuleDefinition approvalSheet,
-            BodyContentComponentRuleDefinition bodyContent
+            BodyContentComponentRuleDefinition bodyContent,
+            ErrataComponentRuleDefinition errata,
+            DedicationComponentRuleDefinition dedication,
+            EpigraphComponentRuleDefinition epigraph,
+            AcknowledgmentsComponentRuleDefinition acknowledgments,
+            ResumoComponentRuleDefinition resumo,
+            @JsonProperty("abstract") AbstractComponentRuleDefinition abstractEn,
+            ReferencesComponentRuleDefinition references,
+            AppendixComponentRuleDefinition appendix,
+            AnnexComponentRuleDefinition annex,
+            GlossaryComponentRuleDefinition glossary
     ) {
         List<ComponentRule> toDomain() {
             List<ComponentRule> rules = new ArrayList<>();
 
-            if (cover != null) {
-                rules.add(cover.toDomain());
-            }
-
-            if (titlePage != null) {
-                rules.add(titlePage.toDomain());
-            }
-
-            if (approvalSheet != null) {
-                rules.add(approvalSheet.toDomain());
-            }
-
-            if (bodyContent != null) {
-                rules.add(bodyContent.toDomain());
-            }
+            if (cover != null) rules.add(cover.toDomain());
+            if (titlePage != null) rules.add(titlePage.toDomain());
+            if (approvalSheet != null) rules.add(approvalSheet.toDomain());
+            if (bodyContent != null) rules.add(bodyContent.toDomain());
+            if (errata != null) rules.add(errata.toDomain());
+            if (dedication != null) rules.add(dedication.toDomain());
+            if (epigraph != null) rules.add(epigraph.toDomain());
+            if (acknowledgments != null) rules.add(acknowledgments.toDomain());
+            if (resumo != null) rules.add(resumo.toDomain());
+            if (abstractEn != null) rules.add(abstractEn.toDomain());
+            if (references != null) rules.add(references.toDomain());
+            if (appendix != null) rules.add(appendix.toDomain());
+            if (annex != null) rules.add(annex.toDomain());
+            if (glossary != null) rules.add(glossary.toDomain());
 
             return List.copyOf(rules);
         }
@@ -815,6 +837,156 @@ public record ProfileDefinition(
                     spacerStylePolicy,
                     safetyPolicy
             );
+        }
+    }
+
+    public record ErrataComponentRuleDefinition(
+            String componentId,
+            String headingStyleId,
+            String headingText,
+            String entryStyleId,
+            String entryTemplate
+    ) {
+        ErrataComponentRule toDomain() {
+            return new ErrataComponentRule(componentId, headingStyleId, headingText, entryStyleId, entryTemplate);
+        }
+    }
+
+    public record DedicationComponentRuleDefinition(
+            String componentId,
+            String textStyleId,
+            Integer blankLinesBefore
+    ) {
+        DedicationComponentRule toDomain() {
+            requireNonNull(blankLinesBefore, "dedication.blankLinesBefore");
+            return new DedicationComponentRule(componentId, textStyleId, blankLinesBefore);
+        }
+    }
+
+    public record EpigraphComponentRuleDefinition(
+            String componentId,
+            String textStyleId,
+            String authorStyleId,
+            String authorTemplate
+    ) {
+        EpigraphComponentRule toDomain() {
+            return new EpigraphComponentRule(componentId, textStyleId, authorStyleId, authorTemplate);
+        }
+    }
+
+    public record AcknowledgmentsComponentRuleDefinition(
+            String componentId,
+            String headingStyleId,
+            String headingText,
+            String textStyleId
+    ) {
+        AcknowledgmentsComponentRule toDomain() {
+            return new AcknowledgmentsComponentRule(componentId, headingStyleId, headingText, textStyleId);
+        }
+    }
+
+    public record ResumoComponentRuleDefinition(
+            String componentId,
+            String headingStyleId,
+            String headingText,
+            String textStyleId,
+            String keywordsStyleId,
+            String keywordsLabel,
+            String keywordsSeparator
+    ) {
+        ResumoComponentRule toDomain() {
+            return new ResumoComponentRule(componentId, headingStyleId, headingText,
+                    textStyleId, keywordsStyleId, keywordsLabel, keywordsSeparator);
+        }
+    }
+
+    public record AbstractComponentRuleDefinition(
+            String componentId,
+            String headingStyleId,
+            String headingText,
+            String textStyleId,
+            String keywordsStyleId,
+            String keywordsLabel,
+            String keywordsSeparator
+    ) {
+        AbstractComponentRule toDomain() {
+            return new AbstractComponentRule(componentId, headingStyleId, headingText,
+                    textStyleId, keywordsStyleId, keywordsLabel, keywordsSeparator);
+        }
+    }
+
+    public record ReferencesFormattingRuleDefinition(
+            String availableAtLabel,
+            String accessedAtLabel,
+            String etAlLabel,
+            String inLabel,
+            String authorSurnameGivenSeparator,
+            String authorNameTerminator,
+            String multiAuthorJoiner,
+            Boolean authorSurnameUppercase
+    ) {
+        ReferencesFormattingRule toDomain() {
+            requireNonNull(authorSurnameUppercase, "references.formattingRule.authorSurnameUppercase");
+            return new ReferencesFormattingRule(
+                    availableAtLabel, accessedAtLabel, etAlLabel, inLabel,
+                    authorSurnameGivenSeparator, authorNameTerminator, multiAuthorJoiner, authorSurnameUppercase
+            );
+        }
+    }
+
+    public record ReferencesComponentRuleDefinition(
+            String componentId,
+            String headingStyleId,
+            String headingText,
+            String entryStyleId,
+            Integer blankLinesBetweenEntries,
+            ReferencesFormattingRuleDefinition formattingRule
+    ) {
+        ReferencesComponentRule toDomain() {
+            requireNonNull(blankLinesBetweenEntries, "references.blankLinesBetweenEntries");
+            requireNonNull(formattingRule, "references.formattingRule");
+            return new ReferencesComponentRule(componentId, headingStyleId, headingText,
+                    entryStyleId, blankLinesBetweenEntries, formattingRule.toDomain());
+        }
+    }
+
+    public record AppendixComponentRuleDefinition(
+            String componentId,
+            String headingTemplate,
+            String headingStyleId,
+            String paragraphStyleId,
+            List<String> sectionTitleStyleIdsByLevel
+    ) {
+        AppendixComponentRule toDomain() {
+            requireNonNull(sectionTitleStyleIdsByLevel, "appendix.sectionTitleStyleIdsByLevel");
+            return new AppendixComponentRule(componentId, headingTemplate, headingStyleId,
+                    paragraphStyleId, sectionTitleStyleIdsByLevel);
+        }
+    }
+
+    public record AnnexComponentRuleDefinition(
+            String componentId,
+            String headingTemplate,
+            String headingStyleId,
+            String paragraphStyleId,
+            List<String> sectionTitleStyleIdsByLevel
+    ) {
+        AnnexComponentRule toDomain() {
+            requireNonNull(sectionTitleStyleIdsByLevel, "annex.sectionTitleStyleIdsByLevel");
+            return new AnnexComponentRule(componentId, headingTemplate, headingStyleId,
+                    paragraphStyleId, sectionTitleStyleIdsByLevel);
+        }
+    }
+
+    public record GlossaryComponentRuleDefinition(
+            String componentId,
+            String headingStyleId,
+            String headingText,
+            String entryStyleId,
+            String termSeparator
+    ) {
+        GlossaryComponentRule toDomain() {
+            return new GlossaryComponentRule(componentId, headingStyleId, headingText, entryStyleId, termSeparator);
         }
     }
 

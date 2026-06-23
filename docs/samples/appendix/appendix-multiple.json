@@ -1,0 +1,30 @@
+{
+  "document": {
+    "appendix": {
+      "items": [
+        {
+          "title": "Questionário Aplicado",
+          "sections": [
+            {
+              "id": "apx-a-s1",
+              "level": 1,
+              "title": "Questões de perfil",
+              "paragraphs": ["Questão 1: Faixa etária do respondente."]
+            }
+          ]
+        },
+        {
+          "title": "Roteiro de Entrevista",
+          "sections": [
+            {
+              "id": "apx-b-s1",
+              "level": 1,
+              "title": "Bloco temático 1",
+              "paragraphs": ["Como você avalia a integração entre as equipes?"]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

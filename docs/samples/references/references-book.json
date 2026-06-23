@@ -1,0 +1,47 @@
+{
+  "document": {
+    "references": {
+      "entries": [
+        {
+          "id": "ref1",
+          "type": "BOOK",
+          "authors": [
+            {"surname": "Lima", "givenNames": "Carlos Eduardo"}
+          ],
+          "title": "Fundamentos de Sistemas Distribuídos",
+          "year": "2021",
+          "city": "São Paulo",
+          "publisher": "Editora Exemplo"
+        },
+        {
+          "id": "ref2",
+          "type": "BOOK",
+          "authors": [
+            {"surname": "Rocha", "givenNames": "Beatriz"},
+            {"surname": "Souza", "givenNames": "Ana Paula"}
+          ],
+          "title": "Arquiteturas de Software Modernas",
+          "subtitle": "padrões e práticas",
+          "edition": "2",
+          "year": "2022",
+          "city": "Limeira",
+          "publisher": "Editora Fictícia"
+        },
+        {
+          "id": "ref3",
+          "type": "BOOK",
+          "authors": [
+            {"surname": "Ferreira", "givenNames": "João"},
+            {"surname": "Alves", "givenNames": "Maria"},
+            {"surname": "Costa", "givenNames": "Pedro"},
+            {"surname": "Nunes", "givenNames": "Laura"}
+          ],
+          "title": "Computação em Nuvem",
+          "year": "2020",
+          "city": "Rio de Janeiro",
+          "publisher": "Editora Genérica"
+        }
+      ]
+    }
+  }
+}

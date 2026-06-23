@@ -1,0 +1,12 @@
+{
+  "document": {
+    "resumo": {
+      "text": "Este trabalho investiga os efeitos do processamento paralelo em sistemas distribuídos de grande escala. Foram analisados três algoritmos de particionamento de dados aplicados a conjuntos de dados sintéticos de até um bilhão de registros. Os resultados indicam melhora de desempenho superior a 40% em relação às abordagens sequenciais, com escalabilidade linear até 32 nós de processamento.",
+      "keywords": ["sistemas distribuídos", "processamento paralelo", "escalabilidade", "particionamento de dados"]
+    },
+    "abstract": {
+      "text": "This work investigates the effects of parallel processing in large-scale distributed systems. Three data partitioning algorithms were analyzed applied to synthetic datasets of up to one billion records. Results indicate performance improvements exceeding 40% compared to sequential approaches, with linear scalability up to 32 processing nodes.",
+      "keywords": ["distributed systems", "parallel processing", "scalability", "data partitioning"]
+    }
+  }
+}

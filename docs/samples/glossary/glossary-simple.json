@@ -1,0 +1,12 @@
+{
+  "document": {
+    "glossary": {
+      "entries": [
+        { "term": "ABNT", "definition": "Associação Brasileira de Normas Técnicas." },
+        { "term": "API", "definition": "Interface de Programação de Aplicações — conjunto de definições e protocolos para comunicação entre sistemas de software." },
+        { "term": "NBR", "definition": "Norma Brasileira Regulamentadora — documento publicado pela ABNT que estabelece requisitos técnicos." },
+        { "term": "TCC", "definition": "Trabalho de Conclusão de Curso — produção acadêmica exigida para a integralização de cursos de graduação ou pós-graduação." }
+      ]
+    }
+  }
+}

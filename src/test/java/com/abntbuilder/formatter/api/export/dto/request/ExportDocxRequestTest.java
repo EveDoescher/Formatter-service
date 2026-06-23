@@ -20,7 +20,8 @@ class ExportDocxRequestTest {
                 null,
                 new ExportOptionsRequest(List.of("titlePage")),
                 null,
-                new DocumentContentRequest(null, titlePageRequest(), null, null),
+                new DocumentContentRequest(null, titlePageRequest(), null, null,
+                        null, null, null, null, null, null, null, null, null, null),
                 List.of()
         );
 
@@ -44,7 +45,8 @@ class ExportDocxRequestTest {
                         new CoverRequest(null, null, null, null, null, null),
                         new TitlePageRequest(null, null, null, null, null, null, null, null),
                         null,
-                        null
+                        null,
+                        null, null, null, null, null, null, null, null, null, null
                 ),
                 List.of()
         );

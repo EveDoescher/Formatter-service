@@ -1,0 +1,20 @@
+{
+  "document": {
+    "errata": {
+      "entries": [
+        {
+          "page": "23",
+          "line": "5",
+          "incorrectText": "analize",
+          "correctText": "análise"
+        },
+        {
+          "page": "47",
+          "line": "12",
+          "incorrectText": "metodologia quantitiva",
+          "correctText": "metodologia quantitativa"
+        }
+      ]
+    }
+  }
+}

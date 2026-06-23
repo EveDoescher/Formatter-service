@@ -1,0 +1,63 @@
+{
+  "document": {
+    "references": {
+      "entries": [
+        {
+          "id": "ref1",
+          "type": "BOOK",
+          "authors": [{"surname": "Lima", "givenNames": "Carlos Eduardo"}],
+          "title": "Fundamentos de Sistemas Distribuídos",
+          "year": "2021",
+          "city": "São Paulo",
+          "publisher": "Editora Exemplo"
+        },
+        {
+          "id": "ref2",
+          "type": "JOURNAL",
+          "authors": [{"surname": "Rocha", "givenNames": "Beatriz"}],
+          "title": "Análise de desempenho em ambientes distribuídos",
+          "publisher": "Revista Fictícia de Computação, v. 15, n. 2",
+          "pages": "123-145",
+          "year": "2023"
+        },
+        {
+          "id": "ref3",
+          "type": "WEBSITE",
+          "authors": [{"surname": "Souza", "givenNames": "Ana Paula"}],
+          "title": "Guia prático de microsserviços",
+          "url": "https://exemplo.ficticio.br/guia-microsservicos",
+          "accessDate": "10 maio 2024",
+          "year": "2024"
+        },
+        {
+          "id": "ref4",
+          "type": "THESIS",
+          "authors": [{"surname": "Ferreira", "givenNames": "João Carlos"}],
+          "title": "Escalonamento adaptativo em sistemas de alta disponibilidade",
+          "year": "2022"
+        },
+        {
+          "id": "ref5",
+          "type": "LEGISLATION",
+          "authors": [],
+          "title": "Lei n. 9.998, de 17 de agosto de 2000",
+          "subtitle": "Institui o Fundo de Universalização dos Serviços de Telecomunicações",
+          "year": "2000",
+          "url": "https://legislacao.ficticia.br/lei-9998"
+        },
+        {
+          "id": "ref6",
+          "type": "BOOK_CHAPTER",
+          "authors": [{"surname": "Alves", "givenNames": "Maria Luiza"}],
+          "title": "Protocolos de consenso distribuído",
+          "subtitle": "Sistemas tolerantes a falhas",
+          "url": "Lima, Carlos Eduardo",
+          "city": "Limeira",
+          "publisher": "Editora Fictícia",
+          "year": "2021",
+          "pages": "45-72"
+        }
+      ]
+    }
+  }
+}
