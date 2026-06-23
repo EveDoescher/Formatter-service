@@ -1,0 +1,52 @@
+{
+  "fileName": "test",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "titlePage",
+      "bodyContent"
+    ]
+  },
+  "work": {
+    "authors": ["Autora Fictícia"],
+    "title": "Documento Teste",
+    "nature": {
+      "workType": "Trabalho",
+      "degreeObjective": "Grau",
+      "courseName": "Curso",
+      "institutionName": "Instituição Fictícia de Limeira"
+    },
+    "advisor": {
+      "name": "Orientador Fictício"
+    },
+    "city": "Limeira",
+    "year": "2026"
+  },
+  "document": {
+    "titlePage": {},
+    "bodyContent": {
+      "sections": [
+        {
+          "id": "s1",
+          "level": 1,
+          "title": "Seção",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "CROSS_REFERENCE",
+                  "crossReference": {
+                    "targetId": "id-que-nao-existe",
+                    "targetType": "FIGURE",
+                    "displayMode": "LABEL_AND_NUMBER"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

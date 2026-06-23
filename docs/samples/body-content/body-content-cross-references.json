@@ -1,0 +1,97 @@
+{
+  "fileName": "test",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "titlePage",
+      "bodyContent"
+    ]
+  },
+  "work": {
+    "authors": ["Autora Fictícia"],
+    "title": "Documento Teste",
+    "nature": {
+      "workType": "Trabalho",
+      "degreeObjective": "Grau",
+      "courseName": "Curso",
+      "institutionName": "Instituição Fictícia de Limeira"
+    },
+    "advisor": {
+      "name": "Orientador Fictício"
+    },
+    "city": "Limeira",
+    "year": "2026"
+  },
+  "document": {
+    "titlePage": {},
+    "bodyContent": {
+      "sections": [
+        {
+          "id": "s1",
+          "level": 1,
+          "title": "Contextualização",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                { "type": "TEXT", "text": "Conforme apresentado na " },
+                {
+                  "type": "CROSS_REFERENCE",
+                  "crossReference": {
+                    "targetId": "fig-modelo",
+                    "targetType": "FIGURE",
+                    "displayMode": "LABEL_AND_NUMBER"
+                  }
+                },
+                { "type": "TEXT", "text": ", o modelo semântico organiza os blocos." }
+              ]
+            },
+            {
+              "type": "FIGURE",
+              "figure": {
+                "id": "fig-modelo",
+                "caption": "Modelo semântico de blocos",
+                "image": {
+                  "sourceType": "DATA_URI",
+                  "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
+                  "altText": "Modelo"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "s2",
+          "level": 1,
+          "title": "Referências a Seções",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                { "type": "TEXT", "text": "A " },
+                {
+                  "type": "CROSS_REFERENCE",
+                  "crossReference": {
+                    "targetId": "s1",
+                    "targetType": "SECTION",
+                    "displayMode": "LABEL_AND_NUMBER"
+                  }
+                },
+                { "type": "TEXT", "text": " introduz o problema. O número da seção anterior é " },
+                {
+                  "type": "CROSS_REFERENCE",
+                  "crossReference": {
+                    "targetId": "s1",
+                    "targetType": "SECTION",
+                    "displayMode": "NUMBER_ONLY"
+                  }
+                },
+                { "type": "TEXT", "text": "." }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

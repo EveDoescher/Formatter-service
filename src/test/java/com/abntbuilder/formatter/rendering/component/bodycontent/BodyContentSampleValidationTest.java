@@ -42,7 +42,8 @@ class BodyContentSampleValidationTest {
                 "body-content-abbreviations.json",
                 "body-content-footnotes.json",
                 "body-content-quote-markers.json",
-                "body-content-fase2-visual-test.json"
+                "body-content-fase2-visual-test.json",
+                "body-content-cross-references.json"
         );
 
         for (String sampleName : sampleNames) {
@@ -68,7 +69,8 @@ class BodyContentSampleValidationTest {
                 "body-content-table-row-mismatch-invalid.json",
                 "body-content-selected-components-pagination-invalid.json",
                 "body-content-inline-formatting-invalid.json",
-                "body-content-lists-nested-invalid.json"
+                "body-content-lists-nested-invalid.json",
+                "body-content-cross-reference-unknown-id-invalid.json"
         );
 
         for (String sampleName : sampleNames) {
