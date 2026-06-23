@@ -2,7 +2,7 @@
 
 > **Pré-requisito:** Fase 2 concluída — todos os tipos de bloco e inline existem, incluindo `BodyFrame`, `BodyCodeListing`, `BodyChart`, `BodyEquation`, `BodyAbbreviation`.
 >
-> **For agentic workers:** Use superpowers:subagent-driven-development. Steps usam `- [ ]`.
+> **For agentic workers:** Use superpowers:subagent-driven-development. Steps usam `- [x]`.
 
 **Goal:** Instrumentar o renderer para emitir metadados de todas as séries numeradas (seções, figuras, tabelas, quadros, gráficos, listagens, siglas). Usar esses metadados para suportar referências cruzadas inline (`CROSS_REFERENCE`).
 
@@ -43,7 +43,7 @@
 **Files:**
 - Create: `ComponentRenderResult.java`, `BodySectionMetadata.java`, `BodyDisplayObjectMetadata.java`, `BodyAbbreviationMetadata.java`, `BodyContentMetadata.java`, `BodyContentRenderResult.java`
 
-- [ ] **Step 1: Criar `BodySectionMetadata`**
+- [x] **Step 1: Criar `BodySectionMetadata`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/rendering/component/bodycontent/BodySectionMetadata.java
@@ -64,7 +64,7 @@ public record BodySectionMetadata(
 }
 ```
 
-- [ ] **Step 2: Criar `BodyDisplayObjectMetadata`**
+- [x] **Step 2: Criar `BodyDisplayObjectMetadata`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/rendering/component/bodycontent/BodyDisplayObjectMetadata.java
@@ -83,7 +83,7 @@ public record BodyDisplayObjectMetadata(
 }
 ```
 
-- [ ] **Step 3: Criar `BodyAbbreviationMetadata`**
+- [x] **Step 3: Criar `BodyAbbreviationMetadata`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/rendering/component/bodycontent/BodyAbbreviationMetadata.java
@@ -100,7 +100,7 @@ public record BodyAbbreviationMetadata(
 }
 ```
 
-- [ ] **Step 4: Criar `BodyContentMetadata`**
+- [x] **Step 4: Criar `BodyContentMetadata`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/rendering/component/bodycontent/BodyContentMetadata.java
@@ -143,7 +143,7 @@ public record BodyContentMetadata(
 }
 ```
 
-- [ ] **Step 5: Criar `ComponentRenderResult`**
+- [x] **Step 5: Criar `ComponentRenderResult`**
 
 Interface marcadora no pacote `rendering.component` — desacopla `MetadataEmittingRenderer` de tipos específicos do bodyContent:
 
@@ -159,7 +159,7 @@ public interface ComponentRenderResult {
 }
 ```
 
-- [ ] **Step 6: Criar `BodyContentRenderResult`**
+- [x] **Step 6: Criar `BodyContentRenderResult`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/rendering/component/bodycontent/BodyContentRenderResult.java
@@ -183,14 +183,14 @@ public record BodyContentRenderResult(
 }
 ```
 
-- [ ] **Step 7: Compilar**
+- [x] **Step 7: Compilar**
 
 ```bash
 cd /mnt/c/Users/evelynnd/Documents/Projetos/Formatter-service
 mvn compile -q
 ```
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/main/java/com/abntbuilder/formatter/rendering/component/ComponentRenderResult.java \
@@ -210,7 +210,7 @@ git commit -m "feat: add ComponentRenderResult, BodyContentMetadata and related 
 - Create: `MetadataEmittingRenderer.java`
 - Modify: `BodyContentRenderer.java` — implementa a interface
 
-- [ ] **Step 1: Criar `MetadataEmittingRenderer`**
+- [x] **Step 1: Criar `MetadataEmittingRenderer`**
 
 `MetadataEmittingRenderer` usa `ComponentRenderResult` (não `BodyContentRenderResult`) para não acoplar a interface genérica a um tipo específico do bodyContent. O `default render()` delega para `renderWithMetadata` e chama `blocks()`, que é o único método declarado em `ComponentRenderResult`.
 
@@ -236,7 +236,7 @@ public interface MetadataEmittingRenderer<T extends DocumentComponent, R extends
 }
 ```
 
-- [ ] **Step 2: Atualizar a assinatura de `BodyContentRenderer`**
+- [x] **Step 2: Atualizar a assinatura de `BodyContentRenderer`**
 
 Mudar a declaração da classe para usar os dois parâmetros de tipo:
 
@@ -312,13 +312,13 @@ public BodyContentRenderResult renderWithMetadata(
 
 Verificar que nenhum `@Override public List<DocxBlock> render(...)` permanece na classe.
 
-- [ ] **Step 3: Compilar e rodar suite para garantir que nada quebrou**
+- [x] **Step 3: Compilar e rodar suite para garantir que nada quebrou**
 
 ```bash
 mvn compile -q && mvn test -q
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/main/java/com/abntbuilder/formatter/rendering/component/MetadataEmittingRenderer.java \
@@ -335,7 +335,7 @@ git commit -m "feat: extract MetadataEmittingRenderer interface and migrate Body
 
 O renderer já acumula estado via `SectionNumberingState` e `DisplayObjectRenderingState`. Agora precisa também acumular metadados.
 
-- [ ] **Step 1: Adicionar acumuladores de metadados no método `renderWithMetadata`**
+- [x] **Step 1: Adicionar acumuladores de metadados no método `renderWithMetadata`**
 
 ```java
 List<BodySectionMetadata> sectionMetas = new ArrayList<>();
@@ -347,7 +347,7 @@ List<BodyDisplayObjectMetadata> codeListingMetas = new ArrayList<>();
 List<BodyAbbreviationMetadata> abbreviationMetas = new ArrayList<>();
 ```
 
-- [ ] **Step 2: Expor `resolveNumber` em `SectionNumberingState`**
+- [x] **Step 2: Expor `resolveNumber` em `SectionNumberingState`**
 
 `SectionNumberingState` só tem `resolveTitle(int level, String title)` — o número é privado em `sectionNumber()`. Adicionar um método público antes de usar na Task 3 e na Task 8:
 
@@ -362,7 +362,7 @@ String resolveNumber(int level) {
 
 **Atenção:** `resolveNumber` deve ser chamado **depois** de `resolveTitle` para o mesmo nível, pois `resolveTitle` é quem faz o `increment()`. Se chamado antes, o número ainda não foi incrementado.
 
-- [ ] **Step 3: Capturar metadados de seções**
+- [x] **Step 3: Capturar metadados de seções**
 
 Dentro do bloco `if (section.title().isPresent())`, após a chamada existente a `numberingState.resolveTitle`:
 
@@ -373,7 +373,7 @@ String renderedNumber = numberingState.resolveNumber(section.level()); // chamad
 sectionMetas.add(new BodySectionMetadata(section.id(), section.level(), renderedTitle, renderedNumber));
 ```
 
-- [ ] **Step 3: Capturar metadados de display objects no caller (não nos métodos privados estáticos)**
+- [x] **Step 3: Capturar metadados de display objects no caller (não nos métodos privados estáticos)**
 
 Os métodos `renderFigure`, `renderTable` etc. são `private static` — não têm acesso às listas de metadados. A coleta ocorre no caller, em `renderWithMetadata`, logo após a chamada que retorna os blocks.
 
@@ -415,7 +415,7 @@ if (isFirstPart) {
 }
 ```
 
-- [ ] **Step 5: Capturar metadados de siglas**
+- [x] **Step 5: Capturar metadados de siglas**
 
 `toDocxRun` já existe e retorna `List<DocxRun>` (desde a Fase 2, por causa dos marcadores de ênfase). Sua assinatura atual é:
 
@@ -459,7 +459,7 @@ case BodyAbbreviation abbr -> {
 
 Não existe um método separado `renderContentBlock(List<BodyInline>...)` — os inlines são processados diretamente com `.flatMap(inline -> toDocxRun(...).stream())` no switch de `renderContentBlock(BodyBlock, ...)`. O parâmetro `abbreviationMetas` é declarado em `renderWithMetadata` e propagado via `toDocxRun`.
 
-- [ ] **Step 6: Construir e retornar `BodyContentMetadata`**
+- [x] **Step 6: Construir e retornar `BodyContentMetadata`**
 
 Ao final do método `renderWithMetadata`:
 
@@ -476,7 +476,7 @@ BodyContentMetadata metadata = new BodyContentMetadata(
 return new BodyContentRenderResult(List.copyOf(blocks), metadata);
 ```
 
-- [ ] **Step 7: Escrever `BodyContentRendererMetadataTest`**
+- [x] **Step 7: Escrever `BodyContentRendererMetadataTest`**
 
 Testes unitários diretos sem `@SpringBootTest` — seguem o padrão de `BodyContentRendererTest`, que instancia `new BodyContentRenderer()` e constrói o `DocumentProfile` via `profile()` helper. Conferir as assinaturas reais antes de implementar: `BodySection` recebe `(String id, int level, Optional<String> title, List<BodyBlock> blocks)`; `BodyContentComponent` recebe `(List<BodySection> sections)`; `BodyFigure` recebe `(String id, Optional<String> continuationGroupId, String caption, Optional<String> source, BodyImageSource image)`.
 
@@ -562,13 +562,13 @@ class BodyContentRendererMetadataTest {
 
 > **Atenção ao implementar:** Copiar o método `profile()` de `BodyContentRendererTest` (que constrói um `DocumentProfile` mínimo com todas as styleRules necessárias). Os construtores de domínio acima são baseados nas assinaturas reais — verificar antes de compilar.
 
-- [ ] **Step 7: Rodar testes**
+- [x] **Step 7: Rodar testes**
 
 ```bash
 mvn test -pl . -Dtest=BodyContentRendererMetadataTest -q
 ```
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/main/java/com/abntbuilder/formatter/rendering/component/bodycontent/BodyContentRenderer.java \
@@ -583,7 +583,7 @@ git commit -m "feat: emit BodyContentMetadata from BodyContentRenderer"
 **Files:**
 - Modify: `DocumentRenderer.java`
 
-- [ ] **Step 1: Adicionar método auxiliar de cast em `MetadataEmittingRenderer`**
+- [x] **Step 1: Adicionar método auxiliar de cast em `MetadataEmittingRenderer`**
 
 `DocumentRenderer` usa `instanceof MetadataEmittingRenderer<?,?>` com wildcard e precisa de um helper que apague os tipos para chamar `renderWithMetadata` sem cast não verificado espalhado pelo caller. Adicionar em `MetadataEmittingRenderer.java`:
 
@@ -600,7 +600,7 @@ default ComponentRenderResult renderComponentWithMetadata(
 
 O retorno é `ComponentRenderResult` (não `BodyContentRenderResult`) para que o `DocumentRenderer` não dependa de um tipo específico do bodyContent.
 
-- [ ] **Step 2: Atualizar o bloco `if (component != null)` em `DocumentRenderer.render()`**
+- [x] **Step 2: Atualizar o bloco `if (component != null)` em `DocumentRenderer.render()`**
 
 Adicionar `BodyContentMetadata bodyContentMetadata = BodyContentMetadata.empty();` como **variável local** antes do loop `for (String componentId : componentOrder)`.
 
@@ -641,13 +641,13 @@ import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentRend
 
 > `bodyContentMetadata` é variável **local ao método** `render()` — uma instância por invocação, sem estado compartilhado entre requests. A Fase 5 Task 1 acrescenta o case `MetadataConsumingRenderer` neste mesmo bloco.
 
-- [ ] **Step 3: Compilar e rodar suite**
+- [x] **Step 3: Compilar e rodar suite**
 
 ```bash
 mvn compile -q && mvn test -q
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/main/java/com/abntbuilder/formatter/rendering/document/DocumentRenderer.java
@@ -662,7 +662,7 @@ git commit -m "feat: DocumentRenderer stores BodyContentMetadata from MetadataEm
 - Create: `CrossReferenceTargetType.java`, `CrossReferenceDisplayMode.java`, `BodyCrossReference.java`
 - Modify: `BodyInline.java`
 
-- [ ] **Step 1: Criar `CrossReferenceTargetType`**
+- [x] **Step 1: Criar `CrossReferenceTargetType`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/document/component/bodycontent/CrossReferenceTargetType.java
@@ -679,7 +679,7 @@ public enum CrossReferenceTargetType {
 }
 ```
 
-- [ ] **Step 2: Criar `CrossReferenceDisplayMode`**
+- [x] **Step 2: Criar `CrossReferenceDisplayMode`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/document/component/bodycontent/CrossReferenceDisplayMode.java
@@ -692,7 +692,7 @@ public enum CrossReferenceDisplayMode {
 }
 ```
 
-- [ ] **Step 3: Criar `BodyCrossReference`**
+- [x] **Step 3: Criar `BodyCrossReference`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/document/component/bodycontent/BodyCrossReference.java
@@ -722,7 +722,7 @@ public record BodyCrossReference(
 }
 ```
 
-- [ ] **Step 4: Atualizar `BodyInline`**
+- [x] **Step 4: Atualizar `BodyInline`**
 
 ```java
 public sealed interface BodyInline
@@ -731,7 +731,7 @@ public sealed interface BodyInline
 }
 ```
 
-- [ ] **Step 5: Escrever e rodar teste**
+- [x] **Step 5: Escrever e rodar teste**
 
 ```java
 class BodyCrossReferenceTest {
@@ -749,7 +749,7 @@ class BodyCrossReferenceTest {
 }
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add -A
@@ -765,7 +765,7 @@ git commit -m "feat: add BodyCrossReference domain type"
 - Modify: `BodyContentComponentRule.java`, `BodyContentComponentRuleRequest.java`
 - Modify: `abnt-unip-profile.json`
 
-- [ ] **Step 1: Criar `CrossReferenceLabelsRule`**
+- [x] **Step 1: Criar `CrossReferenceLabelsRule`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/profile/model/component/bodycontent/CrossReferenceLabelsRule.java
@@ -808,7 +808,7 @@ public record CrossReferenceLabelsRule(
 }
 ```
 
-- [ ] **Step 2: Adicionar `crossReferenceLabels` em `BodyContentComponentRule`**
+- [x] **Step 2: Adicionar `crossReferenceLabels` em `BodyContentComponentRule`**
 
 ```java
 public record BodyContentComponentRule(
@@ -826,7 +826,7 @@ public record BodyContentComponentRule(
 ) implements ComponentRule { ... }
 ```
 
-- [ ] **Step 3: Adicionar no perfil JSON**
+- [x] **Step 3: Adicionar no perfil JSON**
 
 ```json
 "crossReferenceLabels": {
@@ -840,13 +840,13 @@ public record BodyContentComponentRule(
 }
 ```
 
-- [ ] **Step 4: Compilar**
+- [x] **Step 4: Compilar**
 
 ```bash
 mvn compile -q
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
@@ -861,7 +861,7 @@ git commit -m "feat: add CrossReferenceLabelsRule to profile and BodyContentComp
 - Create: `BodyCrossReferenceRequest.java`
 - Modify: `BodyInlineType.java`, `BodyInlineRequest.java`
 
-- [ ] **Step 1: Adicionar `CROSS_REFERENCE` em `BodyInlineType`**
+- [x] **Step 1: Adicionar `CROSS_REFERENCE` em `BodyInlineType`**
 
 ```java
 public enum BodyInlineType {
@@ -874,7 +874,7 @@ public enum BodyInlineType {
 }
 ```
 
-- [ ] **Step 2: Criar `BodyCrossReferenceRequest`**
+- [x] **Step 2: Criar `BodyCrossReferenceRequest`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/api/export/dto/request/BodyCrossReferenceRequest.java
@@ -897,7 +897,7 @@ public record BodyCrossReferenceRequest(
 }
 ```
 
-- [ ] **Step 3: Adicionar campo e caso em `BodyInlineRequest`**
+- [x] **Step 3: Adicionar campo e caso em `BodyInlineRequest`**
 
 Adicionar campo:
 
@@ -916,13 +916,13 @@ case CROSS_REFERENCE -> {
 }
 ```
 
-- [ ] **Step 4: Compilar**
+- [x] **Step 4: Compilar**
 
 ```bash
 mvn compile -q
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
@@ -945,7 +945,7 @@ Alternativa mais simples (e suficiente para esta fase): **pré-coletar** todos o
 
 Adotar a abordagem de pré-coleta:
 
-- [ ] **Step 1: Criar record `CrossReferenceIndex` em `BodyContentRenderer`**
+- [x] **Step 1: Criar record `CrossReferenceIndex` em `BodyContentRenderer`**
 
 ```java
 // Record privado dentro de BodyContentRenderer (ou package-private separado se preferir)
@@ -1023,7 +1023,7 @@ private record CrossReferenceIndex(
 
 Adicionar import: `import java.util.Map;`
 
-- [ ] **Step 2: Implementar `buildCrossReferenceIndex`**
+- [x] **Step 2: Implementar `buildCrossReferenceIndex`**
 
 Este método percorre as seções, usando instâncias **separadas** de `SectionNumberingState` e `DisplayObjectRenderingState` (não as mesmas da renderização principal), para pré-calcular os números sem efeito colateral:
 
@@ -1082,7 +1082,7 @@ private static CrossReferenceIndex buildCrossReferenceIndex(
 
 Adicionar imports: `import java.util.LinkedHashMap;`
 
-- [ ] **Step 3: Chamar `buildCrossReferenceIndex` no início de `renderWithMetadata`**
+- [x] **Step 3: Chamar `buildCrossReferenceIndex` no início de `renderWithMetadata`**
 
 ```java
 CrossReferenceIndex crossRefIndex = buildCrossReferenceIndex(component, rule);
@@ -1107,7 +1107,7 @@ private static List<DocxRun> toDocxRun(
 
 Atualizar todas as chamadas a `toDocxRun` no renderer para passar `crossRefIndex`. Há três sítios: no case `BodyParagraph`, no case `BodyList` (items) e na recursão interna de `BodyFootnote`.
 
-- [ ] **Step 4: Resolver `BodyCrossReference` no `toDocxRun`**
+- [x] **Step 4: Resolver `BodyCrossReference` no `toDocxRun`**
 
 `toDocxRun` retorna `List<DocxRun>` (desde a Fase 2):
 
@@ -1123,7 +1123,7 @@ case BodyCrossReference ref -> {
 }
 ```
 
-- [ ] **Step 3: Rejeitar `targetId` desconhecido**
+- [x] **Step 3: Rejeitar `targetId` desconhecido**
 
 Em `crossRefIndex.resolve`, se o `targetId` não existir no índice:
 
@@ -1133,7 +1133,7 @@ throw new InvalidBodyContentException(
 );
 ```
 
-- [ ] **Step 4: Implementar `CrossReferenceIndex.resolve`**
+- [x] **Step 4: Implementar `CrossReferenceIndex.resolve`**
 
 ```java
 public String resolve(String targetId, CrossReferenceTargetType targetType,
@@ -1146,7 +1146,7 @@ public String resolve(String targetId, CrossReferenceTargetType targetType,
 }
 ```
 
-- [ ] **Step 5: Escrever `BodyCrossReferenceTest` de integração**
+- [x] **Step 5: Escrever `BodyCrossReferenceTest` de integração**
 
 ```java
 @Test
@@ -1169,13 +1169,13 @@ void shouldRejectUnknownCrossReferenceId() throws Exception {
 }
 ```
 
-- [ ] **Step 6: Compilar e rodar**
+- [x] **Step 6: Compilar e rodar**
 
 ```bash
 mvn compile -q && mvn test -q
 ```
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add -A
@@ -1191,7 +1191,7 @@ git commit -m "feat: resolve CROSS_REFERENCE inlines using pre-collected metadat
 - Create: `docs/samples/body-content/body-content-cross-reference-unknown-id-invalid.json`
 - Modify: `BodyContentSampleValidationTest.java`
 
-- [ ] **Step 1: Criar sample de referências cruzadas**
+- [x] **Step 1: Criar sample de referências cruzadas**
 
 ```json
 {
@@ -1238,7 +1238,7 @@ git commit -m "feat: resolve CROSS_REFERENCE inlines using pre-collected metadat
 }
 ```
 
-- [ ] **Step 2: Criar sample inválido (id desconhecido)**
+- [x] **Step 2: Criar sample inválido (id desconhecido)**
 
 ```json
 {
@@ -1266,15 +1266,15 @@ git commit -m "feat: resolve CROSS_REFERENCE inlines using pre-collected metadat
 }
 ```
 
-- [ ] **Step 3: Adicionar ao `BodyContentSampleValidationTest`**
+- [x] **Step 3: Adicionar ao `BodyContentSampleValidationTest`**
 
-- [ ] **Step 4: Suite completa**
+- [x] **Step 4: Suite completa**
 
 ```bash
 mvn test -q
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
