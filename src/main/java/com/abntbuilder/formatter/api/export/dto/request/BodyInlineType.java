@@ -5,5 +5,6 @@ public enum BodyInlineType {
     CITATION,
     QUOTE_TEXT,
     ABBREVIATION,
-    FOOTNOTE
+    FOOTNOTE,
+    CROSS_REFERENCE
 }

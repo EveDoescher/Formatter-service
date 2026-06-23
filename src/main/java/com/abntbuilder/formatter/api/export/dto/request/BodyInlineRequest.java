@@ -26,7 +26,8 @@ public record BodyInlineRequest(
         @Valid CitationSourceRequest consultedSource,
         InlineFormattingRequest formatting,
         @Valid java.util.List<BodyQuoteMarkerRequest> markers,
-        @Valid java.util.List<BodyInlineRequest> content
+        @Valid java.util.List<BodyInlineRequest> content,
+        @Valid BodyCrossReferenceRequest crossReference
 ) {
 
     BodyInline toDomain(CitationFormattingRule citationFormatting) {
@@ -63,6 +64,12 @@ public record BodyInlineRequest(
                 yield new com.abntbuilder.formatter.document.component.bodycontent.BodyFootnote(
                         content.stream().map(inline -> inline.toDomain(citationFormatting)).toList()
                 );
+            }
+            case CROSS_REFERENCE -> {
+                if (crossReference == null) {
+                    throw new IllegalArgumentException("crossReference must be provided for CROSS_REFERENCE inline.");
+                }
+                yield crossReference.toDomain();
             }
         };
     }
