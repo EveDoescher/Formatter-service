@@ -1,6 +1,7 @@
 package com.abntbuilder.formatter.rendering.component.bodycontent;
 
 import com.abntbuilder.formatter.document.component.bodycontent.BodyContentComponent;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyCrossReference;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyBlock;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyAbbreviation;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyCitationCall;
@@ -347,6 +348,8 @@ public final class BodyContentRenderer
                 StyleRule footnoteCallStyle = styleResolver.resolve(rule.styleMapping().footnoteCallStyleId());
                 yield List.of(new DocxRun("[FN:" + fnId + "]", footnoteCallStyle, InlineFormatting.none()));
             }
+            case BodyCrossReference ref ->
+                    List.of(new DocxRun(ref.renderedText(), baseStyle, InlineFormatting.none()));
         };
     }
 
