@@ -3,6 +3,7 @@ package com.abntbuilder.formatter.api.export.dto.request;
 import com.abntbuilder.formatter.profile.model.component.ComponentRule;
 import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentComponentRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.CrossReferenceLabelsRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
 import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageComponentRule;
@@ -132,7 +133,8 @@ class ComponentRulesRequestTest {
                         DisplayObjectSourcePlacement.LAST_PART_ONLY,
                         figureRuleRequest()
                 ),
-                new CitationFormattingRuleRequest("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor", "informação verbal")
+                new CitationFormattingRuleRequest("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor", "informação verbal"),
+                new CrossReferenceLabelsRuleRequest("Seção", "Figura", "Tabela", "Quadro", "Gráfico", "Listagem", "Equação")
         );
     }
 

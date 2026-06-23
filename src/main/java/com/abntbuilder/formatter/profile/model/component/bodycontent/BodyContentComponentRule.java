@@ -15,7 +15,8 @@ public record BodyContentComponentRule(
         FrameRule frame,
         CodeListingRule codeListing,
         ChartRule chart,
-        CitationFormattingRule citationFormatting
+        CitationFormattingRule citationFormatting,
+        CrossReferenceLabelsRule crossReferenceLabels
 ) implements ComponentRule {
 
     public BodyContentComponentRule {
@@ -29,6 +30,7 @@ public record BodyContentComponentRule(
         Objects.requireNonNull(codeListing, "codeListing must not be null");
         Objects.requireNonNull(chart, "chart must not be null");
         Objects.requireNonNull(citationFormatting, "citationFormatting must not be null");
+        Objects.requireNonNull(crossReferenceLabels, "crossReferenceLabels must not be null");
     }
 
     public Map<String, String> contentBindings() {

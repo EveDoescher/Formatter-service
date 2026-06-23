@@ -414,7 +414,8 @@ public record ProfileDefinition(
             FrameRuleDefinition frame,
             CodeListingRuleDefinition codeListing,
             ChartRuleDefinition chart,
-            CitationFormattingRuleDefinition citationFormatting
+            CitationFormattingRuleDefinition citationFormatting,
+            CrossReferenceLabelsRuleDefinition crossReferenceLabels
     ) {
         BodyContentComponentRule toDomain() {
             requireNonNull(styleMapping, "bodyContent.styleMapping");
@@ -426,6 +427,7 @@ public record ProfileDefinition(
             requireNonNull(codeListing, "bodyContent.codeListing");
             requireNonNull(chart, "bodyContent.chart");
             requireNonNull(citationFormatting, "bodyContent.citationFormatting");
+            requireNonNull(crossReferenceLabels, "bodyContent.crossReferenceLabels");
 
             return new BodyContentComponentRule(
                     componentId,
@@ -437,7 +439,30 @@ public record ProfileDefinition(
                     frame.toDomain(),
                     codeListing.toDomain(),
                     chart.toDomain(),
-                    citationFormatting.toDomain()
+                    citationFormatting.toDomain(),
+                    crossReferenceLabels.toDomain()
+            );
+        }
+    }
+
+    public record CrossReferenceLabelsRuleDefinition(
+            String sectionLabel,
+            String figureLabel,
+            String tableLabel,
+            String frameLabel,
+            String chartLabel,
+            String codeListingLabel,
+            String equationLabel
+    ) {
+        com.abntbuilder.formatter.profile.model.component.bodycontent.CrossReferenceLabelsRule toDomain() {
+            return new com.abntbuilder.formatter.profile.model.component.bodycontent.CrossReferenceLabelsRule(
+                    sectionLabel,
+                    figureLabel,
+                    tableLabel,
+                    frameLabel,
+                    chartLabel,
+                    codeListingLabel,
+                    equationLabel
             );
         }
     }

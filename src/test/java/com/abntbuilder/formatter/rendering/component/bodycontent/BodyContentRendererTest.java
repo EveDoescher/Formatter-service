@@ -27,6 +27,7 @@ import com.abntbuilder.formatter.profile.model.StyleType;
 import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentComponentRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.CrossReferenceLabelsRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentNumberingRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentStyleMapping;
@@ -388,7 +389,8 @@ class BodyContentRendererTest {
                         frameRule(),
                         codeListingRule(),
                         chartRule(),
-                        new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor", "informação verbal")
+                        new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor", "informação verbal"),
+                        new CrossReferenceLabelsRule("Seção", "Figura", "Tabela", "Quadro", "Gráfico", "Listagem", "Equação")
                 )),
                 List.of("bodyContent")
         );
@@ -443,7 +445,8 @@ class BodyContentRendererTest {
                         frameRule(),
                         codeListingRule(),
                         chartRule(),
-                        new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor", "informação verbal")
+                        new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor", "informação verbal"),
+                        new CrossReferenceLabelsRule("Seção", "Figura", "Tabela", "Quadro", "Gráfico", "Listagem", "Equação")
                 )),
                 List.of("bodyContent")
         );

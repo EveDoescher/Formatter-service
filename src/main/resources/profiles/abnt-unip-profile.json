@@ -1267,6 +1267,15 @@
         "emphasisOursLabel": "grifo nosso",
         "emphasisAuthorLabel": "grifo do autor",
         "verbalCitationLabel": "informação verbal"
+      },
+      "crossReferenceLabels": {
+        "sectionLabel": "Seção",
+        "figureLabel": "Figura",
+        "tableLabel": "Tabela",
+        "frameLabel": "Quadro",
+        "chartLabel": "Gráfico",
+        "codeListingLabel": "Listagem",
+        "equationLabel": "Equação"
       }
     }
   }

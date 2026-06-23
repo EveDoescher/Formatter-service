@@ -23,13 +23,19 @@ public record BodyContentComponentRuleRequest(
         @Valid @NotNull FrameRuleRequest frame,
         @Valid @NotNull CodeListingRuleRequest codeListing,
         @Valid @NotNull ChartRuleRequest chart,
-        @Valid CitationFormattingRuleRequest citationFormatting
+        @Valid CitationFormattingRuleRequest citationFormatting,
+        @Valid CrossReferenceLabelsRuleRequest crossReferenceLabels
 ) {
 
     public BodyContentComponentRule toDomain() {
         if (citationFormatting == null) {
             throw new com.abntbuilder.formatter.shared.exception.InvalidBodyContentException(
                     "bodyContent.citationFormatting must not be null."
+            );
+        }
+        if (crossReferenceLabels == null) {
+            throw new com.abntbuilder.formatter.shared.exception.InvalidBodyContentException(
+                    "bodyContent.crossReferenceLabels must not be null."
             );
         }
         return new BodyContentComponentRule(
@@ -42,7 +48,8 @@ public record BodyContentComponentRuleRequest(
                 frame.toDomain(),
                 codeListing.toDomain(),
                 chart.toDomain(),
-                citationFormatting.toDomain()
+                citationFormatting.toDomain(),
+                crossReferenceLabels.toDomain()
         );
     }
 }

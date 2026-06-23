@@ -17,7 +17,8 @@
 - `BodySectionMetadata.java`
 - `BodyDisplayObjectMetadata.java` (record genérico para figuras/tabelas/quadros/gráficos/listagens)
 - `BodyAbbreviationMetadata.java`
-- `BodyContentRenderResult.java`
+- `ComponentRenderResult.java` (interface genérica em `rendering.component`)
+- `BodyContentRenderResult.java` (implementa `ComponentRenderResult`)
 - `MetadataEmittingRenderer.java` (interface)
 - `BodyCrossReference.java`
 - `CrossReferenceTargetType.java`
@@ -32,7 +33,7 @@
 - `BodyContentComponentRule.java` — adiciona `crossReferenceLabels`
 - `BodyContentComponentRuleRequest.java` — campo correspondente
 - `BodyContentRenderer.java` — implementa `MetadataEmittingRenderer`, emite `BodyContentRenderResult`, resolve referências cruzadas
-- `DocumentRenderer.java` — detecta `MetadataEmittingRenderer`, armazena metadados em `DocumentRenderResult`
+- `DocumentRenderer.java` — detecta `MetadataEmittingRenderer`, armazena `BodyContentMetadata` em variável local
 - `abnt-unip-profile.json` — adiciona `crossReferenceLabels`
 
 ---
@@ -40,7 +41,7 @@
 ## Task 1 — Tipos de metadados
 
 **Files:**
-- Create: `BodySectionMetadata.java`, `BodyDisplayObjectMetadata.java`, `BodyAbbreviationMetadata.java`, `BodyContentMetadata.java`, `BodyContentRenderResult.java`
+- Create: `ComponentRenderResult.java`, `BodySectionMetadata.java`, `BodyDisplayObjectMetadata.java`, `BodyAbbreviationMetadata.java`, `BodyContentMetadata.java`, `BodyContentRenderResult.java`
 
 - [ ] **Step 1: Criar `BodySectionMetadata`**
 
@@ -142,13 +143,30 @@ public record BodyContentMetadata(
 }
 ```
 
-- [ ] **Step 5: Criar `BodyContentRenderResult`**
+- [ ] **Step 5: Criar `ComponentRenderResult`**
+
+Interface marcadora no pacote `rendering.component` — desacopla `MetadataEmittingRenderer` de tipos específicos do bodyContent:
+
+```java
+// src/main/java/com/abntbuilder/formatter/rendering/component/ComponentRenderResult.java
+package com.abntbuilder.formatter.rendering.component;
+
+import com.abntbuilder.formatter.output.docx.api.DocxBlock;
+import java.util.List;
+
+public interface ComponentRenderResult {
+    List<DocxBlock> blocks();
+}
+```
+
+- [ ] **Step 6: Criar `BodyContentRenderResult`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/rendering/component/bodycontent/BodyContentRenderResult.java
 package com.abntbuilder.formatter.rendering.component.bodycontent;
 
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
+import com.abntbuilder.formatter.rendering.component.ComponentRenderResult;
 
 import java.util.List;
 import java.util.Objects;
@@ -156,7 +174,7 @@ import java.util.Objects;
 public record BodyContentRenderResult(
         List<DocxBlock> blocks,
         BodyContentMetadata metadata
-) {
+) implements ComponentRenderResult {
     public BodyContentRenderResult {
         Objects.requireNonNull(blocks, "blocks must not be null");
         Objects.requireNonNull(metadata, "metadata must not be null");
@@ -165,22 +183,23 @@ public record BodyContentRenderResult(
 }
 ```
 
-- [ ] **Step 6: Compilar**
+- [ ] **Step 7: Compilar**
 
 ```bash
 cd /mnt/c/Users/evelynnd/Documents/Projetos/Formatter-service
 mvn compile -q
 ```
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
-git add src/main/java/com/abntbuilder/formatter/rendering/component/bodycontent/BodySectionMetadata.java \
+git add src/main/java/com/abntbuilder/formatter/rendering/component/ComponentRenderResult.java \
+        src/main/java/com/abntbuilder/formatter/rendering/component/bodycontent/BodySectionMetadata.java \
         src/main/java/com/abntbuilder/formatter/rendering/component/bodycontent/BodyDisplayObjectMetadata.java \
         src/main/java/com/abntbuilder/formatter/rendering/component/bodycontent/BodyAbbreviationMetadata.java \
         src/main/java/com/abntbuilder/formatter/rendering/component/bodycontent/BodyContentMetadata.java \
         src/main/java/com/abntbuilder/formatter/rendering/component/bodycontent/BodyContentRenderResult.java
-git commit -m "feat: add BodyContentMetadata and related types"
+git commit -m "feat: add ComponentRenderResult, BodyContentMetadata and related types"
 ```
 
 ---
@@ -193,6 +212,8 @@ git commit -m "feat: add BodyContentMetadata and related types"
 
 - [ ] **Step 1: Criar `MetadataEmittingRenderer`**
 
+`MetadataEmittingRenderer` usa `ComponentRenderResult` (não `BodyContentRenderResult`) para não acoplar a interface genérica a um tipo específico do bodyContent. O `default render()` delega para `renderWithMetadata` e chama `blocks()`, que é o único método declarado em `ComponentRenderResult`.
+
 ```java
 // src/main/java/com/abntbuilder/formatter/rendering/component/MetadataEmittingRenderer.java
 package com.abntbuilder.formatter.rendering.component;
@@ -200,14 +221,13 @@ package com.abntbuilder.formatter.rendering.component;
 import com.abntbuilder.formatter.document.component.DocumentComponent;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
-import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentRenderResult;
 
 import java.util.List;
 
-public interface MetadataEmittingRenderer<T extends DocumentComponent>
+public interface MetadataEmittingRenderer<T extends DocumentComponent, R extends ComponentRenderResult>
         extends ComponentRenderer<T> {
 
-    BodyContentRenderResult renderWithMetadata(T component, DocumentProfile profile);
+    R renderWithMetadata(T component, DocumentProfile profile);
 
     @Override
     default List<DocxBlock> render(T component, DocumentProfile profile) {
@@ -218,11 +238,11 @@ public interface MetadataEmittingRenderer<T extends DocumentComponent>
 
 - [ ] **Step 2: Atualizar a assinatura de `BodyContentRenderer`**
 
-Mudar a declaração da classe:
+Mudar a declaração da classe para usar os dois parâmetros de tipo:
 
 ```java
 public final class BodyContentRenderer
-        implements MetadataEmittingRenderer<BodyContentComponent> {
+        implements MetadataEmittingRenderer<BodyContentComponent, BodyContentRenderResult> {
 ```
 
 **Importante:** A interface `MetadataEmittingRenderer` fornece um `default render()` que delega para `renderWithMetadata`. Portanto **não deve existir** um método `render` na classe `BodyContentRenderer` — o método a implementar é `renderWithMetadata`. Se o método `render` existir na classe, ele vai sobrescrever o default da interface e não haverá delegação automática.
@@ -231,21 +251,32 @@ Renomear o método existente `render(BodyContentComponent, DocumentProfile)` par
 
 O esqueleto completo do método após esta Task (antes de a Task 3 preencher os acumuladores) é:
 
+O esqueleto usa os mesmos construtores que existem no código atual — `new ComponentRuleResolver(profile).resolve(...)` e `new StyleResolver(profile)`:
+
 ```java
 @Override
 public BodyContentRenderResult renderWithMetadata(
         BodyContentComponent component, DocumentProfile profile) {
 
-    BodyContentComponentRule rule = profile.ruleFor(component);
-    StyleResolver styleResolver = StyleResolver.from(profile, rule.styleMapping());
+    BodyContentComponentRule rule = new ComponentRuleResolver(profile)
+            .resolve(COMPONENT_ID, BodyContentComponentRule.class);
+    StyleResolver styleResolver = new StyleResolver(profile);
 
     // Estado de numeração — inalterado em relação ao render() anterior
     SectionNumberingState numberingState = new SectionNumberingState(rule.numbering());
+    StyleRule blankLineStyle = styleResolver.resolve(rule.layout().blankLineStyleId());
+    boolean previousBlockWasTextualContent = false;
     DisplayObjectRenderingState<BodyFigure> figureRenderingState =
             new DisplayObjectRenderingState<>(figuresFrom(component.sections()));
     DisplayObjectRenderingState<BodyTable> tableRenderingState =
             new DisplayObjectRenderingState<>(tablesFrom(component.sections()));
-    // (demais DisplayObjectRenderingState para Fase 2: frames, charts, codeListings)
+    DisplayObjectRenderingState<BodyFrame> frameRenderingState =
+            new DisplayObjectRenderingState<>(framesFrom(component.sections()));
+    DisplayObjectRenderingState<BodyCodeListing> codeListingRenderingState =
+            new DisplayObjectRenderingState<>(codeListingsFrom(component.sections()));
+    DisplayObjectRenderingState<BodyChart> chartRenderingState =
+            new DisplayObjectRenderingState<>(chartsFrom(component.sections()));
+    int[] footnoteCounter = new int[1];
 
     // Acumuladores de metadados — inicializados aqui, preenchidos na Task 3
     List<BodySectionMetadata> sectionMetas = new ArrayList<>();
@@ -278,8 +309,6 @@ public BodyContentRenderResult renderWithMetadata(
     // Nesta Task, os acumuladores ainda estão vazios — preenchidos na Task 3
 }
 ```
-
-> **Atenção:** O retorno com `BodyContentMetadata.empty()` usado como passo temporário na revisão anterior deve ser substituído pelo retorno acima com os acumuladores já declarados (mesmo que ainda vazios). Isso garante que a Task 3 apenas preencha os acumuladores sem alterar a estrutura do método.
 
 Verificar que nenhum `@Override public List<DocxBlock> render(...)` permanece na classe.
 
@@ -318,13 +347,28 @@ List<BodyDisplayObjectMetadata> codeListingMetas = new ArrayList<>();
 List<BodyAbbreviationMetadata> abbreviationMetas = new ArrayList<>();
 ```
 
-- [ ] **Step 2: Capturar metadados de seções**
+- [ ] **Step 2: Expor `resolveNumber` em `SectionNumberingState`**
 
-Após calcular o título renderizado da seção:
+`SectionNumberingState` só tem `resolveTitle(int level, String title)` — o número é privado em `sectionNumber()`. Adicionar um método público antes de usar na Task 3 e na Task 8:
 
 ```java
-String renderedNumber = numberingState.resolveNumber(section.level());  // ex: "1", "1.2"
+// dentro de SectionNumberingState (classe interna de BodyContentRenderer)
+String resolveNumber(int level) {
+    // Não incrementa — apenas retorna o número atual para o nível dado.
+    // Deve ser chamado APÓS resolveTitle (que já incrementou os contadores).
+    return sectionNumber(level);
+}
+```
+
+**Atenção:** `resolveNumber` deve ser chamado **depois** de `resolveTitle` para o mesmo nível, pois `resolveTitle` é quem faz o `increment()`. Se chamado antes, o número ainda não foi incrementado.
+
+- [ ] **Step 3: Capturar metadados de seções**
+
+Dentro do bloco `if (section.title().isPresent())`, após a chamada existente a `numberingState.resolveTitle`:
+
+```java
 String renderedTitle = numberingState.resolveTitle(section.level(), section.title().orElseThrow());
+String renderedNumber = numberingState.resolveNumber(section.level()); // chamado APÓS resolveTitle
 // ...
 sectionMetas.add(new BodySectionMetadata(section.id(), section.level(), renderedTitle, renderedNumber));
 ```
@@ -371,53 +415,51 @@ if (isFirstPart) {
 }
 ```
 
-- [ ] **Step 4: Capturar metadados de siglas**
+- [ ] **Step 5: Capturar metadados de siglas**
 
-No `toDocxRun`, quando o inline for `BodyAbbreviation`, registrar a primeira ocorrência. Para que `toDocxRun` tenha acesso a `abbreviationMetas`, passar a lista como parâmetro (preferível a transformar em método de instância, pois evita estado mutável implícito).
-
-**Assinatura atualizada de `toDocxRun`:**
+`toDocxRun` já existe e retorna `List<DocxRun>` (desde a Fase 2, por causa dos marcadores de ênfase). Sua assinatura atual é:
 
 ```java
-private static DocxRun toDocxRun(
+private static List<DocxRun> toDocxRun(
         BodyInline inline,
         StyleRule baseStyle,
         BodyContentComponentRule rule,
         StyleResolver styleResolver,
-        List<BodyAbbreviationMetadata> abbreviationMetas  // novo parâmetro
-) { ... }
+        List<DocxFootnoteContent> footnoteAccumulator,
+        int[] footnoteCounter
+)
 ```
 
-**Case de `BodyAbbreviation` dentro de `toDocxRun`:**
+Adicionar `abbreviationMetas` como novo parâmetro após `styleResolver`:
 
 ```java
-case BodyAbbreviation abbr -> {
-    // registrar apenas a primeira ocorrência de cada abreviatura
-    if (abbreviationMetas.stream().noneMatch(m -> m.abbreviation().equals(abbr.abbreviation()))) {
-        abbreviationMetas.add(new BodyAbbreviationMetadata(abbr.abbreviation(), abbr.expansion()));
-    }
-    yield new DocxRun(abbr.renderedText(), baseStyle, InlineFormatting.none());
-}
-```
-
-**Como é chamado em `renderContentBlock`** (o método que itera os inlines de um parágrafo/bloco):
-
-```java
-private static List<DocxRun> renderContentBlock(
-        List<BodyInline> inlines,
+private static List<DocxRun> toDocxRun(
+        BodyInline inline,
         StyleRule baseStyle,
         BodyContentComponentRule rule,
         StyleResolver styleResolver,
-        List<BodyAbbreviationMetadata> abbreviationMetas  // propagado do caller
-) {
-    return inlines.stream()
-            .map(inline -> toDocxRun(inline, baseStyle, rule, styleResolver, abbreviationMetas))
-            .toList();
+        List<BodyAbbreviationMetadata> abbreviationMetas,  // NOVO
+        List<DocxFootnoteContent> footnoteAccumulator,
+        int[] footnoteCounter
+)
+```
+
+Atualizar **todas** as chamadas a `toDocxRun` no corpo do renderer para passar `abbreviationMetas`. Há três sítios: no case `BodyParagraph`, no case `BodyList` (items), e no case `BodyFootnote` (runs recursivos dentro de `toDocxRun` si mesmo).
+
+**Case de `BodyAbbreviation` dentro de `toDocxRun`** — já existe, só adicionar o registro:
+
+```java
+case BodyAbbreviation abbr -> {
+    if (abbreviationMetas.stream().noneMatch(m -> m.abbreviation().equals(abbr.abbreviation()))) {
+        abbreviationMetas.add(new BodyAbbreviationMetadata(abbr.abbreviation(), abbr.expansion()));
+    }
+    yield List.of(new DocxRun(abbr.renderedText(), baseStyle, InlineFormatting.none()));
 }
 ```
 
-`renderContentBlock` é chamado a partir do loop em `renderWithMetadata`, que possui `abbreviationMetas` declarado no topo — portanto a lista mutável é passada por referência e acumulada ao longo de toda a renderização.
+Não existe um método separado `renderContentBlock(List<BodyInline>...)` — os inlines são processados diretamente com `.flatMap(inline -> toDocxRun(...).stream())` no switch de `renderContentBlock(BodyBlock, ...)`. O parâmetro `abbreviationMetas` é declarado em `renderWithMetadata` e propagado via `toDocxRun`.
 
-- [ ] **Step 5: Construir e retornar `BodyContentMetadata`**
+- [ ] **Step 6: Construir e retornar `BodyContentMetadata`**
 
 Ao final do método `renderWithMetadata`:
 
@@ -434,9 +476,9 @@ BodyContentMetadata metadata = new BodyContentMetadata(
 return new BodyContentRenderResult(List.copyOf(blocks), metadata);
 ```
 
-- [ ] **Step 6: Escrever `BodyContentRendererMetadataTest`**
+- [ ] **Step 7: Escrever `BodyContentRendererMetadataTest`**
 
-Estes são testes **unitários diretos** sobre `BodyContentRenderer.renderWithMetadata()` — não usam MockMvc nem `@SpringBootTest`. O `DocumentProfile` é obtido pelo `DocumentProfileRepository` via `@Autowired` (apenas o Spring context mínimo) ou construído manualmente se o perfil de teste permitir.
+Testes unitários diretos sem `@SpringBootTest` — seguem o padrão de `BodyContentRendererTest`, que instancia `new BodyContentRenderer()` e constrói o `DocumentProfile` via `profile()` helper. Conferir as assinaturas reais antes de implementar: `BodySection` recebe `(String id, int level, Optional<String> title, List<BodyBlock> blocks)`; `BodyContentComponent` recebe `(List<BodySection> sections)`; `BodyFigure` recebe `(String id, Optional<String> continuationGroupId, String caption, Optional<String> source, BodyImageSource image)`.
 
 ```java
 // src/test/java/com/abntbuilder/formatter/rendering/component/bodycontent/BodyContentRendererMetadataTest.java
@@ -444,45 +486,33 @@ package com.abntbuilder.formatter.rendering.component.bodycontent;
 
 import com.abntbuilder.formatter.document.component.bodycontent.*;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
-import com.abntbuilder.formatter.profile.repository.DocumentProfileRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
 class BodyContentRendererMetadataTest {
 
-    @Autowired
-    private DocumentProfileRepository profileRepository;
+    private static final String ONE_PIXEL_PNG =
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=";
 
-    @Autowired
-    private BodyContentRenderer renderer;
-
-    private DocumentProfile profile;
-
-    @BeforeEach
-    void setUp() {
-        profile = profileRepository.findById("abnt-unip-profile").orElseThrow();
-    }
+    private final BodyContentRenderer renderer = new BodyContentRenderer();
 
     @Test
     void shouldEmitSectionMetadata() {
-        BodySection s1 = new BodySection("sec-intro", 1, "Introdução", List.of());
-        BodySection s2 = new BodySection("sec-dev", 1, "Desenvolvimento", List.of());
-        BodyContentComponent component = new BodyContentComponent("bodyContent", List.of(s1, s2));
+        BodySection s1 = new BodySection("sec-intro", 1, Optional.of("Introdução"), List.of());
+        BodySection s2 = new BodySection("sec-dev", 1, Optional.of("Desenvolvimento"), List.of());
+        BodyContentComponent component = new BodyContentComponent(List.of(s1, s2));
 
-        BodyContentRenderResult result = renderer.renderWithMetadata(component, profile);
+        BodyContentRenderResult result = renderer.renderWithMetadata(component, profile());
 
         assertThat(result.metadata().sections()).hasSize(2);
         assertThat(result.metadata().sections().get(0).id()).isEqualTo("sec-intro");
         assertThat(result.metadata().sections().get(0).level()).isEqualTo(1);
         assertThat(result.metadata().sections().get(0).renderedTitle()).startsWith("1");
-        assertThat(result.metadata().sections().get(1).id()).isEqualTo("sec-dev");
+        assertThat(result.metadata().sections().get(0).renderedNumber()).isEqualTo("1");
         assertThat(result.metadata().sections().get(1).renderedTitle()).startsWith("2");
     }
 
@@ -490,15 +520,15 @@ class BodyContentRendererMetadataTest {
     void shouldEmitFigureMetadata() {
         BodyFigure figure = new BodyFigure(
                 "fig-1",
+                Optional.empty(),
                 "Diagrama de componentes",
-                new BodyFigure.Image(BodyFigure.Image.SourceType.DATA_URI,
-                        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
-                        "Diagrama")
+                Optional.empty(),
+                new BodyImageSource(ImageSourceType.DATA_URI, ONE_PIXEL_PNG, null, "Diagrama")
         );
-        BodySection section = new BodySection("sec-1", 1, "Seção", List.of(figure));
-        BodyContentComponent component = new BodyContentComponent("bodyContent", List.of(section));
+        BodySection section = new BodySection("sec-1", 1, Optional.of("Seção"), List.of(figure));
+        BodyContentComponent component = new BodyContentComponent(List.of(section));
 
-        BodyContentRenderResult result = renderer.renderWithMetadata(component, profile);
+        BodyContentRenderResult result = renderer.renderWithMetadata(component, profile());
 
         assertThat(result.metadata().figures()).hasSize(1);
         assertThat(result.metadata().figures().get(0).id()).isEqualTo("fig-1");
@@ -507,13 +537,14 @@ class BodyContentRendererMetadataTest {
     }
 
     @Test
-    void shouldEmitAbbreviationMetadata() {
+    void shouldEmitAbbreviationMetadataOnlyOnce() {
         BodyAbbreviation abbr = new BodyAbbreviation("ABNT", "Associação Brasileira de Normas Técnicas");
-        BodyParagraph paragraph = new BodyParagraph(List.of(abbr));
-        BodySection section = new BodySection("sec-1", 1, "Seção", List.of(paragraph));
-        BodyContentComponent component = new BodyContentComponent("bodyContent", List.of(section));
+        BodyParagraph p1 = new BodyParagraph(List.of(abbr));
+        BodyParagraph p2 = new BodyParagraph(List.of(abbr));
+        BodySection section = new BodySection("sec-1", 1, Optional.of("Seção"), List.of(p1, p2));
+        BodyContentComponent component = new BodyContentComponent(List.of(section));
 
-        BodyContentRenderResult result = renderer.renderWithMetadata(component, profile);
+        BodyContentRenderResult result = renderer.renderWithMetadata(component, profile());
 
         assertThat(result.metadata().abbreviations()).hasSize(1);
         assertThat(result.metadata().abbreviations().get(0).abbreviation()).isEqualTo("ABNT");
@@ -521,23 +552,15 @@ class BodyContentRendererMetadataTest {
                 .isEqualTo("Associação Brasileira de Normas Técnicas");
     }
 
-    @Test
-    void shouldEmitAbbreviationOnlyOnce() {
-        BodyAbbreviation abbr = new BodyAbbreviation("ABNT", "Associação Brasileira de Normas Técnicas");
-        BodyParagraph p1 = new BodyParagraph(List.of(abbr));
-        BodyParagraph p2 = new BodyParagraph(List.of(abbr));
-        BodySection section = new BodySection("sec-1", 1, "Seção", List.of(p1, p2));
-        BodyContentComponent component = new BodyContentComponent("bodyContent", List.of(section));
-
-        BodyContentRenderResult result = renderer.renderWithMetadata(component, profile);
-
-        assertThat(result.metadata().abbreviations()).hasSize(1);
-        assertThat(result.metadata().abbreviations().get(0).abbreviation()).isEqualTo("ABNT");
+    private static DocumentProfile profile() {
+        // Copiar o helper profile() de BodyContentRendererTest — mesmo perfil mínimo
+        // com styleRules, BodyContentComponentRule, etc.
+        throw new UnsupportedOperationException("copiar implementação de BodyContentRendererTest.profile()");
     }
 }
 ```
 
-> **Nota:** Os construtores usados acima (`new BodySection(...)`, `new BodyFigure(...)` etc.) devem ser conferidos contra as assinaturas reais das classes de domínio — ajustar se necessário. O ponto central é que os testes constroem `BodyContentComponent` programaticamente e chamam `renderer.renderWithMetadata(component, profile)` diretamente, assertando sobre `result.metadata()`.
+> **Atenção ao implementar:** Copiar o método `profile()` de `BodyContentRendererTest` (que constrói um `DocumentProfile` mínimo com todas as styleRules necessárias). Os construtores de domínio acima são baseados nas assinaturas reais — verificar antes de compilar.
 
 - [ ] **Step 7: Rodar testes**
 
@@ -562,19 +585,20 @@ git commit -m "feat: emit BodyContentMetadata from BodyContentRenderer"
 
 - [ ] **Step 1: Adicionar método auxiliar de cast em `MetadataEmittingRenderer`**
 
+`DocumentRenderer` usa `instanceof MetadataEmittingRenderer<?,?>` com wildcard e precisa de um helper que apague os tipos para chamar `renderWithMetadata` sem cast não verificado espalhado pelo caller. Adicionar em `MetadataEmittingRenderer.java`:
+
 ```java
-// Em MetadataEmittingRenderer — adicionar default method:
+// Em MetadataEmittingRenderer — adicionar default method e import:
+import com.abntbuilder.formatter.document.component.DocumentComponent;
+
 @SuppressWarnings("unchecked")
-default BodyContentRenderResult renderComponentWithMetadata(
+default ComponentRenderResult renderComponentWithMetadata(
         DocumentComponent component, DocumentProfile profile) {
     return renderWithMetadata((T) component, profile);
 }
 ```
 
-Imports necessários em `MetadataEmittingRenderer.java`:
-```java
-import com.abntbuilder.formatter.document.component.DocumentComponent;
-```
+O retorno é `ComponentRenderResult` (não `BodyContentRenderResult`) para que o `DocumentRenderer` não dependa de um tipo específico do bodyContent.
 
 - [ ] **Step 2: Atualizar o bloco `if (component != null)` em `DocumentRenderer.render()`**
 
@@ -592,10 +616,12 @@ if (component != null) {
     ComponentRenderer<?> renderer = rendererRegistry.get(componentId);
     List<DocxBlock> componentBlocks;
 
-    if (renderer instanceof MetadataEmittingRenderer<?> emitting) {
-        BodyContentRenderResult result = emitting.renderComponentWithMetadata(component, command.profile());
+    if (renderer instanceof MetadataEmittingRenderer<?,?> emitting) {
+        ComponentRenderResult result = emitting.renderComponentWithMetadata(component, command.profile());
         componentBlocks = result.blocks();
-        bodyContentMetadata = result.metadata();  // variável local — sem race condition
+        if (result instanceof BodyContentRenderResult bcr) {
+            bodyContentMetadata = bcr.metadata();
+        }
     } else {
         componentBlocks = renderer.renderComponent(component, command.profile());
     }
@@ -607,6 +633,7 @@ if (component != null) {
 
 Adicionar imports em `DocumentRenderer.java`:
 ```java
+import com.abntbuilder.formatter.rendering.component.ComponentRenderResult;
 import com.abntbuilder.formatter.rendering.component.MetadataEmittingRenderer;
 import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentMetadata;
 import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentRenderResult;
@@ -1020,8 +1047,9 @@ private static CrossReferenceIndex buildCrossReferenceIndex(
 
     for (BodySection section : component.sections()) {
         if (section.title().isPresent()) {
-            String renderedNumber = prepassNumbering.resolveNumber(section.level());  // ex: "1", "1.2"
+            // resolveTitle incrementa os contadores; resolveNumber deve ser chamado APÓS
             String renderedTitle = prepassNumbering.resolveTitle(section.level(), section.title().orElseThrow());
+            String renderedNumber = prepassNumbering.resolveNumber(section.level());  // ex: "1", "1.2"
             sectionIndex.put(section.id(), new BodySectionMetadata(section.id(), section.level(), renderedTitle, renderedNumber));
         }
         for (BodyBlock block : section.blocks()) {
@@ -1060,41 +1088,28 @@ Adicionar imports: `import java.util.LinkedHashMap;`
 CrossReferenceIndex crossRefIndex = buildCrossReferenceIndex(component, rule);
 ```
 
-Passar `crossRefIndex` como parâmetro adicional em `renderContentBlock` e, por propagação, em `toDocxRun`.
+Passar `crossRefIndex` como parâmetro adicional em `toDocxRun`. Não existe um método `renderContentBlock(List<BodyInline>...)` separado — os inlines são processados com `.flatMap(inline -> toDocxRun(...).stream())` diretamente nos cases do switch de `renderContentBlock(BodyBlock, ...)`.
 
-**Assinatura atualizada de `renderContentBlock`:**
-
-```java
-private static List<DocxRun> renderContentBlock(
-        List<BodyInline> inlines,
-        StyleRule baseStyle,
-        BodyContentComponentRule rule,
-        StyleResolver styleResolver,
-        List<BodyAbbreviationMetadata> abbreviationMetas,
-        CrossReferenceIndex crossRefIndex  // novo parâmetro
-) {
-    return inlines.stream()
-            .map(inline -> toDocxRun(inline, baseStyle, rule, styleResolver, abbreviationMetas, crossRefIndex))
-            .toList();
-}
-```
-
-**Assinatura atualizada de `toDocxRun`:**
+**Assinatura atualizada de `toDocxRun`** (adicionar `crossRefIndex` após `abbreviationMetas`):
 
 ```java
-private static DocxRun toDocxRun(
+private static List<DocxRun> toDocxRun(
         BodyInline inline,
         StyleRule baseStyle,
         BodyContentComponentRule rule,
         StyleResolver styleResolver,
         List<BodyAbbreviationMetadata> abbreviationMetas,
+        List<DocxFootnoteContent> footnoteAccumulator,
+        int[] footnoteCounter,
         CrossReferenceIndex crossRefIndex  // novo parâmetro
 ) { ... }
 ```
 
-Atualizar todas as chamadas a `renderContentBlock` no loop de `renderWithMetadata` para passar tanto `abbreviationMetas` (adicionado na Task 3) quanto `crossRefIndex`.
+Atualizar todas as chamadas a `toDocxRun` no renderer para passar `crossRefIndex`. Há três sítios: no case `BodyParagraph`, no case `BodyList` (items) e na recursão interna de `BodyFootnote`.
 
 - [ ] **Step 4: Resolver `BodyCrossReference` no `toDocxRun`**
+
+`toDocxRun` retorna `List<DocxRun>` (desde a Fase 2):
 
 ```java
 case BodyCrossReference ref -> {
@@ -1104,7 +1119,7 @@ case BodyCrossReference ref -> {
             ref.displayMode(),
             rule.crossReferenceLabels()
     );
-    yield new DocxRun(resolved, baseStyle, InlineFormatting.none());
+    yield List.of(new DocxRun(resolved, baseStyle, InlineFormatting.none()));
 }
 ```
 
