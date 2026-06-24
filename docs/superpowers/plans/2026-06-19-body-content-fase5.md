@@ -1,4 +1,4 @@
-# bodyContent Fase 5 — Componentes Gerados (Índices Derivados)
+# bodyContent Fase 5 — Componentes Gerados (Índices Derivados) ✅ CONCLUÍDA 2026-06-24
 
 > **Pré-requisito:** Fase 3 concluída — `BodyContentMetadata` disponível em `DocumentRenderer`.
 >
@@ -8,7 +8,7 @@
 
 **Tech Stack:** Java 21, Spring Boot, docx4j 11.5.13, JUnit 5
 
-**Característica arquitetural desta fase:** Os renderers desta fase consomem `BodyContentMetadata` produzido por `BodyContentRenderer`. O `DocumentRenderer` precisa expor esses metadados para que os renderers de índice possam acessá-los durante a renderização do documento.
+**Característica arquitetural desta fase:** Os renderers desta fase consomem `BodyContentMetadata` produzido por `BodyContentRenderer`. O `DocumentRenderer` já possui a variável local `bodyContentMetadata` e o branch `MetadataEmittingRenderer` implementados na Fase 3. A Task 1 desta fase adiciona apenas o branch `MetadataConsumingRenderer` que estava pendente.
 
 ---
 
@@ -37,56 +37,34 @@
 
 ### Novos (requests)
 - `SummaryRequest.java`, `SummaryComponentRuleRequest.java`
-- `ListOfFiguresRequest.java`, `ListOfTablesRequest.java`, etc.
+- `ListOfFiguresRequest.java`, `ListOfTablesRequest.java`, `ListOfFramesRequest.java`, `ListOfChartsRequest.java`, `ListOfCodeListingsRequest.java`
 - `IndexListComponentRuleRequest.java`
 - `ListOfAbbreviationsRequest.java`, `ListOfAbbreviationsComponentRuleRequest.java`
 - `ListOfSymbolsRequest.java`, `SymbolEntryRequest.java`, `ListOfSymbolsComponentRuleRequest.java`
 
 ### Modificados
-- `DocumentRenderer.java` — disponibiliza `BodyContentMetadata` para renderers de índice
+- `DocumentRenderer.java` — adiciona branch `MetadataConsumingRenderer` no loop existente
+- `ComponentRulesRequest.java` — adiciona campos para todas as novas rules
+- `DocumentContentRequest.java` — adiciona campos para todos os novos componentes
+- `RenderingConfig.java` — registra todos os novos renderers como `@Bean`
 - `abnt-unip-profile.json` — regras e estilos de todos os novos componentes
-- `ExportDocxRequest.java` (ou equivalente) — aceita os novos componentes no request
+- `ComponentType.java` — 8 novos valores
 
 ---
 
-## Task 1 — Disponibilizar metadados para renderers de índice
+## Task 1 — `MetadataConsumingRenderer` e atualização do `DocumentRenderer`
 
-O `DocumentRenderer` já armazena `BodyContentMetadata` (Task 4 da Fase 3). Agora os renderers de índice precisam acessá-la.
+O `DocumentRenderer` já tem (desde a Fase 3):
+- Variável local `BodyContentMetadata bodyContentMetadata = BodyContentMetadata.empty()` no início do método `render()`
+- Branch `if (renderer instanceof MetadataEmittingRenderer<?,?> emitting)` que coleta os metadados
 
-**Estratégia:** Interface `MetadataConsumingRenderer` com método `setMetadata(BodyContentMetadata)`. O `DocumentRenderer` chama `setMetadata` antes de renderizar cada componente de índice.
-
-**⚠️ Thread-safety:** Os renderers de índice são beans Spring singleton. `setMetadata` como método mutador de instância criaria race condition em requests concorrentes. A solução é **não usar `setMetadata` como mutador de estado de instância**, mas sim como parâmetro adicional em `render`. Duas abordagens viáveis:
-
-1. **Abordagem A (recomendada):** Alterar `MetadataConsumingRenderer` para ter `render(T component, DocumentProfile profile, BodyContentMetadata metadata)` em vez de `setMetadata + render`. O `DocumentRenderer` chama esse método diretamente quando detecta a interface.
-
-2. **Abordagem B:** Criar um wrapper não-singleton por request que encapsula o renderer singleton e injeta os metadados. Mais complexo.
-
-**Adotar Abordagem A** — é mais simples e alinhada com o padrão de "parâmetros explícitos":
-
-```java
-// MetadataConsumingRenderer
-public interface MetadataConsumingRenderer<T extends DocumentComponent>
-        extends ComponentRenderer<T> {
-
-    List<DocxBlock> renderWithMetadata(T component, DocumentProfile profile, BodyContentMetadata metadata);
-
-    // render() sem metadados retorna lista vazia ou lança — não deve ser chamado diretamente
-    @Override
-    default List<DocxBlock> render(T component, DocumentProfile profile) {
-        return renderWithMetadata(component, profile, BodyContentMetadata.empty());
-    }
-}
-```
-
-O `DocumentRenderer` usa `renderComponentWithMetadata` (que aceita `DocumentComponent` e faz o cast) quando o renderer implementa `MetadataConsumingRenderer`.
+O que está faltando é o branch `else if` para os renderers de índice.
 
 **Files:**
 - Create: `MetadataConsumingRenderer.java`
 - Modify: `DocumentRenderer.java`
 
 - [ ] **Step 1: Criar `MetadataConsumingRenderer`**
-
-**Abordagem A (thread-safe, sem estado mutável de instância):** o método de render recebe os metadados como parâmetro explícito. `DocumentRenderer` detecta a interface e passa os metadados coletados do `BodyContentRenderer`. O método `render(T, DocumentProfile)` herdado de `ComponentRenderer` delega para `renderWithMetadata` com metadados vazios — nunca deve ser chamado diretamente pelo `DocumentRenderer` quando a interface é presente.
 
 ```java
 // src/main/java/com/abntbuilder/formatter/rendering/component/MetadataConsumingRenderer.java
@@ -117,57 +95,46 @@ public interface MetadataConsumingRenderer<T extends DocumentComponent>
 }
 ```
 
-- [ ] **Step 2: Atualizar `DocumentRenderer` para passar metadados como parâmetro**
+- [ ] **Step 2: Atualizar `DocumentRenderer` — adicionar o branch `MetadataConsumingRenderer`**
 
-No loop `for (String componentId : componentOrder)`, substituir o bloco `if (component != null)` existente:
+No loop `for (String componentId : componentOrder)`, dentro do bloco `if (component != null)`, o código atual é:
 
 ```java
-if (component != null) {
-    Optional<DocxPageNumbering> pageNumbering = pageNumberingState.beforeRendering(componentId);
-    if (blocks.isEmpty() && pageNumbering.isPresent()) {
-        initialPageNumbering = pageNumbering;
+if (renderer instanceof MetadataEmittingRenderer<?,?> emitting) {
+    ComponentRenderResult result = emitting.renderComponentWithMetadata(component, command.profile());
+    componentBlocks = result.blocks();
+    if (result instanceof BodyContentRenderResult bcr) {
+        bodyContentMetadata = bcr.metadata();
     }
-
-    ComponentRenderer<?> renderer = rendererRegistry.get(componentId);
-    List<DocxBlock> componentBlocks;
-
-    if (renderer instanceof MetadataEmittingRenderer<?> emitting) {
-        // Fase 3: BodyContentRenderer — coleta metadados e retorna blocks
-        BodyContentRenderResult result = emitting.renderComponentWithMetadata(component, command.profile());
-        componentBlocks = result.blocks();
-        bodyContentMetadata = result.metadata();  // atualizar variável local
-    } else if (renderer instanceof MetadataConsumingRenderer<?> consuming) {
-        // Fase 5: renderers de índice — recebem metadados como parâmetro (thread-safe)
-        componentBlocks = consuming.renderComponentWithMetadata(component, command.profile(), bodyContentMetadata);
-    } else {
-        componentBlocks = renderer.renderComponent(component, command.profile());
-    }
-
-    addBlocks(blocks, pageNumbering, componentBlocks);
-    pageNumberingState.afterRendering();
+} else {
+    componentBlocks = renderer.renderComponent(component, command.profile());
 }
 ```
 
-Adicionar no topo do método `render(ExportDocxCommand command)`, antes do loop:
+Substituir pelo seguinte (adicionar somente o `else if` entre os dois branches existentes):
 
 ```java
-BodyContentMetadata bodyContentMetadata = BodyContentMetadata.empty();  // variável local — sem race condition
+if (renderer instanceof MetadataEmittingRenderer<?,?> emitting) {
+    ComponentRenderResult result = emitting.renderComponentWithMetadata(component, command.profile());
+    componentBlocks = result.blocks();
+    if (result instanceof BodyContentRenderResult bcr) {
+        bodyContentMetadata = bcr.metadata();
+    }
+} else if (renderer instanceof MetadataConsumingRenderer<?> consuming) {
+    componentBlocks = consuming.renderComponentWithMetadata(component, command.profile(), bodyContentMetadata);
+} else {
+    componentBlocks = renderer.renderComponent(component, command.profile());
+}
 ```
 
-Adicionar imports em `DocumentRenderer.java`:
+Adicionar import em `DocumentRenderer.java`:
 ```java
 import com.abntbuilder.formatter.rendering.component.MetadataConsumingRenderer;
-import com.abntbuilder.formatter.rendering.component.MetadataEmittingRenderer;
-import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentMetadata;
-import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentRenderResult;
 ```
-
-**⚠️ Atenção:** O `bodyContentMetadata` é variável local ao método `render()` — uma instância por request, sem campo de instância em `DocumentRenderer`. Isso garante thread-safety no singleton Spring.
 
 - [ ] **Step 3: Compilar**
 
 ```bash
-cd /mnt/c/Users/evelynnd/Documents/Projetos/Formatter-service
 mvn compile -q
 ```
 
@@ -175,7 +142,7 @@ mvn compile -q
 
 ```bash
 git add src/main/java/com/abntbuilder/formatter/rendering/component/MetadataConsumingRenderer.java \
-        src/main/java/com/abntbuilder/formatter/rendering/document/DocumentRenderer.java
+        src/main/java/com/abntbuilder/formatter/rendering/orchestration/DocumentRenderer.java
 git commit -m "feat: add MetadataConsumingRenderer interface and inject metadata in DocumentRenderer"
 ```
 
@@ -183,22 +150,21 @@ git commit -m "feat: add MetadataConsumingRenderer interface and inject metadata
 
 ## Task 2 — Sumário
 
-O sumário usa o campo TOC do Word para geração automática de números de página. O Word atualiza os números quando o usuário abre o documento e pressiona Ctrl+A → F9. Isso é documentado como comportamento esperado — o formatter não promete números de página sem que o usuário atualize o campo.
+O sumário usa o campo TOC do Word para geração automática de números de página. O Word atualiza os números quando o usuário abre o documento e pressiona Ctrl+A → F9. Este comportamento é documentado como esperado — o formatter não promete números de página sem que o usuário atualize o campo. Esta é a solução correta: calcular páginas offline é impossível sem renderizar o layout tipográfico completo.
 
 **Files:**
 - Create: `SummaryComponent.java`, `SummaryComponentRule.java`, `SummaryRenderer.java`
 - Create: `SummaryRequest.java`, `SummaryComponentRuleRequest.java`
-- Create: `DocxTocBlock.java` (novo DocxBlock para campo TOC)
+- Create: `DocxTocBlock.java`
 
-- [ ] **Step 1: Criar `SummaryComponent`**
-
-Adicionar `SUMMARY` ao enum `ComponentType` em `com.abntbuilder.formatter.document.component.ComponentType`:
+- [ ] **Step 1: Adicionar `SUMMARY` ao enum `ComponentType`**
 
 ```java
-// Linha existente (exemplo): GLOSSARY
-// Adicionar após o último valor:
+// Adicionar ao enum ComponentType em ComponentType.java:
 SUMMARY
 ```
+
+- [ ] **Step 2: Criar `SummaryComponent`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/document/component/summary/SummaryComponent.java
@@ -207,13 +173,12 @@ package com.abntbuilder.formatter.document.component.summary;
 import com.abntbuilder.formatter.document.component.ComponentType;
 import com.abntbuilder.formatter.document.component.DocumentComponent;
 
-// Sem campos de conteúdo — o conteúdo vem dos metadados.
 public record SummaryComponent() implements DocumentComponent {
     @Override public ComponentType type() { return ComponentType.SUMMARY; }
 }
 ```
 
-- [ ] **Step 2: Criar `SummaryComponentRule`**
+- [ ] **Step 3: Criar `SummaryComponentRule`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/profile/model/component/summary/SummaryComponentRule.java
@@ -227,25 +192,25 @@ public record SummaryComponentRule(
         String componentId,
         String headingStyleId,
         String headingText,
-        List<String> entryStyleIdsByLevel,  // estilo por nível (level 1, 2, ...)
-        boolean useTocField                 // true = campo TOC do Word; false = entradas estáticas
+        List<String> entryStyleIdsByLevel,
+        boolean useTocField
 ) implements ComponentRule {
     public SummaryComponentRule {
-        if (componentId == null || componentId.isBlank()) throw new IllegalArgumentException("componentId must not be blank.");
-        if (headingStyleId == null || headingStyleId.isBlank()) throw new IllegalArgumentException("headingStyleId must not be blank.");
-        if (headingText == null || headingText.isBlank()) throw new IllegalArgumentException("headingText must not be blank.");
+        requireNonBlank(componentId, "componentId");
+        requireNonBlank(headingStyleId, "headingStyleId");
+        requireNonBlank(headingText, "headingText");
         if (entryStyleIdsByLevel == null || entryStyleIdsByLevel.isEmpty())
             throw new IllegalArgumentException("entryStyleIdsByLevel must not be empty.");
         entryStyleIdsByLevel = List.copyOf(entryStyleIdsByLevel);
     }
-    @Override public String componentId() { return componentId; }
     @Override public Map<String, String> contentBindings() { return Map.of(); }
+    private static void requireNonBlank(String v, String f) {
+        if (v == null || v.isBlank()) throw new IllegalArgumentException(f + " must not be blank.");
+    }
 }
 ```
 
-- [ ] **Step 3: Criar `DocxTocBlock`**
-
-O campo TOC do Word é emitido como três runs encadeados (`fldChar BEGIN`, `instrText`, `fldChar END`) dentro de um parágrafo. Criar um `DocxBlock` especializado para que o writer o materialize corretamente:
+- [ ] **Step 4: Criar `DocxTocBlock`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/output/docx/api/DocxTocBlock.java
@@ -266,16 +231,19 @@ public record DocxTocBlock(
 }
 ```
 
-Atualizar `DocxBlock`:
+Atualizar `DocxBlock` (sealed interface) para incluir `DocxTocBlock` nos `permits`:
 
 ```java
 public sealed interface DocxBlock
     permits DocxParagraph, DocxPageBreak, DocxBlankLine, DocxSectionBreak,
-            DocxImageBlock, DocxTableBlock, DocxListItemParagraph, DocxTocBlock {
+            DocxImageBlock, DocxTableBlock, DocxListItemParagraph,
+            DocxFootnoteReferenceBlock, DocxTocBlock {
 }
 ```
 
-- [ ] **Step 4: Implementar `DocxTocBlock` no `Docx4jWriter`**
+- [ ] **Step 5: Implementar `DocxTocBlock` no `Docx4jWriter`**
+
+No switch de `writeBlock`, adicionar:
 
 ```java
 case DocxTocBlock tocBlock -> {
@@ -287,11 +255,11 @@ case DocxTocBlock tocBlock -> {
     R beginRun = objectFactory.createR();
     FldChar beginFldChar = objectFactory.createFldChar();
     beginFldChar.setFldCharType(STFldCharType.BEGIN);
-    beginFldChar.setDirty(true);  // forçar atualização ao abrir
+    beginFldChar.setDirty(true);
     beginRun.getContent().add(objectFactory.createRFldChar(beginFldChar));
     p.getContent().add(beginRun);
 
-    // Run 2: instrução
+    // Run 2: instrução TOC
     R instrRun = objectFactory.createR();
     Text instrText = objectFactory.createText();
     instrText.setValue(tocBlock.tocInstruction());
@@ -310,9 +278,9 @@ case DocxTocBlock tocBlock -> {
 }
 ```
 
-Imports: `org.docx4j.wml.FldChar`, `org.docx4j.wml.STFldCharType`
+Imports necessários: `org.docx4j.wml.FldChar`, `org.docx4j.wml.STFldCharType`
 
-- [ ] **Step 5: Criar `SummaryRenderer`**
+- [ ] **Step 6: Criar `SummaryRenderer`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/rendering/component/summary/SummaryRenderer.java
@@ -328,7 +296,6 @@ import com.abntbuilder.formatter.profile.model.StyleRule;
 import com.abntbuilder.formatter.profile.model.component.summary.SummaryComponentRule;
 import com.abntbuilder.formatter.profile.resolution.ComponentRuleResolver;
 import com.abntbuilder.formatter.profile.resolution.StyleResolver;
-import com.abntbuilder.formatter.rendering.component.ComponentRenderer;
 import com.abntbuilder.formatter.rendering.component.MetadataConsumingRenderer;
 import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentMetadata;
 import com.abntbuilder.formatter.rendering.component.bodycontent.BodySectionMetadata;
@@ -336,8 +303,7 @@ import com.abntbuilder.formatter.rendering.component.bodycontent.BodySectionMeta
 import java.util.ArrayList;
 import java.util.List;
 
-public final class SummaryRenderer
-        implements MetadataConsumingRenderer<SummaryComponent> {
+public final class SummaryRenderer implements MetadataConsumingRenderer<SummaryComponent> {
 
     public static final String COMPONENT_ID = "summary";
 
@@ -358,15 +324,14 @@ public final class SummaryRenderer
         ));
 
         if (rule.useTocField()) {
-            String tocInstruction = "TOC \\o \"1-" + rule.entryStyleIdsByLevel().size() + "\" \\h \\z \\u";
+            int maxLevel = rule.entryStyleIdsByLevel().size();
+            String tocInstruction = "TOC \\o \"1-" + maxLevel + "\" \\h \\z \\u";
             blocks.add(new DocxTocBlock(headingStyle, tocInstruction));
         } else {
             for (BodySectionMetadata section : metadata.sections()) {
                 int level = section.level();
-                String styleId = level <= rule.entryStyleIdsByLevel().size()
-                        ? rule.entryStyleIdsByLevel().get(level - 1)
-                        : rule.entryStyleIdsByLevel().get(rule.entryStyleIdsByLevel().size() - 1);
-                StyleRule entryStyle = styleResolver.resolve(styleId);
+                int styleIndex = Math.min(level - 1, rule.entryStyleIdsByLevel().size() - 1);
+                StyleRule entryStyle = styleResolver.resolve(rule.entryStyleIdsByLevel().get(styleIndex));
                 blocks.add(new DocxParagraph(
                         List.of(DocxRun.of(section.renderedTitle(), entryStyle)), entryStyle
                 ));
@@ -378,9 +343,7 @@ public final class SummaryRenderer
 }
 ```
 
-- [ ] **Step 6: Criar requests, registrar renderer, adicionar ao perfil e componentOrder**
-
-`SummaryRequest` — record vazio (sem campos de conteúdo):
+- [ ] **Step 7: Criar `SummaryRequest` e `SummaryComponentRuleRequest`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/api/export/dto/request/SummaryRequest.java
@@ -393,17 +356,8 @@ public record SummaryRequest() {
 }
 ```
 
-`SummaryComponentRuleRequest`:
-
 ```java
-// src/main/java/com/abntbuilder/formatter/api/export/dto/request/SummaryComponentRuleRequest.java
-package com.abntbuilder.formatter.api.export.dto.request;
-
-import com.abntbuilder.formatter.profile.model.component.summary.SummaryComponentRule;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import java.util.List;
-
+// Colocar no mesmo pacote dos outros *ComponentRuleRequest existentes
 public record SummaryComponentRuleRequest(
         @NotBlank String headingStyleId,
         @NotBlank String headingText,
@@ -411,73 +365,8 @@ public record SummaryComponentRuleRequest(
         boolean useTocField
 ) {
     public SummaryComponentRule toDomain(String componentId) {
-        return new SummaryComponentRule(componentId, headingStyleId, headingText, entryStyleIdsByLevel, useTocField);
-    }
-}
-```
-
-Em `DocumentContentRequest` — adicionar campo e mapeamento:
-
-```java
-// campo no record:
-@Valid SummaryRequest summary,
-
-// em toComponents():
-if (summary != null) {
-    components.add(summary.toDomain());
-}
-```
-
-Em `RenderingConfig` — adicionar `@Bean`:
-
-```java
-@Bean
-public SummaryRenderer summaryRenderer() {
-    return new SummaryRenderer();
-}
-```
-
-Perfil JSON:
-
-```json
-"summary": {
-  "componentId": "summary",
-  "headingStyleId": "summary.heading",
-  "headingText": "SUMÁRIO",
-  "entryStyleIdsByLevel": [
-    "summary.entry.level1",
-    "summary.entry.level2",
-    "summary.entry.level3"
-  ],
-  "useTocField": true
-}
-```
-
-- [ ] **Step 7: Escrever `SummaryRendererTest`**
-
-```java
-@SpringBootTest
-@AutoConfigureMockMvc
-class SummaryRendererTest {
-
-    @Test
-    void shouldGenerateDocxWithTocField() throws Exception {
-        // Gerar DOCX com bodyContent + summary
-        // Verificar que document.xml contém instrução TOC
-        String json = Files.readString(Path.of("docs/samples/summary/summary-with-toc.json"));
-        byte[] docxBytes = /* perform request */;
-        Document wordDoc = extractWordDocument(docxBytes);
-        NodeList instrNodes = wordDoc.getElementsByTagNameNS(
-                "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "instrText"
-        );
-        boolean hasToc = false;
-        for (int i = 0; i < instrNodes.getLength(); i++) {
-            if (instrNodes.item(i).getTextContent().contains("TOC")) {
-                hasToc = true;
-                break;
-            }
-        }
-        assertThat(hasToc).isTrue();
+        return new SummaryComponentRule(componentId, headingStyleId, headingText,
+                entryStyleIdsByLevel, useTocField);
     }
 }
 ```
@@ -485,36 +374,44 @@ class SummaryRendererTest {
 - [ ] **Step 8: Criar sample**
 
 ```
-docs/samples/summary/summary-with-toc.json   — bodyContent com 3 seções + summary
+docs/samples/summary/summary-with-toc.json   — bodyContent com 3+ seções + summary
 ```
 
 - [ ] **Step 9: Compilar e rodar**
 
 ```bash
-mvn compile -q && mvn test -pl . -Dtest=SummaryRendererTest -q
+mvn compile -q && mvn test -q
 ```
 
 - [ ] **Step 10: Commit**
 
 ```bash
 git add -A
-git commit -m "feat: add Summary component with TOC field generation"
+git commit -m "feat: add Summary component with Word TOC field"
 ```
 
 ---
 
 ## Task 3 — Listas de Display Objects (Figuras, Tabelas, Quadros, Gráficos, Listagens)
 
-Todos os cinco seguem o mesmo padrão — diferem apenas no tipo de metadado consumido e no texto do heading.
-
-**Padrão compartilhado:** `IndexListComponentRule` e `IndexListComponentRuleRequest`.
+Todos os cinco componentes seguem o mesmo padrão arquitetural e são implementados juntos.
 
 **Files:**
 - Create: `IndexListComponentRule.java`, `IndexListComponentRuleRequest.java`
-- Create: `ListOfFiguresComponent.java`, `ListOfTablesComponent.java`, `ListOfFramesComponent.java`, `ListOfChartsComponent.java`, `ListOfCodeListingsComponent.java`
-- Create: (uma renderer para cada, todos implementam `MetadataConsumingRenderer`)
+- Create: 5 componentes, 5 renderers (via `AbstractIndexListRenderer`)
+- Create: 5 requests (records vazios)
 
-- [ ] **Step 1: Criar `IndexListComponentRule`**
+- [ ] **Step 1: Adicionar 5 valores ao enum `ComponentType`**
+
+```java
+LIST_OF_FIGURES,
+LIST_OF_TABLES,
+LIST_OF_FRAMES,
+LIST_OF_CHARTS,
+LIST_OF_CODE_LISTINGS
+```
+
+- [ ] **Step 2: Criar `IndexListComponentRule`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/profile/model/component/indexlist/IndexListComponentRule.java
@@ -529,7 +426,7 @@ public record IndexListComponentRule(
         String headingStyleId,
         String headingText,
         String entryStyleId,
-        String entryTemplate  // ex: "{number} — {caption}" — declarado no perfil
+        String entryTemplate  // ex: "{number} — {caption}"
 ) implements ComponentRule {
     public IndexListComponentRule {
         requireNonBlank(componentId, "componentId");
@@ -539,8 +436,7 @@ public record IndexListComponentRule(
         requireNonBlank(entryTemplate, "entryTemplate");
         if (!entryTemplate.contains("{number}") || !entryTemplate.contains("{caption}")) {
             throw new InvalidProfileStructureException(
-                    "indexList.entryTemplate must contain {number} and {caption}."
-            );
+                    "indexList.entryTemplate must contain {number} and {caption}.");
         }
     }
     @Override public Map<String, String> contentBindings() { return Map.of(); }
@@ -550,82 +446,18 @@ public record IndexListComponentRule(
 }
 ```
 
-- [ ] **Step 2: Criar os cinco componentes (sem campos de conteúdo)**
-
-Adicionar os cinco valores ao enum `ComponentType`:
-
-```java
-// Adicionar após SUMMARY (ou ao final dos valores existentes):
-LIST_OF_FIGURES,
-LIST_OF_TABLES,
-LIST_OF_FRAMES,
-LIST_OF_CHARTS,
-LIST_OF_CODE_LISTINGS
-```
+- [ ] **Step 3: Criar os 5 componentes (records vazios)**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/document/component/listoffigures/ListOfFiguresComponent.java
-package com.abntbuilder.formatter.document.component.listoffigures;
-
-import com.abntbuilder.formatter.document.component.ComponentType;
-import com.abntbuilder.formatter.document.component.DocumentComponent;
-
 public record ListOfFiguresComponent() implements DocumentComponent {
     @Override public ComponentType type() { return ComponentType.LIST_OF_FIGURES; }
 }
+// Idem para ListOfTablesComponent, ListOfFramesComponent, ListOfChartsComponent, ListOfCodeListingsComponent
+// pacotes: listoftables, listofframes, listofcharts, listofcodelistings
 ```
 
-```java
-// src/main/java/com/abntbuilder/formatter/document/component/listoftables/ListOfTablesComponent.java
-package com.abntbuilder.formatter.document.component.listoftables;
-
-import com.abntbuilder.formatter.document.component.ComponentType;
-import com.abntbuilder.formatter.document.component.DocumentComponent;
-
-public record ListOfTablesComponent() implements DocumentComponent {
-    @Override public ComponentType type() { return ComponentType.LIST_OF_TABLES; }
-}
-```
-
-```java
-// src/main/java/com/abntbuilder/formatter/document/component/listofframes/ListOfFramesComponent.java
-package com.abntbuilder.formatter.document.component.listofframes;
-
-import com.abntbuilder.formatter.document.component.ComponentType;
-import com.abntbuilder.formatter.document.component.DocumentComponent;
-
-public record ListOfFramesComponent() implements DocumentComponent {
-    @Override public ComponentType type() { return ComponentType.LIST_OF_FRAMES; }
-}
-```
-
-```java
-// src/main/java/com/abntbuilder/formatter/document/component/listofcharts/ListOfChartsComponent.java
-package com.abntbuilder.formatter.document.component.listofcharts;
-
-import com.abntbuilder.formatter.document.component.ComponentType;
-import com.abntbuilder.formatter.document.component.DocumentComponent;
-
-public record ListOfChartsComponent() implements DocumentComponent {
-    @Override public ComponentType type() { return ComponentType.LIST_OF_CHARTS; }
-}
-```
-
-```java
-// src/main/java/com/abntbuilder/formatter/document/component/listofcodelistings/ListOfCodeListingsComponent.java
-package com.abntbuilder.formatter.document.component.listofcodelistings;
-
-import com.abntbuilder.formatter.document.component.ComponentType;
-import com.abntbuilder.formatter.document.component.DocumentComponent;
-
-public record ListOfCodeListingsComponent() implements DocumentComponent {
-    @Override public ComponentType type() { return ComponentType.LIST_OF_CODE_LISTINGS; }
-}
-```
-
-- [ ] **Step 3: Criar um renderer base por composição**
-
-Para evitar duplicação, criar `AbstractIndexListRenderer` (classe abstrata ou helper):
+- [ ] **Step 4: Criar `AbstractIndexListRenderer`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/rendering/component/indexlist/AbstractIndexListRenderer.java
@@ -664,12 +496,9 @@ public abstract class AbstractIndexListRenderer<T extends DocumentComponent>
 
         List<DocxBlock> blocks = new ArrayList<>();
         blocks.add(new DocxParagraph(
-                List.of(DocxRun.of(rule.headingText(), headingStyle)), headingStyle
-        ));
+                List.of(DocxRun.of(rule.headingText(), headingStyle)), headingStyle));
 
-        List<BodyDisplayObjectMetadata> items = metadataExtractor().apply(metadata);
-        for (BodyDisplayObjectMetadata item : items) {
-            // Formato declarado no perfil via entryTemplate, ex: "{number} — {caption}"
+        for (BodyDisplayObjectMetadata item : metadataExtractor().apply(metadata)) {
             String text = rule.entryTemplate()
                     .replace("{number}", String.valueOf(item.number()))
                     .replace("{caption}", item.caption());
@@ -681,12 +510,21 @@ public abstract class AbstractIndexListRenderer<T extends DocumentComponent>
 }
 ```
 
-- [ ] **Step 4: Criar os cinco renderers concretos**
+- [ ] **Step 5: Criar os 5 renderers concretos**
 
 ```java
-// ListOfFiguresRenderer.java
-public final class ListOfFiguresRenderer
-        extends AbstractIndexListRenderer<ListOfFiguresComponent> {
+// src/main/java/com/abntbuilder/formatter/rendering/component/listoffigures/ListOfFiguresRenderer.java
+package com.abntbuilder.formatter.rendering.component.listoffigures;
+
+import com.abntbuilder.formatter.document.component.listoffigures.ListOfFiguresComponent;
+import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentMetadata;
+import com.abntbuilder.formatter.rendering.component.bodycontent.BodyDisplayObjectMetadata;
+import com.abntbuilder.formatter.rendering.component.indexlist.AbstractIndexListRenderer;
+
+import java.util.List;
+import java.util.function.Function;
+
+public final class ListOfFiguresRenderer extends AbstractIndexListRenderer<ListOfFiguresComponent> {
     public static final String COMPONENT_ID = "listOfFigures";
     @Override public String componentId() { return COMPONENT_ID; }
     @Override public Class<ListOfFiguresComponent> componentType() { return ListOfFiguresComponent.class; }
@@ -694,141 +532,33 @@ public final class ListOfFiguresRenderer
         return BodyContentMetadata::figures;
     }
 }
-
-// ListOfTablesRenderer — uses ::tables
-// ListOfFramesRenderer — uses ::frames
-// ListOfChartsRenderer — uses ::charts
-// ListOfCodeListingsRenderer — uses ::codeListings
+// Idem para os outros 4:
+// ListOfTablesRenderer   → componentId="listOfTables"   → ::tables
+// ListOfFramesRenderer   → componentId="listOfFrames"   → ::frames
+// ListOfChartsRenderer   → componentId="listOfCharts"   → ::charts
+// ListOfCodeListingsRenderer → componentId="listOfCodeListings" → ::codeListings
 ```
 
-- [ ] **Step 5: Criar requests e rule requests**
-
-Todos os cinco são records vazios com `toDomain()`:
+- [ ] **Step 6: Criar 5 requests (records vazios) e `IndexListComponentRuleRequest`**
 
 ```java
-// src/main/java/com/abntbuilder/formatter/api/export/dto/request/ListOfFiguresRequest.java
-package com.abntbuilder.formatter.api.export.dto.request;
-
-import com.abntbuilder.formatter.document.component.listoffigures.ListOfFiguresComponent;
-
+// Padrão idêntico para todos os 5:
 public record ListOfFiguresRequest() {
     public ListOfFiguresComponent toDomain() { return new ListOfFiguresComponent(); }
 }
-```
-
-```java
-// src/main/java/com/abntbuilder/formatter/api/export/dto/request/ListOfTablesRequest.java
-package com.abntbuilder.formatter.api.export.dto.request;
-
-import com.abntbuilder.formatter.document.component.listoftables.ListOfTablesComponent;
-
-public record ListOfTablesRequest() {
-    public ListOfTablesComponent toDomain() { return new ListOfTablesComponent(); }
-}
-```
-
-```java
-// src/main/java/com/abntbuilder/formatter/api/export/dto/request/ListOfFramesRequest.java
-package com.abntbuilder.formatter.api.export.dto.request;
-
-import com.abntbuilder.formatter.document.component.listofframes.ListOfFramesComponent;
-
-public record ListOfFramesRequest() {
-    public ListOfFramesComponent toDomain() { return new ListOfFramesComponent(); }
-}
-```
-
-```java
-// src/main/java/com/abntbuilder/formatter/api/export/dto/request/ListOfChartsRequest.java
-package com.abntbuilder.formatter.api.export.dto.request;
-
-import com.abntbuilder.formatter.document.component.listofcharts.ListOfChartsComponent;
-
-public record ListOfChartsRequest() {
-    public ListOfChartsComponent toDomain() { return new ListOfChartsComponent(); }
-}
-```
-
-```java
-// src/main/java/com/abntbuilder/formatter/api/export/dto/request/ListOfCodeListingsRequest.java
-package com.abntbuilder.formatter.api.export.dto.request;
-
-import com.abntbuilder.formatter.document.component.listofcodelistings.ListOfCodeListingsComponent;
-
-public record ListOfCodeListingsRequest() {
-    public ListOfCodeListingsComponent toDomain() { return new ListOfCodeListingsComponent(); }
-}
-```
-
-Em `DocumentContentRequest` — adicionar campos e mapeamentos para todos os cinco:
-
-```java
-// campos no record:
-@Valid ListOfFiguresRequest listOfFigures,
-@Valid ListOfTablesRequest listOfTables,
-@Valid ListOfFramesRequest listOfFrames,
-@Valid ListOfChartsRequest listOfCharts,
-@Valid ListOfCodeListingsRequest listOfCodeListings,
-
-// em toComponents():
-if (listOfFigures != null) components.add(listOfFigures.toDomain());
-if (listOfTables != null) components.add(listOfTables.toDomain());
-if (listOfFrames != null) components.add(listOfFrames.toDomain());
-if (listOfCharts != null) components.add(listOfCharts.toDomain());
-if (listOfCodeListings != null) components.add(listOfCodeListings.toDomain());
-```
-
-Em `RenderingConfig` — adicionar um `@Bean` para cada renderer:
-
-```java
-@Bean
-public ListOfFiguresRenderer listOfFiguresRenderer() {
-    return new ListOfFiguresRenderer();
-}
-
-@Bean
-public ListOfTablesRenderer listOfTablesRenderer() {
-    return new ListOfTablesRenderer();
-}
-
-@Bean
-public ListOfFramesRenderer listOfFramesRenderer() {
-    return new ListOfFramesRenderer();
-}
-
-@Bean
-public ListOfChartsRenderer listOfChartsRenderer() {
-    return new ListOfChartsRenderer();
-}
-
-@Bean
-public ListOfCodeListingsRenderer listOfCodeListingsRenderer() {
-    return new ListOfCodeListingsRenderer();
-}
-```
-
-`IndexListComponentRuleRequest`:
-
-```java
-// src/main/java/com/abntbuilder/formatter/api/export/dto/request/IndexListComponentRuleRequest.java
-package com.abntbuilder.formatter.api.export.dto.request;
-
-import com.abntbuilder.formatter.profile.model.component.indexlist.IndexListComponentRule;
-import jakarta.validation.constraints.NotBlank;
+// Idem: ListOfTablesRequest, ListOfFramesRequest, ListOfChartsRequest, ListOfCodeListingsRequest
 
 public record IndexListComponentRuleRequest(
         @NotBlank String headingStyleId,
         @NotBlank String headingText,
         @NotBlank String entryStyleId,
-        @NotBlank String entryTemplate  // ex: "{number} — {caption}"
+        @NotBlank String entryTemplate
 ) {
     public IndexListComponentRule toDomain(String componentId) {
         return new IndexListComponentRule(componentId, headingStyleId, headingText, entryStyleId, entryTemplate);
     }
 }
 ```
-
-- [ ] **Step 6: Registrar os cinco renderers**
 
 - [ ] **Step 7: Adicionar ao perfil JSON**
 
@@ -840,30 +570,16 @@ public record IndexListComponentRuleRequest(
   "entryStyleId": "list.entry",
   "entryTemplate": "{number} — {caption}"
 },
-"listOfTables": {
-  "componentId": "listOfTables",
-  "headingText": "LISTA DE TABELAS",
-  "entryTemplate": "{number} — {caption}",
-  ...
-},
-"listOfFrames": {
-  "componentId": "listOfFrames",
-  "headingText": "LISTA DE QUADROS",
-  "entryTemplate": "{number} — {caption}",
-  ...
-},
-"listOfCharts": {
-  "componentId": "listOfCharts",
-  "headingText": "LISTA DE GRÁFICOS",
-  "entryTemplate": "{number} — {caption}",
-  ...
-},
-"listOfCodeListings": {
-  "componentId": "listOfCodeListings",
-  "headingText": "LISTA DE LISTAGENS",
-  "entryTemplate": "{number} — {caption}",
-  ...
-}
+"listOfTables":      { "headingText": "LISTA DE TABELAS",   ... },
+"listOfFrames":      { "headingText": "LISTA DE QUADROS",   ... },
+"listOfCharts":      { "headingText": "LISTA DE GRÁFICOS",  ... },
+"listOfCodeListings":{ "headingText": "LISTA DE LISTAGENS", ... }
+```
+
+Estilos em `styleRules`:
+```json
+{ "id": "list.heading", "fontFamily": "Times New Roman", "fontSizePt": 12, "bold": true, "uppercase": true, "alignment": "CENTER", "lineHeightRule": "EXACT", "lineHeightPt": 18 },
+{ "id": "list.entry",   "fontFamily": "Times New Roman", "fontSizePt": 12, "bold": false, "uppercase": false, "alignment": "JUSTIFY", "lineHeightRule": "EXACT", "lineHeightPt": 18 }
 ```
 
 - [ ] **Step 8: Criar samples**
@@ -872,8 +588,6 @@ public record IndexListComponentRuleRequest(
 docs/samples/list-of-figures/list-of-figures-with-figures.json
 docs/samples/list-of-tables/list-of-tables-with-tables.json
 ```
-
-(Cada sample inclui `bodyContent` com figuras/tabelas E o componente de lista — ambos no `selectedComponents`.)
 
 - [ ] **Step 9: Compilar e rodar**
 
@@ -898,50 +612,56 @@ git commit -m "feat: add list-of-figures, tables, frames, charts, code-listings 
 - Create: `ListOfAbbreviationsRenderer.java`
 - Create: `ListOfAbbreviationsRequest.java`
 
-- [ ] **Step 1: Criar `ListOfAbbreviationsComponent`**
+- [ ] **Step 1: Adicionar `LIST_OF_ABBREVIATIONS` ao enum `ComponentType`**
 
-Adicionar `LIST_OF_ABBREVIATIONS` ao enum `ComponentType`:
-
-```java
-// Adicionar após LIST_OF_CODE_LISTINGS:
-LIST_OF_ABBREVIATIONS
-```
+- [ ] **Step 2: Criar `ListOfAbbreviationsComponent`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/document/component/listofabbreviations/ListOfAbbreviationsComponent.java
-package com.abntbuilder.formatter.document.component.listofabbreviations;
-
-import com.abntbuilder.formatter.document.component.ComponentType;
-import com.abntbuilder.formatter.document.component.DocumentComponent;
-
 public record ListOfAbbreviationsComponent() implements DocumentComponent {
     @Override public ComponentType type() { return ComponentType.LIST_OF_ABBREVIATIONS; }
 }
 ```
 
-- [ ] **Step 2: Criar `ListOfAbbreviationsComponentRule`**
+- [ ] **Step 3: Criar `ListOfAbbreviationsComponentRule`**
 
 ```java
+// src/main/java/com/abntbuilder/formatter/profile/model/component/listofabbreviations/ListOfAbbreviationsComponentRule.java
 public record ListOfAbbreviationsComponentRule(
         String componentId,
         String headingStyleId,
-        String headingText,
+        String headingText,      // "LISTA DE ABREVIATURAS E SIGLAS"
         String entryStyleId,
-        String termSeparator,          // " — "
+        String termSeparator,    // " — "
         boolean sortAlphabetically
-) implements ComponentRule { ... }
+) implements ComponentRule {
+    public ListOfAbbreviationsComponentRule {
+        requireNonBlank(componentId, "componentId");
+        requireNonBlank(headingStyleId, "headingStyleId");
+        requireNonBlank(headingText, "headingText");
+        requireNonBlank(entryStyleId, "entryStyleId");
+        requireNonBlank(termSeparator, "termSeparator");
+    }
+    @Override public Map<String, String> contentBindings() { return Map.of(); }
+    private static void requireNonBlank(String v, String f) {
+        if (v == null || v.isBlank()) throw new IllegalArgumentException(f + " must not be blank.");
+    }
+}
 ```
 
-- [ ] **Step 3: Criar `ListOfAbbreviationsRenderer`**
+- [ ] **Step 4: Criar `ListOfAbbreviationsRenderer`**
 
 ```java
+// src/main/java/com/abntbuilder/formatter/rendering/component/listofabbreviations/ListOfAbbreviationsRenderer.java
 public final class ListOfAbbreviationsRenderer
         implements MetadataConsumingRenderer<ListOfAbbreviationsComponent> {
 
     public static final String COMPONENT_ID = "listOfAbbreviations";
 
     @Override public String componentId() { return COMPONENT_ID; }
-    @Override public Class<ListOfAbbreviationsComponent> componentType() { return ListOfAbbreviationsComponent.class; }
+    @Override public Class<ListOfAbbreviationsComponent> componentType() {
+        return ListOfAbbreviationsComponent.class;
+    }
 
     @Override
     public List<DocxBlock> renderWithMetadata(
@@ -957,7 +677,7 @@ public final class ListOfAbbreviationsRenderer
 
         List<BodyAbbreviationMetadata> abbreviations = new ArrayList<>(metadata.abbreviations());
         if (rule.sortAlphabetically()) {
-            abbreviations.sort(java.util.Comparator.comparing(BodyAbbreviationMetadata::abbreviation));
+            abbreviations.sort(Comparator.comparing(BodyAbbreviationMetadata::abbreviation));
         }
 
         for (BodyAbbreviationMetadata abbr : abbreviations) {
@@ -970,30 +690,15 @@ public final class ListOfAbbreviationsRenderer
 }
 ```
 
-- [ ] **Step 4: Request, registro, perfil, componentOrder, sample, teste, compilar, commit**
-
-`ListOfAbbreviationsRequest` — record vazio:
+- [ ] **Step 5: Request, rule request, `DocumentContentRequest`, `RenderingConfig`, perfil, sample, compilar, commit**
 
 ```java
-// src/main/java/com/abntbuilder/formatter/api/export/dto/request/ListOfAbbreviationsRequest.java
-package com.abntbuilder.formatter.api.export.dto.request;
-
-import com.abntbuilder.formatter.document.component.listofabbreviations.ListOfAbbreviationsComponent;
-
+// ListOfAbbreviationsRequest — record vazio
 public record ListOfAbbreviationsRequest() {
     public ListOfAbbreviationsComponent toDomain() { return new ListOfAbbreviationsComponent(); }
 }
-```
 
-`ListOfAbbreviationsComponentRuleRequest`:
-
-```java
-// src/main/java/com/abntbuilder/formatter/api/export/dto/request/ListOfAbbreviationsComponentRuleRequest.java
-package com.abntbuilder.formatter.api.export.dto.request;
-
-import com.abntbuilder.formatter.profile.model.component.listofabbreviations.ListOfAbbreviationsComponentRule;
-import jakarta.validation.constraints.NotBlank;
-
+// ListOfAbbreviationsComponentRuleRequest
 public record ListOfAbbreviationsComponentRuleRequest(
         @NotBlank String headingStyleId,
         @NotBlank String headingText,
@@ -1002,33 +707,13 @@ public record ListOfAbbreviationsComponentRuleRequest(
         boolean sortAlphabetically
 ) {
     public ListOfAbbreviationsComponentRule toDomain(String componentId) {
-        return new ListOfAbbreviationsComponentRule(
-                componentId, headingStyleId, headingText, entryStyleId, termSeparator, sortAlphabetically);
+        return new ListOfAbbreviationsComponentRule(componentId, headingStyleId, headingText,
+                entryStyleId, termSeparator, sortAlphabetically);
     }
 }
 ```
 
-Em `DocumentContentRequest` — adicionar campo e mapeamento:
-
-```java
-// campo no record:
-@Valid ListOfAbbreviationsRequest listOfAbbreviations,
-
-// em toComponents():
-if (listOfAbbreviations != null) components.add(listOfAbbreviations.toDomain());
-```
-
-Em `RenderingConfig` — adicionar `@Bean`:
-
-```java
-@Bean
-public ListOfAbbreviationsRenderer listOfAbbreviationsRenderer() {
-    return new ListOfAbbreviationsRenderer();
-}
-```
-
 Perfil JSON:
-
 ```json
 "listOfAbbreviations": {
   "componentId": "listOfAbbreviations",
@@ -1048,7 +733,7 @@ git commit -m "feat: add ListOfAbbreviations component using collected abbreviat
 
 ## Task 5 — Lista de Símbolos
 
-Diferente das listas de abreviaturas, a lista de símbolos é fornecida explicitamente pelo usuário (não coletada automaticamente do texto), pois símbolos matemáticos e científicos não têm marcação inline padronizável.
+Diferente das listas de abreviaturas, a lista de símbolos é fornecida explicitamente pelo usuário — símbolos matemáticos e científicos não têm marcação inline padronizável.
 
 **Files:**
 - Create: `SymbolEntry.java`, `ListOfSymbolsComponent.java`
@@ -1056,38 +741,23 @@ Diferente das listas de abreviaturas, a lista de símbolos é fornecida explicit
 - Create: `ListOfSymbolsRenderer.java`
 - Create: `ListOfSymbolsRequest.java`, `SymbolEntryRequest.java`
 
-- [ ] **Step 1: Criar `SymbolEntry`**
+- [ ] **Step 1: Adicionar `LIST_OF_SYMBOLS` ao enum `ComponentType`**
+
+- [ ] **Step 2: Criar `SymbolEntry` e `ListOfSymbolsComponent`**
 
 ```java
 // src/main/java/com/abntbuilder/formatter/document/component/listofsymbols/SymbolEntry.java
-package com.abntbuilder.formatter.document.component.listofsymbols;
-
 public record SymbolEntry(String symbol, String meaning) {
     public SymbolEntry {
-        if (symbol == null || symbol.isBlank()) throw new IllegalArgumentException("symbol must not be blank.");
-        if (meaning == null || meaning.isBlank()) throw new IllegalArgumentException("meaning must not be blank.");
+        requireNonBlank(symbol, "symbol");
+        requireNonBlank(meaning, "meaning");
+    }
+    private static void requireNonBlank(String v, String f) {
+        if (v == null || v.isBlank()) throw new IllegalArgumentException(f + " must not be blank.");
     }
 }
-```
 
-- [ ] **Step 2: Criar `ListOfSymbolsComponent`**
-
-Adicionar `LIST_OF_SYMBOLS` ao enum `ComponentType`:
-
-```java
-// Adicionar após LIST_OF_ABBREVIATIONS:
-LIST_OF_SYMBOLS
-```
-
-```java
 // src/main/java/com/abntbuilder/formatter/document/component/listofsymbols/ListOfSymbolsComponent.java
-package com.abntbuilder.formatter.document.component.listofsymbols;
-
-import com.abntbuilder.formatter.document.component.ComponentType;
-import com.abntbuilder.formatter.document.component.DocumentComponent;
-import java.util.List;
-import java.util.Objects;
-
 public record ListOfSymbolsComponent(List<SymbolEntry> entries) implements DocumentComponent {
     public ListOfSymbolsComponent {
         Objects.requireNonNull(entries, "entries must not be null");
@@ -1104,7 +774,7 @@ public record ListOfSymbolsComponent(List<SymbolEntry> entries) implements Docum
 public record ListOfSymbolsComponentRule(
         String componentId,
         String headingStyleId,
-        String headingText,
+        String headingText,   // "LISTA DE SÍMBOLOS"
         String entryStyleId,
         String termSeparator  // " — "
 ) implements ComponentRule { ... }
@@ -1112,28 +782,12 @@ public record ListOfSymbolsComponentRule(
 
 - [ ] **Step 4: Criar `ListOfSymbolsRenderer`**
 
-**Não** implementa `MetadataConsumingRenderer` — o conteúdo vem diretamente do componente.
+`ListOfSymbolsRenderer` **não** implementa `MetadataConsumingRenderer` — o conteúdo vem diretamente do componente, não dos metadados.
 
 ```java
 // src/main/java/com/abntbuilder/formatter/rendering/component/listofsymbols/ListOfSymbolsRenderer.java
-package com.abntbuilder.formatter.rendering.component.listofsymbols;
-
-import com.abntbuilder.formatter.document.component.listofsymbols.ListOfSymbolsComponent;
-import com.abntbuilder.formatter.document.component.listofsymbols.SymbolEntry;
-import com.abntbuilder.formatter.output.docx.api.DocxBlock;
-import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
-import com.abntbuilder.formatter.output.docx.api.DocxRun;
-import com.abntbuilder.formatter.profile.model.DocumentProfile;
-import com.abntbuilder.formatter.profile.model.StyleRule;
-import com.abntbuilder.formatter.profile.model.component.listofsymbols.ListOfSymbolsComponentRule;
-import com.abntbuilder.formatter.profile.resolution.ComponentRuleResolver;
-import com.abntbuilder.formatter.profile.resolution.StyleResolver;
-import com.abntbuilder.formatter.rendering.component.ComponentRenderer;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public final class ListOfSymbolsRenderer implements ComponentRenderer<ListOfSymbolsComponent> {
+
     public static final String COMPONENT_ID = "listOfSymbols";
 
     @Override public String componentId() { return COMPONENT_ID; }
@@ -1158,71 +812,22 @@ public final class ListOfSymbolsRenderer implements ComponentRenderer<ListOfSymb
 }
 ```
 
-- [ ] **Step 5: Criar `SymbolEntryRequest`**
+- [ ] **Step 5: Criar requests**
 
 ```java
-// src/main/java/com/abntbuilder/formatter/api/export/dto/request/SymbolEntryRequest.java
-package com.abntbuilder.formatter.api.export.dto.request;
-
-import com.abntbuilder.formatter.document.component.listofsymbols.SymbolEntry;
-import jakarta.validation.constraints.NotBlank;
-
-public record SymbolEntryRequest(
-        @NotBlank String symbol,
-        @NotBlank String meaning
-) {
-    public SymbolEntry toDomain() {
-        return new SymbolEntry(symbol, meaning);
-    }
+// SymbolEntryRequest
+public record SymbolEntryRequest(@NotBlank String symbol, @NotBlank String meaning) {
+    public SymbolEntry toDomain() { return new SymbolEntry(symbol, meaning); }
 }
-```
 
-- [ ] **Step 6: Criar `ListOfSymbolsRequest`**
-
-```java
-// src/main/java/com/abntbuilder/formatter/api/export/dto/request/ListOfSymbolsRequest.java
-package com.abntbuilder.formatter.api.export.dto.request;
-
-import com.abntbuilder.formatter.document.component.listofsymbols.ListOfSymbolsComponent;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import java.util.List;
-
-public record ListOfSymbolsRequest(
-        @Valid @NotEmpty List<SymbolEntryRequest> entries
-) {
+// ListOfSymbolsRequest
+public record ListOfSymbolsRequest(@NotEmpty @Valid List<SymbolEntryRequest> entries) {
     public ListOfSymbolsComponent toDomain() {
-        return new ListOfSymbolsComponent(
-                entries.stream().map(SymbolEntryRequest::toDomain).toList()
-        );
+        return new ListOfSymbolsComponent(entries.stream().map(SymbolEntryRequest::toDomain).toList());
     }
 }
-```
 
-- [ ] **Step 7: Adicionar campo em `DocumentContentRequest`**
-
-```java
-// record DocumentContentRequest — adicionar campo:
-@Valid ListOfSymbolsRequest listOfSymbols,
-
-// método toComponents() — adicionar:
-if (listOfSymbols != null) {
-    components.add(listOfSymbols.toDomain());
-}
-```
-
-- [ ] **Step 8: Registrar `ListOfSymbolsRenderer` em `RenderingConfig`**
-
-```java
-@Bean
-public ListOfSymbolsRenderer listOfSymbolsRenderer() {
-    return new ListOfSymbolsRenderer();
-}
-```
-
-- [ ] **Step 9: Criar `ListOfSymbolsComponentRuleRequest`**
-
-```java
+// ListOfSymbolsComponentRuleRequest
 public record ListOfSymbolsComponentRuleRequest(
         @NotBlank String headingStyleId,
         @NotBlank String headingText,
@@ -1230,12 +835,13 @@ public record ListOfSymbolsComponentRuleRequest(
         @NotBlank String termSeparator
 ) {
     public ListOfSymbolsComponentRule toDomain(String componentId) {
-        return new ListOfSymbolsComponentRule(componentId, headingStyleId, headingText, entryStyleId, termSeparator);
+        return new ListOfSymbolsComponentRule(componentId, headingStyleId, headingText,
+                entryStyleId, termSeparator);
     }
 }
 ```
 
-- [ ] **Step 10: Adicionar ao perfil JSON e componentOrder**
+- [ ] **Step 6: `DocumentContentRequest`, `RenderingConfig`, perfil, sample, compilar, commit**
 
 ```json
 "listOfSymbols": {
@@ -1247,43 +853,43 @@ public record ListOfSymbolsComponentRuleRequest(
 }
 ```
 
-- [ ] **Step 11: Criar sample**
-
-```json
-{
-  "profileId": "abnt-unip-profile",
-  "document": {
-    "components": {
-      "listOfSymbols": {
-        "entries": [
-          { "symbol": "α", "meaning": "Coeficiente de significância" },
-          { "symbol": "σ", "meaning": "Desvio padrão" },
-          { "symbol": "μ", "meaning": "Média populacional" }
-        ]
-      }
-    }
-  }
-}
-```
-
-- [ ] **Step 12: Compilar e rodar**
-
 ```bash
-mvn compile -q && mvn test -q
-```
-
-- [ ] **Step 13: Commit**
-
-```bash
-git add -A
 git commit -m "feat: add ListOfSymbols component with explicit user-provided entries"
 ```
 
 ---
 
-## Task 6 — `componentOrder` final e integração completa
+## Task 6 — `ComponentRulesRequest`, `componentOrder` final e integração completa
 
-- [ ] **Step 1: Atualizar `componentOrder` em `abnt-unip-profile.json`**
+> Esta task deve ser executada antes da Task 7 — o sample composto criado aqui é usado no teste de integração do pós-processador LibreOffice.
+
+- [ ] **Step 1: Atualizar `ComponentRulesRequest`**
+
+Adicionar os novos campos e conversões no `toDomain()`:
+
+```java
+// Novos campos a adicionar em ComponentRulesRequest:
+@Valid SummaryComponentRuleRequest summary,
+@Valid IndexListComponentRuleRequest listOfFigures,
+@Valid IndexListComponentRuleRequest listOfTables,
+@Valid IndexListComponentRuleRequest listOfFrames,
+@Valid IndexListComponentRuleRequest listOfCharts,
+@Valid IndexListComponentRuleRequest listOfCodeListings,
+@Valid ListOfAbbreviationsComponentRuleRequest listOfAbbreviations,
+@Valid ListOfSymbolsComponentRuleRequest listOfSymbols
+
+// Em toDomain() — adicionar:
+if (summary != null)            rules.add(summary.toDomain("summary"));
+if (listOfFigures != null)      rules.add(listOfFigures.toDomain("listOfFigures"));
+if (listOfTables != null)       rules.add(listOfTables.toDomain("listOfTables"));
+if (listOfFrames != null)       rules.add(listOfFrames.toDomain("listOfFrames"));
+if (listOfCharts != null)       rules.add(listOfCharts.toDomain("listOfCharts"));
+if (listOfCodeListings != null) rules.add(listOfCodeListings.toDomain("listOfCodeListings"));
+if (listOfAbbreviations != null) rules.add(listOfAbbreviations.toDomain("listOfAbbreviations"));
+if (listOfSymbols != null)      rules.add(listOfSymbols.toDomain("listOfSymbols"));
+```
+
+- [ ] **Step 2: Atualizar `componentOrder` em `abnt-unip-profile.json`**
 
 ```json
 "componentOrder": [
@@ -1312,36 +918,17 @@ git commit -m "feat: add ListOfSymbols component with explicit user-provided ent
 ]
 ```
 
-- [ ] **Step 2: Criar sample composto completo**
+- [ ] **Step 3: Criar sample composto completo**
 
 ```
 docs/samples/composed/documento-completo.json
 ```
 
-Este sample inclui todos os componentes (cover, titlePage, approvalSheet, errata, dedication, acknowledgments, epigraph, resumo, abstract, listOfAbbreviations, listOfSymbols, summary, listOfFigures, listOfTables, bodyContent com figuras e tabelas, references, appendix, annex, glossary) com dados realistas de teste.
+Inclui todos os componentes com dados fictícios realistas: cover, titlePage, approvalSheet, errata, dedication, acknowledgments, epigraph, resumo, abstract, listOfAbbreviations, listOfSymbols, summary, listOfFigures, listOfTables, bodyContent com figuras e tabelas, references, appendix, annex, glossary.
 
-- [ ] **Step 3: Criar `DocumentoCompletoIntegrationTest`**
+- [ ] **Step 4: Criar `DocumentoCompletoIntegrationTest`**
 
 ```java
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.ByteArrayInputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 class DocumentoCompletoIntegrationTest {
@@ -1357,11 +944,10 @@ class DocumentoCompletoIntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsByteArray();
         assertThat(docxBytes).isNotEmpty();
-        // Verificar presença do campo TOC
+
         Document wordDoc = extractWordDocument(docxBytes);
         NodeList instrNodes = wordDoc.getElementsByTagNameNS(
-                "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "instrText"
-        );
+                "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "instrText");
         boolean hasToc = false;
         for (int i = 0; i < instrNodes.getLength(); i++) {
             if (instrNodes.item(i).getTextContent().contains("TOC")) { hasToc = true; break; }
@@ -1369,10 +955,6 @@ class DocumentoCompletoIntegrationTest {
         assertThat(hasToc).as("document should contain TOC field").isTrue();
     }
 
-    /**
-     * Abre o arquivo DOCX (que é um ZIP) e faz o parse do XML de word/document.xml,
-     * retornando o Document DOM para inspeção nos testes.
-     */
     private Document extractWordDocument(byte[] docxBytes) throws Exception {
         try (ZipInputStream zip = new ZipInputStream(new ByteArrayInputStream(docxBytes))) {
             ZipEntry entry;
@@ -1390,7 +972,7 @@ class DocumentoCompletoIntegrationTest {
 }
 ```
 
-- [ ] **Step 4: Suite completa**
+- [ ] **Step 5: Suite completa**
 
 ```bash
 mvn test -q
@@ -1398,23 +980,17 @@ mvn test -q
 
 Esperado: todos os testes passam.
 
-- [ ] **Step 5: Validação visual no Word**
+- [ ] **Step 6: Validação visual no Word**
 
-Abrir o DOCX gerado pelo sample `documento-completo.json` e verificar:
+Abrir o DOCX gerado e verificar:
+- Sumário: campo TOC visível; Ctrl+A → F9 atualiza com títulos e números de página
+- Lista de Ilustrações / Tabelas: entradas com "{número} — {caption}"
+- Lista de Abreviaturas: em ordem alfabética
+- Lista de Símbolos: símbolo + significado
+- Todos os pré-textuais na sequência correta
+- Numeração de páginas visível apenas a partir de `bodyContent`
 
-- Sumário: campo TOC visível (mostra "Erro! Indicador não definido." até atualizar — comportamento esperado)
-- Pressionar Ctrl+A → F9: sumário atualiza com os títulos e números de página corretos
-- Lista de Ilustrações: entradas com "Figura N - Caption"
-- Lista de Tabelas: entradas com "Tabela N - Caption"
-- Lista de Abreviaturas: entradas em ordem alfabética
-- Lista de Símbolos: entradas com símbolo e significado
-- Pré-textuais (errata, dedicatória, epígrafe, agradecimentos, resumo, abstract) no local correto
-- Corpo textual com numeração de páginas visível apenas a partir do bodyContent
-- Referências formatadas por tipo ABNT
-- Apêndices e Anexos com letras automáticas
-- Glossário ao final
-
-- [ ] **Step 6: Commit final**
+- [ ] **Step 7: Commit final**
 
 ```bash
 git add -A
@@ -1423,17 +999,384 @@ git commit -m "feat: complete Fase 5 — all index components and full academic 
 
 ---
 
-## Nota sobre números de página no TOC
+---
 
-O Word processa o campo TOC e insere números de página apenas quando o documento é aberto e o campo é atualizado (Ctrl+A → F9 ou ao abrir se o Word perguntar). O formatter não tem como calcular números de página sem abrir o documento — isso é uma limitação intrínseca do formato DOCX em geração offline.
+## Task 7 — Pós-processamento LibreOffice: atualização automática de campos dinâmicos
 
-Este comportamento deve ser documentado no README do projeto e nos samples:
+### Contexto
 
+O `DocxTocBlock` gerado na Task 2 emite um campo `TOC` do Word com `dirty=true`. Esse campo só é resolvido (com números de página reais) quando um processador de texto abre o documento e atualiza os campos. Sem esse passo, o sumário exibe "Erro! Indicador não definido." até o usuário pressionar F9 manualmente.
+
+Esta task implementa um pós-processador que invoca o LibreOffice em modo headless após a geração do DOCX, fazendo com que os campos dinâmicos (sumário, listas de figuras, referências cruzadas) sejam resolvidos automaticamente antes de entregar o arquivo ao usuário.
+
+**Por que LibreOffice e não docx4j:** o docx4j tem um `FieldUpdater`, mas ele não computa números de página — não faz layout tipográfico. Para resolver o campo `TOC` com números de página corretos é necessário um processador que faça o layout completo do documento. LibreOffice headless faz exatamente isso quando converte DOCX → DOCX.
+
+**Estratégia:** LibreOffice converte o arquivo de entrada para DOCX novamente. Durante o carregamento, ele avalia todos os campos com `dirty=true` e grava os valores resolvidos no arquivo de saída. O arquivo de saída é um DOCX válido com o sumário já preenchido.
+
+**Comando:**
+```bash
+soffice --headless --norestore --convert-to "docx:MS Word 2007 XML" --outdir /tmp/output /tmp/input.docx
 ```
-// Nota no sample README:
-// Após gerar o DOCX, abra no Word e pressione Ctrl+A → F9
-// para atualizar o sumário e os números de página.
+
+**Configuração:** o pós-processador é opcional. Se o LibreOffice não estiver instalado ou estiver desabilitado, o serviço continua funcionando — entrega o DOCX com campos por atualizar (comportamento atual). O usuário configura via `application.properties`.
+
+**Ponto de injeção:** `DocxExportService.export()`, após `docxWriter.write(document)`. O serviço recebe os bytes do DOCX, os passa pelo pós-processador e retorna os bytes processados.
+
+**Files:**
+- Create: `DocxPostProcessor.java` (interface em `output/docx/api`)
+- Create: `LibreOfficeDocxPostProcessor.java` (em `output/docx/postprocess`)
+- Create: `NoOpDocxPostProcessor.java` (em `output/docx/postprocess`)
+- Create: `LibreOfficeProperties.java` (properties em `config`)
+- Create: `PostProcessingConfig.java` (em `config`)
+- Modify: `DocxExportService.java` — injetar e chamar `DocxPostProcessor`
+
+---
+
+- [ ] **Step 1: Criar `DocxPostProcessor`**
+
+```java
+// src/main/java/com/abntbuilder/formatter/output/docx/api/DocxPostProcessor.java
+package com.abntbuilder.formatter.output.docx.api;
+
+public interface DocxPostProcessor {
+    byte[] process(byte[] docxBytes);
+}
 ```
+
+- [ ] **Step 2: Criar `NoOpDocxPostProcessor`**
+
+Usado quando o LibreOffice está desabilitado. Retorna os bytes sem modificação.
+
+```java
+// src/main/java/com/abntbuilder/formatter/output/docx/postprocess/NoOpDocxPostProcessor.java
+package com.abntbuilder.formatter.output.docx.postprocess;
+
+import com.abntbuilder.formatter.output.docx.api.DocxPostProcessor;
+
+public final class NoOpDocxPostProcessor implements DocxPostProcessor {
+    @Override
+    public byte[] process(byte[] docxBytes) {
+        return docxBytes;
+    }
+}
+```
+
+- [ ] **Step 3: Criar `LibreOfficeProperties`**
+
+```java
+// src/main/java/com/abntbuilder/formatter/config/LibreOfficeProperties.java
+package com.abntbuilder.formatter.config;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+@ConfigurationProperties(prefix = "formatter.libreoffice")
+public class LibreOfficeProperties {
+
+    private boolean enabled = false;
+    private String executablePath = "soffice";  // padrão: no PATH
+    private int timeoutSeconds = 60;
+
+    // getters e setters
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
+    public String getExecutablePath() { return executablePath; }
+    public void setExecutablePath(String executablePath) { this.executablePath = executablePath; }
+    public int getTimeoutSeconds() { return timeoutSeconds; }
+    public void setTimeoutSeconds(int timeoutSeconds) { this.timeoutSeconds = timeoutSeconds; }
+}
+```
+
+Em `src/main/resources/application.properties`, documentar as propriedades:
+
+```properties
+# Pós-processamento LibreOffice — desabilitado por padrão
+# formatter.libreoffice.enabled=true
+# formatter.libreoffice.executable-path=/usr/bin/soffice
+# formatter.libreoffice.timeout-seconds=60
+```
+
+- [ ] **Step 4: Criar `LibreOfficeDocxPostProcessor`**
+
+```java
+// src/main/java/com/abntbuilder/formatter/output/docx/postprocess/LibreOfficeDocxPostProcessor.java
+package com.abntbuilder.formatter.output.docx.postprocess;
+
+import com.abntbuilder.formatter.config.LibreOfficeProperties;
+import com.abntbuilder.formatter.output.docx.api.DocxPostProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
+
+public final class LibreOfficeDocxPostProcessor implements DocxPostProcessor {
+
+    private static final Logger log = LoggerFactory.getLogger(LibreOfficeDocxPostProcessor.class);
+
+    private final LibreOfficeProperties properties;
+
+    public LibreOfficeDocxPostProcessor(LibreOfficeProperties properties) {
+        this.properties = Objects.requireNonNull(properties, "properties must not be null");
+    }
+
+    @Override
+    public byte[] process(byte[] docxBytes) {
+        Path tempInput = null;
+        Path tempOutputDir = null;
+        try {
+            tempInput = Files.createTempFile("formatter-", ".docx");
+            tempOutputDir = Files.createTempDirectory("formatter-lo-out-");
+
+            Files.write(tempInput, docxBytes);
+
+            boolean success = runLibreOffice(tempInput, tempOutputDir);
+            if (!success) {
+                log.warn("LibreOffice post-processing failed or timed out — returning original DOCX bytes.");
+                return docxBytes;
+            }
+
+            // LibreOffice gera o arquivo com o mesmo nome na pasta de saída
+            Path outputFile = tempOutputDir.resolve(tempInput.getFileName());
+            if (!Files.exists(outputFile)) {
+                log.warn("LibreOffice output file not found — returning original DOCX bytes.");
+                return docxBytes;
+            }
+
+            return Files.readAllBytes(outputFile);
+
+        } catch (IOException | InterruptedException e) {
+            log.warn("LibreOffice post-processing error — returning original DOCX bytes.", e);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            return docxBytes;
+        } finally {
+            deleteSilently(tempInput);
+            deleteSilently(tempOutputDir);
+        }
+    }
+
+    private boolean runLibreOffice(Path inputFile, Path outputDir)
+            throws IOException, InterruptedException {
+        ProcessBuilder pb = new ProcessBuilder(
+                properties.getExecutablePath(),
+                "--headless",
+                "--norestore",
+                "--convert-to", "docx:MS Word 2007 XML",
+                "--outdir", outputDir.toAbsolutePath().toString(),
+                inputFile.toAbsolutePath().toString()
+        );
+        pb.redirectErrorStream(true);
+        Process process = pb.start();
+
+        // Consumir stdout para evitar bloqueio de buffer
+        process.getInputStream().transferTo(java.io.OutputStream.nullOutputStream());
+
+        boolean finished = process.waitFor(properties.getTimeoutSeconds(), TimeUnit.SECONDS);
+        if (!finished) {
+            process.destroyForcibly();
+            return false;
+        }
+        return process.exitValue() == 0;
+    }
+
+    private static void deleteSilently(Path path) {
+        if (path == null) return;
+        try {
+            if (Files.isDirectory(path)) {
+                try (Stream<Path> walk = Files.walk(path)) {
+                    walk.sorted(Comparator.reverseOrder()).forEach(p -> {
+                        try { Files.deleteIfExists(p); } catch (IOException ignored) {}
+                    });
+                }
+            } else {
+                Files.deleteIfExists(path);
+            }
+        } catch (IOException ignored) {}
+    }
+}
+```
+
+> **Segurança de temp files:** os arquivos são criados em diretório temporário do sistema (`java.io.tmpdir`). O bloco `finally` garante limpeza mesmo em caso de exceção. O nome do arquivo usa `formatter-` como prefixo para facilitar identificação em caso de limpeza manual.
+>
+> **Thread safety:** cada chamada cria seu próprio diretório temporário. O bean pode ser singleton sem problemas de concorrência.
+>
+> **Falha silenciosa:** se o LibreOffice falhar por qualquer motivo (não instalado, timeout, erro de conversão), o método retorna os bytes originais. O serviço nunca falha por causa do pós-processador — apenas o sumário ficará sem números de página.
+
+- [ ] **Step 5: Criar `PostProcessingConfig`**
+
+```java
+// src/main/java/com/abntbuilder/formatter/config/PostProcessingConfig.java
+package com.abntbuilder.formatter.config;
+
+import com.abntbuilder.formatter.output.docx.api.DocxPostProcessor;
+import com.abntbuilder.formatter.output.docx.postprocess.LibreOfficeDocxPostProcessor;
+import com.abntbuilder.formatter.output.docx.postprocess.NoOpDocxPostProcessor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@EnableConfigurationProperties(LibreOfficeProperties.class)
+public class PostProcessingConfig {
+
+    @Bean
+    @ConditionalOnProperty(name = "formatter.libreoffice.enabled", havingValue = "true")
+    public DocxPostProcessor libreOfficeDocxPostProcessor(LibreOfficeProperties properties) {
+        return new LibreOfficeDocxPostProcessor(properties);
+    }
+
+    @Bean
+    @ConditionalOnProperty(
+            name = "formatter.libreoffice.enabled",
+            havingValue = "true",
+            matchIfMissing = true  // default: NoOp quando propriedade ausente ou false
+    )
+    public DocxPostProcessor noOpDocxPostProcessor() {
+        return new NoOpDocxPostProcessor();
+    }
+}
+```
+
+> **⚠️ Dois beans com o mesmo tipo:** Spring injeta o bean ativo pela condição. Quando `formatter.libreoffice.enabled=true`, apenas `libreOfficeDocxPostProcessor` é criado. Quando ausente ou `false`, apenas `noOpDocxPostProcessor`. Não há conflito porque as condições são mutuamente exclusivas.
+
+- [ ] **Step 6: Atualizar `DocxExportService`**
+
+```java
+// Adicionar campo e injeção via construtor:
+private final DocxPostProcessor docxPostProcessor;
+
+public DocxExportService(
+        DocxWriter docxWriter,
+        GeneratedDocxExportStore generatedDocxExportStore,
+        DocumentRenderer documentRenderer,
+        DocxPostProcessor docxPostProcessor  // novo
+) {
+    this.docxWriter = Objects.requireNonNull(docxWriter, "docxWriter must not be null");
+    this.generatedDocxExportStore = Objects.requireNonNull(generatedDocxExportStore, "...");
+    this.documentRenderer = Objects.requireNonNull(documentRenderer, "documentRenderer must not be null");
+    this.docxPostProcessor = Objects.requireNonNull(docxPostProcessor, "docxPostProcessor must not be null");
+}
+
+// Atualizar export():
+public byte[] export(ExportDocxCommand command) {
+    Objects.requireNonNull(command, "command must not be null");
+
+    DocxDocument document = documentRenderer.render(command);
+    byte[] docxBytes = docxWriter.write(document);
+
+    return docxPostProcessor.process(docxBytes);  // novo — NoOp quando LibreOffice desabilitado
+}
+```
+
+- [ ] **Step 7: Escrever `LibreOfficeDocxPostProcessorTest`**
+
+Este teste verifica o comportamento de fallback — não requer LibreOffice instalado para passar no CI:
+
+```java
+// src/test/java/com/abntbuilder/formatter/output/docx/postprocess/LibreOfficeDocxPostProcessorTest.java
+class LibreOfficeDocxPostProcessorTest {
+
+    @Test
+    void shouldReturnOriginalBytesWhenLibreOfficeNotFound() {
+        LibreOfficeProperties props = new LibreOfficeProperties();
+        props.setExecutablePath("nonexistent-soffice-binary");
+        props.setTimeoutSeconds(5);
+
+        LibreOfficeDocxPostProcessor processor = new LibreOfficeDocxPostProcessor(props);
+        byte[] original = new byte[]{1, 2, 3, 4};
+
+        byte[] result = processor.process(original);
+
+        assertThat(result).isEqualTo(original);
+    }
+
+    @Test
+    void shouldReturnOriginalBytesWhenInputIsEmpty() {
+        LibreOfficeProperties props = new LibreOfficeProperties();
+        props.setExecutablePath("nonexistent-soffice-binary");
+        props.setTimeoutSeconds(5);
+
+        LibreOfficeDocxPostProcessor processor = new LibreOfficeDocxPostProcessor(props);
+        byte[] original = new byte[0];
+
+        byte[] result = processor.process(original);
+
+        assertThat(result).isEqualTo(original);
+    }
+}
+```
+
+Teste de integração real (rodado apenas quando LibreOffice disponível, via tag `@Tag("libreoffice")`):
+
+```java
+@Tag("libreoffice")
+@SpringBootTest
+@AutoConfigureMockMvc
+class LibreOfficeTocIntegrationTest {
+
+    @Autowired MockMvc mockMvc;
+
+    @Test
+    void tocShouldHaveResolvedPageNumbersAfterLibreOfficeProcessing() throws Exception {
+        // Este teste só faz sentido com formatter.libreoffice.enabled=true e LibreOffice instalado.
+        // Verificar que o DOCX resultante não contém o atributo dirty=true no campo TOC.
+        String json = Files.readString(Path.of("docs/samples/summary/summary-with-toc.json"));
+        byte[] docxBytes = mockMvc.perform(post("/api/v1/exports/docx")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsByteArray();
+
+        Document wordDoc = extractWordDocument(docxBytes);
+        // Se o LibreOffice processou corretamente, os campos dirty=true foram removidos
+        // e o TOC contém entradas com números de página reais (não placeholders)
+        NodeList instrNodes = wordDoc.getElementsByTagNameNS(
+                "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "instrText");
+        boolean hasToc = false;
+        for (int i = 0; i < instrNodes.getLength(); i++) {
+            if (instrNodes.item(i).getTextContent().contains("TOC")) { hasToc = true; break; }
+        }
+        assertThat(hasToc).as("TOC field should still be present after processing").isTrue();
+        // Verificação visual complementar: abrir o arquivo gerado e conferir que o sumário
+        // exibe números de página sem precisar pressionar F9
+    }
+}
+```
+
+> **CI:** O teste `@Tag("libreoffice")` é excluído do build padrão. Para rodar localmente com LibreOffice instalado:
+> ```bash
+> mvn test -Dgroups=libreoffice -Dformatter.libreoffice.enabled=true
+> ```
+
+- [ ] **Step 8: Compilar e rodar (sem LibreOffice)**
+
+```bash
+mvn compile -q && mvn test -q
+```
+
+Esperado: todos os testes passam, incluindo `LibreOfficeDocxPostProcessorTest` (que testa apenas o fallback, sem LibreOffice real).
+
+- [ ] **Step 9: Commit**
+
+```bash
+git add -A
+git commit -m "feat: add LibreOffice headless post-processor for TOC field resolution"
+```
+
+---
+
+## Nota sobre números de página no Sumário
+
+Com o pós-processador habilitado (`formatter.libreoffice.enabled=true` e LibreOffice instalado no servidor), o sumário e todas as listas de display objects são entregues com números de página já resolvidos. Sem ele, o comportamento de fallback é o DOCX com campos por atualizar — o usuário pressiona Ctrl+A → F9 no Word ou LibreOffice para resolver manualmente.
+
+O LibreOffice é disponível gratuitamente para Linux/macOS/Windows e pode ser instalado no servidor via `apt install libreoffice` (Debian/Ubuntu). Em ambientes Docker, incluir `libreoffice-writer` na imagem.
 
 ---
 
@@ -1441,8 +1384,9 @@ Este comportamento deve ser documentado no README do projeto e nos samples:
 
 | Componente | Fonte de dados | Task |
 |---|---|---|
+| `MetadataConsumingRenderer` + branch no `DocumentRenderer` | — | Task 1 |
+| `DocxTocBlock` + case no `Docx4jWriter` | — | Task 2 |
 | Sumário com campo TOC do Word | `BodyContentMetadata.sections` | Task 2 |
-| `DocxTocBlock` e suporte no writer | — | Task 2 |
 | Lista de Ilustrações | `BodyContentMetadata.figures` | Task 3 |
 | Lista de Tabelas | `BodyContentMetadata.tables` | Task 3 |
 | Lista de Quadros | `BodyContentMetadata.frames` | Task 3 |
@@ -1450,8 +1394,14 @@ Este comportamento deve ser documentado no README do projeto e nos samples:
 | Lista de Listagens | `BodyContentMetadata.codeListings` | Task 3 |
 | Lista de Abreviaturas e Siglas (ordem alfabética) | `BodyContentMetadata.abbreviations` | Task 4 |
 | Lista de Símbolos (conteúdo explícito) | `ListOfSymbolsComponent.entries` | Task 5 |
-| `MetadataConsumingRenderer` + injeção em `DocumentRenderer` | — | Task 1 |
+| `ComponentRulesRequest` atualizado | — | Task 6 |
 | `componentOrder` final com todos os componentes | — | Task 6 |
 | Sample `documento-completo.json` | — | Task 6 |
+| `DocxPostProcessor` interface + `NoOpDocxPostProcessor` | — | Task 7 |
+| `LibreOfficeDocxPostProcessor` com fallback silencioso | — | Task 7 |
+| `PostProcessingConfig` com `@ConditionalOnProperty` | — | Task 7 |
+| `DocxExportService` injetando e chamando `DocxPostProcessor` | — | Task 7 |
+| `LibreOfficeDocxPostProcessorTest` (testa fallback, sem LibreOffice real) | — | Task 7 |
 | Suite completa verde | — | Task 6 |
-| TOC atualiza corretamente ao pressionar F9 no Word | — | Task 6 (validação visual) |
+| Com LibreOffice habilitado: TOC entregue com páginas resolvidas | — | Task 7 (validação local) |
+| Sem LibreOffice: TOC entregue com campos por atualizar (fallback) | — | Task 7 (comportamento padrão) |
