@@ -11,6 +11,14 @@
     "epigraph",
     "resumo",
     "abstract",
+    "listOfAbbreviations",
+    "listOfSymbols",
+    "summary",
+    "listOfFigures",
+    "listOfTables",
+    "listOfFrames",
+    "listOfCharts",
+    "listOfCodeListings",
     "bodyContent",
     "references",
     "appendix",
@@ -979,6 +987,38 @@
       "rightIndentCm": 0,
       "spacingBeforePt": 0,
       "spacingAfterPt": 0
+    },
+    {
+      "id": "list.heading",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": true,
+      "italic": false,
+      "uppercase": true,
+      "alignment": "CENTER",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "list.entry",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "JUSTIFIED",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
     }
   ],
   "componentRules": {
@@ -1621,6 +1661,70 @@
       "headingStyleId": "glossary.heading",
       "headingText": "GLOSSÁRIO",
       "entryStyleId": "glossary.entry",
+      "termSeparator": " — "
+    },
+    "summary": {
+      "componentId": "summary",
+      "headingStyleId": "list.heading",
+      "headingText": "SUMÁRIO",
+      "entryStyleIdsByLevel": [
+        "list.entry",
+        "list.entry",
+        "list.entry",
+        "list.entry",
+        "list.entry",
+        "list.entry"
+      ],
+      "useTocField": true
+    },
+    "listOfFigures": {
+      "componentId": "listOfFigures",
+      "headingStyleId": "list.heading",
+      "headingText": "LISTA DE ILUSTRAÇÕES",
+      "entryStyleId": "list.entry",
+      "entryTemplate": "{number} — {caption}"
+    },
+    "listOfTables": {
+      "componentId": "listOfTables",
+      "headingStyleId": "list.heading",
+      "headingText": "LISTA DE TABELAS",
+      "entryStyleId": "list.entry",
+      "entryTemplate": "{number} — {caption}"
+    },
+    "listOfFrames": {
+      "componentId": "listOfFrames",
+      "headingStyleId": "list.heading",
+      "headingText": "LISTA DE QUADROS",
+      "entryStyleId": "list.entry",
+      "entryTemplate": "{number} — {caption}"
+    },
+    "listOfCharts": {
+      "componentId": "listOfCharts",
+      "headingStyleId": "list.heading",
+      "headingText": "LISTA DE GRÁFICOS",
+      "entryStyleId": "list.entry",
+      "entryTemplate": "{number} — {caption}"
+    },
+    "listOfCodeListings": {
+      "componentId": "listOfCodeListings",
+      "headingStyleId": "list.heading",
+      "headingText": "LISTA DE LISTAGENS",
+      "entryStyleId": "list.entry",
+      "entryTemplate": "{number} — {caption}"
+    },
+    "listOfAbbreviations": {
+      "componentId": "listOfAbbreviations",
+      "headingStyleId": "list.heading",
+      "headingText": "LISTA DE ABREVIATURAS E SIGLAS",
+      "entryStyleId": "list.entry",
+      "termSeparator": " — ",
+      "sortAlphabetically": true
+    },
+    "listOfSymbols": {
+      "componentId": "listOfSymbols",
+      "headingStyleId": "list.heading",
+      "headingText": "LISTA DE SÍMBOLOS",
+      "entryStyleId": "list.entry",
       "termSeparator": " — "
     }
   }

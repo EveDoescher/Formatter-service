@@ -38,7 +38,11 @@ import com.abntbuilder.formatter.profile.model.component.dedication.DedicationCo
 import com.abntbuilder.formatter.profile.model.component.epigraph.EpigraphComponentRule;
 import com.abntbuilder.formatter.profile.model.component.errata.ErrataComponentRule;
 import com.abntbuilder.formatter.profile.model.component.glossary.GlossaryComponentRule;
+import com.abntbuilder.formatter.profile.model.component.indexlist.IndexListComponentRule;
+import com.abntbuilder.formatter.profile.model.component.listofabbreviations.ListOfAbbreviationsComponentRule;
+import com.abntbuilder.formatter.profile.model.component.listofsymbols.ListOfSymbolsComponentRule;
 import com.abntbuilder.formatter.profile.model.component.references.ReferencesComponentRule;
+import com.abntbuilder.formatter.profile.model.component.summary.SummaryComponentRule;
 import com.abntbuilder.formatter.profile.model.component.references.ReferencesFormattingRule;
 import com.abntbuilder.formatter.profile.model.component.resumo.ResumoComponentRule;
 import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageComponentRule;
@@ -196,7 +200,15 @@ public record ProfileDefinition(
             ReferencesComponentRuleDefinition references,
             AppendixComponentRuleDefinition appendix,
             AnnexComponentRuleDefinition annex,
-            GlossaryComponentRuleDefinition glossary
+            GlossaryComponentRuleDefinition glossary,
+            SummaryComponentRuleDefinition summary,
+            IndexListComponentRuleDefinition listOfFigures,
+            IndexListComponentRuleDefinition listOfTables,
+            IndexListComponentRuleDefinition listOfFrames,
+            IndexListComponentRuleDefinition listOfCharts,
+            IndexListComponentRuleDefinition listOfCodeListings,
+            ListOfAbbreviationsComponentRuleDefinition listOfAbbreviations,
+            ListOfSymbolsComponentRuleDefinition listOfSymbols
     ) {
         List<ComponentRule> toDomain() {
             List<ComponentRule> rules = new ArrayList<>();
@@ -215,6 +227,14 @@ public record ProfileDefinition(
             if (appendix != null) rules.add(appendix.toDomain());
             if (annex != null) rules.add(annex.toDomain());
             if (glossary != null) rules.add(glossary.toDomain());
+            if (summary != null) rules.add(summary.toDomain());
+            if (listOfFigures != null) rules.add(listOfFigures.toDomain("listOfFigures"));
+            if (listOfTables != null) rules.add(listOfTables.toDomain("listOfTables"));
+            if (listOfFrames != null) rules.add(listOfFrames.toDomain("listOfFrames"));
+            if (listOfCharts != null) rules.add(listOfCharts.toDomain("listOfCharts"));
+            if (listOfCodeListings != null) rules.add(listOfCodeListings.toDomain("listOfCodeListings"));
+            if (listOfAbbreviations != null) rules.add(listOfAbbreviations.toDomain());
+            if (listOfSymbols != null) rules.add(listOfSymbols.toDomain());
 
             return List.copyOf(rules);
         }
@@ -1006,5 +1026,79 @@ public record ProfileDefinition(
 
     private static ComponentContentBindings createContentBindings(Map<String, String> value) {
         return new ComponentContentBindings(value == null ? Map.of() : value);
+    }
+
+    public record SummaryComponentRuleDefinition(
+            String componentId,
+            String headingStyleId,
+            String headingText,
+            List<String> entryStyleIdsByLevel,
+            Boolean useTocField
+    ) {
+        SummaryComponentRule toDomain() {
+            return new SummaryComponentRule(
+                    componentId,
+                    headingStyleId,
+                    headingText,
+                    entryStyleIdsByLevel,
+                    useTocField != null && useTocField
+            );
+        }
+    }
+
+    public record IndexListComponentRuleDefinition(
+            String componentId,
+            String headingStyleId,
+            String headingText,
+            String entryStyleId,
+            String entryTemplate
+    ) {
+        IndexListComponentRule toDomain(String resolvedComponentId) {
+            return new IndexListComponentRule(
+                    resolvedComponentId,
+                    headingStyleId,
+                    headingText,
+                    entryStyleId,
+                    entryTemplate
+            );
+        }
+    }
+
+    public record ListOfAbbreviationsComponentRuleDefinition(
+            String componentId,
+            String headingStyleId,
+            String headingText,
+            String entryStyleId,
+            String termSeparator,
+            Boolean sortAlphabetically
+    ) {
+        ListOfAbbreviationsComponentRule toDomain() {
+            return new ListOfAbbreviationsComponentRule(
+                    componentId,
+                    headingStyleId,
+                    headingText,
+                    entryStyleId,
+                    termSeparator,
+                    sortAlphabetically != null && sortAlphabetically
+            );
+        }
+    }
+
+    public record ListOfSymbolsComponentRuleDefinition(
+            String componentId,
+            String headingStyleId,
+            String headingText,
+            String entryStyleId,
+            String termSeparator
+    ) {
+        ListOfSymbolsComponentRule toDomain() {
+            return new ListOfSymbolsComponentRule(
+                    componentId,
+                    headingStyleId,
+                    headingText,
+                    entryStyleId,
+                    termSeparator
+            );
+        }
     }
 }

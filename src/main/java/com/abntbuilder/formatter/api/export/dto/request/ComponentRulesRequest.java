@@ -20,7 +20,15 @@ public record ComponentRulesRequest(
         @Valid ReferencesComponentRuleRequest references,
         @Valid AppendixComponentRuleRequest appendix,
         @Valid AnnexComponentRuleRequest annex,
-        @Valid GlossaryComponentRuleRequest glossary
+        @Valid GlossaryComponentRuleRequest glossary,
+        @Valid SummaryComponentRuleRequest summary,
+        @Valid IndexListComponentRuleRequest listOfFigures,
+        @Valid IndexListComponentRuleRequest listOfTables,
+        @Valid IndexListComponentRuleRequest listOfFrames,
+        @Valid IndexListComponentRuleRequest listOfCharts,
+        @Valid IndexListComponentRuleRequest listOfCodeListings,
+        @Valid ListOfAbbreviationsComponentRuleRequest listOfAbbreviations,
+        @Valid ListOfSymbolsComponentRuleRequest listOfSymbols
 ) {
     public List<ComponentRule> toDomain() {
         List<ComponentRule> rules = new ArrayList<>();
@@ -39,6 +47,14 @@ public record ComponentRulesRequest(
         if (appendix != null) rules.add(appendix.toDomain());
         if (annex != null) rules.add(annex.toDomain());
         if (glossary != null) rules.add(glossary.toDomain());
+        if (summary != null) rules.add(summary.toDomain("summary"));
+        if (listOfFigures != null) rules.add(listOfFigures.toDomain("listOfFigures"));
+        if (listOfTables != null) rules.add(listOfTables.toDomain("listOfTables"));
+        if (listOfFrames != null) rules.add(listOfFrames.toDomain("listOfFrames"));
+        if (listOfCharts != null) rules.add(listOfCharts.toDomain("listOfCharts"));
+        if (listOfCodeListings != null) rules.add(listOfCodeListings.toDomain("listOfCodeListings"));
+        if (listOfAbbreviations != null) rules.add(listOfAbbreviations.toDomain("listOfAbbreviations"));
+        if (listOfSymbols != null) rules.add(listOfSymbols.toDomain("listOfSymbols"));
 
         return List.copyOf(rules);
     }

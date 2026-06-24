@@ -18,8 +18,16 @@ import com.abntbuilder.formatter.rendering.component.dedication.DedicationRender
 import com.abntbuilder.formatter.rendering.component.epigraph.EpigraphRenderer;
 import com.abntbuilder.formatter.rendering.component.errata.ErrataRenderer;
 import com.abntbuilder.formatter.rendering.component.glossary.GlossaryRenderer;
+import com.abntbuilder.formatter.rendering.component.listofabbreviations.ListOfAbbreviationsRenderer;
+import com.abntbuilder.formatter.rendering.component.listofcharts.ListOfChartsRenderer;
+import com.abntbuilder.formatter.rendering.component.listofcodelistings.ListOfCodeListingsRenderer;
+import com.abntbuilder.formatter.rendering.component.listoffigures.ListOfFiguresRenderer;
+import com.abntbuilder.formatter.rendering.component.listofframes.ListOfFramesRenderer;
+import com.abntbuilder.formatter.rendering.component.listoftables.ListOfTablesRenderer;
+import com.abntbuilder.formatter.rendering.component.listofsymbols.ListOfSymbolsRenderer;
 import com.abntbuilder.formatter.rendering.component.references.ReferencesRenderer;
 import com.abntbuilder.formatter.rendering.component.resumo.ResumoRenderer;
+import com.abntbuilder.formatter.rendering.component.summary.SummaryRenderer;
 import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutAssembler;
 import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutCalculator;
 import com.abntbuilder.formatter.rendering.component.cover.layout.CoverProfileContentValidator;
@@ -269,6 +277,46 @@ public class RenderingConfig {
     @Bean
     public GlossaryRenderer glossaryRenderer() {
         return new GlossaryRenderer();
+    }
+
+    @Bean
+    public SummaryRenderer summaryRenderer() {
+        return new SummaryRenderer();
+    }
+
+    @Bean
+    public ListOfFiguresRenderer listOfFiguresRenderer() {
+        return new ListOfFiguresRenderer();
+    }
+
+    @Bean
+    public ListOfTablesRenderer listOfTablesRenderer() {
+        return new ListOfTablesRenderer();
+    }
+
+    @Bean
+    public ListOfFramesRenderer listOfFramesRenderer() {
+        return new ListOfFramesRenderer();
+    }
+
+    @Bean
+    public ListOfChartsRenderer listOfChartsRenderer() {
+        return new ListOfChartsRenderer();
+    }
+
+    @Bean
+    public ListOfCodeListingsRenderer listOfCodeListingsRenderer() {
+        return new ListOfCodeListingsRenderer();
+    }
+
+    @Bean
+    public ListOfAbbreviationsRenderer listOfAbbreviationsRenderer() {
+        return new ListOfAbbreviationsRenderer();
+    }
+
+    @Bean
+    public ListOfSymbolsRenderer listOfSymbolsRenderer() {
+        return new ListOfSymbolsRenderer();
     }
 
     @Bean

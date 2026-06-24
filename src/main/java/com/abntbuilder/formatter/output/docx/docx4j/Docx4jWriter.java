@@ -191,6 +191,7 @@ public class Docx4jWriter implements DocxWriter {
             case DocxTableBlock tableBlock -> writeTable(wordPackage, tableBlock);
             case DocxListItemParagraph listItem -> writeListItem(wordPackage, listItem, listNumIds);
             case com.abntbuilder.formatter.output.docx.api.DocxFootnoteReferenceBlock fnBlock -> writeFootnoteReferenceBlock(wordPackage, fnBlock, listNumIds);
+            case DocxTocBlock tocBlock -> writeToc(wordPackage, tocBlock);
             case DocxSectionBreak ignored -> throw new IllegalArgumentException(
                     "Section breaks must be handled by the document section state."
             );
@@ -739,6 +740,34 @@ public class Docx4jWriter implements DocxWriter {
         paragraph.getContent().add(run);
 
         wordPackage.getMainDocumentPart().addObject(paragraph);
+    }
+
+    private void writeToc(WordprocessingMLPackage wordPackage, DocxTocBlock tocBlock) {
+        P p = objectFactory.createP();
+        PPr pPr = createParagraphProperties(tocBlock.styleRule(), Optional.empty(), Optional.empty(), Optional.empty());
+        p.setPPr(pPr);
+
+        R beginRun = objectFactory.createR();
+        FldChar beginFldChar = objectFactory.createFldChar();
+        beginFldChar.setFldCharType(STFldCharType.BEGIN);
+        beginFldChar.setDirty(true);
+        beginRun.getContent().add(objectFactory.createRFldChar(beginFldChar));
+        p.getContent().add(beginRun);
+
+        R instrRun = objectFactory.createR();
+        Text instrText = objectFactory.createText();
+        instrText.setValue(tocBlock.tocInstruction());
+        instrText.setSpace("preserve");
+        instrRun.getContent().add(objectFactory.createRInstrText(instrText));
+        p.getContent().add(instrRun);
+
+        R endRun = objectFactory.createR();
+        FldChar endFldChar = objectFactory.createFldChar();
+        endFldChar.setFldCharType(STFldCharType.END);
+        endRun.getContent().add(objectFactory.createRFldChar(endFldChar));
+        p.getContent().add(endRun);
+
+        wordPackage.getMainDocumentPart().addObject(p);
     }
 
     private void addPageNumberingReference(

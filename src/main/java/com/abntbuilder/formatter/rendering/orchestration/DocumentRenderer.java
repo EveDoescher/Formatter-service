@@ -13,6 +13,7 @@ import com.abntbuilder.formatter.profile.model.PageNumberingRule;
 import com.abntbuilder.formatter.profile.resolution.StyleResolver;
 import com.abntbuilder.formatter.rendering.component.ComponentRenderResult;
 import com.abntbuilder.formatter.rendering.component.ComponentRendererRegistry;
+import com.abntbuilder.formatter.rendering.component.MetadataConsumingRenderer;
 import com.abntbuilder.formatter.rendering.component.MetadataEmittingRenderer;
 import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentMetadata;
 import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentRenderResult;
@@ -104,6 +105,8 @@ public final class DocumentRenderer {
                     if (result instanceof BodyContentRenderResult bcr) {
                         bodyContentMetadata = bcr.metadata();
                     }
+                } else if (renderer instanceof MetadataConsumingRenderer<?> consuming) {
+                    componentBlocks = consuming.renderComponentWithMetadata(component, command.profile(), bodyContentMetadata);
                 } else {
                     componentBlocks = renderer.renderComponent(component, command.profile());
                 }

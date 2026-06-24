@@ -21,7 +21,10 @@ class ClasspathJsonProfileProviderTest {
 
         assertEquals("ABNT UNIP Profile", profile.displayName());
         assertEquals(List.of("cover", "titlePage", "errata", "approvalSheet", "dedication", "acknowledgments",
-                "epigraph", "resumo", "abstract", "bodyContent", "references", "appendix", "annex", "glossary"),
+                "epigraph", "resumo", "abstract",
+                "listOfAbbreviations", "listOfSymbols", "summary",
+                "listOfFigures", "listOfTables", "listOfFrames", "listOfCharts", "listOfCodeListings",
+                "bodyContent", "references", "appendix", "annex", "glossary"),
                 profile.componentOrder());
         assertEquals("titlePage", profile.pageNumberingRule().orElseThrow().countFromComponentId());
         assertEquals("bodyContent", profile.pageNumberingRule().orElseThrow().visibleFromComponentId());

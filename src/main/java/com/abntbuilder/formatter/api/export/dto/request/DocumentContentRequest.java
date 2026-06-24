@@ -28,7 +28,15 @@ public record DocumentContentRequest(
         @Valid ReferencesRequest references,
         @Valid AppendixRequest appendix,
         @Valid AnnexRequest annex,
-        @Valid GlossaryRequest glossary
+        @Valid GlossaryRequest glossary,
+        @Valid SummaryRequest summary,
+        @Valid ListOfFiguresRequest listOfFigures,
+        @Valid ListOfTablesRequest listOfTables,
+        @Valid ListOfFramesRequest listOfFrames,
+        @Valid ListOfChartsRequest listOfCharts,
+        @Valid ListOfCodeListingsRequest listOfCodeListings,
+        @Valid ListOfAbbreviationsRequest listOfAbbreviations,
+        @Valid ListOfSymbolsRequest listOfSymbols
 ) {
     public List<DocumentComponent> toComponents() {
         return toComponents(null, null);
@@ -87,6 +95,38 @@ public record DocumentContentRequest(
 
         if (abstractEn != null) {
             components.add(abstractEn.toDomain());
+        }
+
+        if (listOfAbbreviations != null) {
+            components.add(listOfAbbreviations.toDomain());
+        }
+
+        if (listOfSymbols != null) {
+            components.add(listOfSymbols.toDomain());
+        }
+
+        if (summary != null) {
+            components.add(summary.toDomain());
+        }
+
+        if (listOfFigures != null) {
+            components.add(listOfFigures.toDomain());
+        }
+
+        if (listOfTables != null) {
+            components.add(listOfTables.toDomain());
+        }
+
+        if (listOfFrames != null) {
+            components.add(listOfFrames.toDomain());
+        }
+
+        if (listOfCharts != null) {
+            components.add(listOfCharts.toDomain());
+        }
+
+        if (listOfCodeListings != null) {
+            components.add(listOfCodeListings.toDomain());
         }
 
         if (bodyContent != null || appendix != null || annex != null) {
