@@ -244,8 +244,11 @@ private List<ReferenceSegment> formatStandard(ReferenceEntry e) {
         segments.add(new ReferenceSegment(renderAuthors(e.authors()), false));
     }
     segments.addAll(renderTitle(e.title(), e.subtitle()));
-    e.edition().ifPresent(ed -> segments.add(new ReferenceSegment(". " + ed + " ed.", false)));
-    e.city().ifPresent(c -> segments.add(new ReferenceSegment(". " + c + ", ", false)));
+    // P8 fix: edition termina com ". ed." (sem ponto final solto); city usa separador
+    // condicional para evitar duplo ponto quando edition está presente (". ed.. Cidade").
+    e.edition().ifPresent(ed -> segments.add(new ReferenceSegment(". " + ed + ". ed.", false)));
+    String citySeparator = e.edition().isPresent() ? " " : ". ";
+    e.city().ifPresent(c -> segments.add(new ReferenceSegment(citySeparator + c + ", ", false)));
     segments.add(new ReferenceSegment(e.year() + ".", false));
     return List.copyOf(segments);
 }
@@ -408,10 +411,11 @@ O perfil precisa apenas de estilos tipográficos — o heading de cada entrada v
 // src/main/java/com/abntbuilder/formatter/profile/model/component/abstracten/AbstractComponentRule.java
 public record AbstractComponentRule(
         String componentId,
-        String headingStyleId,   // estilo do heading (igual para todos os idiomas)
+        String headingStyleId,    // estilo do heading (igual para todos os idiomas)
         String textStyleId,
         String keywordsStyleId,
-        String keywordsSeparator // "; "
+        String keywordsSeparator, // "; "
+        String keywordsTerminator // "." — ponto final obrigatório pela ABNT (P5)
 ) implements ComponentRule {
     public AbstractComponentRule {
         requireNonBlank(componentId, "componentId");
@@ -419,6 +423,7 @@ public record AbstractComponentRule(
         requireNonBlank(textStyleId, "textStyleId");
         requireNonBlank(keywordsStyleId, "keywordsStyleId");
         requireNonBlank(keywordsSeparator, "keywordsSeparator");
+        requireNonBlank(keywordsTerminator, "keywordsTerminator");
     }
     @Override public Map<String, String> contentBindings() { return Map.of(); }
     private static void requireNonBlank(String v, String f) {
@@ -427,7 +432,7 @@ public record AbstractComponentRule(
 }
 ```
 
-> Remover os campos `headingText` e `keywordsLabel` da rule — eles ficaram obsoletos com a mudança.
+> Remover os campos `headingText` e `keywordsLabel` da rule — eles ficaram obsoletos com a mudança. O campo `keywordsTerminator` (P5) substitui a ausência de ponto final nas keywords.
 
 - [ ] **Step 4: Atualizar `AbstractRenderer`**
 
@@ -448,14 +453,24 @@ public List<DocxBlock> render(AbstractComponent component, DocumentProfile profi
         if (!first) {
             blocks.add(new DocxPageBreak());  // cada abstract em página própria
         }
+        // P3 fix: linha em branco após o heading, antes do texto
         blocks.add(new DocxParagraph(
                 List.of(DocxRun.of(entry.headingText(), headingStyle)), headingStyle));
+        blocks.add(new DocxBlankLine(headingStyle));
         blocks.add(new DocxParagraph(
                 List.of(DocxRun.of(entry.text(), textStyle)), textStyle));
-        String keywordsText = entry.keywordsLabel() + " "
-                + String.join(rule.keywordsSeparator(), entry.keywords());
+        // P4 fix: label em negrito (run separado) + P5 fix: terminador ao final
+        String keywordsBody = String.join(rule.keywordsSeparator(), entry.keywords())
+                + rule.keywordsTerminator();
+        InlineFormatting boldLabel = new InlineFormatting(
+                Optional.of(true), Optional.empty(), Optional.empty(),
+                Optional.empty(), Optional.empty());
         blocks.add(new DocxParagraph(
-                List.of(DocxRun.of(keywordsText, keywordsStyle)), keywordsStyle));
+                List.of(
+                        new DocxRun(entry.keywordsLabel() + " ", keywordsStyle, boldLabel),
+                        DocxRun.of(keywordsBody, keywordsStyle)
+                ),
+                keywordsStyle));
         first = false;
     }
     return List.copyOf(blocks);
@@ -488,7 +503,7 @@ public record AbstractRequest(
 
 - [ ] **Step 6: Atualizar `AbstractComponentRuleRequest`**
 
-Remover `headingText` e `keywordsLabel`, adicionar `keywordsSeparator`:
+Remover `headingText` e `keywordsLabel`, adicionar `keywordsSeparator` e `keywordsTerminator` (P5):
 
 ```java
 public record AbstractComponentRuleRequest(
@@ -496,11 +511,12 @@ public record AbstractComponentRuleRequest(
         @NotBlank String headingStyleId,
         @NotBlank String textStyleId,
         @NotBlank String keywordsStyleId,
-        @NotBlank String keywordsSeparator
+        @NotBlank String keywordsSeparator,
+        @NotBlank String keywordsTerminator
 ) {
     public AbstractComponentRule toDomain() {
         return new AbstractComponentRule(componentId, headingStyleId,
-                textStyleId, keywordsStyleId, keywordsSeparator);
+                textStyleId, keywordsStyleId, keywordsSeparator, keywordsTerminator);
     }
 }
 ```
@@ -513,7 +529,8 @@ public record AbstractComponentRuleRequest(
   "headingStyleId": "abstract.heading",
   "textStyleId": "abstract.text",
   "keywordsStyleId": "abstract.keywords",
-  "keywordsSeparator": "; "
+  "keywordsSeparator": "; ",
+  "keywordsTerminator": "."
 }
 ```
 

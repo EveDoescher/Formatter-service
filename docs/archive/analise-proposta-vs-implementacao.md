@@ -2,51 +2,47 @@
 
 Gerado por análise de três agentes paralelos independentes.
 
+> **Status (verificado em 2026-06-26):** Todos os itens de Alta e Média severidade foram corrigidos durante a implementação das Fases 1–5. Os itens de Baixa severidade/Cosmético foram avaliados — a maioria foi corrigida; os remanescentes são intencionais ou irrelevantes. Seções mantidas para registro histórico.
+
 ---
 
 ## Parte 1 — Gaps de Implementação (proposta promete, código não entregou)
 
 ### ALTA severidade
 
-**GAP-1 — Citações inline colapsadas em texto plano (sem runs diferenciados no DOCX)**
-A proposta especifica que `PARAGRAPH.content[]` pode ter inline `CITATION` + `QUOTE_TEXT` + `TEXT` com formatação diferenciada por runs. Na prática, `BodyParagraph.text()` concatena tudo em uma `String` única, gerando um único `w:r` no DOCX. Qualquer perfil futuro que queira estilo de caractere diferente no marcador autor-data não tem como fazê-lo.
-- _Arquivo_: `BodyParagraph.java:29–33`, `BodyContentRenderer.java:134–136`
+**GAP-1 — ~~Citações inline colapsadas em texto plano (sem runs diferenciados no DOCX)~~** ✅ CORRIGIDO
+`BodyParagraph` usa `List<BodyInline>` mapeada via `toDocxRun()` no renderer, gerando runs diferenciados por tipo de inline.
 
-**GAP-2 — `BodyCitation` como bloco aceita tipos que deveriam ser apenas inline**
-A proposta é explícita: `DIRECT_SHORT`, `INDIRECT` e `CITATION_OF_CITATION` devem ser inline em parágrafos. `DIRECT_LONG` é o único block-level. O código aceita `DIRECT_SHORT_QUOTE` e `INDIRECT_CITATION` como `BodyBlockType`, renderizando-os como parágrafos isolados — formatação ABNT incorreta.
-- _Arquivo_: `BodyBlock.java`, `BodyBlockType.java`, `BodyBlockRequest.java:29–33`, `BodyContentRenderer.java:138–141`
+**GAP-2 — ~~`BodyCitation` como bloco aceita tipos que deveriam ser apenas inline~~** ✅ CORRIGIDO
+`BodyCitation.java` foi removido. `BodyBlock` (sealed) não admite mais citações autônomas de qualquer tipo. Citações são exclusivamente inline via `BodyCitationCall` dentro de `BodyParagraph`.
 
 ---
 
 ### MÉDIA severidade
 
-**GAP-3 — Ausência de `InvalidBodyContentException` dedicada**
-Todos os outros componentes têm exceção semântica própria (`InvalidCoverContentException`, `InvalidApprovalSheetContentException`, etc.). O `bodyContent` lança `IllegalArgumentException` diretamente dos records — o handler não consegue diferenciar erros de bodyContent de outros contextos.
-- _Arquivo_: `/shared/exception/` (classe inexistente)
+**GAP-3 — ~~Ausência de `InvalidBodyContentException` dedicada~~** ✅ CORRIGIDO
+`InvalidBodyContentException` existe em `shared/exception/` com `InvalidBodyContentExceptionTest`.
 
-**GAP-4 — Ausência de `BodyContentRendererDocxSanityTest`**
-O checklist do roadmap exige teste que inspecione o XML interno do DOCX gerado. Existem testes unitários e de integração, mas nenhum que abra o `.docx` e valide `w:pStyle`, `w:lineRule`, heading styles, etc.
-- _Arquivo_: `/test/.../bodycontent/` (classe inexistente)
+**GAP-4 — ~~Ausência de `BodyContentRendererDocxSanityTest`~~** ✅ CORRIGIDO
+`BodyContentRendererDocxSanityTest.java` existe em `rendering/component/bodycontent/`.
 
-**GAP-5 — Heading styles sem `<w:basedOn>` no writer**
-A proposta exige que os estilos de heading no Word sejam completamente definidos pelo perfil, sem herdar defaults. `Docx4jWriter.createHeadingStyle()` não declara `<w:basedOn>`, o que pode fazer o Word herdar cor azul, espaçamento padrão ou outros defaults do tema em ambientes diferentes.
-- _Arquivo_: `Docx4jWriter.java:429–443`
+**GAP-5 — ~~Heading styles sem `<w:basedOn>` no writer~~** ✅ CORRIGIDO
+`Docx4jWriter.createHeadingStyle()` declara `<w:basedOn>` com valor "Normal".
 
 ---
 
 ### BAIXA severidade
 
 **GAP-8 — Numeração de seção frágil ao auto-iniciar contador de nível anterior zerado**
-`SectionNumberingState.increment()` força `counters[0] = 1` quando o nível 1 nunca foi incrementado. A validação de hierarquia mitiga a maioria dos casos, mas seções que começam direto em nível 2 (com título vazio no nível 1) podem ter comportamento inesperado.
-- _Arquivo_: `BodyContentRenderer.java:474–487`
+`SectionNumberingState.increment()` ainda força `counters[currentIndex] = 1` para níveis anteriores zerados. Comportamento intencional: previne numerações como "0.1.1". A validação de hierarquia de seções mitiga os casos problemáticos antes de chegar aqui.
+- _Status:_ Mantido intencionalmente.
 
 **GAP-9 — `body-content-figures-url-visual.json` excluído do teste automático de samples**
-O sample de figura com URL existe na pasta mas está fora da lista do `BodyContentSampleValidationTest`. Pode ficar desatualizado sem detecção.
-- _Arquivo_: `BodyContentSampleValidationTest.java:32–37`
+O arquivo existe na pasta mas não está na lista do `BodyContentSampleValidationTest`. Excluído intencionalmente por depender de fetch de URL externa — não adequado para testes automatizados sem mock de rede.
+- _Status:_ Exclusão intencional.
 
-**GAP-10 — `previousRenderedTextWasBodyParagraph = true` após figura/tabela**
-A proposta define `blankLinesBeforeSectionTitleWhenPrecededByContent` como espaçamento após parágrafo textual. O código ativa a flag para qualquer bloco (incluindo figuras e tabelas), inserindo blank line extra antes de títulos nesses casos.
-- _Arquivo_: `BodyContentRenderer.java:109`
+**GAP-10 — ~~`previousRenderedTextWasBodyParagraph = true` após figura/tabela~~** ✅ CORRIGIDO
+Flag renomeada para `previousBlockWasTextualContent` e lógica corrigida: ativa apenas para `BodyParagraph` e `BodyLongQuote`.
 
 ---
 
@@ -54,50 +50,38 @@ A proposta define `blankLinesBeforeSectionTitleWhenPrecededByContent` como espa�
 
 ### Arquiteturais
 
-**DESVIO-1 — Dois caminhos para o mesmo tipo de citação (bloco vs inline)**
-`BodyBlock` aceita `BodyCitation` com tipos `DIRECT_SHORT`, `INDIRECT`, `CITATION_OF_CITATION` como blocos autônomos, paralelamente à rota inline correta via `BodyCitationCall` dentro de `BodyParagraph`. Dois contratos para o mesmo comportamento. O caminho de bloco produz formatação ABNT incorreta (parágrafo isolado).
-- _Arquivo_: `BodyBlock.java`, `BodyBlockRequest.java:29–33`
+**DESVIO-1 — ~~Dois caminhos para o mesmo tipo de citação (bloco vs inline)~~** ✅ CORRIGIDO
+`BodyCitation.java` removido. `BodyBlock` sealed não admite mais citações. Caminho único: `BodyCitationCall` inline em `BodyParagraph`.
 
-**DESVIO-2 — `"p. "`, `"et al."`, `"; "`, `" apud "` hardcoded no domínio**
-A proposta é taxativa: sem hardcode de valores acadêmicos, e o serviço deve suportar múltiplos perfis. Esses tokens variam por norma (ABNT vs APA vs Chicago) e por idioma. Estão fixos em `CitationSource.java` e `BodyCitationCall.java` em vez de virem do perfil.
-- _Arquivo_: `CitationSource.java:39–49`, `BodyCitationCall.java:47,55`
+**DESVIO-2 — ~~`"p. "`, `"et al."`, `"; "`, `" apud "` hardcoded no domínio~~** ✅ CORRIGIDO
+`CitationSource` usa `formatting.etAl()`, `formatting.pagePrefix()`. `BodyCitationCall` usa `formatting.apudConnector()`, `formatting.emphasisOursLabel()`, `formatting.emphasisAuthorLabel()`, `formatting.verbalCitationLabel()`. Todos os tokens vêm de `CitationFormattingRule` (perfil).
 
 ---
 
 ### Funcionais
 
-**DESVIO-3 — Flag `previousRenderedTextWasBodyParagraph` com nome e comportamento incorretos**
-O nome diz "body paragraph" mas a flag é ativada por qualquer `BodyBlock` (figuras, tabelas, citações). Resultado: blank line extra inserida antes de títulos quando o bloco anterior foi uma figura ou tabela — viola a semântica do campo de perfil.
-- _Arquivo_: `BodyContentRenderer.java:72,84,109`
+**DESVIO-3 — ~~Flag `previousRenderedTextWasBodyParagraph` com nome e comportamento incorretos~~** ✅ CORRIGIDO
+Renomeada para `previousBlockWasTextualContent`; ativa apenas após `BodyParagraph | BodyLongQuote`.
 
-**DESVIO-5 — `FigureRuleRequest` e `TableRuleRequest` sem anotações `@NotNull`**
-A proposta exige que perfil incompleto falhe cedo com mensagem clara. Os campos de figura/tabela nos requests de perfil inline não têm `@NotNull`/`@NotBlank` — a validação só ocorre dentro do domínio, sem identificar o campo JSON de origem no erro.
-- _Arquivo_: `FigureRuleRequest.java`, `TableRuleRequest.java`
+**DESVIO-5 — ~~`FigureRuleRequest` e `TableRuleRequest` sem anotações `@NotNull`~~** ✅ CORRIGIDO
+Ambos os requests têm `@NotNull`/`@NotBlank` em todos os campos obrigatórios.
 
-**DESVIO-7 — `DIRECT_SHORT` bloco renderiza string pré-montada com aspas como parágrafo isolado**
-Quando enviado como bloco (Desvio-1), `BodyCitation.renderedText()` monta o texto com aspas e a call autor-data e joga tudo como string única num `DocxParagraph`. Resultado no DOCX: citação direta curta aparece como parágrafo isolado com aspas, não inline no texto.
-- _Arquivo_: `BodyContentRenderer.java:138–141`, `BodyCitation.java`
+**DESVIO-7 — ~~`DIRECT_SHORT` bloco renderiza string pré-montada como parágrafo isolado~~** ✅ CORRIGIDO
+`BodyCitation.java` removido junto com DESVIO-1.
 
 ---
 
 ### Cosméticos / Minor
 
 **DESVIO-6 — `BodyContentRequest.toDomain()` tem null-coerce silencioso para `List.of()`**
-`sections == null ? List.of()` viola o padrão de fail-fast. A anotação `@NotEmpty` já cobre o caso, mas o código cria um caminho alternativo diferente da especificação.
-- _Arquivo_: `BodyContentRequest.java:15`
+`sections == null ? List.of()` ainda presente. O `@NotEmpty` na entrada cobre o caso na prática. Path silencioso tecnicamente contrário ao fail-fast, mas sem impacto real.
+- _Status:_ Remanescente de baixo risco.
 
-**DESVIO-9 — `BodyCitation` constrói `BodyQuoteText` descartável como side-effect de validação**
-```java
-if (type == BodyCitationType.DIRECT_SHORT) {
-    new BodyQuoteText(BodyQuoteType.SHORT, text); // objeto criado só para validar
-}
-```
-Anti-padrão: usar construção de objeto como validação side-effect.
-- _Arquivo_: `BodyCitation.java:25–27`
+**DESVIO-9 — ~~`BodyCitation` constrói `BodyQuoteText` descartável como side-effect de validação~~** ✅ CORRIGIDO
+`BodyCitation.java` foi removido; anti-padrão desapareceu junto.
 
-**DESVIO-10 — `BodyContentComponentRule` não tem `contentBindings`, quebrando consistência de `ComponentRule`**
-Todos os outros `ComponentRule` têm `contentBindings()`. `BodyContentComponentRule` não implementa esse campo — o `bodyContent` genuinamente não usa `work`, mas a assimetria não está documentada.
-- _Arquivo_: `BodyContentComponentRule.java`
+**DESVIO-10 — ~~`BodyContentComponentRule` não tem `contentBindings`~~** ✅ CORRIGIDO
+`BodyContentComponentRule` implementa `contentBindings()` retornando `Map.of()`.
 
 ---
 

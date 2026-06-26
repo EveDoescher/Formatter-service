@@ -1,5 +1,11 @@
 # Body Content Component
 
+> **Arquivo histórico — não usar como referência ativa.**
+> Escrito durante a implementação inicial do `bodyContent` (Fases 1–2, junho 2026).
+> O código evoluiu significativamente desde então: block types foram adicionados e removidos,
+> a seção "Current Scope" está desatualizada, e a lista de samples está incompleta.
+> Para a especificação atual do sistema, consulte `docs/guide/formatter-service-rules.md`.
+
 `bodyContent` renders textual content that flows naturally across pages.
 
 It is not a single-page component. Unlike `cover`, `titlePage` and `approvalSheet`, it must not fail just because the content exceeds one page.

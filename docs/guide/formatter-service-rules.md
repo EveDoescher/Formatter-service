@@ -397,6 +397,82 @@ Use `work` as the semantic source for shared data. Profiles declare `contentBind
 
 Do not infer that two component fields are equal because they have similar names.
 
+## 17.1 Resolution Rule
+
+```
+1. Explicit component value wins.
+2. If the component value is absent, use the profile binding.
+3. If the binding points to missing work data, the final component validation fails.
+4. Never infer equality between fields from different components.
+5. Never copy values from one component to another.
+```
+
+Example: if `work.title = "Título comum"` and `cover.title = "Título especial"`, then cover uses its explicit value and title page uses `work.title`. The two fields are independent — the cover override does not propagate.
+
+## 17.2 Request Shape
+
+```json
+{
+  "work": {
+    "authors": ["Nome do Aluno"],
+    "title": "Título do trabalho",
+    "subtitle": "Subtítulo do trabalho",
+    "nature": {
+      "workType": "Trabalho de conclusão de curso",
+      "degreeObjective": "obtenção do título de tecnólogo",
+      "courseName": "Análise e Desenvolvimento de Sistemas",
+      "institutionName": "Universidade Fictícia de Limeira"
+    },
+    "advisor": {
+      "academicTitle": "Prof. Dr.",
+      "name": "Nome Fictício do Orientador"
+    },
+    "city": "Limeira",
+    "year": "2026"
+  },
+  "document": {
+    "cover": {},
+    "titlePage": {},
+    "approvalSheet": {}
+  }
+}
+```
+
+An empty component object means the component is selected and resolves its content from `work` through profile bindings.
+
+## 17.3 Profile Bindings
+
+The profile declares `contentBindings` inside each component rule:
+
+```json
+{
+  "cover": {
+    "contentBindings": {
+      "institutionalLines": "work.institutionalLines",
+      "authors": "work.authors",
+      "title": "work.title",
+      "subtitle": "work.subtitle",
+      "city": "work.city",
+      "year": "work.year"
+    }
+  },
+  "titlePage": {
+    "contentBindings": {
+      "authors": "work.authors",
+      "title": "work.title",
+      "subtitle": "work.subtitle",
+      "nature": "work.nature",
+      "advisor": "work.advisor",
+      "coadvisor": "work.coadvisor",
+      "city": "work.city",
+      "year": "work.year"
+    }
+  }
+}
+```
+
+Valid binding sources are: `work.institutionalLines`, `work.authors`, `work.title`, `work.subtitle`, `work.nature`, `work.advisor`, `work.coadvisor`, `work.city`, `work.year`. An unknown source key must fail at profile validation time.
+
 ---
 
 # 18. Layout Rules
