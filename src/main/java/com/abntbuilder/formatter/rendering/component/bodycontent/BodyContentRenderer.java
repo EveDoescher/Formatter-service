@@ -153,25 +153,32 @@ public final class BodyContentRenderer
                 addBlankLines(blocks, blankLineStyle, rule.layout().blankLinesAfterSectionTitle());
             }
 
-            for (BodyBlock contentBlock : section.blocks()) {
-                blocks.addAll(renderContentBlock(
-                        contentBlock,
-                        rule,
-                        styleResolver,
-                        figureRenderingState,
-                        tableRenderingState,
-                        frameRenderingState,
-                        codeListingRenderingState,
-                        chartRenderingState,
-                        abbreviationMetas,
-                        figureMetas,
-                        tableMetas,
-                        frameMetas,
-                        chartMetas,
-                        codeListingMetas,
-                        footnoteCounter,
-                        crossRefIndex
-                ));
+            for (int blockIndex = 0; blockIndex < section.blocks().size(); blockIndex++) {
+                BodyBlock contentBlock = section.blocks().get(blockIndex);
+                try {
+                    blocks.addAll(renderContentBlock(
+                            contentBlock,
+                            rule,
+                            styleResolver,
+                            figureRenderingState,
+                            tableRenderingState,
+                            frameRenderingState,
+                            codeListingRenderingState,
+                            chartRenderingState,
+                            abbreviationMetas,
+                            figureMetas,
+                            tableMetas,
+                            frameMetas,
+                            chartMetas,
+                            codeListingMetas,
+                            footnoteCounter,
+                            crossRefIndex
+                    ));
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException(
+                            "Error in section '" + section.id() + "', block[" + blockIndex + "] ("
+                                    + contentBlock.getClass().getSimpleName() + "): " + e.getMessage(), e);
+                }
                 previousBlockWasTextualContent = contentBlock instanceof BodyParagraph
                         || contentBlock instanceof BodyLongQuote;
             }
@@ -571,6 +578,7 @@ public final class BodyContentRenderer
                     .build();
             HttpRequest request = HttpRequest.newBuilder(uri)
                     .timeout(Duration.ofSeconds(rule.urlFetchTimeoutSeconds()))
+                    .header("User-Agent", "formatter-service/1.0")
                     .GET()
                     .build();
             HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
@@ -811,8 +819,11 @@ public final class BodyContentRenderer
         StyleRule codeStyle = styleResolver.resolve(rule.codeStyleId());
         String[] lines = codeListing.code().split("\n", -1);
         for (String line : lines) {
-            String rendered = line.isEmpty() ? " " : line;
-            blocks.add(new DocxParagraph(List.of(DocxRun.of(rendered, codeStyle)), codeStyle));
+            if (line.isBlank()) {
+                blocks.add(new DocxBlankLine(codeStyle));
+            } else {
+                blocks.add(new DocxParagraph(List.of(DocxRun.of(line, codeStyle)), codeStyle));
+            }
         }
         if (shouldRenderSource(codeListing, rule, part, codeListingRenderingState)) {
             String source = codeListingRenderingState.sourceFor(codeListing).orElseThrow();

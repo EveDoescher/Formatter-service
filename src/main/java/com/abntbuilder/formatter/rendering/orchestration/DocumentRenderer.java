@@ -99,16 +99,21 @@ public final class DocumentRenderer {
                 var renderer = rendererRegistry.get(componentId);
                 List<DocxBlock> componentBlocks;
 
-                if (renderer instanceof MetadataEmittingRenderer<?,?> emitting) {
-                    ComponentRenderResult result = emitting.renderComponentWithMetadata(component, command.profile());
-                    componentBlocks = result.blocks();
-                    if (result instanceof BodyContentRenderResult bcr) {
-                        bodyContentMetadata = bcr.metadata();
+                try {
+                    if (renderer instanceof MetadataEmittingRenderer<?,?> emitting) {
+                        ComponentRenderResult result = emitting.renderComponentWithMetadata(component, command.profile());
+                        componentBlocks = result.blocks();
+                        if (result instanceof BodyContentRenderResult bcr) {
+                            bodyContentMetadata = bcr.metadata();
+                        }
+                    } else if (renderer instanceof MetadataConsumingRenderer<?> consuming) {
+                        componentBlocks = consuming.renderComponentWithMetadata(component, command.profile(), bodyContentMetadata);
+                    } else {
+                        componentBlocks = renderer.renderComponent(component, command.profile());
                     }
-                } else if (renderer instanceof MetadataConsumingRenderer<?> consuming) {
-                    componentBlocks = consuming.renderComponentWithMetadata(component, command.profile(), bodyContentMetadata);
-                } else {
-                    componentBlocks = renderer.renderComponent(component, command.profile());
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException(
+                            "Error rendering component '" + componentId + "': " + e.getMessage(), e);
                 }
 
                 addBlocks(blocks, pageNumbering, componentBlocks);
