@@ -1,4 +1,11 @@
 {
+  "fileName": "errata-simple.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "errata"
+    ]
+  },
   "document": {
     "errata": {
       "entries": [
@@ -16,5 +23,6 @@
         }
       ]
     }
-  }
+  },
+  "paragraphs": []
 }

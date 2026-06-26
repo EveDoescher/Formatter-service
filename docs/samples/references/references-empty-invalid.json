@@ -1,7 +1,15 @@
 {
+  "fileName": "references-empty-invalid.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "references"
+    ]
+  },
   "document": {
     "references": {
       "entries": []
     }
-  }
+  },
+  "paragraphs": []
 }

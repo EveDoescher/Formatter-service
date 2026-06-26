@@ -1,7 +1,15 @@
 {
+  "fileName": "acknowledgments-simple.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "acknowledgments"
+    ]
+  },
   "document": {
     "acknowledgments": {
-      "text": "Agradeço à minha orientadora, Prof.ª Dr.ª Maria Souza, pela dedicação e paciência ao longo do desenvolvimento deste trabalho. Agradeço também aos meus colegas do laboratório e à minha família pelo suporte constante."
+      "text": "Agradeço à minha orientadora pela dedicação e paciência ao longo do desenvolvimento deste trabalho. Agradeço também aos colegas do laboratório e à minha família pelo suporte constante."
     }
-  }
+  },
+  "paragraphs": []
 }

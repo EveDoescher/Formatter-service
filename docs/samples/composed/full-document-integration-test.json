@@ -12,7 +12,7 @@
   "document": {
     "cover": {
       "institutionalLines": [
-        "UNIVERSIDADE PAULISTA",
+        "UNIVERSIDADE FICTÍCIA DE LIMEIRA",
         "INSTITUTO DE CIÊNCIAS EXATAS E TECNOLOGIA",
         "CURSO DE ANÁLISE E DESENVOLVIMENTO DE SISTEMAS"
       ],
@@ -36,7 +36,7 @@
         "workType": "Trabalho de Conclusão de Curso",
         "degreeObjective": "obtenção do título de tecnólogo",
         "courseName": "Sistemas de Informação",
-        "institutionName": "Universidade Paulista - UNIP"
+        "institutionName": "Universidade Fictícia de Limeira"
       },
       "advisor": {
         "academicTitle": "Prof. Dr.",
@@ -60,13 +60,13 @@
         "workType": "Trabalho de Conclusão de Curso",
         "degreeObjective": "obtenção do título de tecnólogo",
         "courseName": "Sistemas de Informação",
-        "institutionName": "Universidade Paulista - UNIP"
+        "institutionName": "Universidade Fictícia de Limeira"
       },
       "committeeMembers": [
         {
           "name": "Orientador Silva",
           "title": "Prof. Dr.",
-          "institutionName": "Universidade Paulista",
+          "institutionName": "Universidade Fictícia de Limeira",
           "role": "Orientador"
         },
         {

@@ -1,4 +1,11 @@
 {
+  "fileName": "glossary-simple.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "glossary"
+    ]
+  },
   "document": {
     "glossary": {
       "entries": [
@@ -8,5 +15,6 @@
         { "term": "TCC", "definition": "Trabalho de Conclusão de Curso — produção acadêmica exigida para a integralização de cursos de graduação ou pós-graduação." }
       ]
     }
-  }
+  },
+  "paragraphs": []
 }

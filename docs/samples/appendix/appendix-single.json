@@ -1,4 +1,11 @@
 {
+  "fileName": "appendix-single.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "appendix"
+    ]
+  },
   "document": {
     "appendix": {
       "items": [
@@ -9,14 +16,21 @@
               "id": "apx-s1",
               "level": 1,
               "title": "Parte I — Perfil do respondente",
-              "paragraphs": [
-                "Esta seção apresenta as questões relativas ao perfil sociodemográfico dos participantes.",
-                "Questão 1: Qual é o seu nível de escolaridade?"
+              "blocks": [
+                {
+                  "type": "PARAGRAPH",
+                  "text": "Esta seção apresenta as questões relativas ao perfil sociodemográfico dos participantes."
+                },
+                {
+                  "type": "PARAGRAPH",
+                  "text": "Questão 1: Qual é o seu nível de escolaridade?"
+                }
               ]
             }
           ]
         }
       ]
     }
-  }
+  },
+  "paragraphs": []
 }

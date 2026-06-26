@@ -11,7 +11,7 @@
   },
   "work": {
     "institutionalLines": [
-      "UNIVERSIDADE PAULISTA",
+      "UNIVERSIDADE FICTÍCIA DE LIMEIRA",
       "INSTITUTO DE CIÊNCIAS EXATAS E TECNOLOGIA",
       "CURSO SUPERIOR DE TECNOLOGIA EM ANÁLISE E DESENVOLVIMENTO DE SISTEMAS"
     ],
@@ -25,7 +25,7 @@
       "workType": "Projeto integrado multidisciplinar",
       "degreeObjective": "obtenção do título de tecnólogo",
       "courseName": "Análise e Desenvolvimento de Sistemas",
-      "institutionName": "Universidade Paulista - UNIP"
+      "institutionName": "Universidade Fictícia de Limeira"
     },
     "advisor": {
       "academicTitle": "Prof. Dr.",
@@ -50,19 +50,19 @@
         {
           "title": "Prof. Dr.",
           "name": "Pessoa Orientadora Teste",
-          "institutionName": "Universidade Paulista - UNIP",
+          "institutionName": "Universidade Fictícia de Limeira",
           "role": "Orientador"
         },
         {
           "title": "Profa. Ma.",
           "name": "Pessoa Coorientadora Teste",
-          "institutionName": "Universidade Paulista - UNIP",
+          "institutionName": "Universidade Fictícia de Limeira",
           "role": "Coorientadora"
         },
         {
           "title": "Prof. Me.",
           "name": "Pessoa Examinadora Teste",
-          "institutionName": "Universidade Paulista - UNIP",
+          "institutionName": "Universidade Fictícia de Limeira",
           "role": "Examinador"
         }
       ]

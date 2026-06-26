@@ -17,19 +17,19 @@
         "workType": "Trabalho de conclusão de curso",
         "degreeObjective": "obtenção do título de graduação",
         "courseName": "Análise e Desenvolvimento de Sistemas",
-        "institutionName": "Universidade Paulista - UNIP"
+        "institutionName": "Universidade Fictícia de Limeira"
       },
       "committeeMembers": [
         {
           "name": "Pessoa Orientadora Teste",
           "title": "Prof. Dr.",
-          "institutionName": "Universidade Paulista - UNIP",
+          "institutionName": "Universidade Fictícia de Limeira",
           "role": "Orientador"
         },
         {
           "name": "Pessoa Examinadora Teste",
           "title": "Profa. Dra.",
-          "institutionName": "Universidade Paulista - UNIP",
+          "institutionName": "Universidade Fictícia de Limeira",
           "role": "Examinadora"
         }
       ]

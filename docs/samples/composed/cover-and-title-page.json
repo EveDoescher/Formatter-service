@@ -10,7 +10,7 @@
   "document": {
     "cover": {
       "institutionalLines": [
-        "Universidade Paulista"
+        "Universidade Fictícia de Limeira"
       ],
       "authors": [
         "Pessoa Autora Teste 01"
@@ -30,7 +30,7 @@
         "workType": "Trabalho de conclusão de curso",
         "degreeObjective": "obtenção do título de graduação",
         "courseName": "Análise e Desenvolvimento de Sistemas",
-        "institutionName": "Universidade Paulista - UNIP"
+        "institutionName": "Universidade Fictícia de Limeira"
       },
       "advisor": {
         "academicTitle": "Prof. Dr.",

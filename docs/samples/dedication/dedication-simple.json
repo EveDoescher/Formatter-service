@@ -1,7 +1,15 @@
 {
+  "fileName": "dedication-simple.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "dedication"
+    ]
+  },
   "document": {
     "dedication": {
       "text": "Dedico este trabalho à minha família, pelo apoio incondicional durante toda a jornada acadêmica."
     }
-  }
+  },
+  "paragraphs": []
 }

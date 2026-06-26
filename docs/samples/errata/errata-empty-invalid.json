@@ -1,7 +1,15 @@
 {
+  "fileName": "errata-empty-invalid.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "errata"
+    ]
+  },
   "document": {
     "errata": {
       "entries": []
     }
-  }
+  },
+  "paragraphs": []
 }

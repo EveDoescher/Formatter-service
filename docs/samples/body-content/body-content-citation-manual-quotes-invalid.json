@@ -16,7 +16,7 @@
       "workType": "Trabalho acadêmico",
       "degreeObjective": "avaliação parcial da disciplina",
       "courseName": "Análise e Desenvolvimento de Sistemas",
-      "institutionName": "Universidade Paulista - UNIP"
+      "institutionName": "Universidade Fictícia de Limeira"
     },
     "advisor": {
       "academicTitle": "Prof. Dr.",
@@ -32,22 +32,36 @@
         {
           "id": "citacao-direta",
           "level": 1,
-          "title": "Citação direta",
+          "title": "Citação direta com aspas manuais no texto",
           "blocks": [
             {
-              "type": "DIRECT_SHORT_QUOTE",
-              "mode": "PARENTHETICAL",
-              "text": "\"a organização documental depende de critérios formais\"",
-              "source": {
-                "authors": [
-                  {
-                    "type": "PERSON",
-                    "surname": "Sobrenome Teste Um"
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "TEXT",
+                  "text": "Conforme "
+                },
+                {
+                  "type": "CITATION",
+                  "citationType": "DIRECT_SHORT",
+                  "mode": "NARRATIVE",
+                  "source": {
+                    "authors": [
+                      {
+                        "type": "PERSON",
+                        "surname": "Sobrenome Teste Um"
+                      }
+                    ],
+                    "year": "2020",
+                    "page": "10"
                   }
-                ],
-                "year": "2020",
-                "page": "10"
-              }
+                },
+                {
+                  "type": "QUOTE_TEXT",
+                  "quoteType": "SHORT",
+                  "text": "\"a organização documental depende de critérios formais\""
+                }
+              ]
             }
           ]
         }

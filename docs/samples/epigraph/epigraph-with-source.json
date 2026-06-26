@@ -1,9 +1,17 @@
 {
+  "fileName": "epigraph-with-source.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "epigraph"
+    ]
+  },
   "document": {
     "epigraph": {
-      "text": "A imaginação é mais importante que o conhecimento. O conhecimento é limitado; a imaginação abraça o mundo inteiro.",
-      "author": "Albert Einstein",
-      "source": "Como vejo o mundo, 1934"
+      "text": "O valor de uma ideia está na sua aplicação prática, não apenas na sua formulação.",
+      "author": "Caio Moreira",
+      "source": "Ensaios sobre Tecnologia e Criação, 2018"
     }
-  }
+  },
+  "paragraphs": []
 }

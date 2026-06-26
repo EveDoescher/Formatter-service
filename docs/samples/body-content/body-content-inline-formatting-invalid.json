@@ -1,22 +1,53 @@
 {
+  "fileName": "body-content-inline-formatting-invalid.docx",
   "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "bodyContent"
+    ]
+  },
+  "work": {
+    "authors": ["PESSOA AUTORA TESTE 01"],
+    "title": "FORMATAÇÃO INLINE INVÁLIDA",
+    "nature": {
+      "workType": "Trabalho de conclusão de curso",
+      "degreeObjective": "obtenção do título de tecnólogo",
+      "courseName": "Análise e Desenvolvimento de Sistemas",
+      "institutionName": "Universidade Fictícia de Limeira"
+    },
+    "advisor": {
+      "academicTitle": "Prof. Dr.",
+      "name": "Pessoa Orientadora Teste"
+    },
+    "city": "Limeira",
+    "year": "2026"
+  },
   "document": {
-    "components": {
-      "bodyContent": {
-        "sections": [
-          {
-            "id": "s1",
-            "level": 1,
-            "title": "Citação Inválida Como Bloco",
-            "blocks": [
-              {
-                "type": "DIRECT_SHORT_QUOTE",
-                "text": "texto que não pode ser bloco"
-              }
-            ]
-          }
-        ]
-      }
+    "titlePage": {},
+    "bodyContent": {
+      "sections": [
+        {
+          "id": "s1",
+          "level": 1,
+          "title": "Citação inline sem citationType",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "TEXT",
+                  "text": "Texto precedendo a citação inválida "
+                },
+                {
+                  "type": "CITATION",
+                  "mode": "PARENTHETICAL"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
-  }
+  },
+  "paragraphs": []
 }

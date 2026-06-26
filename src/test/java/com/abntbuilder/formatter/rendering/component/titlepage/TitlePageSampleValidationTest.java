@@ -86,7 +86,7 @@ class TitlePageSampleValidationTest {
                         .content(readSample("title-page-bottom-wrap-invalid.json")))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(
-                        "titlePage item exceeds max visual lines: city must fit in 1 visual line(s)."
+                        "Error rendering component 'titlePage': titlePage item exceeds max visual lines: city must fit in 1 visual line(s)."
                 ));
     }
 

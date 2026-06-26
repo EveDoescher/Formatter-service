@@ -5,7 +5,7 @@ Samples for the `approvalSheet` single-page component.
 - `approval-sheet-short.json`: baseline válido da folha de aprovação.
 - `approval-sheet-long-title.json`: título e subtítulo maiores, ainda válidos.
 - `approval-sheet-many-committee-members.json`: banca com três membros.
-- `approval-sheet-without-approval-event.json`: valida template UNIP sem dados de aprovação.
+- `approval-sheet-without-approval-event.json`: valida folha de aprovação sem dados de evento de aprovação.
 - `approval-sheet-overflow.json`: esperado falhar por exceder uma página segura.
 
 Samples compostos ficam em `docs/samples/composed`.

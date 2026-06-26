@@ -1,4 +1,11 @@
 {
+  "fileName": "appendix-multiple.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "appendix"
+    ]
+  },
   "document": {
     "appendix": {
       "items": [
@@ -9,7 +16,12 @@
               "id": "apx-a-s1",
               "level": 1,
               "title": "Questões de perfil",
-              "paragraphs": ["Questão 1: Faixa etária do respondente."]
+              "blocks": [
+                {
+                  "type": "PARAGRAPH",
+                  "text": "Questão 1: Faixa etária do respondente."
+                }
+              ]
             }
           ]
         },
@@ -20,11 +32,17 @@
               "id": "apx-b-s1",
               "level": 1,
               "title": "Bloco temático 1",
-              "paragraphs": ["Como você avalia a integração entre as equipes?"]
+              "blocks": [
+                {
+                  "type": "PARAGRAPH",
+                  "text": "Como você avalia a integração entre as equipes?"
+                }
+              ]
             }
           ]
         }
       ]
     }
-  }
+  },
+  "paragraphs": []
 }

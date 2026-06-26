@@ -1,4 +1,11 @@
 {
+  "fileName": "references-book.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "references"
+    ]
+  },
   "document": {
     "references": {
       "entries": [
@@ -43,5 +50,6 @@
         }
       ]
     }
-  }
+  },
+  "paragraphs": []
 }

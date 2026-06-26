@@ -19,37 +19,37 @@
         "workType": "Trabalho de conclusão de curso",
         "degreeObjective": "obtenção do título de tecnólogo",
         "courseName": "Análise e Desenvolvimento de Sistemas com Ênfase em Sistemas Distribuídos e Automação Documental",
-        "institutionName": "Universidade Paulista - UNIP"
+        "institutionName": "Universidade Fictícia de Limeira"
       },
       "committeeMembers": [
         {
           "name": "Membro da Banca Examinadora Linha 01",
           "title": "Prof. Dr.",
-          "institutionName": "Universidade Paulista - UNIP",
+          "institutionName": "Universidade Fictícia de Limeira",
           "role": "Orientador"
         },
         {
           "name": "Membro da Banca Examinadora Linha 02",
           "title": "Profa. Dra.",
-          "institutionName": "Universidade Paulista - UNIP",
+          "institutionName": "Universidade Fictícia de Limeira",
           "role": "Examinadora"
         },
         {
           "name": "Membro da Banca Examinadora Linha 03",
           "title": "Prof. Me.",
-          "institutionName": "Universidade Paulista - UNIP",
+          "institutionName": "Universidade Fictícia de Limeira",
           "role": "Examinador"
         },
         {
           "name": "Membro da Banca Examinadora Linha 04",
           "title": "Profa. Ma.",
-          "institutionName": "Universidade Paulista - UNIP",
+          "institutionName": "Universidade Fictícia de Limeira",
           "role": "Examinadora"
         },
         {
           "name": "Membro da Banca Examinadora Linha 05",
           "title": "Prof. Dr.",
-          "institutionName": "Universidade Paulista - UNIP",
+          "institutionName": "Universidade Fictícia de Limeira",
           "role": "Examinador"
         }
       ]

@@ -71,7 +71,7 @@ class CoverSampleValidationTest {
                         .content(readSample("cover-bottom-wrap-invalid.json")))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(
-                        "cover city and year must each fit in exactly one visual line."
+                        "Error rendering component 'cover': cover city and year must each fit in exactly one visual line."
                 ));
     }
 

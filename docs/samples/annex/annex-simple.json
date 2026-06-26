@@ -1,4 +1,11 @@
 {
+  "fileName": "annex-simple.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "annex"
+    ]
+  },
   "document": {
     "annex": {
       "items": [
@@ -9,11 +16,17 @@
               "id": "anx-s1",
               "level": 1,
               "title": "Art. 1º",
-              "paragraphs": ["Institui as Diretrizes Curriculares Nacionais dos Cursos de Graduação da área do conhecimento de Computação."]
+              "blocks": [
+                {
+                  "type": "PARAGRAPH",
+                  "text": "Institui as Diretrizes Curriculares Nacionais dos Cursos de Graduação da área do conhecimento de Computação."
+                }
+              ]
             }
           ]
         }
       ]
     }
-  }
+  },
+  "paragraphs": []
 }
