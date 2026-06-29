@@ -6,13 +6,17 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 
-public record BodyListItemRequest(@Valid @NotEmpty List<BodyInlineRequest> content) {
+public record BodyListItemRequest(
+        @Valid @NotEmpty List<BodyInlineRequest> content,
+        @Valid BodyListRequest subList
+) {
 
     public BodyListItem toDomain(CitationFormattingRule citationFormatting) {
         return new BodyListItem(
                 content.stream()
                         .map(inline -> inline.toDomain(citationFormatting))
-                        .toList()
+                        .toList(),
+                java.util.Optional.ofNullable(subList == null ? null : subList.toDomain(citationFormatting))
         );
     }
 }

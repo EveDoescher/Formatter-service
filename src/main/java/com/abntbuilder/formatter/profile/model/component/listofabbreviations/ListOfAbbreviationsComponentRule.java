@@ -10,7 +10,8 @@ public record ListOfAbbreviationsComponentRule(
         String headingText,
         String entryStyleId,
         String termSeparator,
-        boolean sortAlphabetically
+        boolean sortAlphabetically,
+        int blankLinesAfterHeading
 ) implements ComponentRule {
     public ListOfAbbreviationsComponentRule {
         requireNonBlank(componentId, "componentId");
@@ -18,6 +19,7 @@ public record ListOfAbbreviationsComponentRule(
         requireNonBlank(headingText, "headingText");
         requireNonBlank(entryStyleId, "entryStyleId");
         requireNonBlank(termSeparator, "termSeparator");
+        if (blankLinesAfterHeading < 0) throw new IllegalArgumentException("blankLinesAfterHeading must be >= 0.");
     }
 
     public Map<String, String> contentBindings() { return Map.of(); }

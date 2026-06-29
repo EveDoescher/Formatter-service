@@ -40,7 +40,13 @@ public final class SummaryRenderer implements MetadataConsumingRenderer<SummaryC
         if (rule.useTocField()) {
             int maxLevel = rule.entryStyleIdsByLevel().size();
             String tocInstruction = "TOC \\o \"1-" + maxLevel + "\" \\h \\z \\u";
-            blocks.add(new DocxTocBlock(headingStyle, tocInstruction));
+            List<StyleRule> entryStyles = rule.entryStyleIdsByLevel().stream()
+                    .map(styleResolver::resolve)
+                    .toList();
+            double contentWidthCm = profile.pageRule().widthCm().doubleValue()
+                    - profile.pageRule().marginLeftCm().doubleValue()
+                    - profile.pageRule().marginRightCm().doubleValue();
+            blocks.add(new DocxTocBlock(headingStyle, tocInstruction, entryStyles, contentWidthCm));
         } else {
             for (BodySectionMetadata section : metadata.sections()) {
                 int level = section.level();

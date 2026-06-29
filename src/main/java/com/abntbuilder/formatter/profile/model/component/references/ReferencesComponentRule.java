@@ -11,7 +11,8 @@ public record ReferencesComponentRule(
         String headingText,
         String entryStyleId,
         int blankLinesBetweenEntries,
-        ReferencesFormattingRule formattingRule
+        ReferencesFormattingRule formattingRule,
+        int blankLinesAfterHeading
 ) implements ComponentRule {
     public ReferencesComponentRule {
         requireNonBlank(componentId, "componentId");
@@ -20,6 +21,7 @@ public record ReferencesComponentRule(
         requireNonBlank(entryStyleId, "entryStyleId");
         if (blankLinesBetweenEntries < 0) throw new IllegalArgumentException("blankLinesBetweenEntries must be >= 0.");
         Objects.requireNonNull(formattingRule, "formattingRule must not be null");
+        if (blankLinesAfterHeading < 0) throw new IllegalArgumentException("blankLinesAfterHeading must be >= 0.");
     }
 
     public Map<String, String> contentBindings() { return Map.of(); }

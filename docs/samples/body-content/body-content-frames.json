@@ -8,7 +8,9 @@
     ]
   },
   "work": {
-    "authors": ["Autor Teste"],
+    "authors": [
+      "Autor Teste"
+    ],
     "title": "Documento Teste",
     "nature": {
       "workType": "Trabalho",
@@ -25,21 +27,65 @@
   "document": {
     "titlePage": {},
     "bodyContent": {
-      "sections": [{
-    "id": "s1", "level": 1, "title": "Quadros",
-    "blocks": [{
-      "type": "FRAME",
-      "frame": {
-        "id": "qdr-1", "caption": "Comparação de metodologias",
-        "columns": [{ "header": "Método" }, { "header": "Vantagem" }],
-        "rows": [
-          { "cells": ["Quantitativo", "Reprodutibilidade"] },
-          { "cells": ["Qualitativo", "Profundidade"] }
-        ],
-        "source": "O autor"
-      }
-    }]
-      }]
+      "sections": [
+        {
+          "id": "s1",
+          "level": 1,
+          "title": "Quadros",
+          "blocks": [
+            {
+              "type": "FRAME",
+              "frame": {
+                "id": "qdr-1",
+                "caption": "Comparação de metodologias",
+                "columns": [
+                  {
+                    "header": "Método"
+                  },
+                  {
+                    "header": "Vantagem"
+                  }
+                ],
+                "rows": [
+                  {
+                    "cells": [
+                      {
+                        "text": "Quantitativo",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Reprodutibilidade",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      }
+                    ]
+                  },
+                  {
+                    "cells": [
+                      {
+                        "text": "Qualitativo",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Profundidade",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      }
+                    ]
+                  }
+                ],
+                "source": "O autor"
+              }
+            }
+          ]
+        }
+      ]
     }
   }
 }

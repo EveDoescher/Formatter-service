@@ -9,7 +9,8 @@ public record GlossaryComponentRule(
         String headingStyleId,
         String headingText,
         String entryStyleId,
-        String termSeparator
+        String termSeparator,
+        int blankLinesAfterHeading
 ) implements ComponentRule {
     public GlossaryComponentRule {
         requireNonBlank(componentId, "componentId");
@@ -17,6 +18,7 @@ public record GlossaryComponentRule(
         requireNonBlank(headingText, "headingText");
         requireNonBlank(entryStyleId, "entryStyleId");
         requireNonBlank(termSeparator, "termSeparator");
+        if (blankLinesAfterHeading < 0) throw new IllegalArgumentException("blankLinesAfterHeading must be >= 0.");
     }
 
     public Map<String, String> contentBindings() { return Map.of(); }

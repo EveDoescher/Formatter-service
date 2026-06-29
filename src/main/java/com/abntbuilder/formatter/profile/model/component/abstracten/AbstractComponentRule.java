@@ -7,20 +7,20 @@ import java.util.Map;
 public record AbstractComponentRule(
         String componentId,
         String headingStyleId,
-        String headingText,
         String textStyleId,
         String keywordsStyleId,
-        String keywordsLabel,
-        String keywordsSeparator
+        String keywordsSeparator,
+        String keywordsTerminator,
+        int blankLinesAfterHeading
 ) implements ComponentRule {
     public AbstractComponentRule {
         requireNonBlank(componentId, "componentId");
         requireNonBlank(headingStyleId, "headingStyleId");
-        requireNonBlank(headingText, "headingText");
         requireNonBlank(textStyleId, "textStyleId");
         requireNonBlank(keywordsStyleId, "keywordsStyleId");
-        requireNonBlank(keywordsLabel, "keywordsLabel");
         requireNonBlank(keywordsSeparator, "keywordsSeparator");
+        requireNonBlank(keywordsTerminator, "keywordsTerminator");
+        if (blankLinesAfterHeading < 0) throw new IllegalArgumentException("blankLinesAfterHeading must be >= 0.");
     }
 
     public Map<String, String> contentBindings() { return Map.of(); }

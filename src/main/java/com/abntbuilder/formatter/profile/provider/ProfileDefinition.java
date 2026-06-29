@@ -864,11 +864,16 @@ public record ProfileDefinition(
             String componentId,
             String headingStyleId,
             String headingText,
-            String entryStyleId,
-            String entryTemplate
+            String tableHeaderStyleId,
+            String tableCellStyleId,
+            List<String> tableHeaders,
+            Integer blankLinesAfterHeading
     ) {
         ErrataComponentRule toDomain() {
-            return new ErrataComponentRule(componentId, headingStyleId, headingText, entryStyleId, entryTemplate);
+            requireNonNull(tableHeaders, "errata.tableHeaders");
+            return new ErrataComponentRule(componentId, headingStyleId, headingText,
+                    tableHeaderStyleId, tableCellStyleId, tableHeaders,
+                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0);
         }
     }
 
@@ -898,10 +903,12 @@ public record ProfileDefinition(
             String componentId,
             String headingStyleId,
             String headingText,
-            String textStyleId
+            String textStyleId,
+            Integer blankLinesAfterHeading
     ) {
         AcknowledgmentsComponentRule toDomain() {
-            return new AcknowledgmentsComponentRule(componentId, headingStyleId, headingText, textStyleId);
+            return new AcknowledgmentsComponentRule(componentId, headingStyleId, headingText, textStyleId,
+                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0);
         }
     }
 
@@ -912,26 +919,32 @@ public record ProfileDefinition(
             String textStyleId,
             String keywordsStyleId,
             String keywordsLabel,
-            String keywordsSeparator
+            String keywordsSeparator,
+            String keywordsTerminator,
+            Integer blankLinesAfterHeading
     ) {
         ResumoComponentRule toDomain() {
+            requireNonNull(keywordsTerminator, "resumo.keywordsTerminator");
             return new ResumoComponentRule(componentId, headingStyleId, headingText,
-                    textStyleId, keywordsStyleId, keywordsLabel, keywordsSeparator);
+                    textStyleId, keywordsStyleId, keywordsLabel, keywordsSeparator, keywordsTerminator,
+                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0);
         }
     }
 
     public record AbstractComponentRuleDefinition(
             String componentId,
             String headingStyleId,
-            String headingText,
             String textStyleId,
             String keywordsStyleId,
-            String keywordsLabel,
-            String keywordsSeparator
+            String keywordsSeparator,
+            String keywordsTerminator,
+            Integer blankLinesAfterHeading
     ) {
         AbstractComponentRule toDomain() {
-            return new AbstractComponentRule(componentId, headingStyleId, headingText,
-                    textStyleId, keywordsStyleId, keywordsLabel, keywordsSeparator);
+            requireNonNull(keywordsTerminator, "abstract.keywordsTerminator");
+            return new AbstractComponentRule(componentId, headingStyleId,
+                    textStyleId, keywordsStyleId, keywordsSeparator, keywordsTerminator,
+                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0);
         }
     }
 
@@ -960,13 +973,15 @@ public record ProfileDefinition(
             String headingText,
             String entryStyleId,
             Integer blankLinesBetweenEntries,
+            Integer blankLinesAfterHeading,
             ReferencesFormattingRuleDefinition formattingRule
     ) {
         ReferencesComponentRule toDomain() {
             requireNonNull(blankLinesBetweenEntries, "references.blankLinesBetweenEntries");
             requireNonNull(formattingRule, "references.formattingRule");
             return new ReferencesComponentRule(componentId, headingStyleId, headingText,
-                    entryStyleId, blankLinesBetweenEntries, formattingRule.toDomain());
+                    entryStyleId, blankLinesBetweenEntries, formattingRule.toDomain(),
+                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0);
         }
     }
 
@@ -1003,10 +1018,12 @@ public record ProfileDefinition(
             String headingStyleId,
             String headingText,
             String entryStyleId,
-            String termSeparator
+            String termSeparator,
+            Integer blankLinesAfterHeading
     ) {
         GlossaryComponentRule toDomain() {
-            return new GlossaryComponentRule(componentId, headingStyleId, headingText, entryStyleId, termSeparator);
+            return new GlossaryComponentRule(componentId, headingStyleId, headingText, entryStyleId, termSeparator,
+                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0);
         }
     }
 
@@ -1051,7 +1068,8 @@ public record ProfileDefinition(
             String headingStyleId,
             String headingText,
             String entryStyleId,
-            String entryTemplate
+            String entryTemplate,
+            Integer blankLinesAfterHeading
     ) {
         IndexListComponentRule toDomain(String resolvedComponentId) {
             return new IndexListComponentRule(
@@ -1059,7 +1077,8 @@ public record ProfileDefinition(
                     headingStyleId,
                     headingText,
                     entryStyleId,
-                    entryTemplate
+                    entryTemplate,
+                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0
             );
         }
     }
@@ -1070,7 +1089,8 @@ public record ProfileDefinition(
             String headingText,
             String entryStyleId,
             String termSeparator,
-            Boolean sortAlphabetically
+            Boolean sortAlphabetically,
+            Integer blankLinesAfterHeading
     ) {
         ListOfAbbreviationsComponentRule toDomain() {
             return new ListOfAbbreviationsComponentRule(
@@ -1079,7 +1099,8 @@ public record ProfileDefinition(
                     headingText,
                     entryStyleId,
                     termSeparator,
-                    sortAlphabetically != null && sortAlphabetically
+                    sortAlphabetically != null && sortAlphabetically,
+                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0
             );
         }
     }
@@ -1089,7 +1110,8 @@ public record ProfileDefinition(
             String headingStyleId,
             String headingText,
             String entryStyleId,
-            String termSeparator
+            String termSeparator,
+            Integer blankLinesAfterHeading
     ) {
         ListOfSymbolsComponentRule toDomain() {
             return new ListOfSymbolsComponentRule(
@@ -1097,7 +1119,8 @@ public record ProfileDefinition(
                     headingStyleId,
                     headingText,
                     entryStyleId,
-                    termSeparator
+                    termSeparator,
+                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0
             );
         }
     }

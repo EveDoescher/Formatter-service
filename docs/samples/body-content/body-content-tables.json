@@ -59,23 +59,68 @@
                 "rows": [
                   {
                     "cells": [
-                      "Legenda",
-                      "Identificação superior com numeração automática",
-                      "Atendido"
+                      {
+                        "text": "Legenda",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Identificação superior com numeração automática",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Atendido",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      }
                     ]
                   },
                   {
                     "cells": [
-                      "Fonte",
-                      "Indicação inferior com estilo próprio",
-                      "Atendido"
+                      {
+                        "text": "Fonte",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Indicação inferior com estilo próprio",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Atendido",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      }
                     ]
                   },
                   {
                     "cells": [
-                      "Cabeçalho",
-                      "Linha inicial destacada e repetível",
-                      "Atendido"
+                      {
+                        "text": "Cabeçalho",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Linha inicial destacada e repetível",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Atendido",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      }
                     ]
                   }
                 ]
@@ -105,16 +150,46 @@
                 "rows": [
                   {
                     "cells": [
-                      "Tabela simples",
-                      "Uma legenda, uma tabela e uma fonte",
-                      "Bloco renderizado sem separação indevida"
+                      {
+                        "text": "Tabela simples",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Uma legenda, uma tabela e uma fonte",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Bloco renderizado sem separação indevida",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      }
                     ]
                   },
                   {
                     "cells": [
-                      "Tabela sem fonte local",
-                      "Primeira parte de um grupo continuado",
-                      "Fonte omitida até a conclusão"
+                      {
+                        "text": "Tabela sem fonte local",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Primeira parte de um grupo continuado",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Fonte omitida até a conclusão",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      }
                     ]
                   }
                 ]
@@ -141,16 +216,46 @@
                 "rows": [
                   {
                     "cells": [
-                      "Tabela continuada",
-                      "Segunda parte do mesmo grupo",
-                      "Legenda com indicação de conclusão"
+                      {
+                        "text": "Tabela continuada",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Segunda parte do mesmo grupo",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Legenda com indicação de conclusão",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      }
                     ]
                   },
                   {
                     "cells": [
-                      "Fonte final",
-                      "Fonte informada na última parte",
-                      "Fonte exibida apenas na conclusão"
+                      {
+                        "text": "Fonte final",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Fonte informada na última parte",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Fonte exibida apenas na conclusão",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      }
                     ]
                   }
                 ]

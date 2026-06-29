@@ -2,6 +2,7 @@ package com.abntbuilder.formatter.rendering.component.glossary;
 
 import com.abntbuilder.formatter.document.component.glossary.GlossaryComponent;
 import com.abntbuilder.formatter.document.component.glossary.GlossaryEntry;
+import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
 import com.abntbuilder.formatter.output.docx.api.DocxRun;
@@ -35,6 +36,9 @@ public final class GlossaryRenderer implements ComponentRenderer<GlossaryCompone
 
         List<DocxBlock> blocks = new ArrayList<>();
         blocks.add(new DocxParagraph(List.of(DocxRun.of(rule.headingText(), headingStyle)), headingStyle));
+        for (int i = 0; i < rule.blankLinesAfterHeading(); i++) {
+            blocks.add(new DocxBlankLine(headingStyle));
+        }
         for (GlossaryEntry entry : component.entries()) {
             String text = entry.term() + rule.termSeparator() + entry.definition();
             blocks.add(new DocxParagraph(List.of(DocxRun.of(text, entryStyle)), entryStyle));

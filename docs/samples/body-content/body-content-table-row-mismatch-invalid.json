@@ -31,9 +31,24 @@
                 "rows": [
                   {
                     "cells": [
-                      "Valor A",
-                      "Valor B",
-                      "Valor excedente"
+                      {
+                        "text": "Valor A",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Valor B",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Valor excedente",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      }
                     ]
                   }
                 ]

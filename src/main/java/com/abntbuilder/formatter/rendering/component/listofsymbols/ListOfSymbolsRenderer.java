@@ -2,6 +2,7 @@ package com.abntbuilder.formatter.rendering.component.listofsymbols;
 
 import com.abntbuilder.formatter.document.component.listofsymbols.ListOfSymbolsComponent;
 import com.abntbuilder.formatter.document.component.listofsymbols.SymbolEntry;
+import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
 import com.abntbuilder.formatter.output.docx.api.DocxRun;
@@ -32,6 +33,9 @@ public final class ListOfSymbolsRenderer implements ComponentRenderer<ListOfSymb
 
         List<DocxBlock> blocks = new ArrayList<>();
         blocks.add(new DocxParagraph(List.of(DocxRun.of(rule.headingText(), headingStyle)), headingStyle));
+        for (int i = 0; i < rule.blankLinesAfterHeading(); i++) {
+            blocks.add(new DocxBlankLine(headingStyle));
+        }
         for (SymbolEntry entry : component.entries()) {
             String text = entry.symbol() + rule.termSeparator() + entry.meaning();
             blocks.add(new DocxParagraph(List.of(DocxRun.of(text, entryStyle)), entryStyle));

@@ -12,12 +12,13 @@ public record ReferencesComponentRuleRequest(
         @NotBlank String headingText,
         @NotBlank String entryStyleId,
         @Min(0) int blankLinesBetweenEntries,
-        @NotNull @Valid ReferencesFormattingRuleRequest formattingRule
+        @NotNull @Valid ReferencesFormattingRuleRequest formattingRule,
+        int blankLinesAfterHeading
 ) {
     public ReferencesComponentRule toDomain() {
         return new ReferencesComponentRule(
                 componentId, headingStyleId, headingText, entryStyleId,
-                blankLinesBetweenEntries, formattingRule.toDomain()
+                blankLinesBetweenEntries, formattingRule.toDomain(), blankLinesAfterHeading
         );
     }
 }

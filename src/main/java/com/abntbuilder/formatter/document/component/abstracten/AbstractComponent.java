@@ -7,14 +7,12 @@ import java.util.List;
 import java.util.Objects;
 
 public record AbstractComponent(
-        String text,
-        List<String> keywords
+        List<AbstractEntry> entries
 ) implements DocumentComponent {
     public AbstractComponent {
-        if (text == null || text.isBlank()) throw new IllegalArgumentException("text must not be blank.");
-        Objects.requireNonNull(keywords, "keywords must not be null");
-        if (keywords.isEmpty()) throw new IllegalArgumentException("keywords must not be empty.");
-        keywords = List.copyOf(keywords);
+        Objects.requireNonNull(entries, "entries must not be null");
+        if (entries.isEmpty()) throw new IllegalArgumentException("entries must not be empty.");
+        entries = List.copyOf(entries);
     }
 
     @Override

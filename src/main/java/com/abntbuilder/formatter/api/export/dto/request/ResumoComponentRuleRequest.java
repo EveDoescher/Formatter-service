@@ -10,10 +10,12 @@ public record ResumoComponentRuleRequest(
         @NotBlank String textStyleId,
         @NotBlank String keywordsStyleId,
         @NotBlank String keywordsLabel,
-        @NotBlank String keywordsSeparator
+        @NotBlank String keywordsSeparator,
+        @NotBlank String keywordsTerminator,
+        int blankLinesAfterHeading
 ) {
     public ResumoComponentRule toDomain() {
         return new ResumoComponentRule(componentId, headingStyleId, headingText,
-                textStyleId, keywordsStyleId, keywordsLabel, keywordsSeparator);
+                textStyleId, keywordsStyleId, keywordsLabel, keywordsSeparator, keywordsTerminator, blankLinesAfterHeading);
     }
 }

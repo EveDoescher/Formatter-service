@@ -7,9 +7,10 @@ public record IndexListComponentRuleRequest(
         @NotBlank String headingStyleId,
         @NotBlank String headingText,
         @NotBlank String entryStyleId,
-        @NotBlank String entryTemplate
+        @NotBlank String entryTemplate,
+        int blankLinesAfterHeading
 ) {
     public IndexListComponentRule toDomain(String componentId) {
-        return new IndexListComponentRule(componentId, headingStyleId, headingText, entryStyleId, entryTemplate);
+        return new IndexListComponentRule(componentId, headingStyleId, headingText, entryStyleId, entryTemplate, blankLinesAfterHeading);
     }
 }

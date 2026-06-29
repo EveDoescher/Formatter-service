@@ -1,6 +1,7 @@
 package com.abntbuilder.formatter.rendering.component.indexlist;
 
 import com.abntbuilder.formatter.document.component.DocumentComponent;
+import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
 import com.abntbuilder.formatter.output.docx.api.DocxRun;
@@ -34,6 +35,9 @@ public abstract class AbstractIndexListRenderer<T extends DocumentComponent>
         List<DocxBlock> blocks = new ArrayList<>();
         blocks.add(new DocxParagraph(
                 List.of(DocxRun.of(rule.headingText(), headingStyle)), headingStyle));
+        for (int i = 0; i < rule.blankLinesAfterHeading(); i++) {
+            blocks.add(new DocxBlankLine(headingStyle));
+        }
 
         for (BodyDisplayObjectMetadata item : metadataExtractor().apply(metadata)) {
             String text = rule.entryTemplate()

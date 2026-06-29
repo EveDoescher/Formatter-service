@@ -765,6 +765,38 @@
       "spacingAfterPt": 0
     },
     {
+      "id": "errata.tableHeader",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": true,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "CENTER",
+      "lineSpacing": 1,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "errata.tableCell",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "CENTER",
+      "lineSpacing": 1,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
       "id": "dedication.text",
       "type": "PARAGRAPH",
       "fontFamily": "Times New Roman",
@@ -1587,8 +1619,10 @@
       "componentId": "errata",
       "headingStyleId": "errata.heading",
       "headingText": "ERRATA",
-      "entryStyleId": "errata.entry",
-      "entryTemplate": "Folha {page}, linha {line}: onde se lê {incorrect}, leia-se {correct}."
+      "tableHeaderStyleId": "errata.tableHeader",
+      "tableCellStyleId": "errata.tableCell",
+      "tableHeaders": ["Folha", "Linha", "Onde se lê", "Leia-se"],
+      "blankLinesAfterHeading": 1
     },
     "dedication": {
       "componentId": "dedication",
@@ -1605,7 +1639,8 @@
       "componentId": "acknowledgments",
       "headingStyleId": "acknowledgments.heading",
       "headingText": "AGRADECIMENTOS",
-      "textStyleId": "acknowledgments.text"
+      "textStyleId": "acknowledgments.text",
+      "blankLinesAfterHeading": 1
     },
     "resumo": {
       "componentId": "resumo",
@@ -1614,16 +1649,18 @@
       "textStyleId": "resumo.text",
       "keywordsStyleId": "resumo.keywords",
       "keywordsLabel": "Palavras-chave:",
-      "keywordsSeparator": "; "
+      "keywordsSeparator": "; ",
+      "keywordsTerminator": ".",
+      "blankLinesAfterHeading": 1
     },
     "abstract": {
       "componentId": "abstract",
       "headingStyleId": "resumo.heading",
-      "headingText": "ABSTRACT",
       "textStyleId": "resumo.text",
       "keywordsStyleId": "resumo.keywords",
-      "keywordsLabel": "Keywords:",
-      "keywordsSeparator": "; "
+      "keywordsSeparator": "; ",
+      "keywordsTerminator": ".",
+      "blankLinesAfterHeading": 1
     },
     "references": {
       "componentId": "references",
@@ -1631,6 +1668,7 @@
       "headingText": "REFERÊNCIAS",
       "entryStyleId": "references.entry",
       "blankLinesBetweenEntries": 1,
+      "blankLinesAfterHeading": 1,
       "formattingRule": {
         "availableAtLabel": "Disponível em: ",
         "accessedAtLabel": "Acesso em: ",
@@ -1644,14 +1682,14 @@
     },
     "appendix": {
       "componentId": "appendix",
-      "headingTemplate": "APÊNDICE {letter} — {title}",
+      "headingTemplate": "APÊNDICE {letter} – {title}",
       "headingStyleId": "appendix.heading",
       "paragraphStyleId": "bodyContent.paragraph",
       "sectionTitleStyleIdsByLevel": ["bodyContent.heading1", "bodyContent.heading2"]
     },
     "annex": {
       "componentId": "annex",
-      "headingTemplate": "ANEXO {letter} — {title}",
+      "headingTemplate": "ANEXO {letter} – {title}",
       "headingStyleId": "annex.heading",
       "paragraphStyleId": "bodyContent.paragraph",
       "sectionTitleStyleIdsByLevel": ["bodyContent.heading1", "bodyContent.heading2"]
@@ -1661,7 +1699,8 @@
       "headingStyleId": "glossary.heading",
       "headingText": "GLOSSÁRIO",
       "entryStyleId": "glossary.entry",
-      "termSeparator": " — "
+      "termSeparator": " — ",
+      "blankLinesAfterHeading": 1
     },
     "summary": {
       "componentId": "summary",
@@ -1682,35 +1721,40 @@
       "headingStyleId": "list.heading",
       "headingText": "LISTA DE ILUSTRAÇÕES",
       "entryStyleId": "list.entry",
-      "entryTemplate": "{number} — {caption}"
+      "entryTemplate": "{number} — {caption}",
+      "blankLinesAfterHeading": 1
     },
     "listOfTables": {
       "componentId": "listOfTables",
       "headingStyleId": "list.heading",
       "headingText": "LISTA DE TABELAS",
       "entryStyleId": "list.entry",
-      "entryTemplate": "{number} — {caption}"
+      "entryTemplate": "{number} — {caption}",
+      "blankLinesAfterHeading": 1
     },
     "listOfFrames": {
       "componentId": "listOfFrames",
       "headingStyleId": "list.heading",
       "headingText": "LISTA DE QUADROS",
       "entryStyleId": "list.entry",
-      "entryTemplate": "{number} — {caption}"
+      "entryTemplate": "{number} — {caption}",
+      "blankLinesAfterHeading": 1
     },
     "listOfCharts": {
       "componentId": "listOfCharts",
       "headingStyleId": "list.heading",
       "headingText": "LISTA DE GRÁFICOS",
       "entryStyleId": "list.entry",
-      "entryTemplate": "{number} — {caption}"
+      "entryTemplate": "{number} — {caption}",
+      "blankLinesAfterHeading": 1
     },
     "listOfCodeListings": {
       "componentId": "listOfCodeListings",
       "headingStyleId": "list.heading",
       "headingText": "LISTA DE LISTAGENS",
       "entryStyleId": "list.entry",
-      "entryTemplate": "{number} — {caption}"
+      "entryTemplate": "{number} — {caption}",
+      "blankLinesAfterHeading": 1
     },
     "listOfAbbreviations": {
       "componentId": "listOfAbbreviations",
@@ -1718,14 +1762,16 @@
       "headingText": "LISTA DE ABREVIATURAS E SIGLAS",
       "entryStyleId": "list.entry",
       "termSeparator": " — ",
-      "sortAlphabetically": true
+      "sortAlphabetically": true,
+      "blankLinesAfterHeading": 1
     },
     "listOfSymbols": {
       "componentId": "listOfSymbols",
       "headingStyleId": "list.heading",
       "headingText": "LISTA DE SÍMBOLOS",
       "entryStyleId": "list.entry",
-      "termSeparator": " — "
+      "termSeparator": " — ",
+      "blankLinesAfterHeading": 1
     }
   }
 }

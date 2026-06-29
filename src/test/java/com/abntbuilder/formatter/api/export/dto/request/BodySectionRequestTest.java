@@ -9,6 +9,7 @@ import com.abntbuilder.formatter.document.component.bodycontent.BodyQuoteType;
 import com.abntbuilder.formatter.document.component.bodycontent.BodySection;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyTable;
 import com.abntbuilder.formatter.document.component.bodycontent.ImageSourceType;
+import com.abntbuilder.formatter.api.export.dto.request.BodyTableCellRequest;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule;
 import org.junit.jupiter.api.Test;
 
@@ -266,7 +267,7 @@ class BodySectionRequestTest {
                                         new BodyTableColumnRequest("Cenário"),
                                         new BodyTableColumnRequest("Resultado")
                                 ),
-                                List.of(new BodyTableRowRequest(List.of("Teste A", "Aprovado")))
+                                List.of(new BodyTableRowRequest(List.of(new BodyTableCellRequest("Teste A"), new BodyTableCellRequest("Aprovado"))))
                         ),
                         null,
                         null,

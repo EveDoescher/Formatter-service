@@ -21,7 +21,14 @@ public record ReferenceEntryRequest(
         @NotBlank String year,
         String pages,
         String url,
-        String accessDate
+        String accessDate,
+        String volume,
+        String issue,
+        String doi,
+        String degree,
+        String institutionName,
+        String bookTitle,
+        @Valid List<ReferenceAuthorRequest> bookAuthors
 ) {
     public ReferenceEntry toDomain() {
         return new ReferenceEntry(
@@ -36,7 +43,15 @@ public record ReferenceEntryRequest(
                 year,
                 Optional.ofNullable(pages),
                 Optional.ofNullable(url),
-                Optional.ofNullable(accessDate)
+                Optional.ofNullable(accessDate),
+                Optional.ofNullable(volume),
+                Optional.ofNullable(issue),
+                Optional.ofNullable(doi),
+                Optional.ofNullable(degree),
+                Optional.ofNullable(institutionName),
+                Optional.ofNullable(bookTitle),
+                Optional.ofNullable(bookAuthors == null ? null :
+                        bookAuthors.stream().map(ReferenceAuthorRequest::toDomain).toList())
         );
     }
 }

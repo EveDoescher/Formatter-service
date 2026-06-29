@@ -2,7 +2,6 @@ package com.abntbuilder.formatter.rendering.component.epigraph;
 
 import com.abntbuilder.formatter.document.component.epigraph.EpigraphComponent;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
-import com.abntbuilder.formatter.output.docx.api.DocxPageBreak;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
 import com.abntbuilder.formatter.output.docx.api.DocxRun;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
@@ -34,7 +33,6 @@ public final class EpigraphRenderer implements ComponentRenderer<EpigraphCompone
         StyleRule authorStyle = styleResolver.resolve(rule.authorStyleId());
 
         List<DocxBlock> blocks = new ArrayList<>();
-        blocks.add(new DocxPageBreak());
         blocks.add(new DocxParagraph(List.of(DocxRun.of(component.text(), textStyle)), textStyle));
 
         String authorText = component.source()

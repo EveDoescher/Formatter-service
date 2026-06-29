@@ -8,6 +8,7 @@ import com.abntbuilder.formatter.document.component.bodycontent.BodyImageSource;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyParagraph;
 import com.abntbuilder.formatter.document.component.bodycontent.BodySection;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyTable;
+import com.abntbuilder.formatter.document.component.bodycontent.BodyTableCell;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyTableColumn;
 import com.abntbuilder.formatter.document.component.bodycontent.BodyTableRow;
 import com.abntbuilder.formatter.document.component.bodycontent.CitationAuthor;
@@ -326,8 +327,8 @@ class BodyContentRendererTest {
                         new BodyTableColumn("Resultado")
                 ),
                 List.of(
-                        new BodyTableRow(List.of("Teste A", "Aprovado")),
-                        new BodyTableRow(List.of("Teste B", "Aprovado"))
+                        new BodyTableRow(List.of(new BodyTableCell("Teste A"), new BodyTableCell("Aprovado"))),
+                        new BodyTableRow(List.of(new BodyTableCell("Teste B"), new BodyTableCell("Aprovado")))
                 )
         );
     }

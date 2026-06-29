@@ -41,6 +41,9 @@ public final class ReferencesRenderer implements ComponentRenderer<ReferencesCom
         blocks.add(new DocxParagraph(
                 List.of(DocxRun.of(rule.headingText(), headingStyle)), headingStyle
         ));
+        for (int i = 0; i < rule.blankLinesAfterHeading(); i++) {
+            blocks.add(new DocxBlankLine(headingStyle));
+        }
 
         boolean first = true;
         for (ReferenceEntry entry : component.entries()) {

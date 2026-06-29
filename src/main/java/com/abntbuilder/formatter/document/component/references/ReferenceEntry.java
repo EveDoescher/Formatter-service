@@ -16,7 +16,14 @@ public record ReferenceEntry(
         String year,
         Optional<String> pages,
         Optional<String> url,
-        Optional<String> accessDate
+        Optional<String> accessDate,
+        Optional<String> volume,
+        Optional<String> issue,
+        Optional<String> doi,
+        Optional<String> degree,
+        Optional<String> institutionName,
+        Optional<String> bookTitle,
+        Optional<List<ReferenceAuthor>> bookAuthors
 ) {
     public ReferenceEntry {
         requireNonBlank(id, "id");
@@ -31,7 +38,15 @@ public record ReferenceEntry(
         Objects.requireNonNull(pages, "pages must not be null");
         Objects.requireNonNull(url, "url must not be null");
         Objects.requireNonNull(accessDate, "accessDate must not be null");
+        Objects.requireNonNull(volume, "volume must not be null");
+        Objects.requireNonNull(issue, "issue must not be null");
+        Objects.requireNonNull(doi, "doi must not be null");
+        Objects.requireNonNull(degree, "degree must not be null");
+        Objects.requireNonNull(institutionName, "institutionName must not be null");
+        Objects.requireNonNull(bookTitle, "bookTitle must not be null");
+        Objects.requireNonNull(bookAuthors, "bookAuthors must not be null");
         authors = List.copyOf(authors);
+        bookAuthors = bookAuthors.map(List::copyOf);
     }
 
     private static void requireNonBlank(String v, String f) {

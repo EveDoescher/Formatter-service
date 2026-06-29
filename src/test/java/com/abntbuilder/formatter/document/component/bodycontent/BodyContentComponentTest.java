@@ -110,7 +110,7 @@ class BodyContentComponentTest {
                 "Tabela teste",
                 Optional.empty(),
                 List.of(new BodyTableColumn("Cenario")),
-                List.of(new BodyTableRow(List.of("Teste A")))
+                List.of(new BodyTableRow(List.of(new BodyTableCell("Teste A"))))
         );
     }
 }

@@ -11,7 +11,9 @@ public record ResumoComponentRule(
         String textStyleId,
         String keywordsStyleId,
         String keywordsLabel,
-        String keywordsSeparator
+        String keywordsSeparator,
+        String keywordsTerminator,
+        int blankLinesAfterHeading
 ) implements ComponentRule {
     public ResumoComponentRule {
         requireNonBlank(componentId, "componentId");
@@ -21,6 +23,8 @@ public record ResumoComponentRule(
         requireNonBlank(keywordsStyleId, "keywordsStyleId");
         requireNonBlank(keywordsLabel, "keywordsLabel");
         requireNonBlank(keywordsSeparator, "keywordsSeparator");
+        requireNonBlank(keywordsTerminator, "keywordsTerminator");
+        if (blankLinesAfterHeading < 0) throw new IllegalArgumentException("blankLinesAfterHeading must be >= 0.");
     }
 
     public Map<String, String> contentBindings() { return Map.of(); }

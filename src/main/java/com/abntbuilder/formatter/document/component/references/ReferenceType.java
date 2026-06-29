@@ -6,5 +6,8 @@ public enum ReferenceType {
     JOURNAL,
     WEBSITE,
     LEGISLATION,
-    THESIS
+    THESIS,
+    CONFERENCE_PAPER,
+    REPORT,
+    STANDARD
 }

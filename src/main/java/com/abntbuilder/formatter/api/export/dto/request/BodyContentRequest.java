@@ -13,9 +13,7 @@ public record BodyContentRequest(
 
     public BodyContentComponent toDomain(CitationFormattingRule citationFormatting) {
         return new BodyContentComponent(
-                sections == null
-                        ? List.of()
-                        : sections.stream()
+                sections.stream()
                         .map(s -> s.toDomain(citationFormatting))
                         .toList()
         );

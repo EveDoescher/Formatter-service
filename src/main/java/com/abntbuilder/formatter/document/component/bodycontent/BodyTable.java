@@ -37,8 +37,8 @@ public record BodyTable(
 
         int columnCount = columns.size();
         for (BodyTableRow row : rows) {
-            if (row.cells().size() != columnCount) {
-                throw new IllegalArgumentException("table row cell count must match column count.");
+            if (row.effectiveColumnCount() != columnCount) {
+                throw new IllegalArgumentException("table row effective column count must match column count.");
             }
         }
     }

@@ -8,9 +8,10 @@ public record GlossaryComponentRuleRequest(
         @NotBlank String headingStyleId,
         @NotBlank String headingText,
         @NotBlank String entryStyleId,
-        @NotBlank String termSeparator
+        @NotBlank String termSeparator,
+        int blankLinesAfterHeading
 ) {
     public GlossaryComponentRule toDomain() {
-        return new GlossaryComponentRule(componentId, headingStyleId, headingText, entryStyleId, termSeparator);
+        return new GlossaryComponentRule(componentId, headingStyleId, headingText, entryStyleId, termSeparator, blankLinesAfterHeading);
     }
 }

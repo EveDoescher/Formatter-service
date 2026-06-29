@@ -7,9 +7,10 @@ public record AcknowledgmentsComponentRuleRequest(
         @NotBlank String componentId,
         @NotBlank String headingStyleId,
         @NotBlank String headingText,
-        @NotBlank String textStyleId
+        @NotBlank String textStyleId,
+        int blankLinesAfterHeading
 ) {
     public AcknowledgmentsComponentRule toDomain() {
-        return new AcknowledgmentsComponentRule(componentId, headingStyleId, headingText, textStyleId);
+        return new AcknowledgmentsComponentRule(componentId, headingStyleId, headingText, textStyleId, blankLinesAfterHeading);
     }
 }

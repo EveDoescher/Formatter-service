@@ -8,7 +8,9 @@
     ]
   },
   "work": {
-    "authors": ["Pessoa Autora Teste 01"],
+    "authors": [
+      "Pessoa Autora Teste 01"
+    ],
     "title": "Teste Visual da Fase 2",
     "nature": {
       "workType": "Trabalho de conclusão de curso",
@@ -24,7 +26,9 @@
   },
   "document": {
     "titlePage": {
-      "authors": ["Pessoa Autora Teste 01"],
+      "authors": [
+        "Pessoa Autora Teste 01"
+      ],
       "title": "Teste Visual da Fase 2",
       "subtitle": "Validação dos componentes da Fase 2",
       "nature": {
@@ -83,11 +87,22 @@
               "mode": "PARENTHETICAL",
               "text": "Este texto tem uma supressão aqui e um destaque nosso, além de um comentário do autor.",
               "markers": [
-                { "type": "SUPPRESSION", "position": 36 },
-                { "type": "EMPHASIS_OURS", "position": 0 }
+                {
+                  "type": "SUPPRESSION",
+                  "position": 36
+                },
+                {
+                  "type": "EMPHASIS_OURS",
+                  "position": 0
+                }
               ],
               "source": {
-                "authors": [{ "type": "PERSON", "surname": "SILVA" }],
+                "authors": [
+                  {
+                    "type": "PERSON",
+                    "surname": "SILVA"
+                  }
+                ],
                 "year": "2023",
                 "page": "12"
               }
@@ -99,12 +114,18 @@
                 "items": [
                   {
                     "content": [
-                      { "type": "TEXT", "text": "Item não-ordenado 1" }
+                      {
+                        "type": "TEXT",
+                        "text": "Item não-ordenado 1"
+                      }
                     ]
                   },
                   {
                     "content": [
-                      { "type": "TEXT", "text": "Item não-ordenado 2" }
+                      {
+                        "type": "TEXT",
+                        "text": "Item não-ordenado 2"
+                      }
                     ]
                   }
                 ]
@@ -117,12 +138,18 @@
                 "items": [
                   {
                     "content": [
-                      { "type": "TEXT", "text": "Primeiro passo ordenado" }
+                      {
+                        "type": "TEXT",
+                        "text": "Primeiro passo ordenado"
+                      }
                     ]
                   },
                   {
                     "content": [
-                      { "type": "TEXT", "text": "Segundo passo ordenado" }
+                      {
+                        "type": "TEXT",
+                        "text": "Segundo passo ordenado"
+                      }
                     ]
                   }
                 ]
@@ -135,12 +162,46 @@
                 "caption": "Comparação de metodologias",
                 "source": "Elaborado pelo autor",
                 "columns": [
-                  { "header": "Método" },
-                  { "header": "Vantagem" }
+                  {
+                    "header": "Método"
+                  },
+                  {
+                    "header": "Vantagem"
+                  }
                 ],
                 "rows": [
-                  { "cells": ["Quantitativo", "Reprodutibilidade"] },
-                  { "cells": ["Qualitativo", "Profundidade"] }
+                  {
+                    "cells": [
+                      {
+                        "text": "Quantitativo",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Reprodutibilidade",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      }
+                    ]
+                  },
+                  {
+                    "cells": [
+                      {
+                        "text": "Qualitativo",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Profundidade",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      }
+                    ]
+                  }
                 ]
               }
             },

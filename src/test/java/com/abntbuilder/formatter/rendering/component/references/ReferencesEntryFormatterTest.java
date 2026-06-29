@@ -26,7 +26,9 @@ class ReferencesEntryFormatterTest {
                 List.of(new ReferenceAuthor("Lima", Optional.of("Carlos Eduardo"))),
                 "Fundamentos de Sistemas Distribuídos", Optional.empty(), Optional.empty(),
                 Optional.of("São Paulo"), Optional.of("Editora Exemplo"),
-                "2021", Optional.empty(), Optional.empty(), Optional.empty()
+                "2021", Optional.empty(), Optional.empty(), Optional.empty(),
+                Optional.empty(), Optional.empty(), Optional.empty(),
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()
         );
 
         List<ReferenceSegment> segments = formatter.format(entry);
@@ -51,7 +53,9 @@ class ReferencesEntryFormatterTest {
                 ),
                 "Arquiteturas de Software", Optional.empty(), Optional.empty(),
                 Optional.of("Limeira"), Optional.of("Editora Fictícia"),
-                "2022", Optional.empty(), Optional.empty(), Optional.empty()
+                "2022", Optional.empty(), Optional.empty(), Optional.empty(),
+                Optional.empty(), Optional.empty(), Optional.empty(),
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()
         );
 
         List<ReferenceSegment> segments = formatter.format(entry);
@@ -74,7 +78,9 @@ class ReferencesEntryFormatterTest {
                 ),
                 "Computação em Nuvem", Optional.empty(), Optional.empty(),
                 Optional.empty(), Optional.empty(), "2020",
-                Optional.empty(), Optional.empty(), Optional.empty()
+                Optional.empty(), Optional.empty(), Optional.empty(),
+                Optional.empty(), Optional.empty(), Optional.empty(),
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()
         );
 
         List<ReferenceSegment> segments = formatter.format(entry);
@@ -94,7 +100,9 @@ class ReferencesEntryFormatterTest {
                 Optional.empty(), Optional.empty(), "2024",
                 Optional.empty(),
                 Optional.of("https://exemplo.ficticio.br/guia"),
-                Optional.of("10 maio 2024")
+                Optional.of("10 maio 2024"),
+                Optional.empty(), Optional.empty(), Optional.empty(),
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()
         );
 
         List<ReferenceSegment> segments = formatter.format(entry);
@@ -111,8 +119,10 @@ class ReferencesEntryFormatterTest {
                 "ref5", ReferenceType.JOURNAL,
                 List.of(new ReferenceAuthor("Rocha", Optional.of("Beatriz"))),
                 "Análise de desempenho em ambientes distribuídos", Optional.empty(), Optional.empty(),
-                Optional.empty(), Optional.of("Revista Fictícia de Computação, v. 15, n. 2"),
-                "2023", Optional.of("123-145"), Optional.empty(), Optional.empty()
+                Optional.empty(), Optional.of("Revista Fictícia de Computação"),
+                "2023", Optional.of("123-145"), Optional.empty(), Optional.empty(),
+                Optional.of("15"), Optional.of("2"), Optional.empty(),
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()
         );
 
         List<ReferenceSegment> segments = formatter.format(entry);

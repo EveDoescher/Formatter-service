@@ -8,10 +8,11 @@ public record ListOfAbbreviationsComponentRuleRequest(
         @NotBlank String headingText,
         @NotBlank String entryStyleId,
         @NotBlank String termSeparator,
-        boolean sortAlphabetically
+        boolean sortAlphabetically,
+        int blankLinesAfterHeading
 ) {
     public ListOfAbbreviationsComponentRule toDomain(String componentId) {
         return new ListOfAbbreviationsComponentRule(componentId, headingStyleId, headingText,
-                entryStyleId, termSeparator, sortAlphabetically);
+                entryStyleId, termSeparator, sortAlphabetically, blankLinesAfterHeading);
     }
 }

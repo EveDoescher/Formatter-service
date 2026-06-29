@@ -1,6 +1,7 @@
 package com.abntbuilder.formatter.rendering.component.acknowledgments;
 
 import com.abntbuilder.formatter.document.component.acknowledgments.AcknowledgmentsComponent;
+import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
 import com.abntbuilder.formatter.output.docx.api.DocxRun;
@@ -34,6 +35,9 @@ public final class AcknowledgmentsRenderer implements ComponentRenderer<Acknowle
 
         List<DocxBlock> blocks = new ArrayList<>();
         blocks.add(new DocxParagraph(List.of(DocxRun.of(rule.headingText(), headingStyle)), headingStyle));
+        for (int i = 0; i < rule.blankLinesAfterHeading(); i++) {
+            blocks.add(new DocxBlankLine(headingStyle));
+        }
         blocks.add(new DocxParagraph(List.of(DocxRun.of(component.text(), textStyle)), textStyle));
         return List.copyOf(blocks);
     }

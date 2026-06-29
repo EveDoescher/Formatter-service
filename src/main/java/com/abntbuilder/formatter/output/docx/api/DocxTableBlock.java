@@ -9,7 +9,7 @@ import java.util.Objects;
 
 public record DocxTableBlock(
         List<String> headers,
-        List<List<String>> rows,
+        List<List<DocxTableCell>> rows,
         StyleRule headerStyleRule,
         StyleRule cellStyleRule,
         BigDecimal widthPercent,
@@ -30,18 +30,17 @@ public record DocxTableBlock(
         Objects.requireNonNull(borderStyle, "borderStyle must not be null");
 
         List<String> resolvedHeaders = List.copyOf(headers);
-        List<List<String>> resolvedRows = rows.stream()
+        int columnCount = resolvedHeaders.size();
+        List<List<DocxTableCell>> resolvedRows = rows.stream()
                 .map(row -> {
                     requireNonEmpty(row, "row");
-
-                    if (row.size() != resolvedHeaders.size()) {
-                        throw new IllegalArgumentException("table row cell count must match header count.");
+                    int effective = row.stream().mapToInt(DocxTableCell::colspan).sum();
+                    if (effective != columnCount) {
+                        throw new IllegalArgumentException("table row effective column count must match header count.");
                     }
-
-                    for (String cell : row) {
+                    for (DocxTableCell cell : row) {
                         Objects.requireNonNull(cell, "table cell must not be null");
                     }
-
                     return List.copyOf(row);
                 })
                 .toList();
@@ -52,7 +51,6 @@ public record DocxTableBlock(
 
     private static void requireNonEmpty(List<?> value, String fieldName) {
         Objects.requireNonNull(value, fieldName + " must not be null");
-
         if (value.isEmpty()) {
             throw new IllegalArgumentException(fieldName + " must not be empty.");
         }

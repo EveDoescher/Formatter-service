@@ -7,10 +7,11 @@ public record ListOfSymbolsComponentRuleRequest(
         @NotBlank String headingStyleId,
         @NotBlank String headingText,
         @NotBlank String entryStyleId,
-        @NotBlank String termSeparator
+        @NotBlank String termSeparator,
+        int blankLinesAfterHeading
 ) {
     public ListOfSymbolsComponentRule toDomain(String componentId) {
         return new ListOfSymbolsComponentRule(componentId, headingStyleId, headingText,
-                entryStyleId, termSeparator);
+                entryStyleId, termSeparator, blankLinesAfterHeading);
     }
 }

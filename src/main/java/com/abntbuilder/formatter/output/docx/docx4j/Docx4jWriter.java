@@ -58,12 +58,17 @@ import org.docx4j.wml.Br;
 import org.docx4j.wml.Drawing;
 import org.docx4j.wml.STBrType;
 import org.docx4j.wml.STBorder;
+import org.docx4j.wml.CTTabStop;
+import org.docx4j.wml.STTabJc;
+import org.docx4j.wml.STTabTlc;
+import org.docx4j.wml.Tabs;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.TblBorders;
 import org.docx4j.wml.TblPr;
 import org.docx4j.wml.TblWidth;
 import org.docx4j.wml.Tc;
 import org.docx4j.wml.TcPr;
+import org.docx4j.wml.TcPrInner;
 import org.docx4j.wml.Tr;
 import org.docx4j.wml.TrPr;
 
@@ -90,6 +95,7 @@ public class Docx4jWriter implements DocxWriter {
 
             clearDefaultBodyContent(wordPackage);
             applyHeadingStyleDefinitions(wordPackage, document.blocks());
+            applyTocStyleDefinitions(wordPackage, document.blocks());
 
             Optional<DocxPageNumbering> currentSectionPageNumbering = document.initialPageNumbering();
 
@@ -288,8 +294,8 @@ public class Docx4jWriter implements DocxWriter {
         );
         table.getContent().add(headerRow);
 
-        for (List<String> row : tableBlock.rows()) {
-            table.getContent().add(createTableRow(
+        for (List<com.abntbuilder.formatter.output.docx.api.DocxTableCell> row : tableBlock.rows()) {
+            table.getContent().add(createTableRowFromCells(
                     row,
                     tableBlock.cellStyleRule(),
                     tableBlock.headers().size(),
@@ -347,21 +353,61 @@ public class Docx4jWriter implements DocxWriter {
         }
 
         for (String cellText : cells) {
-            row.getContent().add(createTableCell(cellText, styleRule, columnCount));
+            row.getContent().add(createTableCell(new com.abntbuilder.formatter.output.docx.api.DocxTableCell(cellText), styleRule, columnCount));
         }
 
         return row;
     }
 
-    private Tc createTableCell(String cellText, StyleRule styleRule, int columnCount) {
+    private Tr createTableRowFromCells(
+            List<com.abntbuilder.formatter.output.docx.api.DocxTableCell> cells,
+            StyleRule styleRule,
+            int columnCount,
+            boolean repeatHeaderOnPageBreak
+    ) {
+        Tr row = objectFactory.createTr();
+
+        if (repeatHeaderOnPageBreak) {
+            TrPr rowProperties = objectFactory.createTrPr();
+            rowProperties.getCnfStyleOrDivIdOrGridBefore().add(
+                    objectFactory.createCTTrPrBaseTblHeader(objectFactory.createBooleanDefaultTrue())
+            );
+            row.setTrPr(rowProperties);
+        }
+
+        for (com.abntbuilder.formatter.output.docx.api.DocxTableCell cell : cells) {
+            row.getContent().add(createTableCell(cell, styleRule, columnCount));
+        }
+
+        return row;
+    }
+
+    private Tc createTableCell(com.abntbuilder.formatter.output.docx.api.DocxTableCell docxCell, StyleRule styleRule, int columnCount) {
         Tc cell = objectFactory.createTc();
 
         TcPr cellProperties = objectFactory.createTcPr();
         TblWidth cellWidth = objectFactory.createTblWidth();
         cellWidth.setType("pct");
-        cellWidth.setW(BigInteger.valueOf(5000L / columnCount));
+        cellWidth.setW(BigInteger.valueOf(5000L * docxCell.colspan() / columnCount));
         cellProperties.setTcW(cellWidth);
+
+        if (docxCell.colspan() > 1) {
+            TcPrInner.GridSpan gridSpan = objectFactory.createTcPrInnerGridSpan();
+            gridSpan.setVal(BigInteger.valueOf(docxCell.colspan()));
+            cellProperties.setGridSpan(gridSpan);
+        }
+
+        if (docxCell.rowspanStart()) {
+            TcPrInner.VMerge vMerge = objectFactory.createTcPrInnerVMerge();
+            vMerge.setVal("restart");
+            cellProperties.setVMerge(vMerge);
+        } else if (docxCell.rowspanContinuation()) {
+            TcPrInner.VMerge vMerge = objectFactory.createTcPrInnerVMerge();
+            cellProperties.setVMerge(vMerge);
+        }
+
         cell.setTcPr(cellProperties);
+        String cellText = docxCell.text();
 
         P paragraph = objectFactory.createP();
         paragraph.setPPr(createParagraphProperties(
@@ -459,6 +505,82 @@ public class Docx4jWriter implements DocxWriter {
 
             styles.getStyle().removeIf(style -> headingStyleId.equals(style.getStyleId()));
             styles.getStyle().add(createHeadingStyle(headingStyleId, entry.getValue()));
+        }
+    }
+
+    private void applyTocStyleDefinitions(
+            WordprocessingMLPackage wordPackage,
+            List<DocxBlock> blocks
+    ) throws Exception {
+        DocxTocBlock tocBlock = null;
+        for (DocxBlock block : blocks) {
+            if (block instanceof DocxTocBlock b) {
+                tocBlock = b;
+                break;
+            }
+        }
+        if (tocBlock == null) return;
+
+        StyleDefinitionsPart stylesPart = wordPackage.getMainDocumentPart().getStyleDefinitionsPart();
+        if (stylesPart == null) {
+            stylesPart = new StyleDefinitionsPart();
+            stylesPart.setJaxbElement(objectFactory.createStyles());
+            wordPackage.getMainDocumentPart().addTargetPart(stylesPart);
+        }
+        Styles styles = (Styles) stylesPart.getJaxbElement();
+        if (styles == null) {
+            styles = objectFactory.createStyles();
+            stylesPart.setJaxbElement(styles);
+        }
+
+        // Tab stop at content right edge for dotted leader
+        long rightEdgeTwips = MeasurementConverter.centimetersToTwips(new java.math.BigDecimal(tocBlock.contentWidthCm()));
+
+        List<StyleRule> entryStyles = tocBlock.entryStylesByLevel();
+        for (int level = 0; level < entryStyles.size(); level++) {
+            StyleRule entryStyle = entryStyles.get(level);
+            String styleId = "TOC" + (level + 1);
+            final Styles finalStyles = styles;
+            finalStyles.getStyle().removeIf(s -> styleId.equals(s.getStyleId()));
+
+            Style style = objectFactory.createStyle();
+            style.setType("paragraph");
+            style.setStyleId(styleId);
+
+            Style.Name name = objectFactory.createStyleName();
+            name.setVal("TOC " + (level + 1));
+            style.setName(name);
+
+            Style.BasedOn basedOn = objectFactory.createStyleBasedOn();
+            basedOn.setVal("Normal");
+            style.setBasedOn(basedOn);
+
+            PPr pPr = createParagraphProperties(entryStyle, Optional.empty(), Optional.empty(), Optional.empty());
+
+            // Left indent increases per level (0.5 cm per level starting from level 2)
+            if (level > 0) {
+                PPrBase.Ind ind = pPr.getInd();
+                if (ind == null) {
+                    ind = objectFactory.createPPrBaseInd();
+                    pPr.setInd(ind);
+                }
+                long indentTwips = MeasurementConverter.centimetersToTwips(new java.math.BigDecimal("0.5").multiply(new java.math.BigDecimal(level)));
+                ind.setLeft(BigInteger.valueOf(indentTwips));
+            }
+
+            // Tab stop with dot leader at right edge
+            CTTabStop tabStop = objectFactory.createCTTabStop();
+            tabStop.setVal(STTabJc.RIGHT);
+            tabStop.setLeader(STTabTlc.DOT);
+            tabStop.setPos(BigInteger.valueOf(rightEdgeTwips));
+            Tabs tabs = objectFactory.createTabs();
+            tabs.getTab().add(tabStop);
+            pPr.setTabs(tabs);
+
+            style.setPPr(pPr);
+            style.setRPr(createRunProperties(entryStyle));
+
+            finalStyles.getStyle().add(style);
         }
     }
 

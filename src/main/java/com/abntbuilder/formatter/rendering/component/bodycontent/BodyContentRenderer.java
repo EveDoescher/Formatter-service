@@ -206,6 +206,40 @@ public final class BodyContentRenderer
         }
     }
 
+    private static List<DocxBlock> renderListItems(
+            BodyList list,
+            StyleRule itemStyle,
+            int nestingLevel,
+            BodyContentComponentRule rule,
+            StyleResolver styleResolver,
+            List<BodyAbbreviationMetadata> abbreviationMetas,
+            int[] footnoteCounter,
+            CrossReferenceIndex crossRefIndex
+    ) {
+        List<DocxBlock> blocks = new ArrayList<>();
+        for (com.abntbuilder.formatter.document.component.bodycontent.BodyListItem item : list.items()) {
+            java.util.List<com.abntbuilder.formatter.output.docx.api.DocxFootnoteContent> footnoteAccumulator = new java.util.ArrayList<>();
+            List<DocxRun> runs = item.content().stream()
+                    .flatMap(inline -> toDocxRun(inline, itemStyle, rule, styleResolver, abbreviationMetas, footnoteAccumulator, footnoteCounter, crossRefIndex).stream())
+                    .toList();
+            DocxBlock listItem = new DocxListItemParagraph(runs, itemStyle, list.type(), nestingLevel);
+            if (!footnoteAccumulator.isEmpty()) {
+                blocks.add(new com.abntbuilder.formatter.output.docx.api.DocxFootnoteReferenceBlock(listItem, footnoteAccumulator));
+            } else {
+                blocks.add(listItem);
+            }
+            item.subList().ifPresent(subList -> {
+                StyleRule subItemStyle = styleResolver.resolve(
+                        subList.type() == BodyListType.ORDERED
+                                ? rule.styleMapping().listOrderedStyleId()
+                                : rule.styleMapping().listUnorderedStyleId()
+                );
+                blocks.addAll(renderListItems(subList, subItemStyle, nestingLevel + 1, rule, styleResolver, abbreviationMetas, footnoteCounter, crossRefIndex));
+            });
+        }
+        return blocks;
+    }
+
     private static List<DocxBlock> renderContentBlock(
             BodyBlock contentBlock,
             BodyContentComponentRule rule,
@@ -264,19 +298,7 @@ public final class BodyContentRenderer
                                 ? rule.styleMapping().listOrderedStyleId()
                                 : rule.styleMapping().listUnorderedStyleId()
                 );
-                yield list.items().stream()
-                        .map(item -> {
-                            java.util.List<com.abntbuilder.formatter.output.docx.api.DocxFootnoteContent> footnoteAccumulator = new java.util.ArrayList<>();
-                            List<DocxRun> runs = item.content().stream()
-                                    .flatMap(inline -> toDocxRun(inline, itemStyle, rule, styleResolver, abbreviationMetas, footnoteAccumulator, footnoteCounter, crossRefIndex).stream())
-                                    .toList();
-                            com.abntbuilder.formatter.output.docx.api.DocxBlock listItem = new DocxListItemParagraph(runs, itemStyle, list.type(), 0);
-                            if (!footnoteAccumulator.isEmpty()) {
-                                return new com.abntbuilder.formatter.output.docx.api.DocxFootnoteReferenceBlock(listItem, footnoteAccumulator);
-                            }
-                            return listItem;
-                        })
-                        .toList();
+                yield renderListItems(list, itemStyle, 0, rule, styleResolver, abbreviationMetas, footnoteCounter, crossRefIndex);
             }
             case BodyFrame frame -> {
                 DisplayObjectContinuationPart part = frameRenderingState.nextPart(frame, rule.frame().continuationLabels());
@@ -462,7 +484,12 @@ public final class BodyContentRenderer
         ));
         blocks.add(new DocxTableBlock(
                 table.columns().stream().map(column -> column.header()).toList(),
-                table.rows().stream().map(row -> row.cells()).toList(),
+                table.rows().stream()
+                        .map(row -> row.cells().stream()
+                                .map(cell -> new com.abntbuilder.formatter.output.docx.api.DocxTableCell(
+                                        cell.text(), cell.colspan(), cell.rowspanStart(), cell.rowspanContinuation()))
+                                .toList())
+                        .toList(),
                 styleResolver.resolve(rule.headerStyleId()),
                 styleResolver.resolve(rule.cellStyleId()),
                 rule.widthPercent(),
@@ -757,7 +784,12 @@ public final class BodyContentRenderer
         ));
         blocks.add(new DocxTableBlock(
                 frame.columns().stream().map(column -> column.header()).toList(),
-                frame.rows().stream().map(row -> row.cells()).toList(),
+                frame.rows().stream()
+                        .map(row -> row.cells().stream()
+                                .map(cell -> new com.abntbuilder.formatter.output.docx.api.DocxTableCell(
+                                        cell.text(), cell.colspan(), cell.rowspanStart(), cell.rowspanContinuation()))
+                                .toList())
+                        .toList(),
                 styleResolver.resolve(rule.headerStyleId()),
                 styleResolver.resolve(rule.cellStyleId()),
                 rule.widthPercent(),

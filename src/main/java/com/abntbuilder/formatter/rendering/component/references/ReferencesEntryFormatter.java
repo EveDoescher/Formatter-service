@@ -26,6 +26,9 @@ public final class ReferencesEntryFormatter {
             case WEBSITE -> formatWebsite(entry);
             case LEGISLATION -> formatLegislation(entry);
             case THESIS -> formatThesis(entry);
+            case CONFERENCE_PAPER -> formatConferencePaper(entry);
+            case REPORT -> formatReport(entry);
+            case STANDARD -> formatStandard(entry);
         };
     }
 
@@ -33,8 +36,12 @@ public final class ReferencesEntryFormatter {
         List<ReferenceSegment> segments = new ArrayList<>();
         segments.add(new ReferenceSegment(renderAuthors(e.authors()), false));
         segments.addAll(renderTitle(e.title(), e.subtitle()));
-        e.edition().ifPresent(ed -> segments.add(new ReferenceSegment(" " + ed + " ed.", false)));
-        segments.add(new ReferenceSegment(". ", false));
+        if (e.edition().isPresent()) {
+            segments.add(new ReferenceSegment(". " + e.edition().get() + ". ed.", false));
+            segments.add(new ReferenceSegment(" ", false));
+        } else {
+            segments.add(new ReferenceSegment(". ", false));
+        }
         e.city().ifPresent(c -> segments.add(new ReferenceSegment(c + ": ", false)));
         e.publisher().ifPresent(p -> segments.add(new ReferenceSegment(p + ", ", false)));
         segments.add(new ReferenceSegment(e.year() + ".", false));
@@ -42,17 +49,22 @@ public final class ReferencesEntryFormatter {
     }
 
     private List<ReferenceSegment> formatBookChapter(ReferenceEntry e) {
-        // AUTOR DO CAPÍTULO. Título do capítulo. In: AUTOR DO LIVRO (url field). Título do livro (subtitle field). ed. Cidade: Editora, Ano. p. páginas.
         List<ReferenceSegment> segments = new ArrayList<>();
         segments.add(new ReferenceSegment(renderAuthors(e.authors()), false));
         segments.addAll(renderTitle(e.title(), Optional.empty()));
         segments.add(new ReferenceSegment(" " + rule.inLabel(), false));
-        e.url().ifPresent(bookAuthor -> segments.add(new ReferenceSegment(bookAuthor.toUpperCase() + ". ", false)));
-        e.subtitle().ifPresent(bookTitle -> {
-            segments.add(new ReferenceSegment(bookTitle, true));
+        e.bookAuthors().ifPresent(bookAuthors -> {
+            if (!bookAuthors.isEmpty()) {
+                segments.add(new ReferenceSegment(renderAuthors(bookAuthors).stripTrailing() + " (org.). ", false));
+            }
+        });
+        e.bookTitle().ifPresent(bt -> {
+            segments.add(new ReferenceSegment(bt, true));
             segments.add(new ReferenceSegment(". ", false));
         });
-        e.edition().ifPresent(ed -> segments.add(new ReferenceSegment(ed + " ed. ", false)));
+        if (e.edition().isPresent()) {
+            segments.add(new ReferenceSegment(e.edition().get() + ". ed. ", false));
+        }
         e.city().ifPresent(c -> segments.add(new ReferenceSegment(c + ": ", false)));
         e.publisher().ifPresent(p -> segments.add(new ReferenceSegment(p + ", ", false)));
         segments.add(new ReferenceSegment(e.year() + ".", false));
@@ -65,8 +77,11 @@ public final class ReferencesEntryFormatter {
         segments.add(new ReferenceSegment(renderAuthors(e.authors()), false));
         segments.addAll(renderTitle(e.title(), e.subtitle()));
         e.publisher().ifPresent(journal -> segments.add(new ReferenceSegment(" " + journal, false)));
+        e.volume().ifPresent(v -> segments.add(new ReferenceSegment(", v. " + v, false)));
+        e.issue().ifPresent(n -> segments.add(new ReferenceSegment(", n. " + n, false)));
         e.pages().ifPresent(p -> segments.add(new ReferenceSegment(", p. " + p, false)));
         segments.add(new ReferenceSegment(", " + e.year() + ".", false));
+        e.doi().ifPresent(d -> segments.add(new ReferenceSegment(" https://doi.org/" + d + ".", false)));
         return List.copyOf(segments);
     }
 
@@ -93,6 +108,48 @@ public final class ReferencesEntryFormatter {
         segments.add(new ReferenceSegment(renderAuthors(e.authors()), false));
         segments.addAll(renderTitle(e.title(), e.subtitle()));
         segments.add(new ReferenceSegment(". " + e.year() + ".", false));
+        e.degree().ifPresent(d -> segments.add(new ReferenceSegment(" " + d + ".", false)));
+        e.institutionName().ifPresent(inst -> segments.add(new ReferenceSegment(" " + inst + ".", false)));
+        return List.copyOf(segments);
+    }
+
+    private List<ReferenceSegment> formatConferencePaper(ReferenceEntry e) {
+        // AUTOR. Título. In: NOME DO EVENTO, ed., ano, cidade. Anais... Cidade: Editora, Ano. p. páginas.
+        List<ReferenceSegment> segments = new ArrayList<>();
+        segments.add(new ReferenceSegment(renderAuthors(e.authors()), false));
+        segments.addAll(renderTitle(e.title(), e.subtitle()));
+        segments.add(new ReferenceSegment(". " + rule.inLabel(), false));
+        e.publisher().ifPresent(event -> segments.add(new ReferenceSegment(event + ". ", false)));
+        e.city().ifPresent(c -> segments.add(new ReferenceSegment(c + ": ", false)));
+        segments.add(new ReferenceSegment(e.year() + ".", false));
+        e.pages().ifPresent(p -> segments.add(new ReferenceSegment(" p. " + p + ".", false)));
+        return List.copyOf(segments);
+    }
+
+    private List<ReferenceSegment> formatReport(ReferenceEntry e) {
+        // AUTOR. Título. Cidade: Instituição, Ano. (Relatório técnico, n.)
+        List<ReferenceSegment> segments = new ArrayList<>();
+        segments.add(new ReferenceSegment(renderAuthors(e.authors()), false));
+        segments.addAll(renderTitle(e.title(), e.subtitle()));
+        segments.add(new ReferenceSegment(". ", false));
+        e.city().ifPresent(c -> segments.add(new ReferenceSegment(c + ": ", false)));
+        e.institutionName().ifPresent(inst -> segments.add(new ReferenceSegment(inst + ", ", false)));
+        segments.add(new ReferenceSegment(e.year() + ".", false));
+        e.issue().ifPresent(n -> segments.add(new ReferenceSegment(" (Relatório técnico, n. " + n + ")", false)));
+        return List.copyOf(segments);
+    }
+
+    private List<ReferenceSegment> formatStandard(ReferenceEntry e) {
+        // ÓRGÃO NORMALIZADOR. Número: Título. Cidade, Ano.
+        List<ReferenceSegment> segments = new ArrayList<>();
+        if (!e.authors().isEmpty()) {
+            segments.add(new ReferenceSegment(renderAuthors(e.authors()), false));
+        }
+        segments.add(new ReferenceSegment(e.title(), false));
+        e.subtitle().ifPresent(s -> segments.add(new ReferenceSegment(": " + s, false)));
+        segments.add(new ReferenceSegment(". ", false));
+        e.city().ifPresent(c -> segments.add(new ReferenceSegment(c + ", ", false)));
+        segments.add(new ReferenceSegment(e.year() + ".", false));
         return List.copyOf(segments);
     }
 

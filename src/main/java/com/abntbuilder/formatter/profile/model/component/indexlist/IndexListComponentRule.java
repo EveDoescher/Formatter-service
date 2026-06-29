@@ -10,7 +10,8 @@ public record IndexListComponentRule(
         String headingStyleId,
         String headingText,
         String entryStyleId,
-        String entryTemplate
+        String entryTemplate,
+        int blankLinesAfterHeading
 ) implements ComponentRule {
     public IndexListComponentRule {
         requireNonBlank(componentId, "componentId");
@@ -22,6 +23,7 @@ public record IndexListComponentRule(
             throw new InvalidProfileStructureException(
                     "indexList.entryTemplate must contain {number} and {caption}.");
         }
+        if (blankLinesAfterHeading < 0) throw new IllegalArgumentException("blankLinesAfterHeading must be >= 0.");
     }
 
     public Map<String, String> contentBindings() { return Map.of(); }
