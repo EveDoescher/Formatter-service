@@ -17,7 +17,10 @@ public record TableRule(
         DisplayObjectSourcePlacement sourcePlacement,
         TextAlignment tableAlignment,
         BigDecimal widthPercent,
-        Boolean repeatHeaderOnPageBreak
+        Boolean repeatHeaderOnPageBreak,
+        NumberingStrategy numberingStrategy,
+        String label,
+        String separator
 ) {
 
     public TableRule {
@@ -32,6 +35,8 @@ public record TableRule(
         Objects.requireNonNull(tableAlignment, "tableAlignment must not be null");
         requirePositive(widthPercent, "widthPercent");
         Objects.requireNonNull(repeatHeaderOnPageBreak, "repeatHeaderOnPageBreak must not be null");
+        Objects.requireNonNull(numberingStrategy, "numberingStrategy must not be null");
+        requireNonBlank(label, "label");
 
         if (widthPercent.compareTo(BigDecimal.valueOf(100)) > 0) {
             throw new InvalidProfileStructureException("table.widthPercent must be less than or equal to 100.");

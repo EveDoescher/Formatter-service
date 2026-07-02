@@ -19,7 +19,10 @@ public record FigureRule(
         BigDecimal defaultDpi,
         Integer maxImageBytes,
         Integer urlFetchTimeoutSeconds,
-        ImageFitPolicy fitPolicy
+        ImageFitPolicy fitPolicy,
+        NumberingStrategy numberingStrategy,
+        String label,
+        String separator
 ) {
 
     public FigureRule {
@@ -36,6 +39,8 @@ public record FigureRule(
         requirePositive(maxImageBytes, "maxImageBytes");
         requirePositive(urlFetchTimeoutSeconds, "urlFetchTimeoutSeconds");
         Objects.requireNonNull(fitPolicy, "fitPolicy must not be null");
+        Objects.requireNonNull(numberingStrategy, "numberingStrategy must not be null");
+        requireNonBlank(label, "label");
 
         if (!captionTemplate.contains("{number}") || !captionTemplate.contains("{caption}")) {
             throw new InvalidProfileStructureException(

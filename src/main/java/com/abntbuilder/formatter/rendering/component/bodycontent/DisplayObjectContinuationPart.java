@@ -2,7 +2,7 @@ package com.abntbuilder.formatter.rendering.component.bodycontent;
 
 import java.util.Optional;
 
-record DisplayObjectContinuationPart(
+public record DisplayObjectContinuationPart(
         int number,
         int index,
         int count,

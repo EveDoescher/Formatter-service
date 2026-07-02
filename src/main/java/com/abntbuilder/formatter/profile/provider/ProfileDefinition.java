@@ -30,6 +30,7 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.FrameRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.CodeListingRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ChartRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.NumberingStrategy;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.TableRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
 import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
@@ -578,7 +579,10 @@ public record ProfileDefinition(
             BigDecimal defaultDpi,
             Integer maxImageBytes,
             Integer urlFetchTimeoutSeconds,
-            ImageFitPolicy fitPolicy
+            ImageFitPolicy fitPolicy,
+            NumberingStrategy numberingStrategy,
+            String label,
+            String separator
     ) {
         FigureRule toDomain() {
             requireNonNull(continuationLabels, "bodyContent.figure.continuationLabels");
@@ -596,7 +600,10 @@ public record ProfileDefinition(
                     defaultDpi,
                     maxImageBytes,
                     urlFetchTimeoutSeconds,
-                    fitPolicy
+                    fitPolicy,
+                    numberingStrategy,
+                    label,
+                    separator
             );
         }
     }
@@ -612,7 +619,10 @@ public record ProfileDefinition(
             DisplayObjectSourcePlacement sourcePlacement,
             TextAlignment tableAlignment,
             BigDecimal widthPercent,
-            Boolean repeatHeaderOnPageBreak
+            Boolean repeatHeaderOnPageBreak,
+            NumberingStrategy numberingStrategy,
+            String label,
+            String separator
     ) {
         TableRule toDomain() {
             requireNonNull(continuationLabels, "bodyContent.table.continuationLabels");
@@ -628,7 +638,10 @@ public record ProfileDefinition(
                     sourcePlacement,
                     tableAlignment,
                     widthPercent,
-                    repeatHeaderOnPageBreak
+                    repeatHeaderOnPageBreak,
+                    numberingStrategy,
+                    label,
+                    separator
             );
         }
     }
@@ -644,7 +657,10 @@ public record ProfileDefinition(
             DisplayObjectSourcePlacement sourcePlacement,
             TextAlignment tableAlignment,
             BigDecimal widthPercent,
-            Boolean repeatHeaderOnPageBreak
+            Boolean repeatHeaderOnPageBreak,
+            NumberingStrategy numberingStrategy,
+            String label,
+            String separator
     ) {
         FrameRule toDomain() {
             requireNonNull(continuationLabels, "bodyContent.frame.continuationLabels");
@@ -660,7 +676,10 @@ public record ProfileDefinition(
                     sourcePlacement,
                     tableAlignment,
                     widthPercent,
-                    repeatHeaderOnPageBreak
+                    repeatHeaderOnPageBreak,
+                    numberingStrategy,
+                    label,
+                    separator
             );
         }
     }
@@ -672,7 +691,10 @@ public record ProfileDefinition(
             String captionTemplate,
             String sourceTemplate,
             DisplayObjectContinuationLabelsDefinition continuationLabels,
-            DisplayObjectSourcePlacement sourcePlacement
+            DisplayObjectSourcePlacement sourcePlacement,
+            NumberingStrategy numberingStrategy,
+            String label,
+            String separator
     ) {
         CodeListingRule toDomain() {
             requireNonNull(continuationLabels, "bodyContent.codeListing.continuationLabels");
@@ -684,7 +706,10 @@ public record ProfileDefinition(
                     captionTemplate,
                     sourceTemplate,
                     continuationLabels.toDomain(),
-                    sourcePlacement
+                    sourcePlacement,
+                    numberingStrategy,
+                    label,
+                    separator
             );
         }
     }
@@ -696,7 +721,10 @@ public record ProfileDefinition(
             String sourceTemplate,
             DisplayObjectContinuationLabelsDefinition continuationLabels,
             DisplayObjectSourcePlacement sourcePlacement,
-            FigureRuleDefinition imageRule
+            FigureRuleDefinition imageRule,
+            NumberingStrategy numberingStrategy,
+            String label,
+            String separator
     ) {
         ChartRule toDomain() {
             requireNonNull(continuationLabels, "bodyContent.chart.continuationLabels");
@@ -709,7 +737,10 @@ public record ProfileDefinition(
                     sourceTemplate,
                     continuationLabels.toDomain(),
                     sourcePlacement,
-                    imageRule.toDomain()
+                    imageRule.toDomain(),
+                    numberingStrategy,
+                    label,
+                    separator
             );
         }
     }

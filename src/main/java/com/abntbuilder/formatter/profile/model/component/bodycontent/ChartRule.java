@@ -11,7 +11,10 @@ public record ChartRule(
         String sourceTemplate,
         DisplayObjectContinuationLabels continuationLabels,
         DisplayObjectSourcePlacement sourcePlacement,
-        FigureRule imageRule
+        FigureRule imageRule,
+        NumberingStrategy numberingStrategy,
+        String label,
+        String separator
 ) {
 
     public ChartRule {
@@ -22,6 +25,8 @@ public record ChartRule(
         Objects.requireNonNull(continuationLabels, "continuationLabels must not be null");
         Objects.requireNonNull(sourcePlacement, "sourcePlacement must not be null");
         Objects.requireNonNull(imageRule, "imageRule must not be null");
+        Objects.requireNonNull(numberingStrategy, "numberingStrategy must not be null");
+        requireNonBlank(label, "label");
 
         if (!captionTemplate.contains("{number}") || !captionTemplate.contains("{caption}")) {
             throw new InvalidProfileStructureException(

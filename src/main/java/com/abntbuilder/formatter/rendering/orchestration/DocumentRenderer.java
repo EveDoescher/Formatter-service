@@ -15,8 +15,11 @@ import com.abntbuilder.formatter.rendering.component.ComponentRenderResult;
 import com.abntbuilder.formatter.rendering.component.ComponentRendererRegistry;
 import com.abntbuilder.formatter.rendering.component.MetadataConsumingRenderer;
 import com.abntbuilder.formatter.rendering.component.MetadataEmittingRenderer;
+import com.abntbuilder.formatter.rendering.component.Phase0ConsumingRenderer;
 import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentMetadata;
 import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentRenderResult;
+import com.abntbuilder.formatter.rendering.phase0.DisplayObjectCollector;
+import com.abntbuilder.formatter.rendering.phase0.Phase0Index;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -32,6 +35,7 @@ public final class DocumentRenderer {
 
     private final ComponentRendererRegistry rendererRegistry;
     private final ComponentSelectionResolver selectionResolver;
+    private final DisplayObjectCollector displayObjectCollector;
 
     public DocumentRenderer(
             ComponentRendererRegistry rendererRegistry,
@@ -39,6 +43,7 @@ public final class DocumentRenderer {
     ) {
         this.rendererRegistry = Objects.requireNonNull(rendererRegistry, "rendererRegistry must not be null");
         this.selectionResolver = Objects.requireNonNull(selectionResolver, "selectionResolver must not be null");
+        this.displayObjectCollector = new DisplayObjectCollector();
     }
 
     public DocxDocument render(ExportDocxCommand command) {
@@ -61,6 +66,8 @@ public final class DocumentRenderer {
         validateSelectedContent(command, documentComponentsById);
         validateSelectedPageNumberingComponents(command.selectedComponents(), componentOrder, pageNumberingRule);
 
+        Phase0Index phase0Index = displayObjectCollector.collect(
+                command.documentComponents(), command.profile());
         BodyContentMetadata bodyContentMetadata = BodyContentMetadata.empty();
 
         for (String componentId : componentOrder) {
@@ -100,14 +107,20 @@ public final class DocumentRenderer {
                 List<DocxBlock> componentBlocks;
 
                 try {
-                    if (renderer instanceof MetadataEmittingRenderer<?,?> emitting) {
+                    if (renderer instanceof Phase0ConsumingRenderer<?,?> phase0Consumer) {
+                        ComponentRenderResult result = phase0Consumer.renderComponentWithPhase0(component, command.profile(), phase0Index);
+                        componentBlocks = result.blocks();
+                        if (result instanceof BodyContentRenderResult bcr) {
+                            bodyContentMetadata = bcr.metadata();
+                        }
+                    } else if (renderer instanceof MetadataEmittingRenderer<?,?> emitting) {
                         ComponentRenderResult result = emitting.renderComponentWithMetadata(component, command.profile());
                         componentBlocks = result.blocks();
                         if (result instanceof BodyContentRenderResult bcr) {
                             bodyContentMetadata = bcr.metadata();
                         }
                     } else if (renderer instanceof MetadataConsumingRenderer<?> consuming) {
-                        componentBlocks = consuming.renderComponentWithMetadata(component, command.profile(), bodyContentMetadata);
+                        componentBlocks = consuming.renderComponentWithMetadata(component, command.profile(), phase0Index);
                     } else {
                         componentBlocks = renderer.renderComponent(component, command.profile());
                     }

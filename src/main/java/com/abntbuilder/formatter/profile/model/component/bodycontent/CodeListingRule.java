@@ -11,7 +11,10 @@ public record CodeListingRule(
         String captionTemplate,
         String sourceTemplate,
         DisplayObjectContinuationLabels continuationLabels,
-        DisplayObjectSourcePlacement sourcePlacement
+        DisplayObjectSourcePlacement sourcePlacement,
+        NumberingStrategy numberingStrategy,
+        String label,
+        String separator
 ) {
 
     public CodeListingRule {
@@ -22,6 +25,8 @@ public record CodeListingRule(
         requireNonBlank(sourceTemplate, "sourceTemplate");
         Objects.requireNonNull(continuationLabels, "continuationLabels must not be null");
         Objects.requireNonNull(sourcePlacement, "sourcePlacement must not be null");
+        Objects.requireNonNull(numberingStrategy, "numberingStrategy must not be null");
+        requireNonBlank(label, "label");
 
         if (!captionTemplate.contains("{number}") || !captionTemplate.contains("{caption}")) {
             throw new InvalidProfileStructureException(

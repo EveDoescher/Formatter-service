@@ -2,6 +2,7 @@ package com.abntbuilder.formatter.api.export.dto.request;
 
 import com.abntbuilder.formatter.profile.model.component.bodycontent.CodeListingRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.NumberingStrategy;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,7 +14,10 @@ public record CodeListingRuleRequest(
         @NotBlank String captionTemplate,
         @NotBlank String sourceTemplate,
         @Valid @NotNull DisplayObjectContinuationLabelsRequest continuationLabels,
-        @NotNull DisplayObjectSourcePlacement sourcePlacement
+        @NotNull DisplayObjectSourcePlacement sourcePlacement,
+        @NotNull NumberingStrategy numberingStrategy,
+        @NotBlank String label,
+        String separator
 ) {
     public CodeListingRule toDomain() {
         return new CodeListingRule(
@@ -23,7 +27,10 @@ public record CodeListingRuleRequest(
                 captionTemplate,
                 sourceTemplate,
                 continuationLabels.toDomain(),
-                sourcePlacement
+                sourcePlacement,
+                numberingStrategy,
+                label,
+                separator
         );
     }
 }

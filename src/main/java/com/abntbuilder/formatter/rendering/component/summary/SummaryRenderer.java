@@ -11,8 +11,8 @@ import com.abntbuilder.formatter.profile.model.component.summary.SummaryComponen
 import com.abntbuilder.formatter.profile.resolution.ComponentRuleResolver;
 import com.abntbuilder.formatter.profile.resolution.StyleResolver;
 import com.abntbuilder.formatter.rendering.component.MetadataConsumingRenderer;
-import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentMetadata;
 import com.abntbuilder.formatter.rendering.component.bodycontent.BodySectionMetadata;
+import com.abntbuilder.formatter.rendering.phase0.Phase0Index;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ public final class SummaryRenderer implements MetadataConsumingRenderer<SummaryC
 
     @Override
     public List<DocxBlock> renderWithMetadata(
-            SummaryComponent component, DocumentProfile profile, BodyContentMetadata metadata) {
+            SummaryComponent component, DocumentProfile profile, Phase0Index phase0Index) {
         SummaryComponentRule rule = new ComponentRuleResolver(profile)
                 .resolve(COMPONENT_ID, SummaryComponentRule.class);
         StyleResolver styleResolver = new StyleResolver(profile);
@@ -48,7 +48,7 @@ public final class SummaryRenderer implements MetadataConsumingRenderer<SummaryC
                     - profile.pageRule().marginRightCm().doubleValue();
             blocks.add(new DocxTocBlock(headingStyle, tocInstruction, entryStyles, contentWidthCm));
         } else {
-            for (BodySectionMetadata section : metadata.sections()) {
+            for (BodySectionMetadata section : phase0Index.sections().values()) {
                 int level = section.level();
                 int styleIndex = Math.min(level - 1, rule.entryStyleIdsByLevel().size() - 1);
                 StyleRule entryStyle = styleResolver.resolve(rule.entryStyleIdsByLevel().get(styleIndex));

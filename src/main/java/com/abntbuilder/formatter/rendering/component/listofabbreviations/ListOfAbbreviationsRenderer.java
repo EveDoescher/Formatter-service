@@ -12,7 +12,7 @@ import com.abntbuilder.formatter.profile.resolution.ComponentRuleResolver;
 import com.abntbuilder.formatter.profile.resolution.StyleResolver;
 import com.abntbuilder.formatter.rendering.component.MetadataConsumingRenderer;
 import com.abntbuilder.formatter.rendering.component.bodycontent.BodyAbbreviationMetadata;
-import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentMetadata;
+import com.abntbuilder.formatter.rendering.phase0.Phase0Index;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -30,7 +30,7 @@ public final class ListOfAbbreviationsRenderer
 
     @Override
     public List<DocxBlock> renderWithMetadata(
-            ListOfAbbreviationsComponent component, DocumentProfile profile, BodyContentMetadata metadata) {
+            ListOfAbbreviationsComponent component, DocumentProfile profile, Phase0Index phase0Index) {
         ListOfAbbreviationsComponentRule rule = new ComponentRuleResolver(profile)
                 .resolve(COMPONENT_ID, ListOfAbbreviationsComponentRule.class);
         StyleResolver styleResolver = new StyleResolver(profile);
@@ -43,7 +43,7 @@ public final class ListOfAbbreviationsRenderer
             blocks.add(new DocxBlankLine(headingStyle));
         }
 
-        List<BodyAbbreviationMetadata> abbreviations = new ArrayList<>(metadata.abbreviations());
+        List<BodyAbbreviationMetadata> abbreviations = new ArrayList<>(phase0Index.abbreviations());
         if (rule.sortAlphabetically()) {
             abbreviations.sort(Comparator.comparing(BodyAbbreviationMetadata::abbreviation));
         }

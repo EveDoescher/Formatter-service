@@ -2,6 +2,7 @@ package com.abntbuilder.formatter.api.export.dto.request;
 
 import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.NumberingStrategy;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.TableRule;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -20,7 +21,10 @@ public record TableRuleRequest(
         @NotNull DisplayObjectSourcePlacement sourcePlacement,
         @NotNull TextAlignment tableAlignment,
         @NotNull BigDecimal widthPercent,
-        @NotNull Boolean repeatHeaderOnPageBreak
+        @NotNull Boolean repeatHeaderOnPageBreak,
+        @NotNull NumberingStrategy numberingStrategy,
+        @NotBlank String label,
+        String separator
 ) {
 
     TableRule toDomain() {
@@ -35,7 +39,10 @@ public record TableRuleRequest(
                 sourcePlacement,
                 tableAlignment,
                 widthPercent,
-                repeatHeaderOnPageBreak
+                repeatHeaderOnPageBreak,
+                numberingStrategy,
+                label,
+                separator
         );
     }
 }

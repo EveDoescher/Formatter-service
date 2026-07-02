@@ -9,14 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-final class DisplayObjectRenderingState<T extends NumberedDisplayObject> {
+public final class DisplayObjectRenderingState<T extends NumberedDisplayObject> {
 
     private final Map<String, Integer> numbersByGroupKey = new LinkedHashMap<>();
     private final Map<String, Integer> countsByGroupKey = new HashMap<>();
     private final Map<String, Integer> currentIndexByGroupKey = new HashMap<>();
     private final Map<String, String> sourceByGroupKey = new HashMap<>();
 
-    DisplayObjectRenderingState(List<T> displayObjects) {
+    public DisplayObjectRenderingState(List<T> displayObjects) {
         int nextNumber = 1;
 
         for (T displayObject : displayObjects) {
@@ -32,11 +32,11 @@ final class DisplayObjectRenderingState<T extends NumberedDisplayObject> {
         }
     }
 
-    Optional<String> sourceFor(T displayObject) {
+    public Optional<String> sourceFor(T displayObject) {
         return Optional.ofNullable(sourceByGroupKey.get(displayObject.displayGroupKey()));
     }
 
-    DisplayObjectContinuationPart nextPart(T displayObject, DisplayObjectContinuationLabels labels) {
+    public DisplayObjectContinuationPart nextPart(T displayObject, DisplayObjectContinuationLabels labels) {
         String groupKey = displayObject.displayGroupKey();
         int index = currentIndexByGroupKey.merge(groupKey, 1, Integer::sum);
         int count = countsByGroupKey.get(groupKey);

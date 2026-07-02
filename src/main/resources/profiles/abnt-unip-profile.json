@@ -1515,7 +1515,9 @@
         "defaultDpi": 96,
         "maxImageBytes": 2000000,
         "urlFetchTimeoutSeconds": 10,
-        "fitPolicy": "SCALE_DOWN_PRESERVE_ASPECT_RATIO"
+        "fitPolicy": "SCALE_DOWN_PRESERVE_ASPECT_RATIO",
+        "numberingStrategy": "GLOBAL_SEQUENTIAL",
+        "label": "Figura"
       },
       "table": {
         "captionStyleId": "bodyContent.table.caption",
@@ -1532,7 +1534,9 @@
         "sourcePlacement": "LAST_PART_ONLY",
         "tableAlignment": "CENTER",
         "widthPercent": 100,
-        "repeatHeaderOnPageBreak": true
+        "repeatHeaderOnPageBreak": true,
+        "numberingStrategy": "GLOBAL_SEQUENTIAL",
+        "label": "Tabela"
       },
       "frame": {
         "captionStyleId": "bodyContent.frame.caption",
@@ -1549,7 +1553,9 @@
         "sourcePlacement": "LAST_PART_ONLY",
         "tableAlignment": "CENTER",
         "widthPercent": 100,
-        "repeatHeaderOnPageBreak": true
+        "repeatHeaderOnPageBreak": true,
+        "numberingStrategy": "GLOBAL_SEQUENTIAL",
+        "label": "Quadro"
       },
       "codeListing": {
         "captionStyleId": "bodyContent.figure.caption",
@@ -1562,7 +1568,9 @@
           "middle": "continuação",
           "last": "conclusão"
         },
-        "sourcePlacement": "LAST_PART_ONLY"
+        "sourcePlacement": "LAST_PART_ONLY",
+        "numberingStrategy": "GLOBAL_SEQUENTIAL",
+        "label": "Código-fonte"
       },
       "chart": {
         "captionStyleId": "bodyContent.figure.caption",
@@ -1592,8 +1600,12 @@
           "defaultDpi": 96,
           "maxImageBytes": 2000000,
           "urlFetchTimeoutSeconds": 10,
-          "fitPolicy": "SCALE_DOWN_PRESERVE_ASPECT_RATIO"
-        }
+          "fitPolicy": "SCALE_DOWN_PRESERVE_ASPECT_RATIO",
+          "numberingStrategy": "GLOBAL_SEQUENTIAL",
+          "label": "Gráfico"
+        },
+        "numberingStrategy": "GLOBAL_SEQUENTIAL",
+        "label": "Gráfico"
       },
       "citationFormatting": {
         "pagePrefix": "p.",

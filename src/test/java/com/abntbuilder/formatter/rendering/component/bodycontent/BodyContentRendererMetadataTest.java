@@ -29,9 +29,12 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObje
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FigureRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FrameRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.NumberingStrategy;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.TableRule;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
 import com.abntbuilder.formatter.output.docx.api.DocxRun;
+import com.abntbuilder.formatter.rendering.phase0.DisplayObjectCollector;
+import com.abntbuilder.formatter.rendering.phase0.Phase0Index;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -46,6 +49,7 @@ class BodyContentRendererMetadataTest {
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=";
 
     private final BodyContentRenderer renderer = new BodyContentRenderer();
+    private final DisplayObjectCollector collector = new DisplayObjectCollector();
 
     @Test
     void shouldEmitSectionMetadata() {
@@ -113,13 +117,15 @@ class BodyContentRendererMetadataTest {
         BodyParagraph paragraph = new BodyParagraph(List.of(ref));
         BodySection section = new BodySection("sec-1", 1, Optional.of("Seção"), List.of(figure, paragraph));
         BodyContentComponent component = new BodyContentComponent(List.of(section));
+        DocumentProfile prof = profile();
+        Phase0Index phase0Index = collector.collect(List.of(component), prof);
 
-        BodyContentRenderResult result = renderer.renderWithMetadata(component, profile());
+        BodyContentRenderResult result = renderer.renderWithPhase0(component, prof, phase0Index);
 
         boolean hasResolvedReference = result.blocks().stream()
                 .filter(b -> b instanceof DocxParagraph)
                 .map(b -> (DocxParagraph) b)
-                .anyMatch(p -> p.runs().stream().map(DocxRun::text).reduce("", String::concat).equals("Figura 1"));
+                .anyMatch(para -> para.runs().stream().map(DocxRun::text).reduce("", String::concat).equals("Figura 1"));
         assertThat(hasResolvedReference).as("Expected a paragraph with exactly 'Figura 1' (resolved cross-reference)").isTrue();
     }
 
@@ -129,11 +135,13 @@ class BodyContentRendererMetadataTest {
         BodyCrossReference ref = new BodyCrossReference("sec-target", CrossReferenceTargetType.SECTION, CrossReferenceDisplayMode.NUMBER_ONLY);
         BodySection refSection = new BodySection("sec-ref", 1, Optional.of("Introdução"), List.of(new BodyParagraph(List.of(ref))));
         BodyContentComponent component = new BodyContentComponent(List.of(target, refSection));
+        DocumentProfile prof = profile();
+        Phase0Index phase0Index = collector.collect(List.of(component), prof);
 
-        BodyContentRenderResult result = renderer.renderWithMetadata(component, profile());
+        BodyContentRenderResult result = renderer.renderWithPhase0(component, prof, phase0Index);
 
         DocxParagraph docxParagraph = result.blocks().stream()
-                .filter(b -> b instanceof DocxParagraph p && p.runs().stream().anyMatch(r -> r.text().equals("1")))
+                .filter(b -> b instanceof DocxParagraph para && para.runs().stream().anyMatch(r -> r.text().equals("1")))
                 .map(b -> (DocxParagraph) b)
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("No paragraph with section number '1' found"));
@@ -247,7 +255,10 @@ class BodyContentRendererMetadataTest {
                 BigDecimal.valueOf(96),
                 2_000_000,
                 10,
-                ImageFitPolicy.SCALE_DOWN_PRESERVE_ASPECT_RATIO
+                ImageFitPolicy.SCALE_DOWN_PRESERVE_ASPECT_RATIO,
+                NumberingStrategy.GLOBAL_SEQUENTIAL,
+                "Figura",
+                null
         );
     }
 
@@ -263,7 +274,10 @@ class BodyContentRendererMetadataTest {
                 DisplayObjectSourcePlacement.LAST_PART_ONLY,
                 TextAlignment.CENTER,
                 BigDecimal.valueOf(100),
-                true
+                true,
+                NumberingStrategy.GLOBAL_SEQUENTIAL,
+                "Tabela",
+                null
         );
     }
 
@@ -279,7 +293,10 @@ class BodyContentRendererMetadataTest {
                 DisplayObjectSourcePlacement.LAST_PART_ONLY,
                 TextAlignment.CENTER,
                 BigDecimal.valueOf(100),
-                true
+                true,
+                NumberingStrategy.GLOBAL_SEQUENTIAL,
+                "Quadro",
+                null
         );
     }
 
@@ -291,7 +308,10 @@ class BodyContentRendererMetadataTest {
                 "Código-fonte {number} - {caption}",
                 "Fonte: {source}",
                 new DisplayObjectContinuationLabels("continua", "continuação", "conclusão"),
-                DisplayObjectSourcePlacement.LAST_PART_ONLY
+                DisplayObjectSourcePlacement.LAST_PART_ONLY,
+                NumberingStrategy.GLOBAL_SEQUENTIAL,
+                "Código-fonte",
+                null
         );
     }
 
@@ -303,7 +323,10 @@ class BodyContentRendererMetadataTest {
                 "Fonte: {source}",
                 new DisplayObjectContinuationLabels("continua", "continuação", "conclusão"),
                 DisplayObjectSourcePlacement.LAST_PART_ONLY,
-                figureRule()
+                figureRule(),
+                NumberingStrategy.GLOBAL_SEQUENTIAL,
+                "Gráfico",
+                null
         );
     }
 }

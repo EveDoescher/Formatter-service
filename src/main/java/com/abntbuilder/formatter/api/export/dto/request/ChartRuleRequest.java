@@ -2,6 +2,7 @@ package com.abntbuilder.formatter.api.export.dto.request;
 
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ChartRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.NumberingStrategy;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,7 +14,10 @@ public record ChartRuleRequest(
         @NotBlank String sourceTemplate,
         @Valid @NotNull DisplayObjectContinuationLabelsRequest continuationLabels,
         @NotNull DisplayObjectSourcePlacement sourcePlacement,
-        @Valid @NotNull FigureRuleRequest imageRule
+        @Valid @NotNull FigureRuleRequest imageRule,
+        @NotNull NumberingStrategy numberingStrategy,
+        @NotBlank String label,
+        String separator
 ) {
     public ChartRule toDomain() {
         return new ChartRule(
@@ -23,7 +27,10 @@ public record ChartRuleRequest(
                 sourceTemplate,
                 continuationLabels.toDomain(),
                 sourcePlacement,
-                imageRule.toDomain()
+                imageRule.toDomain(),
+                numberingStrategy,
+                label,
+                separator
         );
     }
 }

@@ -11,8 +11,8 @@ import com.abntbuilder.formatter.profile.model.component.indexlist.IndexListComp
 import com.abntbuilder.formatter.profile.resolution.ComponentRuleResolver;
 import com.abntbuilder.formatter.profile.resolution.StyleResolver;
 import com.abntbuilder.formatter.rendering.component.MetadataConsumingRenderer;
-import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentMetadata;
 import com.abntbuilder.formatter.rendering.component.bodycontent.BodyDisplayObjectMetadata;
+import com.abntbuilder.formatter.rendering.phase0.Phase0Index;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +21,11 @@ import java.util.function.Function;
 public abstract class AbstractIndexListRenderer<T extends DocumentComponent>
         implements MetadataConsumingRenderer<T> {
 
-    protected abstract Function<BodyContentMetadata, List<BodyDisplayObjectMetadata>> metadataExtractor();
+    protected abstract Function<Phase0Index, List<BodyDisplayObjectMetadata>> metadataExtractor();
 
     @Override
     public List<DocxBlock> renderWithMetadata(
-            T component, DocumentProfile profile, BodyContentMetadata metadata) {
+            T component, DocumentProfile profile, Phase0Index phase0Index) {
         IndexListComponentRule rule = new ComponentRuleResolver(profile)
                 .resolve(componentId(), IndexListComponentRule.class);
         StyleResolver styleResolver = new StyleResolver(profile);
@@ -39,7 +39,7 @@ public abstract class AbstractIndexListRenderer<T extends DocumentComponent>
             blocks.add(new DocxBlankLine(headingStyle));
         }
 
-        for (BodyDisplayObjectMetadata item : metadataExtractor().apply(metadata)) {
+        for (BodyDisplayObjectMetadata item : metadataExtractor().apply(phase0Index)) {
             String text = rule.entryTemplate()
                     .replace("{number}", String.valueOf(item.number()))
                     .replace("{caption}", item.caption());

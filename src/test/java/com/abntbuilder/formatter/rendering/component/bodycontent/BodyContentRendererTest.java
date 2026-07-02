@@ -37,6 +37,7 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObje
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FigureRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FrameRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.NumberingStrategy;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.TableRule;
 import org.junit.jupiter.api.Test;
 
@@ -502,7 +503,10 @@ class BodyContentRendererTest {
                 BigDecimal.valueOf(96),
                 2_000_000,
                 10,
-                ImageFitPolicy.SCALE_DOWN_PRESERVE_ASPECT_RATIO
+                ImageFitPolicy.SCALE_DOWN_PRESERVE_ASPECT_RATIO,
+                NumberingStrategy.GLOBAL_SEQUENTIAL,
+                "Figura",
+                null
         );
     }
 
@@ -518,7 +522,10 @@ class BodyContentRendererTest {
                 DisplayObjectSourcePlacement.LAST_PART_ONLY,
                 TextAlignment.CENTER,
                 BigDecimal.valueOf(100),
-                true
+                true,
+                NumberingStrategy.GLOBAL_SEQUENTIAL,
+                "Tabela",
+                null
         );
     }
 
@@ -534,7 +541,10 @@ class BodyContentRendererTest {
                 DisplayObjectSourcePlacement.LAST_PART_ONLY,
                 TextAlignment.CENTER,
                 BigDecimal.valueOf(100),
-                true
+                true,
+                NumberingStrategy.GLOBAL_SEQUENTIAL,
+                "Quadro",
+                null
         );
     }
 
@@ -546,7 +556,10 @@ class BodyContentRendererTest {
                 "Código-fonte {number} - {caption}",
                 "Fonte: {source}",
                 new DisplayObjectContinuationLabels("continua", "continuação", "conclusão"),
-                DisplayObjectSourcePlacement.LAST_PART_ONLY
+                DisplayObjectSourcePlacement.LAST_PART_ONLY,
+                NumberingStrategy.GLOBAL_SEQUENTIAL,
+                "Código-fonte",
+                null
         );
     }
 
@@ -558,7 +571,10 @@ class BodyContentRendererTest {
                 "Fonte: {source}",
                 new DisplayObjectContinuationLabels("continua", "continuação", "conclusão"),
                 DisplayObjectSourcePlacement.LAST_PART_ONLY,
-                figureRule()
+                figureRule(),
+                NumberingStrategy.GLOBAL_SEQUENTIAL,
+                "Gráfico",
+                null
         );
     }
 }

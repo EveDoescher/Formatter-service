@@ -3,6 +3,7 @@ package com.abntbuilder.formatter.api.export.dto.request;
 import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FrameRule;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.NumberingStrategy;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,7 +21,10 @@ public record FrameRuleRequest(
         @NotNull DisplayObjectSourcePlacement sourcePlacement,
         @NotNull TextAlignment tableAlignment,
         @NotNull BigDecimal widthPercent,
-        @NotNull Boolean repeatHeaderOnPageBreak
+        @NotNull Boolean repeatHeaderOnPageBreak,
+        @NotNull NumberingStrategy numberingStrategy,
+        @NotBlank String label,
+        String separator
 ) {
 
     public FrameRule toDomain() {
@@ -35,7 +39,10 @@ public record FrameRuleRequest(
                 sourcePlacement,
                 tableAlignment,
                 widthPercent,
-                repeatHeaderOnPageBreak
+                repeatHeaderOnPageBreak,
+                numberingStrategy,
+                label,
+                separator
         );
     }
 }

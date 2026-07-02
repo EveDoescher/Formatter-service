@@ -4,6 +4,7 @@ import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.FigureRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.NumberingStrategy;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,7 +24,10 @@ public record FigureRuleRequest(
         @NotNull BigDecimal defaultDpi,
         @NotNull Integer maxImageBytes,
         @NotNull Integer urlFetchTimeoutSeconds,
-        @NotNull ImageFitPolicy fitPolicy
+        @NotNull ImageFitPolicy fitPolicy,
+        @NotNull NumberingStrategy numberingStrategy,
+        @NotBlank String label,
+        String separator
 ) {
 
     FigureRule toDomain() {
@@ -40,7 +44,10 @@ public record FigureRuleRequest(
                 defaultDpi,
                 maxImageBytes,
                 urlFetchTimeoutSeconds,
-                fitPolicy
+                fitPolicy,
+                numberingStrategy,
+                label,
+                separator
         );
     }
 }

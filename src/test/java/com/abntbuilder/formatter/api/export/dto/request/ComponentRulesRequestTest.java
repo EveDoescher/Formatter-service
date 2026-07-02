@@ -6,6 +6,7 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContent
 import com.abntbuilder.formatter.profile.model.component.bodycontent.CrossReferenceLabelsRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
+import com.abntbuilder.formatter.profile.model.component.bodycontent.NumberingStrategy;
 import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageComponentRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.HorizontalPlacementStrategy;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageAnchorStrategy;
@@ -128,7 +129,10 @@ class ComponentRulesRequestTest {
                         "Código {number} - {caption}",
                         "Fonte: {source}",
                         new DisplayObjectContinuationLabelsRequest("continua", "continuação", "conclusão"),
-                        DisplayObjectSourcePlacement.LAST_PART_ONLY
+                        DisplayObjectSourcePlacement.LAST_PART_ONLY,
+                        NumberingStrategy.GLOBAL_SEQUENTIAL,
+                        "Código-fonte",
+                        null
                 ),
                 new ChartRuleRequest(
                         "bodyContent.chart.caption",
@@ -137,7 +141,10 @@ class ComponentRulesRequestTest {
                         "Fonte: {source}",
                         new DisplayObjectContinuationLabelsRequest("continua", "continuação", "conclusão"),
                         DisplayObjectSourcePlacement.LAST_PART_ONLY,
-                        figureRuleRequest()
+                        figureRuleRequest(),
+                        NumberingStrategy.GLOBAL_SEQUENTIAL,
+                        "Gráfico",
+                        null
                 ),
                 new CitationFormattingRuleRequest("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor", "informação verbal"),
                 new CrossReferenceLabelsRuleRequest("Seção", "Figura", "Tabela", "Quadro", "Gráfico", "Listagem", "Equação")
@@ -158,7 +165,10 @@ class ComponentRulesRequestTest {
                 BigDecimal.valueOf(96),
                 2_000_000,
                 10,
-                ImageFitPolicy.SCALE_DOWN_PRESERVE_ASPECT_RATIO
+                ImageFitPolicy.SCALE_DOWN_PRESERVE_ASPECT_RATIO,
+                NumberingStrategy.GLOBAL_SEQUENTIAL,
+                "Figura",
+                null
         );
     }
 
@@ -174,7 +184,10 @@ class ComponentRulesRequestTest {
                 DisplayObjectSourcePlacement.LAST_PART_ONLY,
                 TextAlignment.CENTER,
                 BigDecimal.valueOf(100),
-                true
+                true,
+                NumberingStrategy.GLOBAL_SEQUENTIAL,
+                "Tabela",
+                null
         );
     }
 
@@ -190,7 +203,10 @@ class ComponentRulesRequestTest {
                 DisplayObjectSourcePlacement.LAST_PART_ONLY,
                 TextAlignment.CENTER,
                 BigDecimal.valueOf(100),
-                true
+                true,
+                NumberingStrategy.GLOBAL_SEQUENTIAL,
+                "Quadro",
+                null
         );
     }
 

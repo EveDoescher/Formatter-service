@@ -16,7 +16,10 @@ public record FrameRule(
         DisplayObjectSourcePlacement sourcePlacement,
         TextAlignment tableAlignment,
         BigDecimal widthPercent,
-        Boolean repeatHeaderOnPageBreak
+        Boolean repeatHeaderOnPageBreak,
+        NumberingStrategy numberingStrategy,
+        String label,
+        String separator
 ) {
     public FrameRule {
         requireNonBlank(captionStyleId, "captionStyleId");
@@ -33,6 +36,8 @@ public record FrameRule(
             throw new IllegalArgumentException("widthPercent must be between 0 (exclusive) and 100 (inclusive).");
         }
         Objects.requireNonNull(repeatHeaderOnPageBreak, "repeatHeaderOnPageBreak must not be null");
+        Objects.requireNonNull(numberingStrategy, "numberingStrategy must not be null");
+        requireNonBlank(label, "label");
     }
 
     private static void requireNonBlank(String value, String field) {
