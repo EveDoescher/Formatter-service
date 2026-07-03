@@ -1,11 +1,7 @@
 package com.abntbuilder.formatter.rendering.orchestration;
 
 import com.abntbuilder.formatter.application.export.ExportDocxCommand;
-import com.abntbuilder.formatter.document.component.approvalsheet.ApprovalSheetComponent;
-import com.abntbuilder.formatter.document.component.approvalsheet.ApprovalSheetNature;
-import com.abntbuilder.formatter.document.component.cover.CoverComponent;
-import com.abntbuilder.formatter.document.component.titlepage.TitlePageComponent;
-import com.abntbuilder.formatter.document.component.titlepage.TitlePageNature;
+import com.abntbuilder.formatter.document.component.singlepage.SinglePageContent;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.output.docx.api.DocxDocument;
 import com.abntbuilder.formatter.output.docx.api.DocxPageBreak;
@@ -230,33 +226,16 @@ class DocumentRendererComponentSelectionTest {
         );
     }
 
-    private static CoverComponent cover() {
-        return new CoverComponent(
-                List.of("Universidade"),
-                List.of("Autor"),
-                "Titulo",
-                Optional.empty(),
-                "Limeira",
-                "2026"
-        );
+    private static SinglePageContent cover() {
+        return new SinglePageContent("cover", java.util.Map.of());
     }
 
-    private static TitlePageComponent titlePage() {
-        return new TitlePageComponent(
-                List.of("Autor"),
-                "Titulo",
-                Optional.empty(),
-                new TitlePageNature(
-                        "Trabalho de conclusao de curso",
-                        "obtencao do titulo de graduacao",
-                        "Curso",
-                        "Universidade"
-                ),
-                Optional.empty(),
-                Optional.empty(),
-                "Limeira",
-                "2026"
-        );
+    private static SinglePageContent titlePage() {
+        return new SinglePageContent("titlePage", java.util.Map.of());
+    }
+
+    private static SinglePageContent approvalSheet() {
+        return new SinglePageContent("approvalSheet", java.util.Map.of());
     }
 
     private static DocumentProfile profile() {
@@ -361,23 +340,7 @@ class DocumentRendererComponentSelectionTest {
         );
     }
 
-    private static ApprovalSheetComponent approvalSheet() {
-        return new ApprovalSheetComponent(
-                List.of("Autor"),
-                "Titulo",
-                Optional.empty(),
-                new ApprovalSheetNature(
-                        "Trabalho academico",
-                        "avaliacao parcial",
-                        "Curso",
-                        "Universidade"
-                ),
-                Optional.empty(),
-                List.of()
-        );
-    }
-
-    private static final class FakeCoverRenderer implements ComponentRenderer<CoverComponent> {
+    private static final class FakeCoverRenderer implements ComponentRenderer<SinglePageContent> {
 
         @Override
         public String componentId() {
@@ -385,17 +348,17 @@ class DocumentRendererComponentSelectionTest {
         }
 
         @Override
-        public Class<CoverComponent> componentType() {
-            return CoverComponent.class;
+        public Class<SinglePageContent> componentType() {
+            return SinglePageContent.class;
         }
 
         @Override
-        public List<DocxBlock> render(CoverComponent component, DocumentProfile profile) {
+        public List<DocxBlock> render(SinglePageContent component, DocumentProfile profile) {
             StyleRule s = style("body"); return List.of(new DocxParagraph(List.of(DocxRun.of("COVER", s)), s));
         }
     }
 
-    private static final class FakeTitlePageRenderer implements ComponentRenderer<TitlePageComponent> {
+    private static final class FakeTitlePageRenderer implements ComponentRenderer<SinglePageContent> {
 
         @Override
         public String componentId() {
@@ -403,17 +366,17 @@ class DocumentRendererComponentSelectionTest {
         }
 
         @Override
-        public Class<TitlePageComponent> componentType() {
-            return TitlePageComponent.class;
+        public Class<SinglePageContent> componentType() {
+            return SinglePageContent.class;
         }
 
         @Override
-        public List<DocxBlock> render(TitlePageComponent component, DocumentProfile profile) {
+        public List<DocxBlock> render(SinglePageContent component, DocumentProfile profile) {
             StyleRule s = style("body"); return List.of(new DocxParagraph(List.of(DocxRun.of("TITLE_PAGE", s)), s));
         }
     }
 
-    private static final class FakeApprovalSheetRenderer implements ComponentRenderer<ApprovalSheetComponent> {
+    private static final class FakeApprovalSheetRenderer implements ComponentRenderer<SinglePageContent> {
 
         @Override
         public String componentId() {
@@ -421,12 +384,12 @@ class DocumentRendererComponentSelectionTest {
         }
 
         @Override
-        public Class<ApprovalSheetComponent> componentType() {
-            return ApprovalSheetComponent.class;
+        public Class<SinglePageContent> componentType() {
+            return SinglePageContent.class;
         }
 
         @Override
-        public List<DocxBlock> render(ApprovalSheetComponent component, DocumentProfile profile) {
+        public List<DocxBlock> render(SinglePageContent component, DocumentProfile profile) {
             StyleRule s = style("body"); return List.of(new DocxParagraph(List.of(DocxRun.of("APPROVAL_SHEET", s)), s));
         }
     }

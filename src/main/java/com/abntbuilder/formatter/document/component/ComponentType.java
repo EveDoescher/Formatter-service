@@ -1,6 +1,7 @@
 package com.abntbuilder.formatter.document.component;
 
 public enum ComponentType {
+    SINGLE_PAGE,
     COVER,
     TITLE_PAGE,
     APPROVAL_SHEET,

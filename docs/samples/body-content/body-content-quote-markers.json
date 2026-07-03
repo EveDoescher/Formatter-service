@@ -8,7 +8,9 @@
     ]
   },
   "work": {
-    "authors": ["Autor Teste"],
+    "authors": [
+      "Autor Teste"
+    ],
     "title": "Documento Teste",
     "nature": {
       "workType": "Trabalho de conclusão de curso",
@@ -24,7 +26,6 @@
     "year": "2026"
   },
   "document": {
-    "titlePage": {},
     "bodyContent": {
       "sections": [
         {
@@ -37,11 +38,22 @@
               "mode": "PARENTHETICAL",
               "text": "A metodologia foi aplicada com sucesso em contextos variados.",
               "markers": [
-                { "type": "SUPPRESSION", "position": 15 },
-                { "type": "EMPHASIS_OURS", "position": 0 }
+                {
+                  "type": "SUPPRESSION",
+                  "position": 15
+                },
+                {
+                  "type": "EMPHASIS_OURS",
+                  "position": 0
+                }
               ],
               "source": {
-                "authors": [{ "type": "PERSON", "surname": "FERREIRA" }],
+                "authors": [
+                  {
+                    "type": "PERSON",
+                    "surname": "FERREIRA"
+                  }
+                ],
                 "year": "2020",
                 "page": "45"
               }
@@ -49,6 +61,20 @@
           ]
         }
       ]
+    },
+    "titlePage": {
+      "authors": [
+        "Pessoa Autora Teste 01"
+      ],
+      "title": "Título do Trabalho de Teste",
+      "nature": {
+        "workType": "Trabalho de conclusão de curso",
+        "degreeObjective": "obtenção do título de tecnólogo",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Fictícia de Limeira"
+      },
+      "city": "Limeira",
+      "year": "2026"
     }
   }
 }

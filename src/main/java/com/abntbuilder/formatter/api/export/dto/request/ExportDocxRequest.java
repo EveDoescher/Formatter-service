@@ -48,7 +48,7 @@ public record ExportDocxRequest(
     private ExportDocxCommand toCommand(DocumentProfile documentProfile) {
         List<DocumentComponent> documentComponents = document == null
                 ? List.of()
-                : document.toComponents(work, documentProfile);
+                : document.toComponents(documentProfile);
 
         List<ExportDocxCommand.ParagraphCommand> paragraphCommands = paragraphs == null
                 ? List.of()

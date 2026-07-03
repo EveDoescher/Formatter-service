@@ -1056,21 +1056,39 @@
   "componentRules": {
     "cover": {
       "componentId": "cover",
-      "contentBindings": {
-        "institutionalLines": "work.institutionalLines",
-        "authors": "work.authors",
-        "title": "work.title",
-        "subtitle": "work.subtitle",
-        "city": "work.city",
-        "year": "work.year"
+      "slots": {
+        "institutionalLines": {
+          "type": "TEXT_LIST",
+          "required": true
+        },
+        "authors": {
+          "type": "TEXT_LIST",
+          "required": true
+        },
+        "title": {
+          "type": "TEXT",
+          "required": true
+        },
+        "subtitle": {
+          "type": "TEXT",
+          "required": false
+        },
+        "city": {
+          "type": "TEXT",
+          "required": true
+        },
+        "year": {
+          "type": "TEXT",
+          "required": true
+        }
       },
       "styleMapping": {
-        "institutionalLinesStyleId": "cover.top",
-        "authorsStyleId": "cover.author",
-        "titleStyleId": "cover.title",
-        "subtitleStyleId": "cover.subtitle",
-        "cityStyleId": "cover.bottom",
-        "yearStyleId": "cover.bottom"
+        "institutionalLines": "cover.top",
+        "authors": "cover.author",
+        "title": "cover.title",
+        "subtitle": "cover.subtitle",
+        "city": "cover.bottom",
+        "year": "cover.bottom"
       },
       "layoutRule": {
         "groups": [
@@ -1170,30 +1188,66 @@
     },
     "titlePage": {
       "componentId": "titlePage",
-      "contentBindings": {
-        "authors": "work.authors",
-        "title": "work.title",
-        "subtitle": "work.subtitle",
-        "nature": "work.nature",
-        "advisor": "work.advisor",
-        "coadvisor": "work.coadvisor",
-        "city": "work.city",
-        "year": "work.year"
+      "slots": {
+        "authors": {
+          "type": "TEXT_LIST",
+          "required": true
+        },
+        "title": {
+          "type": "TEXT",
+          "required": true
+        },
+        "subtitle": {
+          "type": "TEXT",
+          "required": false
+        },
+        "nature": {
+          "type": "COMPOSED_TEXT",
+          "required": true,
+          "template": "{workType} para {degreeObjective} em {courseName} apresentado à {institutionName}.",
+          "fieldNames": [
+            "workType",
+            "degreeObjective",
+            "courseName",
+            "institutionName"
+          ]
+        },
+        "advisor": {
+          "type": "COMPOSED_TEXT",
+          "required": false,
+          "template": "Orientador(a): {academicTitle} {name}.",
+          "fieldNames": [
+            "academicTitle",
+            "name"
+          ]
+        },
+        "coadvisor": {
+          "type": "COMPOSED_TEXT",
+          "required": false,
+          "template": "Coorientador(a): {academicTitle} {name}.",
+          "fieldNames": [
+            "academicTitle",
+            "name"
+          ]
+        },
+        "city": {
+          "type": "TEXT",
+          "required": true
+        },
+        "year": {
+          "type": "TEXT",
+          "required": true
+        }
       },
       "styleMapping": {
-        "authorsStyleId": "titlePage.author",
-        "titleStyleId": "titlePage.title",
-        "subtitleStyleId": "titlePage.subtitle",
-        "natureStyleId": "titlePage.nature",
-        "advisorStyleId": "titlePage.advisor",
-        "coadvisorStyleId": "titlePage.coadvisor",
-        "cityStyleId": "titlePage.bottom",
-        "yearStyleId": "titlePage.bottom"
-      },
-      "textTemplates": {
-        "natureTemplate": "{workType} para {degreeObjective} em {courseName} apresentado \u00e0 {institutionName}.",
-        "advisorTemplate": "Orientador(a): {academicTitle} {name}.",
-        "coadvisorTemplate": "Coorientador(a): {academicTitle} {name}."
+        "authors": "titlePage.author",
+        "title": "titlePage.title",
+        "subtitle": "titlePage.subtitle",
+        "nature": "titlePage.nature",
+        "advisor": "titlePage.advisor",
+        "coadvisor": "titlePage.coadvisor",
+        "city": "titlePage.bottom",
+        "year": "titlePage.bottom"
       },
       "layoutRule": {
         "groups": [
@@ -1309,36 +1363,64 @@
     },
     "approvalSheet": {
       "componentId": "approvalSheet",
-      "contentBindings": {
-        "authors": "work.authors",
-        "title": "work.title",
-        "subtitle": "work.subtitle",
-        "nature": "work.nature"
-      },
-      "styleMapping": {
-        "authorsStyleId": "approvalSheet.author",
-        "titleStyleId": "approvalSheet.title",
-        "subtitleStyleId": "approvalSheet.subtitle",
-        "natureStyleId": "approvalSheet.nature",
-        "approvalTextStyleId": "approvalSheet.approval",
-        "committeeHeadingStyleId": "approvalSheet.committee.heading",
-        "committeeMembersStyleId": "approvalSheet.committee"
-      },
-      "textTemplates": {
-        "natureTemplate": "{workType} para {degreeObjective} em {courseName} apresentado \u00e0 {institutionName}.",
-        "approvalTextTemplate": "Aprovado(a) em: ______/______/______",
-        "committeeHeadingTemplate": "BANCA EXAMINADORA",
-        "committeeMemberTemplate": {
-          "signatureLine": {
-            "enabled": true,
-            "text": "________________________________________"
-          },
+      "slots": {
+        "authors": {
+          "type": "TEXT_LIST",
+          "required": true
+        },
+        "title": {
+          "type": "TEXT",
+          "required": true
+        },
+        "subtitle": {
+          "type": "TEXT",
+          "required": false
+        },
+        "nature": {
+          "type": "COMPOSED_TEXT",
+          "required": true,
+          "template": "{workType} para {degreeObjective} em {courseName} apresentado à {institutionName}.",
+          "fieldNames": [
+            "workType",
+            "degreeObjective",
+            "courseName",
+            "institutionName"
+          ]
+        },
+        "approvalText": {
+          "type": "TEXT",
+          "required": true
+        },
+        "committeeHeading": {
+          "type": "TEXT",
+          "required": true
+        },
+        "committeeMembers": {
+          "type": "SIGNATURE_BLOCK_LIST",
+          "required": false,
+          "signatureLineEnabled": true,
+          "signatureLineText": "________________________________________",
           "lineTemplates": [
             "{title} {name}",
             "{institutionName}",
             "{role}"
+          ],
+          "knownFieldNames": [
+            "name",
+            "title",
+            "institutionName",
+            "role"
           ]
         }
+      },
+      "styleMapping": {
+        "authors": "approvalSheet.author",
+        "title": "approvalSheet.title",
+        "subtitle": "approvalSheet.subtitle",
+        "nature": "approvalSheet.nature",
+        "approvalText": "approvalSheet.approval",
+        "committeeHeading": "approvalSheet.committee.heading",
+        "committeeMembers": "approvalSheet.committee"
       },
       "layoutRule": {
         "groups": [
@@ -1633,7 +1715,12 @@
       "headingText": "ERRATA",
       "tableHeaderStyleId": "errata.tableHeader",
       "tableCellStyleId": "errata.tableCell",
-      "tableHeaders": ["Folha", "Linha", "Onde se lê", "Leia-se"],
+      "tableHeaders": [
+        "Folha",
+        "Linha",
+        "Onde se lê",
+        "Leia-se"
+      ],
       "blankLinesAfterHeading": 1
     },
     "dedication": {
@@ -1697,14 +1784,20 @@
       "headingTemplate": "APÊNDICE {letter} – {title}",
       "headingStyleId": "appendix.heading",
       "paragraphStyleId": "bodyContent.paragraph",
-      "sectionTitleStyleIdsByLevel": ["bodyContent.heading1", "bodyContent.heading2"]
+      "sectionTitleStyleIdsByLevel": [
+        "bodyContent.heading1",
+        "bodyContent.heading2"
+      ]
     },
     "annex": {
       "componentId": "annex",
       "headingTemplate": "ANEXO {letter} – {title}",
       "headingStyleId": "annex.heading",
       "paragraphStyleId": "bodyContent.paragraph",
-      "sectionTitleStyleIdsByLevel": ["bodyContent.heading1", "bodyContent.heading2"]
+      "sectionTitleStyleIdsByLevel": [
+        "bodyContent.heading1",
+        "bodyContent.heading2"
+      ]
     },
     "glossary": {
       "componentId": "glossary",

@@ -8,7 +8,9 @@
     ]
   },
   "work": {
-    "authors": ["Autor Teste"],
+    "authors": [
+      "Autor Teste"
+    ],
     "title": "Documento Teste",
     "nature": {
       "workType": "Trabalho",
@@ -23,15 +25,37 @@
     "year": "2026"
   },
   "document": {
-    "titlePage": {},
     "bodyContent": {
-      "sections": [{
-    "id": "s1", "level": 1, "title": "Equações",
-    "blocks": [{
-      "type": "EQUATION",
-      "equation": { "text": "E = mc²", "label": "1" }
-    }]
-      }]
+      "sections": [
+        {
+          "id": "s1",
+          "level": 1,
+          "title": "Equações",
+          "blocks": [
+            {
+              "type": "EQUATION",
+              "equation": {
+                "text": "E = mc²",
+                "label": "1"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "titlePage": {
+      "authors": [
+        "Pessoa Autora Teste 01"
+      ],
+      "title": "Título do Trabalho de Teste",
+      "nature": {
+        "workType": "Trabalho de conclusão de curso",
+        "degreeObjective": "obtenção do título de tecnólogo",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Fictícia de Limeira"
+      },
+      "city": "Limeira",
+      "year": "2026"
     }
   }
 }

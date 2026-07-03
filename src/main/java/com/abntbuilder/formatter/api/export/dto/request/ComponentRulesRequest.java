@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record ComponentRulesRequest(
-        @Valid CoverComponentRuleRequest cover,
-        @Valid TitlePageComponentRuleRequest titlePage,
-        @Valid ApprovalSheetComponentRuleRequest approvalSheet,
+        @Valid SinglePageComponentRuleRequest cover,
+        @Valid SinglePageComponentRuleRequest titlePage,
+        @Valid SinglePageComponentRuleRequest approvalSheet,
         @Valid BodyContentComponentRuleRequest bodyContent,
         @Valid ErrataComponentRuleRequest errata,
         @Valid DedicationComponentRuleRequest dedication,

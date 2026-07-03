@@ -1,10 +1,8 @@
 package com.abntbuilder.formatter.profile.model;
 
 import com.abntbuilder.formatter.profile.model.component.ComponentRule;
-import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetComponentRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentComponentRule;
-import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
-import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageComponentRule;
+import com.abntbuilder.formatter.profile.model.component.singlepage.SinglePageComponentRule;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -189,33 +187,7 @@ public record DocumentProfile(
 
     private static Collection<String> styleIdsFor(ComponentRule componentRule) {
         return switch (componentRule) {
-            case CoverComponentRule coverRule -> List.of(
-                    coverRule.styleMapping().institutionalLinesStyleId(),
-                    coverRule.styleMapping().authorsStyleId(),
-                    coverRule.styleMapping().titleStyleId(),
-                    coverRule.styleMapping().subtitleStyleId(),
-                    coverRule.styleMapping().cityStyleId(),
-                    coverRule.styleMapping().yearStyleId()
-            );
-            case TitlePageComponentRule titlePageRule -> List.of(
-                    titlePageRule.styleMapping().authorsStyleId(),
-                    titlePageRule.styleMapping().titleStyleId(),
-                    titlePageRule.styleMapping().subtitleStyleId(),
-                    titlePageRule.styleMapping().natureStyleId(),
-                    titlePageRule.styleMapping().advisorStyleId(),
-                    titlePageRule.styleMapping().coadvisorStyleId(),
-                    titlePageRule.styleMapping().cityStyleId(),
-                    titlePageRule.styleMapping().yearStyleId()
-            );
-            case ApprovalSheetComponentRule approvalSheetRule -> List.of(
-                    approvalSheetRule.styleMapping().authorsStyleId(),
-                    approvalSheetRule.styleMapping().titleStyleId(),
-                    approvalSheetRule.styleMapping().subtitleStyleId(),
-                    approvalSheetRule.styleMapping().natureStyleId(),
-                    approvalSheetRule.styleMapping().approvalTextStyleId(),
-                    approvalSheetRule.styleMapping().committeeHeadingStyleId(),
-                    approvalSheetRule.styleMapping().committeeMembersStyleId()
-            );
+            case SinglePageComponentRule singlePageRule -> singlePageRule.styleMapping().values().stream().toList();
             case BodyContentComponentRule bodyContentRule -> {
                 List<String> styleIds = new java.util.ArrayList<>(
                         bodyContentRule.styleMapping().sectionTitleStyleIdsByLevel()

@@ -8,7 +8,9 @@
     ]
   },
   "work": {
-    "authors": ["Autor Teste"],
+    "authors": [
+      "Autor Teste"
+    ],
     "title": "Documento Teste",
     "nature": {
       "workType": "Trabalho",
@@ -23,23 +25,43 @@
     "year": "2026"
   },
   "document": {
-    "titlePage": {},
     "bodyContent": {
-      "sections": [{
-    "id": "s1", "level": 1, "title": "Gráficos",
-    "blocks": [{
-      "type": "CHART",
-      "chart": {
-        "id": "grf-1", "caption": "Distribuição por faixa etária",
-        "source": "O autor",
-        "image": {
-          "sourceType": "DATA_URI",
-          "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
-          "altText": "Gráfico de distribuição"
+      "sections": [
+        {
+          "id": "s1",
+          "level": 1,
+          "title": "Gráficos",
+          "blocks": [
+            {
+              "type": "CHART",
+              "chart": {
+                "id": "grf-1",
+                "caption": "Distribuição por faixa etária",
+                "source": "O autor",
+                "image": {
+                  "sourceType": "DATA_URI",
+                  "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
+                  "altText": "Gráfico de distribuição"
+                }
+              }
+            }
+          ]
         }
-      }
-    }]
-      }]
+      ]
+    },
+    "titlePage": {
+      "authors": [
+        "Pessoa Autora Teste 01"
+      ],
+      "title": "Título do Trabalho de Teste",
+      "nature": {
+        "workType": "Trabalho de conclusão de curso",
+        "degreeObjective": "obtenção do título de tecnólogo",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Fictícia de Limeira"
+      },
+      "city": "Limeira",
+      "year": "2026"
     }
   }
 }

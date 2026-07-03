@@ -3,17 +3,11 @@ package com.abntbuilder.formatter.config;
 import com.abntbuilder.formatter.profile.resolution.ProfileProvider;
 import com.abntbuilder.formatter.rendering.component.ComponentRenderer;
 import com.abntbuilder.formatter.rendering.component.ComponentRendererRegistry;
-import com.abntbuilder.formatter.rendering.component.approvalsheet.ApprovalSheetLayoutAssembler;
-import com.abntbuilder.formatter.rendering.component.approvalsheet.ApprovalSheetLayoutCalculator;
-import com.abntbuilder.formatter.rendering.component.approvalsheet.ApprovalSheetProfileContentValidator;
-import com.abntbuilder.formatter.rendering.component.approvalsheet.ApprovalSheetRenderer;
-import com.abntbuilder.formatter.rendering.component.approvalsheet.ApprovalSheetTextTemplateResolver;
 import com.abntbuilder.formatter.rendering.component.abstracten.AbstractRenderer;
 import com.abntbuilder.formatter.rendering.component.acknowledgments.AcknowledgmentsRenderer;
 import com.abntbuilder.formatter.rendering.component.annex.AnnexRenderer;
 import com.abntbuilder.formatter.rendering.component.appendix.AppendixRenderer;
 import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentRenderer;
-import com.abntbuilder.formatter.rendering.component.cover.CoverRenderer;
 import com.abntbuilder.formatter.rendering.component.dedication.DedicationRenderer;
 import com.abntbuilder.formatter.rendering.component.epigraph.EpigraphRenderer;
 import com.abntbuilder.formatter.rendering.component.errata.ErrataRenderer;
@@ -27,17 +21,11 @@ import com.abntbuilder.formatter.rendering.component.listoftables.ListOfTablesRe
 import com.abntbuilder.formatter.rendering.component.listofsymbols.ListOfSymbolsRenderer;
 import com.abntbuilder.formatter.rendering.component.references.ReferencesRenderer;
 import com.abntbuilder.formatter.rendering.component.resumo.ResumoRenderer;
+import com.abntbuilder.formatter.rendering.component.singlepage.SinglePageContentValidator;
+import com.abntbuilder.formatter.rendering.component.singlepage.SinglePageLayoutAssembler;
+import com.abntbuilder.formatter.rendering.component.singlepage.SinglePageLayoutCalculator;
+import com.abntbuilder.formatter.rendering.component.singlepage.SinglePageRenderer;
 import com.abntbuilder.formatter.rendering.component.summary.SummaryRenderer;
-import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutAssembler;
-import com.abntbuilder.formatter.rendering.component.cover.layout.CoverLayoutCalculator;
-import com.abntbuilder.formatter.rendering.component.cover.layout.CoverProfileContentValidator;
-import com.abntbuilder.formatter.rendering.component.titlepage.TitlePageLayoutAssembler;
-import com.abntbuilder.formatter.rendering.component.titlepage.TitlePageLayoutCalculator;
-import com.abntbuilder.formatter.rendering.component.titlepage.TitlePageProfileContentValidator;
-import com.abntbuilder.formatter.rendering.component.titlepage.TitlePageRenderer;
-import com.abntbuilder.formatter.rendering.component.titlepage.TitlePageTextTemplateResolver;
-import com.abntbuilder.formatter.rendering.orchestration.ComponentSelectionResolver;
-import com.abntbuilder.formatter.rendering.orchestration.DocumentRenderer;
 import com.abntbuilder.formatter.rendering.layout.singlepage.HorizontalPlacementResolver;
 import com.abntbuilder.formatter.rendering.layout.singlepage.MarginBasedSinglePageSafetyPolicy;
 import com.abntbuilder.formatter.rendering.layout.singlepage.OrderedLayoutGapResolver;
@@ -46,6 +34,8 @@ import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutEng
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutLineMetrics;
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutRenderer;
 import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageSafetyPolicy;
+import com.abntbuilder.formatter.rendering.orchestration.ComponentSelectionResolver;
+import com.abntbuilder.formatter.rendering.orchestration.DocumentRenderer;
 import com.abntbuilder.formatter.rendering.layout.text.FontMetricsTextMeasurer;
 import com.abntbuilder.formatter.rendering.layout.text.TextMeasurer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -103,125 +93,55 @@ public class RenderingConfig {
     }
 
     @Bean
-    public CoverProfileContentValidator coverProfileContentValidator() {
-        return new CoverProfileContentValidator();
-    }
-
-    @Bean
-    public CoverLayoutAssembler coverLayoutAssembler(
-            TextMeasurer textMeasurer,
-            OrderedLayoutGapResolver gapResolver,
-            CoverProfileContentValidator validator,
-            HorizontalPlacementResolver horizontalPlacementResolver
-    ) {
-        return new CoverLayoutAssembler(textMeasurer, gapResolver, validator, horizontalPlacementResolver);
-    }
-
-    @Bean
-    public CoverLayoutCalculator coverLayoutCalculator(
-            CoverLayoutAssembler assembler,
-            SinglePageLayoutEngine layoutEngine
-    ) {
-        return new CoverLayoutCalculator(assembler, layoutEngine);
-    }
-
-    @Bean
     public SinglePageLayoutRenderer singlePageLayoutRenderer() {
         return new SinglePageLayoutRenderer();
     }
 
     @Bean
-    public CoverRenderer coverRenderer(
-            CoverLayoutCalculator layoutCalculator,
-            SinglePageLayoutRenderer singlePageRenderer
-    ) {
-        return new CoverRenderer(layoutCalculator, singlePageRenderer);
+    public SinglePageContentValidator singlePageContentValidator() {
+        return new SinglePageContentValidator();
     }
 
     @Bean
-    public TitlePageProfileContentValidator titlePageProfileContentValidator() {
-        return new TitlePageProfileContentValidator();
-    }
-
-    @Bean
-    public TitlePageTextTemplateResolver titlePageTextTemplateResolver() {
-        return new TitlePageTextTemplateResolver();
-    }
-
-    @Bean
-    public TitlePageLayoutAssembler titlePageLayoutAssembler(
+    public SinglePageLayoutAssembler singlePageLayoutAssembler(
             TextMeasurer textMeasurer,
-            OrderedLayoutGapResolver gapResolver,
-            TitlePageProfileContentValidator validator,
-            TitlePageTextTemplateResolver templateResolver,
+            OrderedLayoutGapResolver orderedLayoutGapResolver,
             HorizontalPlacementResolver horizontalPlacementResolver
     ) {
-        return new TitlePageLayoutAssembler(
-                textMeasurer,
-                gapResolver,
-                validator,
-                templateResolver,
-                horizontalPlacementResolver
-        );
+        return new SinglePageLayoutAssembler(textMeasurer, orderedLayoutGapResolver, horizontalPlacementResolver);
     }
 
     @Bean
-    public TitlePageLayoutCalculator titlePageLayoutCalculator(
-            TitlePageLayoutAssembler assembler,
+    public SinglePageLayoutCalculator singlePageLayoutCalculator(
+            SinglePageContentValidator validator,
+            SinglePageLayoutAssembler assembler,
             SinglePageLayoutEngine layoutEngine
     ) {
-        return new TitlePageLayoutCalculator(assembler, layoutEngine);
+        return new SinglePageLayoutCalculator(validator, assembler, layoutEngine);
     }
 
     @Bean
-    public TitlePageRenderer titlePageRenderer(
-            TitlePageLayoutCalculator layoutCalculator,
-            SinglePageLayoutRenderer singlePageRenderer
+    public SinglePageRenderer coverRenderer(
+            SinglePageLayoutCalculator layoutCalculator,
+            SinglePageLayoutRenderer layoutRenderer
     ) {
-        return new TitlePageRenderer(layoutCalculator, singlePageRenderer);
+        return new SinglePageRenderer("cover", layoutCalculator, layoutRenderer);
     }
 
     @Bean
-    public ApprovalSheetProfileContentValidator approvalSheetProfileContentValidator() {
-        return new ApprovalSheetProfileContentValidator();
-    }
-
-    @Bean
-    public ApprovalSheetTextTemplateResolver approvalSheetTextTemplateResolver() {
-        return new ApprovalSheetTextTemplateResolver();
-    }
-
-    @Bean
-    public ApprovalSheetLayoutAssembler approvalSheetLayoutAssembler(
-            TextMeasurer textMeasurer,
-            OrderedLayoutGapResolver gapResolver,
-            ApprovalSheetProfileContentValidator validator,
-            ApprovalSheetTextTemplateResolver templateResolver,
-            HorizontalPlacementResolver horizontalPlacementResolver
+    public SinglePageRenderer titlePageRenderer(
+            SinglePageLayoutCalculator layoutCalculator,
+            SinglePageLayoutRenderer layoutRenderer
     ) {
-        return new ApprovalSheetLayoutAssembler(
-                textMeasurer,
-                gapResolver,
-                validator,
-                templateResolver,
-                horizontalPlacementResolver
-        );
+        return new SinglePageRenderer("titlePage", layoutCalculator, layoutRenderer);
     }
 
     @Bean
-    public ApprovalSheetLayoutCalculator approvalSheetLayoutCalculator(
-            ApprovalSheetLayoutAssembler assembler,
-            SinglePageLayoutEngine layoutEngine
+    public SinglePageRenderer approvalSheetRenderer(
+            SinglePageLayoutCalculator layoutCalculator,
+            SinglePageLayoutRenderer layoutRenderer
     ) {
-        return new ApprovalSheetLayoutCalculator(assembler, layoutEngine);
-    }
-
-    @Bean
-    public ApprovalSheetRenderer approvalSheetRenderer(
-            ApprovalSheetLayoutCalculator layoutCalculator,
-            SinglePageLayoutRenderer singlePageRenderer
-    ) {
-        return new ApprovalSheetRenderer(layoutCalculator, singlePageRenderer);
+        return new SinglePageRenderer("approvalSheet", layoutCalculator, layoutRenderer);
     }
 
     @Bean

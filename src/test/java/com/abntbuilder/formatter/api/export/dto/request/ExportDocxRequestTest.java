@@ -1,105 +1,78 @@
 package com.abntbuilder.formatter.api.export.dto.request;
 
-import com.abntbuilder.formatter.application.export.ExportDocxCommand;
-import com.abntbuilder.formatter.document.component.cover.CoverComponent;
-import com.abntbuilder.formatter.document.component.titlepage.TitlePageComponent;
-import com.abntbuilder.formatter.config.ClasspathJsonProfileProvider;
+import com.abntbuilder.formatter.document.component.singlepage.ComposedTextValue;
+import com.abntbuilder.formatter.document.component.singlepage.SinglePageContent;
+import com.abntbuilder.formatter.document.component.singlepage.TextListValue;
+import com.abntbuilder.formatter.document.component.singlepage.TextValue;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ExportDocxRequestTest {
 
     @Test
-    void shouldConvertDocumentTitlePageToCommand() {
-        ExportDocxRequest request = new ExportDocxRequest(
-                "title-page.docx",
-                "abnt-unip-profile",
-                null,
-                new ExportOptionsRequest(List.of("titlePage")),
-                null,
-                new DocumentContentRequest(null, titlePageRequest(), null, null,
-                        null, null, null, null, null, null, null, null, null, null,
-                        null, null, null, null, null, null, null, null),
-                List.of()
-        );
+    void shouldConvertTextSlotToTextValue() {
+        SinglePageContentRequest request = new SinglePageContentRequest();
+        request.setSlot("title", "Título do Trabalho");
 
-        ExportDocxCommand command = request.toCommand(new ClasspathJsonProfileProvider());
+        SinglePageContent content = request.toDomain("cover");
 
-        assertEquals(1, command.documentComponents().size());
-        TitlePageComponent titlePage = (TitlePageComponent) command.documentComponents().getFirst();
-        assertEquals(List.of("titlePage"), command.selectedComponents());
-        assertEquals("Titulo", titlePage.title());
+        assertEquals("cover", content.componentId());
+        assertInstanceOf(TextValue.class, content.slots().get("title"));
+        assertEquals("Título do Trabalho", ((TextValue) content.slots().get("title")).text());
     }
 
     @Test
-    void shouldResolveDocumentComponentsFromWorkBindings() {
-        ExportDocxRequest request = new ExportDocxRequest(
-                "work-bound.docx",
-                "abnt-unip-profile",
-                null,
-                new ExportOptionsRequest(List.of("cover", "titlePage")),
-                workRequest(),
-                new DocumentContentRequest(
-                        new CoverRequest(null, null, null, null, null, null),
-                        new TitlePageRequest(null, null, null, null, null, null, null, null),
-                        null,
-                        null,
-                        null, null, null, null, null, null, null, null, null, null,
-                        null, null, null, null, null, null, null, null
-                ),
-                List.of()
-        );
+    void shouldConvertStringListSlotToTextListValue() {
+        SinglePageContentRequest request = new SinglePageContentRequest();
+        request.setSlot("authors", List.of("Ana Souza", "Carlos Lima"));
 
-        ExportDocxCommand command = request.toCommand(new ClasspathJsonProfileProvider());
+        SinglePageContent content = request.toDomain("cover");
 
-        CoverComponent cover = (CoverComponent) command.documentComponents().get(0);
-        TitlePageComponent titlePage = (TitlePageComponent) command.documentComponents().get(1);
-
-        assertEquals(List.of("UNIVERSIDADE PAULISTA"), cover.institutionalLines());
-        assertEquals(List.of("Autora Teste"), cover.authors());
-        assertEquals("Titulo comum", cover.title());
-        assertEquals("Titulo comum", titlePage.title());
-        assertEquals("Trabalho academico", titlePage.nature().workType());
-        assertEquals("Professora Teste", titlePage.advisor().orElseThrow().name());
+        assertInstanceOf(TextListValue.class, content.slots().get("authors"));
+        assertEquals(List.of("Ana Souza", "Carlos Lima"),
+                ((TextListValue) content.slots().get("authors")).items());
     }
 
-    private static TitlePageRequest titlePageRequest() {
-        return new TitlePageRequest(
-                List.of("Autor"),
-                "Titulo",
-                null,
-                new TitlePageNatureRequest(
-                        "Trabalho academico",
-                        "avaliacao parcial",
-                        "Curso",
-                        "Universidade"
-                ),
-                null,
-                null,
-                "Limeira",
-                "2026"
-        );
+    @Test
+    void shouldConvertMapSlotToComposedTextValue() {
+        SinglePageContentRequest request = new SinglePageContentRequest();
+        request.setSlot("nature", Map.of("workType", "TCC", "courseName", "ADS"));
+
+        SinglePageContent content = request.toDomain("titlePage");
+
+        assertInstanceOf(ComposedTextValue.class, content.slots().get("nature"));
+        assertEquals("TCC", ((ComposedTextValue) content.slots().get("nature")).fields().get("workType"));
     }
 
-    private static AcademicWorkRequest workRequest() {
-        return new AcademicWorkRequest(
-                List.of("UNIVERSIDADE PAULISTA"),
-                List.of("Autora Teste"),
-                "Titulo comum",
-                "Subtitulo comum",
-                new AcademicWorkNatureRequest(
-                        "Trabalho academico",
-                        "avaliacao parcial",
-                        "Curso",
-                        "Universidade"
-                ),
-                new AcademicPersonRequest("Profa. Dra.", "Professora Teste"),
-                null,
-                "Limeira",
-                "2026"
-        );
+    @Test
+    void shouldSkipNullSlots() {
+        SinglePageContentRequest request = new SinglePageContentRequest();
+        request.setSlot("title", "Título");
+        request.setSlot("subtitle", null);
+
+        SinglePageContent content = request.toDomain("cover");
+
+        assertTrue(content.slots().containsKey("title"));
+        assertFalse(content.slots().containsKey("subtitle"));
+    }
+
+    @Test
+    void shouldThrowForEmptyList() {
+        SinglePageContentRequest request = new SinglePageContentRequest();
+        request.setSlot("authors", List.of());
+
+        assertThrows(IllegalArgumentException.class, () -> request.toDomain("cover"));
+    }
+
+    @Test
+    void shouldThrowForUnsupportedType() {
+        SinglePageContentRequest request = new SinglePageContentRequest();
+        request.setSlot("weird", 42);
+
+        assertThrows(IllegalArgumentException.class, () -> request.toDomain("cover"));
     }
 }

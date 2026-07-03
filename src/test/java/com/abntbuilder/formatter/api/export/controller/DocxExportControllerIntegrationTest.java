@@ -419,13 +419,21 @@ class DocxExportControllerIntegrationTest {
                     "componentRules": {
                       "cover": {
                         "componentId": "cover",
+                        "slots": {
+                          "institutionalLines": { "type": "TEXT_LIST", "required": true },
+                          "authors": { "type": "TEXT_LIST", "required": true },
+                          "title": { "type": "TEXT", "required": true },
+                          "subtitle": { "type": "TEXT", "required": false },
+                          "city": { "type": "TEXT", "required": true },
+                          "year": { "type": "TEXT", "required": true }
+                        },
                         "styleMapping": {
-                          "institutionalLinesStyleId": "cover.top",
-                          "authorsStyleId": "cover.author",
-                          "titleStyleId": "cover.title",
-                          "subtitleStyleId": "cover.subtitle",
-                          "cityStyleId": "cover.bottom",
-                          "yearStyleId": "cover.bottom"
+                          "institutionalLines": "cover.top",
+                          "authors": "cover.author",
+                          "title": "cover.title",
+                          "subtitle": "cover.subtitle",
+                          "city": "cover.bottom",
+                          "year": "cover.bottom"
                         },
                         "layoutRule": {
                           "groups": [

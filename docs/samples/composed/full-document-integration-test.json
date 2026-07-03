@@ -75,7 +75,9 @@
           "institutionName": "Universidade de São Paulo",
           "role": "Convidada"
         }
-      ]
+      ],
+      "approvalText": "Aprovado(a) em: ______/______/______",
+      "committeeHeading": "BANCA EXAMINADORA"
     },
     "bodyContent": {
       "sections": [
@@ -106,7 +108,10 @@
                   "mode": "NARRATIVE",
                   "source": {
                     "authors": [
-                      { "type": "PERSON", "surname": "SOUZA" }
+                      {
+                        "type": "PERSON",
+                        "surname": "SOUZA"
+                      }
                     ],
                     "year": "2021"
                   }
@@ -123,7 +128,10 @@
               "text": "As citações longas (com mais de três linhas) devem ter um recuo de 4 cm da margem esquerda, tamanho de fonte reduzido e espaçamento simples.",
               "source": {
                 "authors": [
-                  { "type": "PERSON", "surname": "ABNT" }
+                  {
+                    "type": "PERSON",
+                    "surname": "ABNT"
+                  }
                 ],
                 "year": "2002",
                 "page": "2"
@@ -149,12 +157,26 @@
                 "caption": "Tabela Demonstrativa",
                 "source": "Os autores",
                 "columns": [
-                  { "header": "Item" },
-                  { "header": "Quantidade" }
+                  {
+                    "header": "Item"
+                  },
+                  {
+                    "header": "Quantidade"
+                  }
                 ],
                 "rows": [
-                  { "cells": ["Lápis", "10"] },
-                  { "cells": ["Caderno", "5"] }
+                  {
+                    "cells": [
+                      "Lápis",
+                      "10"
+                    ]
+                  },
+                  {
+                    "cells": [
+                      "Caderno",
+                      "5"
+                    ]
+                  }
                 ]
               }
             }
@@ -175,7 +197,9 @@
                 {
                   "type": "TEXT",
                   "text": "negrito",
-                  "formatting": { "bold": true }
+                  "formatting": {
+                    "bold": true
+                  }
                 },
                 {
                   "type": "TEXT",
@@ -184,7 +208,9 @@
                 {
                   "type": "TEXT",
                   "text": "itálico",
-                  "formatting": { "italic": true }
+                  "formatting": {
+                    "italic": true
+                  }
                 },
                 {
                   "type": "TEXT",
@@ -193,7 +219,9 @@
                 {
                   "type": "TEXT",
                   "text": "sobrescrito",
-                  "formatting": { "superscript": true }
+                  "formatting": {
+                    "superscript": true
+                  }
                 },
                 {
                   "type": "TEXT",
@@ -208,12 +236,18 @@
                 "items": [
                   {
                     "content": [
-                      { "type": "TEXT", "text": "Coleta de dados" }
+                      {
+                        "type": "TEXT",
+                        "text": "Coleta de dados"
+                      }
                     ]
                   },
                   {
                     "content": [
-                      { "type": "TEXT", "text": "Análise" }
+                      {
+                        "type": "TEXT",
+                        "text": "Análise"
+                      }
                     ]
                   }
                 ]
@@ -226,12 +260,26 @@
                 "caption": "Quadro de Atividades",
                 "source": "Os autores",
                 "columns": [
-                  { "header": "Atividade" },
-                  { "header": "Prazo" }
+                  {
+                    "header": "Atividade"
+                  },
+                  {
+                    "header": "Prazo"
+                  }
                 ],
                 "rows": [
-                  { "cells": ["Desenvolvimento", "Junho/2026"] },
-                  { "cells": ["Testes", "Julho/2026"] }
+                  {
+                    "cells": [
+                      "Desenvolvimento",
+                      "Junho/2026"
+                    ]
+                  },
+                  {
+                    "cells": [
+                      "Testes",
+                      "Julho/2026"
+                    ]
+                  }
                 ]
               }
             },

@@ -8,7 +8,9 @@
     ]
   },
   "work": {
-    "authors": ["Autor Teste"],
+    "authors": [
+      "Autor Teste"
+    ],
     "title": "Documento Teste",
     "nature": {
       "workType": "Trabalho",
@@ -23,27 +25,62 @@
     "year": "2026"
   },
   "document": {
-    "titlePage": {},
     "bodyContent": {
-      "sections": [{
-          "id": "s1", "level": 1, "title": "Listas Invalidas",
+      "sections": [
+        {
+          "id": "s1",
+          "level": 1,
+          "title": "Listas Invalidas",
           "blocks": [
             {
               "type": "ORDERED_LIST",
               "list": {
                 "type": "ORDERED",
                 "items": [
-                  { 
+                  {
                     "content": [
-                      { "type": "TEXT", "text": "Primeiro item." },
-                      { "type": "ORDERED_LIST", "list": { "type": "ORDERED", "items": [{"content": [{"type": "TEXT", "text": "sub"}]}] } }
-                    ] 
+                      {
+                        "type": "TEXT",
+                        "text": "Primeiro item."
+                      },
+                      {
+                        "type": "ORDERED_LIST",
+                        "list": {
+                          "type": "ORDERED",
+                          "items": [
+                            {
+                              "content": [
+                                {
+                                  "type": "TEXT",
+                                  "text": "sub"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    ]
                   }
                 ]
               }
             }
           ]
-        }]
+        }
+      ]
+    },
+    "titlePage": {
+      "authors": [
+        "Pessoa Autora Teste 01"
+      ],
+      "title": "Título do Trabalho de Teste",
+      "nature": {
+        "workType": "Trabalho de conclusão de curso",
+        "degreeObjective": "obtenção do título de tecnólogo",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Fictícia de Limeira"
+      },
+      "city": "Limeira",
+      "year": "2026"
     }
   }
 }

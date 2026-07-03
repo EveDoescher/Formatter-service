@@ -9,43 +9,61 @@
       "bodyContent"
     ]
   },
-  "work": {
-    "institutionalLines": [
-      "UNIVERSIDADE FICTÍCIA DE LIMEIRA",
-      "INSTITUTO DE CIÊNCIAS EXATAS E TECNOLOGIA",
-      "CURSO SUPERIOR DE TECNOLOGIA EM ANÁLISE E DESENVOLVIMENTO DE SISTEMAS"
-    ],
-    "authors": [
-      "PESSOA AUTORA TESTE 01",
-      "PESSOA AUTORA TESTE 02"
-    ],
-    "title": "FORMATAÇÃO AUTOMÁTICA DE DOCUMENTOS ACADÊMICOS",
-    "subtitle": "Uma análise sobre dados compartilhados e componentes semânticos",
-    "nature": {
-      "workType": "Projeto integrado multidisciplinar",
-      "degreeObjective": "obtenção do título de tecnólogo",
-      "courseName": "Análise e Desenvolvimento de Sistemas",
-      "institutionName": "Universidade Fictícia de Limeira"
-    },
-    "advisor": {
-      "academicTitle": "Prof. Dr.",
-      "name": "Pessoa Orientadora Teste"
-    },
-    "coadvisor": {
-      "academicTitle": "Profa. Ma.",
-      "name": "Pessoa Coorientadora Teste"
-    },
-    "city": "Limeira",
-    "year": "2026"
-  },
   "document": {
-    "cover": {},
-    "titlePage": {},
-    "approvalSheet": {
-      "approvalEvent": {
-        "location": "Limeira",
-        "date": "10 de junho de 2026"
+    "cover": {
+      "institutionalLines": [
+        "UNIVERSIDADE FICTÍCIA DE LIMEIRA",
+        "INSTITUTO DE CIÊNCIAS EXATAS E TECNOLOGIA",
+        "CURSO SUPERIOR DE TECNOLOGIA EM ANÁLISE E DESENVOLVIMENTO DE SISTEMAS"
+      ],
+      "authors": [
+        "PESSOA AUTORA TESTE 01",
+        "PESSOA AUTORA TESTE 02"
+      ],
+      "title": "FORMATAÇÃO AUTOMÁTICA DE DOCUMENTOS ACADÊMICOS",
+      "subtitle": "Uma análise sobre dados compartilhados e componentes semânticos",
+      "city": "Limeira",
+      "year": "2026"
+    },
+    "titlePage": {
+      "authors": [
+        "PESSOA AUTORA TESTE 01",
+        "PESSOA AUTORA TESTE 02"
+      ],
+      "title": "FORMATAÇÃO AUTOMÁTICA DE DOCUMENTOS ACADÊMICOS",
+      "subtitle": "Uma análise sobre dados compartilhados e componentes semânticos",
+      "nature": {
+        "workType": "Projeto integrado multidisciplinar",
+        "degreeObjective": "obtenção do título de tecnólogo",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Fictícia de Limeira"
       },
+      "advisor": {
+        "academicTitle": "Prof. Dr.",
+        "name": "Pessoa Orientadora Teste"
+      },
+      "coadvisor": {
+        "academicTitle": "Profa. Ma.",
+        "name": "Pessoa Coorientadora Teste"
+      },
+      "city": "Limeira",
+      "year": "2026"
+    },
+    "approvalSheet": {
+      "authors": [
+        "PESSOA AUTORA TESTE 01",
+        "PESSOA AUTORA TESTE 02"
+      ],
+      "title": "FORMATAÇÃO AUTOMÁTICA DE DOCUMENTOS ACADÊMICOS",
+      "subtitle": "Uma análise sobre dados compartilhados e componentes semânticos",
+      "nature": {
+        "workType": "Projeto integrado multidisciplinar",
+        "degreeObjective": "obtenção do título de tecnólogo",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Fictícia de Limeira"
+      },
+      "approvalText": "Aprovado(a) em: ______/______/______",
+      "committeeHeading": "BANCA EXAMINADORA",
       "committeeMembers": [
         {
           "title": "Prof. Dr.",

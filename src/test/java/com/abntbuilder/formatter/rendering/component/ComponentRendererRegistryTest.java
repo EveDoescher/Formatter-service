@@ -1,53 +1,47 @@
 package com.abntbuilder.formatter.rendering.component;
 
-import com.abntbuilder.formatter.document.component.cover.CoverComponent;
+import com.abntbuilder.formatter.document.component.singlepage.SinglePageContent;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
 import com.abntbuilder.formatter.shared.exception.MissingComponentRendererException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ComponentRendererRegistryTest {
 
     @Test
     void shouldResolveRegisteredRenderer() {
-        ComponentRenderer<CoverComponent> renderer = new FakeCoverRenderer();
+        ComponentRenderer<SinglePageContent> renderer = new FakeCoverRenderer();
         ComponentRendererRegistry registry = new ComponentRendererRegistry(List.of(renderer));
 
         assertSame(renderer, registry.get("cover"));
     }
 
     @Test
-    void shouldResolveComponentIdForRegisteredComponentType() {
+    void shouldResolveComponentIdForRegisteredSinglePageRenderer() {
         ComponentRendererRegistry registry = new ComponentRendererRegistry(List.of(new FakeCoverRenderer()));
 
-        assertEquals("cover", registry.componentIdFor(new CoverComponent(
-                List.of("Universidade"),
-                List.of("Autor"),
-                "Titulo",
-                Optional.empty(),
-                "Limeira",
-                "2026"
+        assertEquals("cover", registry.componentIdFor(new SinglePageContent("cover", Map.of())));
+    }
+
+    @Test
+    void shouldAllowMultipleSinglePageRenderersWithDifferentComponentIds() {
+        // SinglePageContent renderers share a Java type but differ by componentId — all valid
+        assertDoesNotThrow(() -> new ComponentRendererRegistry(List.of(
+                new FakeCoverRenderer(),
+                new AlternativeFakeCoverRenderer()
         )));
     }
 
     @Test
-    void shouldRejectDuplicateRendererComponentType() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new ComponentRendererRegistry(List.of(
-                        new FakeCoverRenderer(),
-                        new AlternativeFakeCoverRenderer()
-                ))
-        );
+    void shouldResolveComponentIdDirectlyFromSinglePageContentComponentId() {
+        ComponentRendererRegistry registry = new ComponentRendererRegistry(List.of(new FakeCoverRenderer()));
 
-        assertEquals("Duplicate component renderer type: CoverComponent", exception.getMessage());
+        assertEquals("cover", registry.componentIdFor(new SinglePageContent("cover", java.util.Map.of())));
     }
 
     @Test
@@ -62,7 +56,7 @@ class ComponentRendererRegistryTest {
         assertEquals("Missing component renderer for id: titlePage", exception.getMessage());
     }
 
-    private static final class FakeCoverRenderer implements ComponentRenderer<CoverComponent> {
+    private static final class FakeCoverRenderer implements ComponentRenderer<SinglePageContent> {
 
         @Override
         public String componentId() {
@@ -70,17 +64,17 @@ class ComponentRendererRegistryTest {
         }
 
         @Override
-        public Class<CoverComponent> componentType() {
-            return CoverComponent.class;
+        public Class<SinglePageContent> componentType() {
+            return SinglePageContent.class;
         }
 
         @Override
-        public List<DocxBlock> render(CoverComponent component, DocumentProfile profile) {
+        public List<DocxBlock> render(SinglePageContent component, DocumentProfile profile) {
             return List.of();
         }
     }
 
-    private static final class AlternativeFakeCoverRenderer implements ComponentRenderer<CoverComponent> {
+    private static final class AlternativeFakeCoverRenderer implements ComponentRenderer<SinglePageContent> {
 
         @Override
         public String componentId() {
@@ -88,12 +82,12 @@ class ComponentRendererRegistryTest {
         }
 
         @Override
-        public Class<CoverComponent> componentType() {
-            return CoverComponent.class;
+        public Class<SinglePageContent> componentType() {
+            return SinglePageContent.class;
         }
 
         @Override
-        public List<DocxBlock> render(CoverComponent component, DocumentProfile profile) {
+        public List<DocxBlock> render(SinglePageContent component, DocumentProfile profile) {
             return List.of();
         }
     }

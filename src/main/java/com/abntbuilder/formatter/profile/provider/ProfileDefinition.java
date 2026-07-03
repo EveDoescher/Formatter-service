@@ -10,11 +10,12 @@ import com.abntbuilder.formatter.profile.model.StyleType;
 import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.ComponentContentBindings;
 import com.abntbuilder.formatter.profile.model.component.ComponentRule;
-import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetCommitteeMemberRule;
-import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetComponentRule;
-import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetSignatureLineRule;
-import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetStyleMapping;
-import com.abntbuilder.formatter.profile.model.component.approvalsheet.ApprovalSheetTextTemplateRule;
+import com.abntbuilder.formatter.profile.model.component.singlepage.ComposedTextSlotRule;
+import com.abntbuilder.formatter.profile.model.component.singlepage.SignatureBlockListSlotRule;
+import com.abntbuilder.formatter.profile.model.component.singlepage.SinglePageComponentRule;
+import com.abntbuilder.formatter.profile.model.component.singlepage.SlotRule;
+import com.abntbuilder.formatter.profile.model.component.singlepage.TextListSlotRule;
+import com.abntbuilder.formatter.profile.model.component.singlepage.TextSlotRule;
 import com.abntbuilder.formatter.profile.model.component.abstracten.AbstractComponentRule;
 import com.abntbuilder.formatter.profile.model.component.acknowledgments.AcknowledgmentsComponentRule;
 import com.abntbuilder.formatter.profile.model.component.annex.AnnexComponentRule;
@@ -32,9 +33,6 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.ChartRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.NumberingStrategy;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.TableRule;
-import com.abntbuilder.formatter.profile.model.component.cover.CoverComponentRule;
-import com.abntbuilder.formatter.profile.model.component.cover.CoverLayoutRule;
-import com.abntbuilder.formatter.profile.model.component.cover.CoverStyleMapping;
 import com.abntbuilder.formatter.profile.model.component.dedication.DedicationComponentRule;
 import com.abntbuilder.formatter.profile.model.component.epigraph.EpigraphComponentRule;
 import com.abntbuilder.formatter.profile.model.component.errata.ErrataComponentRule;
@@ -46,9 +44,6 @@ import com.abntbuilder.formatter.profile.model.component.references.ReferencesCo
 import com.abntbuilder.formatter.profile.model.component.summary.SummaryComponentRule;
 import com.abntbuilder.formatter.profile.model.component.references.ReferencesFormattingRule;
 import com.abntbuilder.formatter.profile.model.component.resumo.ResumoComponentRule;
-import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageComponentRule;
-import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageStyleMapping;
-import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageTextTemplateRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.HorizontalPlacementRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.HorizontalPlacementStrategy;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.LayoutGapRule;
@@ -188,9 +183,9 @@ public record ProfileDefinition(
     }
 
     public record ComponentRulesDefinition(
-            CoverComponentRuleDefinition cover,
-            TitlePageComponentRuleDefinition titlePage,
-            ApprovalSheetComponentRuleDefinition approvalSheet,
+            SinglePageComponentRuleDefinition cover,
+            SinglePageComponentRuleDefinition titlePage,
+            SinglePageComponentRuleDefinition approvalSheet,
             BodyContentComponentRuleDefinition bodyContent,
             ErrataComponentRuleDefinition errata,
             DedicationComponentRuleDefinition dedication,
@@ -241,209 +236,61 @@ public record ProfileDefinition(
         }
     }
 
-    public record CoverComponentRuleDefinition(
+    public record SinglePageComponentRuleDefinition(
             String componentId,
-            Map<String, String> contentBindings,
-            CoverStyleMappingDefinition styleMapping,
-            CoverLayoutRuleDefinition layoutRule
-    ) {
-        CoverComponentRule toDomain() {
-            requireNonNull(styleMapping, "cover.styleMapping");
-            requireNonNull(layoutRule, "cover.layoutRule");
-
-            return new CoverComponentRule(
-                    componentId,
-                    createContentBindings(contentBindings),
-                    styleMapping.toDomain(),
-                    layoutRule.toDomain()
-            );
-        }
-    }
-
-    public record CoverStyleMappingDefinition(
-            String institutionalLinesStyleId,
-            String authorsStyleId,
-            String titleStyleId,
-            String subtitleStyleId,
-            String cityStyleId,
-            String yearStyleId
-    ) {
-        CoverStyleMapping toDomain() {
-            return new CoverStyleMapping(
-                    institutionalLinesStyleId,
-                    authorsStyleId,
-                    titleStyleId,
-                    subtitleStyleId,
-                    cityStyleId,
-                    yearStyleId
-            );
-        }
-    }
-
-    public record CoverLayoutRuleDefinition(
-            List<SinglePageGroupRuleDefinition> groups,
-            List<LayoutGapRuleDefinition> gapRules,
-            SinglePageLayoutPolicyDefinition policy
-    ) {
-        CoverLayoutRule toDomain() {
-            requireNonEmpty(groups, "cover.layoutRule.groups");
-            requireNonNull(gapRules, "cover.layoutRule.gapRules");
-            requireNonNull(policy, "cover.layoutRule.policy");
-
-            return new CoverLayoutRule(
-                    groups.stream()
-                            .map(SinglePageGroupRuleDefinition::toDomain)
-                            .toList(),
-                    gapRules.stream()
-                            .map(LayoutGapRuleDefinition::toDomain)
-                            .toList(),
-                    policy.toDomain()
-            );
-        }
-    }
-
-    public record TitlePageComponentRuleDefinition(
-            String componentId,
-            Map<String, String> contentBindings,
-            TitlePageStyleMappingDefinition styleMapping,
-            TitlePageTextTemplateRuleDefinition textTemplates,
+            Map<String, SlotRuleDefinition> slots,
+            Map<String, String> styleMapping,
             SinglePageLayoutRuleDefinition layoutRule
     ) {
-        TitlePageComponentRule toDomain() {
-            requireNonNull(styleMapping, "titlePage.styleMapping");
-            requireNonNull(textTemplates, "titlePage.textTemplates");
-            requireNonNull(layoutRule, "titlePage.layoutRule");
+        SinglePageComponentRule toDomain() {
+            requireNonNull(slots, componentId + ".slots");
+            requireNonNull(styleMapping, componentId + ".styleMapping");
+            requireNonNull(layoutRule, componentId + ".layoutRule");
 
-            return new TitlePageComponentRule(
-                    componentId,
-                    createContentBindings(contentBindings),
-                    styleMapping.toDomain(),
-                    textTemplates.toDomain(),
-                    layoutRule.toDomain()
-            );
+            Map<String, SlotRule> domainSlots = slots.entrySet().stream()
+                    .collect(java.util.stream.Collectors.toUnmodifiableMap(
+                            Map.Entry::getKey,
+                            e -> e.getValue().toDomain()
+                    ));
+
+            return new SinglePageComponentRule(componentId, domainSlots, styleMapping, layoutRule.toDomain());
         }
     }
 
-    public record TitlePageStyleMappingDefinition(
-            String authorsStyleId,
-            String titleStyleId,
-            String subtitleStyleId,
-            String natureStyleId,
-            String advisorStyleId,
-            String coadvisorStyleId,
-            String cityStyleId,
-            String yearStyleId
+    public record SlotRuleDefinition(
+            String type,
+            Boolean required,
+            String template,
+            List<String> fieldNames,
+            Boolean signatureLineEnabled,
+            String signatureLineText,
+            List<String> lineTemplates,
+            List<String> knownFieldNames
     ) {
-        TitlePageStyleMapping toDomain() {
-            return new TitlePageStyleMapping(
-                    authorsStyleId,
-                    titleStyleId,
-                    subtitleStyleId,
-                    natureStyleId,
-                    advisorStyleId,
-                    coadvisorStyleId,
-                    cityStyleId,
-                    yearStyleId
-            );
-        }
-    }
+        SlotRule toDomain() {
+            requireNonNull(type, "slot.type");
+            requireNonNull(required, "slot.required");
 
-    public record TitlePageTextTemplateRuleDefinition(
-            String natureTemplate,
-            String advisorTemplate,
-            String coadvisorTemplate
-    ) {
-        TitlePageTextTemplateRule toDomain() {
-            return new TitlePageTextTemplateRule(
-                    natureTemplate,
-                    advisorTemplate,
-                    coadvisorTemplate
-            );
-        }
-    }
-
-    public record ApprovalSheetComponentRuleDefinition(
-            String componentId,
-            Map<String, String> contentBindings,
-            ApprovalSheetStyleMappingDefinition styleMapping,
-            ApprovalSheetTextTemplateRuleDefinition textTemplates,
-            SinglePageLayoutRuleDefinition layoutRule
-    ) {
-        ApprovalSheetComponentRule toDomain() {
-            requireNonNull(styleMapping, "approvalSheet.styleMapping");
-            requireNonNull(textTemplates, "approvalSheet.textTemplates");
-            requireNonNull(layoutRule, "approvalSheet.layoutRule");
-
-            return new ApprovalSheetComponentRule(
-                    componentId,
-                    createContentBindings(contentBindings),
-                    styleMapping.toDomain(),
-                    textTemplates.toDomain(),
-                    layoutRule.toDomain()
-            );
-        }
-    }
-
-    public record ApprovalSheetStyleMappingDefinition(
-            String authorsStyleId,
-            String titleStyleId,
-            String subtitleStyleId,
-            String natureStyleId,
-            String approvalTextStyleId,
-            String committeeHeadingStyleId,
-            String committeeMembersStyleId
-    ) {
-        ApprovalSheetStyleMapping toDomain() {
-            return new ApprovalSheetStyleMapping(
-                    authorsStyleId,
-                    titleStyleId,
-                    subtitleStyleId,
-                    natureStyleId,
-                    approvalTextStyleId,
-                    committeeHeadingStyleId,
-                    committeeMembersStyleId
-            );
-        }
-    }
-
-    public record ApprovalSheetTextTemplateRuleDefinition(
-            String natureTemplate,
-            String approvalTextTemplate,
-            String committeeHeadingTemplate,
-            ApprovalSheetCommitteeMemberRuleDefinition committeeMemberTemplate
-    ) {
-        ApprovalSheetTextTemplateRule toDomain() {
-            requireNonNull(committeeMemberTemplate, "approvalSheet.textTemplates.committeeMemberTemplate");
-
-            return new ApprovalSheetTextTemplateRule(
-                    natureTemplate,
-                    approvalTextTemplate,
-                    committeeHeadingTemplate,
-                    committeeMemberTemplate.toDomain()
-            );
-        }
-    }
-
-    public record ApprovalSheetCommitteeMemberRuleDefinition(
-            ApprovalSheetSignatureLineRuleDefinition signatureLine,
-            List<String> lineTemplates
-    ) {
-        ApprovalSheetCommitteeMemberRule toDomain() {
-            requireNonNull(signatureLine, "approvalSheet.textTemplates.committeeMemberTemplate.signatureLine");
-            requireNonEmpty(lineTemplates, "approvalSheet.textTemplates.committeeMemberTemplate.lineTemplates");
-
-            return new ApprovalSheetCommitteeMemberRule(signatureLine.toDomain(), lineTemplates);
-        }
-    }
-
-    public record ApprovalSheetSignatureLineRuleDefinition(
-            Boolean enabled,
-            String text
-    ) {
-        ApprovalSheetSignatureLineRule toDomain() {
-            requireNonNull(enabled, "approvalSheet.textTemplates.committeeMemberTemplate.signatureLine.enabled");
-
-            return new ApprovalSheetSignatureLineRule(enabled, text);
+            return switch (type) {
+                case "TEXT" -> new TextSlotRule(required);
+                case "TEXT_LIST" -> new TextListSlotRule(required);
+                case "COMPOSED_TEXT" -> {
+                    requireNonNull(template, "slot.template");
+                    requireNonEmpty(fieldNames, "slot.fieldNames");
+                    yield new ComposedTextSlotRule(required, template, fieldNames);
+                }
+                case "SIGNATURE_BLOCK_LIST" -> {
+                    requireNonEmpty(lineTemplates, "slot.lineTemplates");
+                    yield new SignatureBlockListSlotRule(
+                            required,
+                            signatureLineEnabled != null && signatureLineEnabled,
+                            signatureLineText,
+                            lineTemplates,
+                            knownFieldNames != null ? knownFieldNames : List.of()
+                    );
+                }
+                default -> throw new InvalidProfileStructureException("Unknown slot type: " + type);
+            };
         }
     }
 

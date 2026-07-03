@@ -3,11 +3,10 @@ package com.abntbuilder.formatter.api.export.dto.request;
 import com.abntbuilder.formatter.profile.model.component.ComponentRule;
 import com.abntbuilder.formatter.profile.model.TextAlignment;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentComponentRule;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.CrossReferenceLabelsRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.NumberingStrategy;
-import com.abntbuilder.formatter.profile.model.component.titlepage.TitlePageComponentRule;
+import com.abntbuilder.formatter.profile.model.component.singlepage.SinglePageComponentRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.HorizontalPlacementStrategy;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageAnchorStrategy;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageLineHeightStrategy;
@@ -15,9 +14,9 @@ import com.abntbuilder.formatter.profile.model.layout.singlepage.SinglePageSafet
 import com.abntbuilder.formatter.profile.model.layout.singlepage.SpacerStylePolicy;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -25,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 class ComponentRulesRequestTest {
 
     @Test
-    void shouldConvertTitlePageComponentRuleWhenPresent() {
+    void shouldConvertSinglePageComponentRuleWhenPresent() {
         ComponentRulesRequest request = new ComponentRulesRequest(null, titlePageRuleRequest(), null, null,
                 null, null, null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null);
@@ -33,9 +32,9 @@ class ComponentRulesRequestTest {
         List<ComponentRule> rules = request.toDomain();
 
         assertEquals(1, rules.size());
-        TitlePageComponentRule rule = assertInstanceOf(TitlePageComponentRule.class, rules.getFirst());
+        SinglePageComponentRule rule = assertInstanceOf(SinglePageComponentRule.class, rules.getFirst());
         assertEquals("titlePage", rule.componentId());
-        assertEquals("titlePage.nature", rule.styleMapping().styleIdForItem("nature"));
+        assertEquals("titlePage.nature", rule.styleMapping().get("nature"));
     }
 
     @Test
@@ -64,25 +63,15 @@ class ComponentRulesRequestTest {
         assertEquals("bodyContent.table.caption", rule.table().captionStyleId());
     }
 
-    private static TitlePageComponentRuleRequest titlePageRuleRequest() {
-        return new TitlePageComponentRuleRequest(
+    private static SinglePageComponentRuleRequest titlePageRuleRequest() {
+        return new SinglePageComponentRuleRequest(
                 "titlePage",
-                Map.of("title", "work.title"),
-                new TitlePageStyleMappingRequest(
-                        "titlePage.author",
-                        "titlePage.title",
-                        "titlePage.subtitle",
-                        "titlePage.nature",
-                        "titlePage.advisor",
-                        "titlePage.coadvisor",
-                        "titlePage.bottom",
-                        "titlePage.bottom"
+                Map.of(
+                        "nature", new SlotRuleRequest("COMPOSED_TEXT", true,
+                                "{workType} para {degreeObjective}.", List.of("workType", "degreeObjective"),
+                                null, null, null, null)
                 ),
-                new TitlePageTextTemplateRuleRequest(
-                        "{workType} para {degreeObjective} em {courseName} apresentado a {institutionName}.",
-                        "Orientador(a): {academicTitle} {name}.",
-                        "Coorientador(a): {academicTitle} {name}."
-                ),
+                Map.of("nature", "titlePage.nature"),
                 new SinglePageLayoutRuleRequest(
                         List.of(new SinglePageGroupRuleRequest(
                                 "titlePage.natureBlock",

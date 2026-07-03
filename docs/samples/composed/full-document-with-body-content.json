@@ -68,7 +68,9 @@
           "institutionName": "Universidade Fictícia de Limeira",
           "role": "Examinadora"
         }
-      ]
+      ],
+      "approvalText": "Aprovado(a) em: ______/______/______",
+      "committeeHeading": "BANCA EXAMINADORA"
     },
     "bodyContent": {
       "sections": [

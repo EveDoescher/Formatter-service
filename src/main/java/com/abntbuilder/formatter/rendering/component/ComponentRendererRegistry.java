@@ -1,6 +1,7 @@
 package com.abntbuilder.formatter.rendering.component;
 
 import com.abntbuilder.formatter.document.component.DocumentComponent;
+import com.abntbuilder.formatter.document.component.singlepage.SinglePageContent;
 import com.abntbuilder.formatter.shared.exception.MissingComponentRendererException;
 
 import java.util.HashMap;
@@ -27,10 +28,14 @@ public final class ComponentRendererRegistry {
                 throw new IllegalArgumentException("Duplicate component renderer id: " + renderer.componentId());
             }
 
-            if (resolvedRenderersByType.put(renderer.componentType(), renderer) != null) {
-                throw new IllegalArgumentException(
-                        "Duplicate component renderer type: " + renderer.componentType().getSimpleName()
-                );
+            // SinglePageContent renderers share the same Java type but differ by componentId —
+            // skip the type-map duplicate check for them.
+            if (renderer.componentType() != SinglePageContent.class) {
+                if (resolvedRenderersByType.put(renderer.componentType(), renderer) != null) {
+                    throw new IllegalArgumentException(
+                            "Duplicate component renderer type: " + renderer.componentType().getSimpleName()
+                    );
+                }
             }
         }
 
@@ -54,6 +59,14 @@ public final class ComponentRendererRegistry {
 
     public String componentIdFor(DocumentComponent component) {
         Objects.requireNonNull(component, "component must not be null");
+
+        // SinglePageContent carries its own componentId.
+        if (component instanceof SinglePageContent singlePage) {
+            if (!renderersByComponentId.containsKey(singlePage.componentId())) {
+                throw new MissingComponentRendererException(singlePage.componentId());
+            }
+            return singlePage.componentId();
+        }
 
         ComponentRenderer<?> renderer = renderersByComponentType.get(component.getClass());
 

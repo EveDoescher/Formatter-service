@@ -174,7 +174,7 @@ class ProfileDefinitionTest {
                 () -> readProfile(coverProfileWithoutPolicy())
         );
 
-        assertEquals("cover.layoutRule.policy must be provided.", exception.getMessage());
+        assertEquals("layoutRule.policy must be provided.", exception.getMessage());
     }
 
     private DocumentProfile readProfile(String json) throws IOException {
@@ -286,13 +286,11 @@ class ProfileDefinitionTest {
                   "componentRules": {
                     "cover": {
                       "componentId": "cover",
+                      "slots": {
+                        "institutionalLines": {"type": "TEXT_LIST", "required": true}
+                      },
                       "styleMapping": {
-                        "institutionalLinesStyleId": "body",
-                        "authorsStyleId": "body",
-                        "titleStyleId": "body",
-                        "subtitleStyleId": "body",
-                        "cityStyleId": "body",
-                        "yearStyleId": "body"
+                        "institutionalLines": "body"
                       },
                       "layoutRule": {
                         %s
