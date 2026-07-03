@@ -9,7 +9,7 @@ public record DisplayObjectContinuationPart(
         Optional<String> continuationLabel
 ) {
 
-    boolean last() {
+    public boolean last() {
         return index == count;
     }
 }
