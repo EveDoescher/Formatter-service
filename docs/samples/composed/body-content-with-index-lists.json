@@ -1,0 +1,125 @@
+{
+  "fileName": "body-content-with-index-lists.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "titlePage",
+      "listOfFigures",
+      "listOfTables",
+      "listOfFrames",
+      "listOfCharts",
+      "listOfCodeListings",
+      "bodyContent"
+    ]
+  },
+  "document": {
+    "titlePage": {
+      "authors": ["Pessoa Autora Teste 01"],
+      "title": "Documento com Todas as Listas de Ilustrações",
+      "nature": {
+        "workType": "Trabalho de conclusão de curso",
+        "degreeObjective": "obtenção do título de graduado",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Fictícia de Limeira"
+      },
+      "advisor": {
+        "academicTitle": "Prof. Dr.",
+        "name": "Pessoa Orientadora Teste"
+      },
+      "city": "Limeira",
+      "year": "2026"
+    },
+    "listOfFigures": {},
+    "listOfTables": {},
+    "listOfFrames": {},
+    "listOfCharts": {},
+    "listOfCodeListings": {},
+    "bodyContent": {
+      "sections": [
+        {
+          "id": "s1",
+          "level": 1,
+          "title": "Elementos Visuais",
+          "blocks": [
+            {
+              "type": "FIGURE",
+              "figure": {
+                "id": "fig-1",
+                "caption": "Diagrama de componentes do sistema",
+                "source": "Elaboração teste",
+                "image": {
+                  "sourceType": "DATA_URI",
+                  "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
+                  "altText": "Diagrama de componentes"
+                }
+              }
+            },
+            {
+              "type": "TABLE",
+              "table": {
+                "id": "tab-1",
+                "caption": "Dados de desempenho do sistema",
+                "source": "Elaboração teste",
+                "columns": [
+                  {"header": "Métrica"},
+                  {"header": "Valor"}
+                ],
+                "rows": [
+                  {
+                    "cells": [
+                      {"text": "Latência média", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false},
+                      {"text": "42 ms", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false}
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "FRAME",
+              "frame": {
+                "id": "qdr-1",
+                "caption": "Comparação de abordagens metodológicas",
+                "source": "Elaboração teste",
+                "columns": [
+                  {"header": "Abordagem"},
+                  {"header": "Característica"}
+                ],
+                "rows": [
+                  {
+                    "cells": [
+                      {"text": "Quantitativa", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false},
+                      {"text": "Mensurável", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false}
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "CHART",
+              "chart": {
+                "id": "grf-1",
+                "caption": "Distribuição dos resultados por categoria",
+                "source": "Elaboração teste",
+                "image": {
+                  "sourceType": "DATA_URI",
+                  "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
+                  "altText": "Gráfico de distribuição"
+                }
+              }
+            },
+            {
+              "type": "CODE_LISTING",
+              "codeListing": {
+                "id": "lst-1",
+                "caption": "Exemplo de algoritmo de processamento",
+                "language": "java",
+                "code": "public void process(List<String> items) {\n    items.forEach(System.out::println);\n}",
+                "source": "Elaboração teste"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -14,7 +14,8 @@ public sealed interface FlowItem
                 FlowItem.TemplatedTextItem,
                 FlowItem.BoldLabeledKeywordsItem,
                 FlowItem.PairListItem,
-                FlowItem.TableBlockItem {
+                FlowItem.TableBlockItem,
+                FlowItem.RepeatGroupItem {
 
     /** Fixed heading paragraph with text from the profile. */
     record HeadingItem(String styleId, String text) implements FlowItem {
@@ -109,6 +110,23 @@ public sealed interface FlowItem
             if (headers.isEmpty()) throw new IllegalArgumentException("TableBlockItem.headers must not be empty.");
             headers = List.copyOf(headers);
             requireNonBlank(rowsSlotName, "TableBlockItem.rowsSlotName");
+        }
+    }
+
+    /**
+     * Repeats a group of FlowItems once per entry in an EntryListValue slot.
+     * Each iteration's slots override the component-level slots for the duration of that group.
+     */
+    record RepeatGroupItem(
+            String entriesSlotName,
+            boolean pageBreakBetweenEntries,
+            List<FlowItem> group
+    ) implements FlowItem {
+        public RepeatGroupItem {
+            requireNonBlank(entriesSlotName, "RepeatGroupItem.entriesSlotName");
+            Objects.requireNonNull(group, "RepeatGroupItem.group must not be null.");
+            if (group.isEmpty()) throw new IllegalArgumentException("RepeatGroupItem.group must not be empty.");
+            group = List.copyOf(group);
         }
     }
 

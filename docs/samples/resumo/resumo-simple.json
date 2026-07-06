@@ -3,13 +3,31 @@
   "profileId": "abnt-unip-profile",
   "options": {
     "selectedComponents": [
+      "titlePage",
       "resumo",
       "abstract"
     ]
   },
   "document": {
+    "titlePage": {
+      "authors": ["Pessoa Autora Teste 01"],
+      "title": "Processamento Paralelo em Sistemas Distribuídos",
+      "nature": {
+        "workType": "Trabalho de conclusão de curso",
+        "degreeObjective": "obtenção do título de graduado",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Fictícia de Limeira"
+      },
+      "advisor": {
+        "academicTitle": "Prof. Dr.",
+        "name": "Pessoa Orientadora Teste"
+      },
+      "city": "Limeira",
+      "year": "2026"
+    },
     "resumo": {
       "text": "Este trabalho investiga os efeitos do processamento paralelo em sistemas distribuídos de grande escala. Foram analisados três algoritmos de particionamento de dados aplicados a conjuntos de dados sintéticos de até um bilhão de registros. Os resultados indicam melhora de desempenho superior a 40% em relação às abordagens sequenciais, com escalabilidade linear até 32 nós de processamento.",
+      "keywordsLabel": "Palavras-chave:",
       "keywords": ["sistemas distribuídos", "processamento paralelo", "escalabilidade", "particionamento de dados"]
     },
     "abstract": {
@@ -28,6 +46,5 @@
         }
       ]
     }
-  },
-  "paragraphs": []
+  }
 }

@@ -185,10 +185,10 @@ class DocumentRendererComponentSelectionTest {
     void shouldRejectUnsupportedSelectedComponent() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> renderer.render(command(List.of("abstract")))
+                () -> renderer.render(command(List.of("unknownComponent")))
         );
 
-        assertEquals("Unsupported selected component: abstract", exception.getMessage());
+        assertEquals("Unsupported selected component: unknownComponent", exception.getMessage());
     }
 
     @Test

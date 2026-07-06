@@ -181,6 +181,10 @@ public final class SinglePageLayoutAssembler {
                 throw new com.abntbuilder.formatter.shared.exception.InvalidSinglePageContentException(
                         "TableValue is not supported in single-page layout components (slot '" + slotId
                         + "' in '" + content.componentId() + "').");
+            case com.abntbuilder.formatter.document.component.singlepage.EntryListValue ignored ->
+                throw new com.abntbuilder.formatter.shared.exception.InvalidSinglePageContentException(
+                        "EntryListValue is not supported in single-page layout components (slot '" + slotId
+                        + "' in '" + content.componentId() + "').");
         };
     }
 

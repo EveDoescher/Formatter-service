@@ -1,0 +1,60 @@
+{
+  "fileName": "list-of-abbreviations-with-body.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": ["titlePage", "listOfAbbreviations", "bodyContent"]
+  },
+  "document": {
+    "titlePage": {
+      "authors": ["Pessoa Autora Teste 01"],
+      "title": "Estudo de Abreviações em Documentos Acadêmicos",
+      "nature": {
+        "workType": "Trabalho de conclusão de curso",
+        "degreeObjective": "obtenção do título de graduado",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Fictícia de Limeira"
+      },
+      "advisor": {
+        "academicTitle": "Prof. Dr.",
+        "name": "Pessoa Orientadora Teste"
+      },
+      "city": "Limeira",
+      "year": "2026"
+    },
+    "listOfAbbreviations": {},
+    "bodyContent": {
+      "sections": [
+        {
+          "id": "s1",
+          "level": 1,
+          "title": "Introdução",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "ABBREVIATION",
+                  "text": "TCC",
+                  "expansion": "Trabalho de Conclusão de Curso"
+                },
+                {
+                  "type": "TEXT",
+                  "text": " é um requisito acadêmico regulamentado pela "
+                },
+                {
+                  "type": "ABBREVIATION",
+                  "text": "ABNT",
+                  "expansion": "Associação Brasileira de Normas Técnicas"
+                },
+                {
+                  "type": "TEXT",
+                  "text": "."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

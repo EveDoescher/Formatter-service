@@ -1,0 +1,26 @@
+{
+  "fileName": "summary-simple.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": ["titlePage", "summary"]
+  },
+  "document": {
+    "titlePage": {
+      "authors": ["Pessoa Autora Teste 01"],
+      "title": "Documento com Sumário Automático",
+      "nature": {
+        "workType": "Trabalho de conclusão de curso",
+        "degreeObjective": "obtenção do título de graduado",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Fictícia de Limeira"
+      },
+      "advisor": {
+        "academicTitle": "Prof. Dr.",
+        "name": "Pessoa Orientadora Teste"
+      },
+      "city": "Limeira",
+      "year": "2026"
+    },
+    "summary": {}
+  }
+}

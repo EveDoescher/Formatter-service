@@ -2,12 +2,14 @@ package com.abntbuilder.formatter.rendering.component.flowtextual;
 
 import com.abntbuilder.formatter.document.component.flowtextual.FlowTextualContent;
 import com.abntbuilder.formatter.document.component.singlepage.ContentValue;
+import com.abntbuilder.formatter.document.component.singlepage.EntryListValue;
 import com.abntbuilder.formatter.document.component.singlepage.TableValue;
 import com.abntbuilder.formatter.document.component.singlepage.TextListValue;
 import com.abntbuilder.formatter.document.component.singlepage.TextValue;
 import com.abntbuilder.formatter.document.component.bodycontent.InlineFormatting;
 import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
+import com.abntbuilder.formatter.output.docx.api.DocxPageBreak;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
 import com.abntbuilder.formatter.output.docx.api.DocxRun;
 import com.abntbuilder.formatter.output.docx.api.DocxTableBlock;
@@ -27,7 +29,9 @@ import com.abntbuilder.formatter.rendering.phase0.Phase0Index;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public final class FlowTextualRenderer implements MetadataConsumingRenderer<FlowTextualContent> {
@@ -59,7 +63,33 @@ public final class FlowTextualRenderer implements MetadataConsumingRenderer<Flow
         StyleResolver styleResolver = new StyleResolver(profile);
 
         List<DocxBlock> blocks = new ArrayList<>();
+        for (FlowItem item : rule.items()) {
+            if (item instanceof FlowItem.RepeatGroupItem r) {
+                EntryListValue entryList = requireEntryListValue(component, r.entriesSlotName());
+                boolean firstEntry = true;
+                for (Map<String, ContentValue> entrySlots : entryList.entries()) {
+                    if (!firstEntry && r.pageBreakBetweenEntries()) {
+                        blocks.add(new DocxPageBreak());
+                    }
+                    firstEntry = false;
+                    Map<String, ContentValue> merged = new HashMap<>(component.slots());
+                    merged.putAll(entrySlots);
+                    FlowTextualContent entryComponent = new FlowTextualContent(componentId, merged);
+                    FlowTextualComponentRule groupRule = new FlowTextualComponentRule(componentId, r.group());
+                    blocks.addAll(renderItems(groupRule, entryComponent, styleResolver, phase0Index));
+                }
+            } else {
+                FlowTextualComponentRule singleItemRule = new FlowTextualComponentRule(componentId, List.of(item));
+                blocks.addAll(renderItems(singleItemRule, component, styleResolver, phase0Index));
+            }
+        }
+        return List.copyOf(blocks);
+    }
 
+    private List<DocxBlock> renderItems(
+            FlowTextualComponentRule rule, FlowTextualContent component,
+            StyleResolver styleResolver, Phase0Index phase0Index) {
+        List<DocxBlock> blocks = new ArrayList<>();
         for (FlowItem item : rule.items()) {
             switch (item) {
                 case FlowItem.HeadingItem h -> {
@@ -101,10 +131,7 @@ public final class FlowTextualRenderer implements MetadataConsumingRenderer<Flow
                 }
                 case FlowItem.PairListItem p -> {
                     StyleRule style = styleResolver.resolve(p.styleId());
-                    List<String> terms;
-                    List<String> definitions;
                     if (p.termsSlotName().startsWith("$")) {
-                        // Phase0-sourced data (e.g. "$abbreviations")
                         List<BodyAbbreviationMetadata> abbrs = resolvePhase0PairList(
                                 p.termsSlotName(), phase0Index, p);
                         for (BodyAbbreviationMetadata abbr : abbrs) {
@@ -112,8 +139,8 @@ public final class FlowTextualRenderer implements MetadataConsumingRenderer<Flow
                             blocks.add(new DocxParagraph(List.of(DocxRun.of(text, style)), style));
                         }
                     } else {
-                        terms = requireTextListValue(component, p.termsSlotName()).items();
-                        definitions = requireTextListValue(component, p.definitionsSlotName()).items();
+                        List<String> terms = requireTextListValue(component, p.termsSlotName()).items();
+                        List<String> definitions = requireTextListValue(component, p.definitionsSlotName()).items();
                         if (terms.size() != definitions.size()) {
                             throw new IllegalArgumentException(
                                     "FlowTextualContent[" + componentId + "]: slots '"
@@ -140,10 +167,13 @@ public final class FlowTextualRenderer implements MetadataConsumingRenderer<Flow
                             false, false, false, TableBorderStyle.CLOSED
                     ));
                 }
+                case FlowItem.RepeatGroupItem ignored ->
+                    throw new IllegalArgumentException(
+                            "RepeatGroupItem is not allowed inside a RepeatGroupItem group in component '"
+                            + componentId + "'.");
             }
         }
-
-        return List.copyOf(blocks);
+        return blocks;
     }
 
     private TextValue requireTextValue(FlowTextualContent component, String slotName) {
@@ -179,11 +209,21 @@ public final class FlowTextualRenderer implements MetadataConsumingRenderer<Flow
         return tv;
     }
 
+    private EntryListValue requireEntryListValue(FlowTextualContent component, String slotName) {
+        ContentValue value = component.slots().get(slotName);
+        if (!(value instanceof EntryListValue elv)) {
+            throw new IllegalArgumentException(
+                    "FlowTextualContent[" + componentId + "]: slot '" + slotName
+                    + "' must be an EntryListValue (found: "
+                    + (value == null ? "null" : value.getClass().getSimpleName()) + ").");
+        }
+        return elv;
+    }
+
     private List<BodyAbbreviationMetadata> resolvePhase0PairList(
             String sourceKey, Phase0Index phase0Index, FlowItem.PairListItem item) {
         if ("$abbreviations".equals(sourceKey)) {
             List<BodyAbbreviationMetadata> abbrs = new ArrayList<>(phase0Index.abbreviations());
-            // sortAlphabetically is encoded by a non-blank definitionsSlotName = "$sort"
             if ("$sort".equals(item.definitionsSlotName())) {
                 abbrs.sort(Comparator.comparing(BodyAbbreviationMetadata::abbreviation));
             }

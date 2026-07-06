@@ -80,4 +80,35 @@ class ContentValueTest {
         assertEquals(1, v.entries().size());
         assertThrows(UnsupportedOperationException.class, () -> v.entries().add(Map.of("name", "extra")));
     }
+
+    @Test
+    void entryListValueRejectsEmptyList() {
+        assertThrows(IllegalArgumentException.class, () -> new EntryListValue(List.of()));
+    }
+
+    @Test
+    void entryListValueRejectsNullList() {
+        assertThrows(NullPointerException.class, () -> new EntryListValue(null));
+    }
+
+    @Test
+    void entryListValueRejectsNullEntry() {
+        List<Map<String, ContentValue>> entries = new java.util.ArrayList<>();
+        entries.add(null);
+        assertThrows(NullPointerException.class, () -> new EntryListValue(entries));
+    }
+
+    @Test
+    void entryListValueIsImmutable() {
+        EntryListValue v = new EntryListValue(List.of(Map.of("text", new TextValue("abc"))));
+        assertEquals(1, v.entries().size());
+        assertThrows(UnsupportedOperationException.class, () -> v.entries().add(Map.of()));
+    }
+
+    @Test
+    void entryListValueEachEntryIsImmutable() {
+        EntryListValue v = new EntryListValue(List.of(Map.of("text", new TextValue("abc"))));
+        assertThrows(UnsupportedOperationException.class,
+                () -> v.entries().get(0).put("extra", new TextValue("x")));
+    }
 }

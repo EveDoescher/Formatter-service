@@ -17,7 +17,7 @@ public record ComponentRulesRequest(
         @Valid FlowTextualComponentRuleRequest epigraph,
         @Valid FlowTextualComponentRuleRequest acknowledgments,
         @Valid FlowTextualComponentRuleRequest resumo,
-        @JsonProperty("abstract") @Valid AbstractComponentRuleRequest abstractEn,
+        @JsonProperty("abstract") @Valid FlowTextualComponentRuleRequest abstractEn,
         @Valid ReferencesComponentRuleRequest references,
         @Valid AppendixComponentRuleRequest appendix,
         @Valid AnnexComponentRuleRequest annex,

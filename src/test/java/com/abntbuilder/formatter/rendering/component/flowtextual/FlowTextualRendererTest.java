@@ -1,11 +1,13 @@
 package com.abntbuilder.formatter.rendering.component.flowtextual;
 
 import com.abntbuilder.formatter.document.component.flowtextual.FlowTextualContent;
+import com.abntbuilder.formatter.document.component.singlepage.EntryListValue;
 import com.abntbuilder.formatter.document.component.singlepage.TableValue;
 import com.abntbuilder.formatter.document.component.singlepage.TextListValue;
 import com.abntbuilder.formatter.document.component.singlepage.TextValue;
 import com.abntbuilder.formatter.output.docx.api.DocxBlankLine;
 import com.abntbuilder.formatter.output.docx.api.DocxBlock;
+import com.abntbuilder.formatter.output.docx.api.DocxPageBreak;
 import com.abntbuilder.formatter.output.docx.api.DocxParagraph;
 import com.abntbuilder.formatter.output.docx.api.DocxTableBlock;
 import com.abntbuilder.formatter.profile.model.DocumentProfile;
@@ -188,6 +190,72 @@ class FlowTextualRendererTest {
         FlowTextualRenderer renderer = new FlowTextualRenderer("errata");
         assertEquals("errata", renderer.componentId());
         assertEquals(FlowTextualContent.class, renderer.componentType());
+    }
+
+    @Test
+    void shouldRenderRepeatGroupItemWithPageBreakBetweenEntries() {
+        FlowTextualRenderer renderer = new FlowTextualRenderer("abstract");
+        FlowTextualComponentRule rule = new FlowTextualComponentRule("abstract", List.of(
+                new FlowItem.RepeatGroupItem("entries", true, List.of(
+                        new FlowItem.PlainTextItem("s", "headingText"),
+                        new FlowItem.PlainTextItem("s", "text")
+                ))
+        ));
+        DocumentProfile profile = profileWith("abstract", rule);
+        EntryListValue entries = new EntryListValue(List.of(
+                Map.of("headingText", new TextValue("ABSTRACT"), "text", new TextValue("English text.")),
+                Map.of("headingText", new TextValue("RESUMEN"), "text", new TextValue("Spanish text."))
+        ));
+        FlowTextualContent content = new FlowTextualContent("abstract", Map.of("entries", entries));
+
+        List<DocxBlock> blocks = renderer.renderWithMetadata(content, profile, Phase0Index.empty());
+
+        // 2 paragraphs for first entry + 1 page break + 2 paragraphs for second entry = 5
+        assertEquals(5, blocks.size());
+        assertInstanceOf(DocxParagraph.class, blocks.get(0));
+        assertInstanceOf(DocxParagraph.class, blocks.get(1));
+        assertInstanceOf(DocxPageBreak.class, blocks.get(2));
+        assertInstanceOf(DocxParagraph.class, blocks.get(3));
+        assertInstanceOf(DocxParagraph.class, blocks.get(4));
+        assertEquals("ABSTRACT", ((DocxParagraph) blocks.get(0)).runs().getFirst().text());
+        assertEquals("RESUMEN", ((DocxParagraph) blocks.get(3)).runs().getFirst().text());
+    }
+
+    @Test
+    void shouldRenderRepeatGroupItemWithoutPageBreakWhenDisabled() {
+        FlowTextualRenderer renderer = new FlowTextualRenderer("abstract");
+        FlowTextualComponentRule rule = new FlowTextualComponentRule("abstract", List.of(
+                new FlowItem.RepeatGroupItem("entries", false, List.of(
+                        new FlowItem.PlainTextItem("s", "text")
+                ))
+        ));
+        DocumentProfile profile = profileWith("abstract", rule);
+        EntryListValue entries = new EntryListValue(List.of(
+                Map.of("text", new TextValue("First.")),
+                Map.of("text", new TextValue("Second."))
+        ));
+        FlowTextualContent content = new FlowTextualContent("abstract", Map.of("entries", entries));
+
+        List<DocxBlock> blocks = renderer.renderWithMetadata(content, profile, Phase0Index.empty());
+
+        assertEquals(2, blocks.size());
+        assertInstanceOf(DocxParagraph.class, blocks.get(0));
+        assertInstanceOf(DocxParagraph.class, blocks.get(1));
+    }
+
+    @Test
+    void shouldRejectRepeatGroupItemWithMissingEntriesSlot() {
+        FlowTextualRenderer renderer = new FlowTextualRenderer("abstract");
+        FlowTextualComponentRule rule = new FlowTextualComponentRule("abstract", List.of(
+                new FlowItem.RepeatGroupItem("entries", true, List.of(
+                        new FlowItem.PlainTextItem("s", "text")
+                ))
+        ));
+        DocumentProfile profile = profileWith("abstract", rule);
+        FlowTextualContent content = new FlowTextualContent("abstract", Map.of());
+
+        assertThrows(IllegalArgumentException.class, () ->
+                renderer.renderWithMetadata(content, profile, Phase0Index.empty()));
     }
 
     private static DocumentProfile profileWith(String componentId, FlowTextualComponentRule rule) {

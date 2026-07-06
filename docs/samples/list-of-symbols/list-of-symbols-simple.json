@@ -1,0 +1,34 @@
+{
+  "fileName": "list-of-symbols-simple.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": ["titlePage", "listOfSymbols"]
+  },
+  "document": {
+    "titlePage": {
+      "authors": ["Pessoa Autora Teste 01"],
+      "title": "Estudo de Simbologia em Documentos Científicos",
+      "nature": {
+        "workType": "Trabalho de conclusão de curso",
+        "degreeObjective": "obtenção do título de graduado",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Fictícia de Limeira"
+      },
+      "advisor": {
+        "academicTitle": "Prof. Dr.",
+        "name": "Pessoa Orientadora Teste"
+      },
+      "city": "Limeira",
+      "year": "2026"
+    },
+    "listOfSymbols": {
+      "terms": ["α", "β", "σ²", "μ"],
+      "definitions": [
+        "Nível de significância",
+        "Coeficiente de regressão",
+        "Variância amostral",
+        "Média populacional"
+      ]
+    }
+  }
+}

@@ -64,4 +64,34 @@ class FlowItemTest {
         assertEquals(4, item.headers().size());
         assertThrows(UnsupportedOperationException.class, () -> item.headers().add("extra"));
     }
+
+    @Test
+    void repeatGroupItemRejectsEmptyGroup() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new FlowItem.RepeatGroupItem("entries", true, List.of()));
+    }
+
+    @Test
+    void repeatGroupItemRejectsNullGroup() {
+        assertThrows(NullPointerException.class,
+                () -> new FlowItem.RepeatGroupItem("entries", true, null));
+    }
+
+    @Test
+    void repeatGroupItemRejectsBlankSlotName() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new FlowItem.RepeatGroupItem("", true,
+                        List.of(new FlowItem.PlainTextItem("s", "text"))));
+    }
+
+    @Test
+    void repeatGroupItemGroupIsImmutable() {
+        FlowItem.RepeatGroupItem item = new FlowItem.RepeatGroupItem(
+                "entries", true,
+                List.of(new FlowItem.PlainTextItem("s", "text")));
+
+        assertEquals(1, item.group().size());
+        assertThrows(UnsupportedOperationException.class,
+                () -> item.group().add(new FlowItem.PlainTextItem("s", "x")));
+    }
 }

@@ -17,7 +17,7 @@ import com.abntbuilder.formatter.profile.model.component.singlepage.SinglePageCo
 import com.abntbuilder.formatter.profile.model.component.singlepage.SlotRule;
 import com.abntbuilder.formatter.profile.model.component.singlepage.TextListSlotRule;
 import com.abntbuilder.formatter.profile.model.component.singlepage.TextSlotRule;
-import com.abntbuilder.formatter.profile.model.component.abstracten.AbstractComponentRule;
+// AbstractComponentRule removed — abstract is now a FlowTextualComponentRule
 import com.abntbuilder.formatter.profile.model.component.annex.AnnexComponentRule;
 import com.abntbuilder.formatter.profile.model.component.appendix.AppendixComponentRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentComponentRule;
@@ -837,11 +837,17 @@ public record ProfileDefinition(
             String keywordsTerminator,
             Integer blankLinesAfterHeading
     ) {
-        AbstractComponentRule toDomain() {
+        FlowTextualComponentRule toDomain() {
             requireNonNull(keywordsTerminator, "abstract.keywordsTerminator");
-            return new AbstractComponentRule(componentId, headingStyleId,
-                    textStyleId, keywordsStyleId, keywordsSeparator, keywordsTerminator,
-                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0);
+            int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
+            List<FlowItem> group = new ArrayList<>();
+            group.add(new FlowItem.PlainTextItem(headingStyleId, "headingText"));
+            if (blankLines > 0) group.add(new FlowItem.BlankLinesItem(headingStyleId, blankLines));
+            group.add(new FlowItem.PlainTextItem(textStyleId, "text"));
+            group.add(new FlowItem.BoldLabeledKeywordsItem(
+                    keywordsStyleId, "keywordsLabel", "keywords", keywordsSeparator, keywordsTerminator));
+            return new FlowTextualComponentRule(componentId, List.of(
+                    new FlowItem.RepeatGroupItem("entries", true, group)));
         }
     }
 

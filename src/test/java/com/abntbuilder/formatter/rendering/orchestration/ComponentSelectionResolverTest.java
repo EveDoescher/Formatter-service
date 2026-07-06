@@ -48,9 +48,9 @@ class ComponentSelectionResolverTest {
     void shouldRejectUnsupportedSelectedComponent() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> resolver.validateSupportedSelections(List.of("abstract"), Set.of("cover"))
+                () -> resolver.validateSupportedSelections(List.of("unknownComponent"), Set.of("cover"))
         );
 
-        assertEquals("Unsupported selected component: abstract", exception.getMessage());
+        assertEquals("Unsupported selected component: unknownComponent", exception.getMessage());
     }
 }

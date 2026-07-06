@@ -4,7 +4,6 @@ public enum ComponentType {
     SINGLE_PAGE,
     FLOW_TEXTUAL,
     BODY_CONTENT,
-    ABSTRACT_EN,
     REFERENCES,
     APPENDIX,
     ANNEX,

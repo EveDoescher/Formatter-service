@@ -1,0 +1,280 @@
+{
+  "fileName": "full-document-abnt-complete.docx",
+  "profileId": "abnt-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "cover",
+      "titlePage",
+      "errata",
+      "approvalSheet",
+      "dedication",
+      "acknowledgments",
+      "epigraph",
+      "resumo",
+      "abstract",
+      "listOfAbbreviations",
+      "listOfSymbols",
+      "summary",
+      "listOfFigures",
+      "listOfTables",
+      "bodyContent",
+      "references",
+      "appendix",
+      "annex",
+      "glossary"
+    ]
+  },
+  "document": {
+    "cover": {
+      "institutionalLines": [
+        "UNIVERSIDADE FICTÍCIA DE LIMEIRA",
+        "INSTITUTO DE CIÊNCIAS EXATAS E TECNOLOGIA",
+        "CURSO DE ANÁLISE E DESENVOLVIMENTO DE SISTEMAS"
+      ],
+      "authors": ["PESSOA AUTORA TESTE 01"],
+      "title": "FORMATAÇÃO AUTOMÁTICA DE TRABALHOS ACADÊMICOS",
+      "subtitle": "Uma proposta orientada por perfis institucionais",
+      "city": "Limeira",
+      "year": "2026"
+    },
+    "titlePage": {
+      "authors": ["Pessoa Autora Teste 01"],
+      "title": "Formatação Automática de Trabalhos Acadêmicos",
+      "subtitle": "Uma proposta orientada por perfis institucionais",
+      "nature": {
+        "workType": "Trabalho de conclusão de curso",
+        "degreeObjective": "obtenção do título de graduado",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Fictícia de Limeira"
+      },
+      "advisor": {
+        "academicTitle": "Prof. Dr.",
+        "name": "Pessoa Orientadora Teste"
+      },
+      "city": "Limeira",
+      "year": "2026"
+    },
+    "errata": {
+      "rows": [
+        ["12", "3", "formatção", "formatação"]
+      ]
+    },
+    "approvalSheet": {
+      "authors": ["Pessoa Autora Teste 01"],
+      "title": "Formatação Automática de Trabalhos Acadêmicos",
+      "nature": {
+        "workType": "Trabalho de conclusão de curso",
+        "degreeObjective": "obtenção do título de graduado",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Fictícia de Limeira"
+      },
+      "approvalText": "Trabalho aprovado. Limeira, 10 de julho de 2026.",
+      "committeeHeading": "Banca examinadora:",
+      "committeeMembers": [
+        {
+          "name": "Pessoa Orientadora Teste",
+          "title": "Prof. Dr.",
+          "institutionName": "Universidade Fictícia de Limeira",
+          "role": "Orientador"
+        },
+        {
+          "name": "Banca Examinadora Teste 01",
+          "title": "Profa. Dra.",
+          "institutionName": "Universidade Fictícia de Limeira",
+          "role": "Examinadora"
+        }
+      ]
+    },
+    "dedication": {
+      "text": "Aos que tornaram esta jornada possível."
+    },
+    "acknowledgments": {
+      "text": "Agradeço à orientação recebida e ao suporte da família durante todo o percurso."
+    },
+    "epigraph": {
+      "text": "A clareza na escrita é o reflexo da clareza no pensamento.",
+      "author": "Autor Fictício",
+      "source": "Obra Fictícia, 2024"
+    },
+    "resumo": {
+      "text": "Este trabalho apresenta uma proposta de motor de formatação automática de documentos acadêmicos, orientado por perfis institucionais declarativos. A abordagem elimina lógica hardcoded dos componentes de renderização, permitindo que novos perfis sejam criados sem alterações de código.",
+      "keywordsLabel": "Palavras-chave:",
+      "keywords": ["formatação automática", "documentos acadêmicos", "perfis institucionais"]
+    },
+    "abstract": {
+      "entries": [
+        {
+          "headingText": "ABSTRACT",
+          "text": "This work presents a proposal for an automatic formatting engine for academic documents, driven by declarative institutional profiles. The approach eliminates hardcoded logic from rendering components, enabling new profiles to be created without code changes.",
+          "keywords": ["automatic formatting", "academic documents", "institutional profiles"],
+          "keywordsLabel": "Keywords:"
+        },
+        {
+          "headingText": "RESUMEN",
+          "text": "Este trabajo presenta una propuesta de motor de formateo automático de documentos académicos, orientado por perfiles institucionales declarativos. El enfoque elimina la lógica codificada de los componentes de renderizado.",
+          "keywords": ["formateo automático", "documentos académicos", "perfiles institucionales"],
+          "keywordsLabel": "Palabras clave:"
+        }
+      ]
+    },
+    "listOfAbbreviations": {},
+    "listOfSymbols": {
+      "terms": ["α", "β", "n"],
+      "definitions": ["Nível de significância", "Coeficiente de regressão", "Tamanho da amostra"]
+    },
+    "summary": {},
+    "listOfFigures": {},
+    "listOfTables": {},
+    "bodyContent": {
+      "sections": [
+        {
+          "id": "s1",
+          "level": 1,
+          "title": "Introdução",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "TEXT",
+                  "text": "Este trabalho aborda a formatação de documentos acadêmicos por meio de um motor orientado a perfis. A norma "
+                },
+                {
+                  "type": "ABBREVIATION",
+                  "text": "ABNT",
+                  "expansion": "Associação Brasileira de Normas Técnicas"
+                },
+                {
+                  "type": "TEXT",
+                  "text": " define os requisitos para trabalhos como o "
+                },
+                {
+                  "type": "ABBREVIATION",
+                  "text": "TCC",
+                  "expansion": "Trabalho de Conclusão de Curso"
+                },
+                {
+                  "type": "TEXT",
+                  "text": "."
+                }
+              ]
+            },
+            {
+              "type": "FIGURE",
+              "figure": {
+                "id": "fig-1",
+                "caption": "Arquitetura geral do motor de formatação",
+                "source": "Elaboração teste",
+                "image": {
+                  "sourceType": "DATA_URI",
+                  "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
+                  "altText": "Diagrama de arquitetura"
+                }
+              }
+            },
+            {
+              "type": "TABLE",
+              "table": {
+                "id": "tab-1",
+                "caption": "Componentes do documento ABNT avaliados",
+                "source": "Elaboração teste",
+                "columns": [
+                  {"header": "Componente"},
+                  {"header": "Tipo"}
+                ],
+                "rows": [
+                  {
+                    "cells": [
+                      {"text": "Capa", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false},
+                      {"text": "Single-page", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false}
+                    ]
+                  },
+                  {
+                    "cells": [
+                      {"text": "Resumo", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false},
+                      {"text": "Flow-textual", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false}
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "s2",
+          "level": 1,
+          "title": "Conclusão",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "text": "O motor demonstrou capacidade de gerar documentos completos em conformidade com as normas, sem lógica específica de perfil no código de renderização."
+            }
+          ]
+        }
+      ]
+    },
+    "references": {
+      "entries": [
+        {
+          "id": "ref1",
+          "type": "BOOK",
+          "authors": [
+            {"surname": "Lima", "givenNames": "Carlos Eduardo"}
+          ],
+          "title": "Fundamentos de Formatação Documental",
+          "year": "2021",
+          "city": "Limeira",
+          "publisher": "Editora Fictícia"
+        }
+      ]
+    },
+    "appendix": {
+      "items": [
+        {
+          "title": "Questionário de Validação",
+          "sections": [
+            {
+              "id": "apx-s1",
+              "level": 1,
+              "title": "Questões aplicadas",
+              "blocks": [
+                {
+                  "type": "PARAGRAPH",
+                  "text": "Questão 1: O documento gerado atende aos requisitos visuais da ABNT?"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "annex": {
+      "items": [
+        {
+          "title": "Norma de Referência Utilizada",
+          "sections": [
+            {
+              "id": "anx-s1",
+              "level": 1,
+              "title": "NBR 14724",
+              "blocks": [
+                {
+                  "type": "PARAGRAPH",
+                  "text": "Norma que estabelece os princípios gerais para elaboração de trabalhos acadêmicos."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "glossary": {
+      "terms": ["ABNT", "TCC", "Perfil"],
+      "definitions": [
+        "Associação Brasileira de Normas Técnicas.",
+        "Trabalho de Conclusão de Curso.",
+        "Conjunto declarativo de regras que governa a formatação de um tipo de documento."
+      ]
+    }
+  }
+}

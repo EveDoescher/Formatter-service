@@ -21,7 +21,7 @@ public record DocumentContentRequest(
         @Valid FlowTextualContentRequest epigraph,
         @Valid FlowTextualContentRequest acknowledgments,
         @Valid FlowTextualContentRequest resumo,
-        @JsonProperty("abstract") @Valid AbstractRequest abstractEn,
+        @JsonProperty("abstract") @Valid FlowTextualContentRequest abstractEn,
         @Valid ReferencesRequest references,
         @Valid AppendixRequest appendix,
         @Valid AnnexRequest annex,
@@ -76,7 +76,7 @@ public record DocumentContentRequest(
         }
 
         if (abstractEn != null) {
-            components.add(abstractEn.toDomain());
+            components.add(abstractEn.toDomain("abstract"));
         }
 
         if (listOfAbbreviations != null) {

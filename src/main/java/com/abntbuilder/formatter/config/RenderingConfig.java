@@ -3,7 +3,6 @@ package com.abntbuilder.formatter.config;
 import com.abntbuilder.formatter.profile.resolution.ProfileProvider;
 import com.abntbuilder.formatter.rendering.component.ComponentRenderer;
 import com.abntbuilder.formatter.rendering.component.ComponentRendererRegistry;
-import com.abntbuilder.formatter.rendering.component.abstracten.AbstractRenderer;
 import com.abntbuilder.formatter.rendering.component.annex.AnnexRenderer;
 import com.abntbuilder.formatter.rendering.component.appendix.AppendixRenderer;
 import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentRenderer;
@@ -168,8 +167,8 @@ public class RenderingConfig {
     }
 
     @Bean
-    public AbstractRenderer abstractRenderer() {
-        return new AbstractRenderer();
+    public FlowTextualRenderer abstractRenderer() {
+        return new FlowTextualRenderer("abstract");
     }
 
     @Bean

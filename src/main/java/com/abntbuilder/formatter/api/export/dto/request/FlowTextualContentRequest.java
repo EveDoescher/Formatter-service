@@ -2,6 +2,7 @@ package com.abntbuilder.formatter.api.export.dto.request;
 
 import com.abntbuilder.formatter.document.component.flowtextual.FlowTextualContent;
 import com.abntbuilder.formatter.document.component.singlepage.ContentValue;
+import com.abntbuilder.formatter.document.component.singlepage.EntryListValue;
 import com.abntbuilder.formatter.document.component.singlepage.TableValue;
 import com.abntbuilder.formatter.document.component.singlepage.TextListValue;
 import com.abntbuilder.formatter.document.component.singlepage.TextValue;
@@ -59,6 +60,22 @@ public final class FlowTextualContentRequest {
             if (first instanceof List) {
                 List<List<String>> rows = (List<List<String>>) list;
                 return new TableValue(rows);
+            }
+
+            if (first instanceof Map) {
+                List<Map<String, ContentValue>> entries = ((List<Map<String, Object>>) list).stream()
+                        .map(entryMap -> {
+                            Map<String, ContentValue> converted = new java.util.HashMap<>();
+                            for (Map.Entry<String, Object> e : entryMap.entrySet()) {
+                                if (e.getValue() != null) {
+                                    converted.put(e.getKey(),
+                                            toContentValue(componentId, e.getKey(), e.getValue()));
+                                }
+                            }
+                            return converted;
+                        })
+                        .toList();
+                return new EntryListValue(entries);
             }
 
             throw new IllegalArgumentException(

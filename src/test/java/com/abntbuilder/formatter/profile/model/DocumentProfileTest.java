@@ -196,10 +196,10 @@ class DocumentProfileTest {
                 validPageRule(),
                 List.of(validStyleRule("body")),
                 List.of(),
-                List.of("abstract")
+                List.of("nonExistentComponent")
         ));
 
-        assertEquals("Unknown component order id: abstract", exception.getMessage());
+        assertEquals("Unknown component order id: nonExistentComponent", exception.getMessage());
     }
 
     @Test
