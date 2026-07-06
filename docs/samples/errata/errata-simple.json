@@ -8,21 +8,10 @@
   },
   "document": {
     "errata": {
-      "entries": [
-        {
-          "page": "23",
-          "line": "5",
-          "incorrectText": "analize",
-          "correctText": "análise"
-        },
-        {
-          "page": "47",
-          "line": "12",
-          "incorrectText": "metodologia quantitiva",
-          "correctText": "metodologia quantitativa"
-        }
+      "rows": [
+        ["23", "5", "analize", "análise"],
+        ["47", "12", "metodologia quantitiva", "metodologia quantitativa"]
       ]
     }
-  },
-  "paragraphs": []
+  }
 }
