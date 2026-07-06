@@ -1,5 +1,7 @@
 package com.abntbuilder.formatter.output.docx.api;
 
+import com.abntbuilder.formatter.profile.model.DocumentProfile;
+
 public interface DocxPostProcessor {
-    byte[] process(byte[] docxBytes);
+    PostProcessorResult process(byte[] docxBytes, DocumentProfile profile);
 }

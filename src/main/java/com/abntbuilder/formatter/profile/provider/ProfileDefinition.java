@@ -5,6 +5,7 @@ import com.abntbuilder.formatter.profile.model.PageOrientation;
 import com.abntbuilder.formatter.profile.model.PageNumberingPlacement;
 import com.abntbuilder.formatter.profile.model.PageNumberingRule;
 import com.abntbuilder.formatter.profile.model.PageRule;
+import com.abntbuilder.formatter.profile.model.PostProcessingRule;
 import com.abntbuilder.formatter.profile.model.StyleRule;
 import com.abntbuilder.formatter.profile.model.StyleType;
 import com.abntbuilder.formatter.profile.model.TextAlignment;
@@ -64,6 +65,7 @@ public record ProfileDefinition(
         String displayName,
         PageRuleDefinition pageRule,
         PageNumberingRuleDefinition pageNumbering,
+        PostProcessingDefinition postProcessing,
         List<StyleRuleDefinition> styleRules,
         ComponentRulesDefinition componentRules,
         List<String> componentOrder
@@ -82,6 +84,7 @@ public record ProfileDefinition(
                 displayName,
                 pageRule.toDomain(),
                 Optional.ofNullable(pageNumbering).map(PageNumberingRuleDefinition::toDomain),
+                Optional.ofNullable(postProcessing).map(PostProcessingDefinition::toDomain),
                 styleRules.stream()
                         .map(StyleRuleDefinition::toDomain)
                         .toList(),
@@ -937,6 +940,72 @@ public record ProfileDefinition(
 
     private static ComponentContentBindings createContentBindings(Map<String, String> value) {
         return new ComponentContentBindings(value == null ? Map.of() : value);
+    }
+
+    public record PostProcessingDefinition(
+            TableContinuationLabelsDefinition tableContinuationLabels,
+            OrphanTitleCorrectionDefinition orphanTitleCorrection,
+            IntegrityCheckDefinition integrityCheck,
+            PdfOutputDefinition pdfOutput
+    ) {
+        PostProcessingRule toDomain() {
+            return new PostProcessingRule(
+                    Optional.ofNullable(tableContinuationLabels).map(TableContinuationLabelsDefinition::toDomain),
+                    Optional.ofNullable(orphanTitleCorrection).map(OrphanTitleCorrectionDefinition::toDomain),
+                    Optional.ofNullable(integrityCheck).map(IntegrityCheckDefinition::toDomain),
+                    Optional.ofNullable(pdfOutput).map(PdfOutputDefinition::toDomain)
+            );
+        }
+    }
+
+    public record TableContinuationLabelsDefinition(
+            Boolean enabled,
+            String continuesLabel,
+            String continuationLabel,
+            String conclusionLabel,
+            String labelStyleId
+    ) {
+        PostProcessingRule.TableContinuationLabelsRule toDomain() {
+            requireNonNull(enabled, "postProcessing.tableContinuationLabels.enabled");
+            return new PostProcessingRule.TableContinuationLabelsRule(
+                    enabled,
+                    continuesLabel,
+                    continuationLabel,
+                    conclusionLabel,
+                    labelStyleId
+            );
+        }
+    }
+
+    public record OrphanTitleCorrectionDefinition(Boolean enabled) {
+        PostProcessingRule.OrphanTitleCorrectionRule toDomain() {
+            requireNonNull(enabled, "postProcessing.orphanTitleCorrection.enabled");
+            return new PostProcessingRule.OrphanTitleCorrectionRule(enabled);
+        }
+    }
+
+    public record IntegrityCheckDefinition(
+            Boolean enabled,
+            Boolean checkMarginOverflow,
+            Boolean checkFontSubstitution,
+            Integer maxPages
+    ) {
+        PostProcessingRule.IntegrityCheckRule toDomain() {
+            requireNonNull(enabled, "postProcessing.integrityCheck.enabled");
+            return new PostProcessingRule.IntegrityCheckRule(
+                    enabled,
+                    checkMarginOverflow != null && checkMarginOverflow,
+                    checkFontSubstitution != null && checkFontSubstitution,
+                    Optional.ofNullable(maxPages)
+            );
+        }
+    }
+
+    public record PdfOutputDefinition(Boolean enabled) {
+        PostProcessingRule.PdfOutputRule toDomain() {
+            requireNonNull(enabled, "postProcessing.pdfOutput.enabled");
+            return new PostProcessingRule.PdfOutputRule(enabled);
+        }
     }
 
     public record SummaryComponentRuleDefinition(

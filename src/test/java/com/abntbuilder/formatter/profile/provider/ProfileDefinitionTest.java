@@ -300,4 +300,89 @@ class ProfileDefinitionTest {
                 }
                 """.formatted(layoutRuleJson);
     }
+
+    @Test
+    void shouldParsePostProcessingSection() throws IOException {
+        DocumentProfile profile = readProfile("""
+                {
+                  "id": "test-profile",
+                  "displayName": "Test Profile",
+                  "componentOrder": ["paragraphs"],
+                  "pageRule": {
+                    "widthCm": 21, "heightCm": 29.7,
+                    "marginTopCm": 3, "marginRightCm": 2,
+                    "marginBottomCm": 2, "marginLeftCm": 3,
+                    "orientation": "PORTRAIT"
+                  },
+                  "postProcessing": {
+                    "tableContinuationLabels": {
+                      "enabled": true,
+                      "continuesLabel": "continua",
+                      "continuationLabel": "continuação",
+                      "conclusionLabel": "conclusão",
+                      "labelStyleId": "table.continuation"
+                    },
+                    "orphanTitleCorrection": { "enabled": true },
+                    "integrityCheck": {
+                      "enabled": true,
+                      "checkMarginOverflow": true,
+                      "checkFontSubstitution": false,
+                      "maxPages": 200
+                    },
+                    "pdfOutput": { "enabled": false }
+                  },
+                  "styleRules": [{
+                    "id": "body", "type": "PARAGRAPH",
+                    "fontFamily": "Times New Roman", "fontSizePt": 12,
+                    "alignment": "JUSTIFIED", "lineSpacing": 1.5,
+                    "firstLineIndentCm": 1.25, "leftIndentCm": 0, "rightIndentCm": 0,
+                    "spacingBeforePt": 0, "spacingAfterPt": 0,
+                    "bold": false, "italic": false, "uppercase": false
+                  }],
+                  "componentRules": {}
+                }
+                """);
+
+        var postProcessing = profile.postProcessingRule().orElseThrow();
+        var tableContinuation = postProcessing.tableContinuationLabels().orElseThrow();
+        assertEquals(true, tableContinuation.enabled());
+        assertEquals("continua", tableContinuation.continuesLabel());
+        assertEquals("continuação", tableContinuation.continuationLabel());
+        assertEquals("conclusão", tableContinuation.conclusionLabel());
+        assertEquals("table.continuation", tableContinuation.labelStyleId());
+        assertEquals(true, postProcessing.orphanTitleCorrection().orElseThrow().enabled());
+        var integrityCheck = postProcessing.integrityCheck().orElseThrow();
+        assertEquals(true, integrityCheck.enabled());
+        assertEquals(true, integrityCheck.checkMarginOverflow());
+        assertEquals(java.util.Optional.of(200), integrityCheck.maxPages());
+        assertEquals(false, postProcessing.pdfOutput().orElseThrow().enabled());
+    }
+
+    @Test
+    void shouldParseProfileWithoutPostProcessingSection() throws IOException {
+        DocumentProfile profile = readProfile("""
+                {
+                  "id": "test-profile",
+                  "displayName": "Test Profile",
+                  "componentOrder": ["paragraphs"],
+                  "pageRule": {
+                    "widthCm": 21, "heightCm": 29.7,
+                    "marginTopCm": 3, "marginRightCm": 2,
+                    "marginBottomCm": 2, "marginLeftCm": 3,
+                    "orientation": "PORTRAIT"
+                  },
+                  "styleRules": [{
+                    "id": "body", "type": "PARAGRAPH",
+                    "fontFamily": "Times New Roman", "fontSizePt": 12,
+                    "alignment": "JUSTIFIED", "lineSpacing": 1.5,
+                    "firstLineIndentCm": 1.25, "leftIndentCm": 0, "rightIndentCm": 0,
+                    "spacingBeforePt": 0, "spacingAfterPt": 0,
+                    "bold": false, "italic": false, "uppercase": false
+                  }],
+                  "componentRules": {}
+                }
+                """);
+
+        assertEquals(java.util.Optional.empty(), profile.postProcessingRule());
+    }
 }

@@ -4,6 +4,7 @@ import com.abntbuilder.formatter.api.export.dto.request.ExportDocxRequest;
 import com.abntbuilder.formatter.api.export.dto.response.GenerateDocxResponse;
 import com.abntbuilder.formatter.application.export.DocxExportService;
 import com.abntbuilder.formatter.application.export.GeneratedDocxExport;
+import com.abntbuilder.formatter.output.docx.api.PostProcessorResult;
 import com.abntbuilder.formatter.profile.resolution.ProfileProvider;
 import jakarta.validation.Valid;
 import org.springframework.http.ContentDisposition;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/exports")
 public class DocxExportController {
@@ -27,6 +30,8 @@ public class DocxExportController {
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 
     private static final MediaType DOCX_MEDIA_TYPE = MediaType.parseMediaType(DOCX_MEDIA_TYPE_VALUE);
+
+    static final String WARNINGS_HEADER = "X-Formatter-Warnings";
 
     private final DocxExportService docxExportService;
     private final ProfileProvider profileProvider;
@@ -45,13 +50,18 @@ public class DocxExportController {
             produces = DOCX_MEDIA_TYPE_VALUE
     )
     public ResponseEntity<byte[]> exportDocx(@Valid @RequestBody ExportDocxRequest request) {
-        byte[] docxBytes = docxExportService.export(request.toCommand(profileProvider));
+        PostProcessorResult result = docxExportService.export(request.toCommand(profileProvider));
 
-        return ResponseEntity.ok()
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok()
                 .contentType(DOCX_MEDIA_TYPE)
-                .contentLength(docxBytes.length)
-                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition(request.fileName()))
-                .body(docxBytes);
+                .contentLength(result.docxBytes().length)
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition(request.fileName()));
+
+        if (result.hasWarnings()) {
+            builder.header(WARNINGS_HEADER, formatWarnings(result.warnings()));
+        }
+
+        return builder.body(result.docxBytes());
     }
 
     @PostMapping(
@@ -87,6 +97,13 @@ public class DocxExportController {
                 .contentLength(docxBytes.length)
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition(generatedExport.fileName()))
                 .body(docxBytes);
+    }
+
+    private static String formatWarnings(List<String> warnings) {
+        return String.join("; ", warnings
+                .stream()
+                .map(w -> w.replace(";", ",").replace("\n", " ").replace("\r", ""))
+                .toList());
     }
 
     private static String contentDisposition(String fileName) {

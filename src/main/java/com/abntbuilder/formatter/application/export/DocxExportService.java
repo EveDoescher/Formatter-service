@@ -3,6 +3,7 @@ package com.abntbuilder.formatter.application.export;
 import com.abntbuilder.formatter.output.docx.api.DocxDocument;
 import com.abntbuilder.formatter.output.docx.api.DocxPostProcessor;
 import com.abntbuilder.formatter.output.docx.api.DocxWriter;
+import com.abntbuilder.formatter.output.docx.api.PostProcessorResult;
 import com.abntbuilder.formatter.rendering.orchestration.DocumentRenderer;
 import com.abntbuilder.formatter.shared.exception.MissingGeneratedDocxExportException;
 import org.springframework.stereotype.Service;
@@ -32,19 +33,18 @@ public class DocxExportService {
         this.docxPostProcessor = Objects.requireNonNull(docxPostProcessor, "docxPostProcessor must not be null");
     }
 
-    public byte[] export(ExportDocxCommand command) {
+    public PostProcessorResult export(ExportDocxCommand command) {
         Objects.requireNonNull(command, "command must not be null");
 
         DocxDocument document = documentRenderer.render(command);
         byte[] docxBytes = docxWriter.write(document);
 
-        return docxPostProcessor.process(docxBytes);
+        return docxPostProcessor.process(docxBytes, command.profile());
     }
 
     public GeneratedDocxExport generate(ExportDocxCommand command) {
-        byte[] bytes = export(command);
-
-        return generatedDocxExportStore.save(command.fileName(), bytes);
+        PostProcessorResult result = export(command);
+        return generatedDocxExportStore.save(command.fileName(), result.docxBytes());
     }
 
     public GeneratedDocxExport findGeneratedExport(String exportId) {

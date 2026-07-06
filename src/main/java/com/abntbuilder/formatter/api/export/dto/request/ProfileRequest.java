@@ -41,6 +41,7 @@ public record ProfileRequest(
                 displayName,
                 pageRule.toDomain(),
                 Optional.ofNullable(pageNumbering).map(PageNumberingRuleRequest::toDomain),
+                Optional.empty(),
                 styleRules.stream()
                         .map(StyleRuleRequest::toDomain)
                         .toList(),

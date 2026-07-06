@@ -1,11 +1,17 @@
 package com.abntbuilder.formatter.output.docx.postprocess;
 
+import com.abntbuilder.formatter.config.ClasspathJsonProfileProvider;
 import com.abntbuilder.formatter.config.LibreOfficeProperties;
+import com.abntbuilder.formatter.output.docx.api.PostProcessorResult;
+import com.abntbuilder.formatter.profile.model.DocumentProfile;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LibreOfficeDocxPostProcessorTest {
+
+    private static final DocumentProfile PROFILE =
+            new ClasspathJsonProfileProvider().findById("abnt-unip-profile");
 
     @Test
     void shouldReturnOriginalBytesWhenLibreOfficeNotFound() {
@@ -16,9 +22,10 @@ class LibreOfficeDocxPostProcessorTest {
         LibreOfficeDocxPostProcessor processor = new LibreOfficeDocxPostProcessor(props);
         byte[] original = new byte[]{1, 2, 3, 4};
 
-        byte[] result = processor.process(original);
+        PostProcessorResult result = processor.process(original, PROFILE);
 
-        assertThat(result).isEqualTo(original);
+        assertThat(result.docxBytes()).isEqualTo(original);
+        assertThat(result.warnings()).isEmpty();
     }
 
     @Test
@@ -30,8 +37,8 @@ class LibreOfficeDocxPostProcessorTest {
         LibreOfficeDocxPostProcessor processor = new LibreOfficeDocxPostProcessor(props);
         byte[] original = new byte[0];
 
-        byte[] result = processor.process(original);
+        PostProcessorResult result = processor.process(original, PROFILE);
 
-        assertThat(result).isEqualTo(original);
+        assertThat(result.docxBytes()).isEqualTo(original);
     }
 }

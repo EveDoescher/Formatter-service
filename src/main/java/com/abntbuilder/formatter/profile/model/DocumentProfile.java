@@ -16,6 +16,7 @@ public record DocumentProfile(
         String displayName,
         PageRule pageRule,
         Optional<PageNumberingRule> pageNumberingRule,
+        Optional<PostProcessingRule> postProcessingRule,
         List<StyleRule> styleRules,
         List<ComponentRule> componentRules,
         List<String> componentOrder
@@ -28,6 +29,7 @@ public record DocumentProfile(
         requireNonBlank(displayName, "displayName");
         Objects.requireNonNull(pageRule, "pageRule must not be null");
         Objects.requireNonNull(pageNumberingRule, "pageNumberingRule must not be null");
+        Objects.requireNonNull(postProcessingRule, "postProcessingRule must not be null");
         Objects.requireNonNull(styleRules, "styleRules must not be null");
         Objects.requireNonNull(componentRules, "componentRules must not be null");
         Objects.requireNonNull(componentOrder, "componentOrder must not be null");
@@ -55,7 +57,19 @@ public record DocumentProfile(
             List<ComponentRule> componentRules,
             List<String> componentOrder
     ) {
-        this(id, displayName, pageRule, Optional.empty(), styleRules, componentRules, componentOrder);
+        this(id, displayName, pageRule, Optional.empty(), Optional.empty(), styleRules, componentRules, componentOrder);
+    }
+
+    public DocumentProfile(
+            String id,
+            String displayName,
+            PageRule pageRule,
+            Optional<PageNumberingRule> pageNumberingRule,
+            List<StyleRule> styleRules,
+            List<ComponentRule> componentRules,
+            List<String> componentOrder
+    ) {
+        this(id, displayName, pageRule, pageNumberingRule, Optional.empty(), styleRules, componentRules, componentOrder);
     }
 
     private static void validateStyleRules(List<StyleRule> styleRules) {
