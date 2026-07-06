@@ -165,17 +165,12 @@ O profile de referência está em:
 
 ### `componentOrder`
 
-Lista ordenada de todos os IDs de componentes que o profile suporta. Define a ordem do documento
-final. IDs em `selectedComponents` que não estiverem aqui são rejeitados com 400.
+Lista ordenada dos IDs de componentes declarados neste profile. Define a ordem do documento final.
+IDs em `selectedComponents` que não estiverem aqui são rejeitados com 400.
 
-IDs suportados (únicos reconhecidos pelo engine):
-
-```
-cover, titlePage, errata, approvalSheet, dedication, acknowledgments, epigraph,
-resumo, abstract, listOfAbbreviations, listOfSymbols, summary,
-listOfFigures, listOfTables, listOfFrames, listOfCharts, listOfCodeListings,
-bodyContent, references, appendix, annex, glossary
-```
+O engine não tem lista interna de IDs reconhecidos. O profile é a única fonte de verdade sobre
+quais componentes existem e o que cada um significa. Qualquer ID pode aparecer em `componentOrder`
+desde que tenha uma entrada correspondente em `componentRules`.
 
 ### `pageRule`
 
@@ -276,6 +271,12 @@ Opcional. Ignorado no modo inline. Todos os sub-campos são opcionais.
 Obrigatório, não vazio. Lista de estilos tipográficos. Todos os valores que variam entre perfis
 ficam aqui.
 
+Existem dois tipos de estilo com campos e contextos de uso distintos:
+
+#### Estilos de bloco — `PARAGRAPH`, `HEADING_1`…`HEADING_6`
+
+Aplicados a parágrafos e títulos inteiros. Todos os campos abaixo são obrigatórios.
+
 ```json
 {
   "id": "bodyContent.paragraph",
@@ -298,7 +299,7 @@ ficam aqui.
 | Campo | Tipo | Obrigatório |
 |---|---|---|
 | `id` | `string` | sim |
-| `type` | `PARAGRAPH` \| `HEADING_1`…`HEADING_6` \| `CHARACTER` | sim |
+| `type` | `PARAGRAPH` \| `HEADING_1`…`HEADING_6` | sim |
 | `fontFamily` | `string` | sim |
 | `fontSizePt` | `double` > 0 | sim |
 | `alignment` | `LEFT` \| `RIGHT` \| `CENTER` \| `JUSTIFIED` | sim |
@@ -312,29 +313,121 @@ ficam aqui.
 | `italic` | `boolean` | sim |
 | `uppercase` | `boolean` | sim |
 
+#### Estilos de caractere — `CHARACTER`
+
+Aplicados a trechos inline dentro de um parágrafo (ex: chamada de nota de rodapé, marcador de
+citação). Não têm propriedades de layout — apenas aparência tipográfica do caractere.
+
+```json
+{
+  "id": "bodyContent.footnoteCall",
+  "type": "CHARACTER",
+  "fontFamily": "Times New Roman",
+  "fontSizePt": 10,
+  "bold": false,
+  "italic": false,
+  "superscript": true,
+  "underline": false
+}
+```
+
+| Campo | Tipo | Obrigatório |
+|---|---|---|
+| `id` | `string` | sim |
+| `type` | `CHARACTER` | sim |
+| `fontFamily` | `string` | sim |
+| `fontSizePt` | `double` > 0 | sim |
+| `bold` | `boolean` | não |
+| `italic` | `boolean` | não |
+| `superscript` | `boolean` | não |
+| `underline` | `boolean` | não |
+
+Campos de layout (`alignment`, `lineSpacing`, `firstLineIndentCm`, etc.) não se aplicam a estilos
+`CHARACTER` e são ignorados se presentes.
+
+#### Qual tipo usar em cada campo
+
+| Campo em `componentRules` | Tipo de style esperado |
+|---|---|
+| `styleMapping.paragraphStyleId` | `PARAGRAPH` |
+| `styleMapping.sectionTitleStyleIdsByLevel` | `HEADING_1`…`HEADING_6` |
+| `styleMapping.directLongQuoteStyleId` | `PARAGRAPH` |
+| `styleMapping.directShortQuoteStyleId` | `CHARACTER` |
+| `styleMapping.indirectCitationStyleId` | `CHARACTER` |
+| `styleMapping.citationOfCitationStyleId` | `CHARACTER` |
+| `styleMapping.listOrderedStyleId` | `PARAGRAPH` |
+| `styleMapping.listUnorderedStyleId` | `PARAGRAPH` |
+| `styleMapping.equationStyleId` | `PARAGRAPH` |
+| `styleMapping.footnoteCallStyleId` | `CHARACTER` |
+| `styleMapping.footnoteTextStyleId` | `PARAGRAPH` |
+| `figure.captionStyleId` | `PARAGRAPH` |
+| `figure.sourceStyleId` | `PARAGRAPH` |
+| `table.headerStyleId` | `PARAGRAPH` |
+| `table.cellStyleId` | `PARAGRAPH` |
+| `codeListing.captionStyleId` | `PARAGRAPH` |
+| `codeListing.sourceStyleId` | `PARAGRAPH` |
+| `codeListing.codeStyleId` | `PARAGRAPH` |
+| `pageNumbering.styleId` | `CHARACTER` |
+| Demais `*StyleId` em componentRules | `PARAGRAPH` salvo indicação contrária |
+
 Qualquer `styleId` referenciado em `componentRules` deve ter uma entrada correspondente em
-`styleRules`. Referências inválidas retornam 400 em runtime quando o componente é renderizado.
+`styleRules`. A camada de profile valida essa consistência interna ao carregar o profile — uma
+referência inválida retorna 400 antes de qualquer renderização.
 
 ### `componentRules`
 
-Obrigatório. Mapa de ID de componente para suas regras. **Todas as rules são opcionais** — o
-engine só resolve a rule de um componente no momento em que renderiza. Se um componente
-selecionado não tiver rule correspondente, retorna 400 em runtime.
-
----
-
-## `componentRules` — referência completa
-
----
-
-### cover, titlePage, approvalSheet
-
-**Tipo:** `SinglePageComponentRule` — ocupa exatamente uma página; o engine distribui os grupos
-proporcionalmente a partir dos pesos de `gapRules`.
+Obrigatório. Mapa de ID de componente para suas regras. O campo `ruleType` discrimina qual
+mecanismo de renderização o engine usará para aquele componente. Se um componente selecionado
+não tiver rule correspondente no mapa, retorna 400.
 
 ```json
-"cover": {
-  "componentId": "cover",
+"componentRules": {
+  "meu-componente": {
+    "ruleType": "SINGLE_PAGE",
+    "componentId": "meu-componente",
+    ...
+  }
+}
+```
+
+`componentId` dentro do objeto deve ser idêntico à chave do mapa — validado ao carregar o
+profile.
+
+---
+
+## `componentRules` — tipos de rule disponíveis
+
+O engine não tem lista de componentes reconhecidos. Cada entrada em `componentRules` associa um
+ID arbitrário (definido pelo profile) a um **tipo de rule** via o campo `ruleType`. O tipo de
+rule determina qual mecanismo de renderização o engine usa para aquele componente.
+
+Todo profile pode usar qualquer combinação desses tipos com qualquer ID. Nenhum ID específico
+é obrigatório ou tem significado especial para o engine.
+
+Os `ruleType` disponíveis:
+
+| `ruleType` | Mecanismo |
+|---|---|
+| `SINGLE_PAGE` | Página única com grupos posicionais e layout proporcional |
+| `BODY_CONTENT` | Conteúdo textual em seções recursivas com elementos textuais |
+| `REFERENCE_LIST` | Lista de referências bibliográficas com formatação declarativa |
+| `FLOW_TEXTUAL` | Fluxo linear de itens declarados no profile |
+| `SECTIONED` | Itens sequenciais com letra, título e seções internas |
+| `ELEMENT_INDEX` | Índice derivado de elementos textuais coletados de outro componente |
+| `SECTION_INDEX` | Índice derivado da estrutura de seções de outro componente |
+
+---
+
+### `ruleType: SINGLE_PAGE`
+
+Componente que ocupa exatamente uma página. O engine distribui os grupos verticalmente usando os
+pesos de `gapRules` para calcular os espaços entre eles. Se o conteúdo não couber em uma página,
+retorna 400.
+
+```json
+"meu-componente": {
+  "ruleType": "SINGLE_PAGE",
+  "componentId": "meu-componente",
   "slots": { ... },
   "styleMapping": { ... },
   "layoutRule": { ... }
@@ -343,7 +436,7 @@ proporcionalmente a partir dos pesos de `gapRules`.
 
 #### `slots`
 
-Mapa de nome-do-slot para declaração. O nome do slot é a mesma chave que no conteúdo da
+Mapa de nome-do-slot para declaração. O nome do slot é a mesma chave usada no conteúdo da
 requisição.
 
 | `type` | Valor no conteúdo | Campos adicionais obrigatórios |
@@ -354,8 +447,7 @@ requisição.
 | `SIGNATURE_BLOCK_LIST` | `[{"name": "...", ...}]` | `required`, `signatureLineEnabled`, `signatureLineText`, `lineTemplates`, `knownFieldNames` |
 
 `COMPOSED_TEXT`: o engine substitui cada `{fieldName}` em `template` pelo valor correspondente
-no mapa do conteúdo. Se um campo de `fieldNames` estiver ausente no conteúdo e `required: true`,
-retorna 400.
+no mapa do conteúdo. Se um campo de `fieldNames` estiver ausente e `required: true`, retorna 400.
 
 `SIGNATURE_BLOCK_LIST`: cada membro é um mapa livre. `lineTemplates` gera uma linha por template,
 substituindo `{fieldName}` pelos valores do membro. `signatureLineEnabled: true` gera a linha de
@@ -371,7 +463,7 @@ Mapa de nome-do-slot para ID de `styleRule`.
 "layoutRule": {
   "groups": [
     {
-      "id": "cover.titleBlock",
+      "id": "bloco-titulo",
       "required": true,
       "items": [
         {
@@ -385,7 +477,7 @@ Mapa de nome-do-slot para ID de `styleRule`.
     }
   ],
   "gapRules": [
-    { "fromGroupId": "cover.institution", "toGroupId": "cover.titleBlock", "weight": 30 }
+    { "fromGroupId": "bloco-instituicao", "toGroupId": "bloco-titulo", "weight": 30 }
   ],
   "policy": {
     "anchorStrategy": "LAST_GROUP_AT_SAFE_AREA_END",
@@ -433,11 +525,15 @@ Cada item:
 
 ---
 
-### bodyContent
+### `ruleType: BODY_CONTENT`
+
+Componente de conteúdo textual estruturado em seções recursivas com blocos e inlines. Suporta
+parágrafos, citações, figuras, tabelas, listas, equações, notas de rodapé e cross-references.
 
 ```json
-"bodyContent": {
-  "componentId": "bodyContent",
+"meu-componente": {
+  "ruleType": "BODY_CONTENT",
+  "componentId": "meu-componente",
   "styleMapping": { ... },
   "numbering": { ... },
   "layout": { ... },
@@ -451,7 +547,8 @@ Cada item:
 }
 ```
 
-Todos os sub-objetos são obrigatórios.
+O engine só exige os sub-objetos que o profile declara — um profile que não suporta figuras não
+precisa declarar `figure`.
 
 #### `styleMapping`
 
@@ -483,7 +580,7 @@ Todos os sub-objetos são obrigatórios.
 |---|---|---|---|
 | `blankLinesBeforeSectionTitleWhenPrecededByContent` | `int` | sim | Linhas em branco antes de título com conteúdo acima |
 | `blankLinesAfterSectionTitle` | `int` | sim | Linhas em branco após título |
-| `pageBreakBeforePrimarySection` | `boolean` | sim | Quebra de página antes de cada seção nível 1 |
+| `pageBreakBeforePrimarySection` | `boolean` | sim | Quebra de página antes de seção de nível 1 |
 | `blankLineStyleId` | `string` | não | Estilo das linhas em branco inseridas pelo engine |
 
 #### `figure`
@@ -504,13 +601,13 @@ Todos os sub-objetos são obrigatórios.
 | `urlFetchTimeoutSeconds` | `int` > 0 | sim | |
 | `fitPolicy` | `SCALE_DOWN_PRESERVE_ASPECT_RATIO` | sim | |
 | `numberingStrategy` | `GLOBAL_SEQUENTIAL` \| `BY_CHAPTER` | sim | |
-| `label` | `string` | sim | Label para cross-references (ex.: `"Figura"`) |
-| `separator` | `string` | não | Separador entre número do capítulo e número sequencial quando `BY_CHAPTER` |
+| `label` | `string` | sim | Label para cross-references |
+| `separator` | `string` | não | Separador entre número do capítulo e sequencial quando `BY_CHAPTER` |
 
 #### `table`
 
-Mesmos campos obrigatórios de `figure`, exceto `imageAlignment`, `maxWidthCm`, `maxHeightCm`,
-`defaultDpi`, `maxImageBytes`, `urlFetchTimeoutSeconds`, `fitPolicy`. Campos adicionais:
+Mesmos campos de `figure`, exceto `imageAlignment`, `maxWidthCm`, `maxHeightCm`, `defaultDpi`,
+`maxImageBytes`, `urlFetchTimeoutSeconds`, `fitPolicy`. Campos adicionais:
 
 | Campo | Tipo | Obrigatório |
 |---|---|---|
@@ -539,7 +636,7 @@ Mesmos campos obrigatórios de `figure`, exceto `imageAlignment`, `maxWidthCm`, 
 
 #### `chart`
 
-Campos de legenda/fonte/continuação de `figure` (sem os de imagem) mais:
+Campos de legenda/fonte/continuação de `figure` (sem os campos de imagem) mais:
 
 | Campo | Tipo | Obrigatório | Descrição |
 |---|---|---|---|
@@ -580,14 +677,17 @@ Todos os campos são opcionais.
 
 ---
 
-### references
+### `ruleType: REFERENCE_LIST`
+
+Componente de lista de referências bibliográficas com formatação declarativa por tipo de entrada.
 
 ```json
-"references": {
-  "componentId": "references",
-  "headingStyleId": "references.heading",
-  "headingText": "REFERÊNCIAS",
-  "entryStyleId": "references.entry",
+"meu-componente": {
+  "ruleType": "REFERENCE_LIST",
+  "componentId": "meu-componente",
+  "headingStyleId": "...",
+  "headingText": "...",
+  "entryStyleId": "...",
   "blankLinesBetweenEntries": 1,
   "blankLinesAfterHeading": 1,
   "formattingRule": {
@@ -621,8 +721,7 @@ Todos os campos são opcionais.
 #### `formattingRule.entryFormats`
 
 Mapa de tipo de referência para lista de segmentos. Se o conteúdo tiver uma entrada de um tipo
-que não está neste mapa, o formatter retorna 400 com a mensagem
-`"No entryFormat declared for reference type: TIPO"`.
+que não está neste mapa, o formatter retorna 400.
 
 Cada segmento:
 
@@ -650,143 +749,56 @@ Fontes disponíveis em `source`:
 
 ---
 
-### Componentes textuais simples
+### `ruleType: FLOW_TEXTUAL`
 
-#### dedication
+Componente de fluxo linear de itens declarados no profile. O profile declara a sequência de
+itens — heading, texto simples, texto com template, lista de pares, tabela, keywords, grupos
+repetidos — e o engine os renderiza em ordem. É o mecanismo mais flexível para componentes
+textuais que não precisam de estrutura de seções recursivas.
 
-| Campo | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `componentId` | `string` | sim | |
-| `textStyleId` | `string` | sim | |
-| `blankLinesBefore` | `int` | sim | Linhas em branco antes do texto |
+O conteúdo é um mapa de slots cujos nomes e tipos são declarados pelos `FlowItem`s da rule.
 
-**Slots esperados no conteúdo:** `text` (string)
+```json
+"meu-componente": {
+  "ruleType": "FLOW_TEXTUAL",
+  "componentId": "meu-componente",
+  "items": [ ... ]
+}
+```
 
-#### acknowledgments
+#### Tipos de `FlowItem`
 
-| Campo | Tipo | Obrigatório |
+| Tipo | Descrição | Campos obrigatórios |
 |---|---|---|
-| `componentId` | `string` | sim |
-| `headingStyleId` | `string` | sim |
-| `headingText` | `string` | sim |
-| `textStyleId` | `string` | sim |
-| `blankLinesAfterHeading` | `int` | não (padrão 0) |
+| `HEADING` | Parágrafo fixo com texto do profile | `styleId`, `text` |
+| `BLANK_LINES` | N linhas em branco semânticas | `styleId`, `count` |
+| `PLAIN_TEXT` | Parágrafo cujo texto vem de um slot | `styleId`, `slotName` |
+| `TEMPLATED_TEXT` | Parágrafo montado de template com slots | `styleId`, `template`, `fieldNames` |
+| `BOLD_LABELED_KEYWORDS` | Label em negrito + lista de palavras-chave | `styleId`, `labelSlotName`, `keywordsSlotName`, `separator`, `terminator` |
+| `PAIR_LIST` | Lista de pares termo/definição | `styleId`, `termsSlotName`, `definitionsSlotName`, `separator` |
+| `TABLE_BLOCK` | Tabela com cabeçalhos do profile e linhas do conteúdo | `headerStyleId`, `cellStyleId`, `headers`, `rowsSlotName` |
+| `REPEAT_GROUP` | Repete um grupo de itens para cada entrada de uma lista | `entriesSlotName`, `pageBreakBetweenEntries`, `group` |
 
-**Slots esperados no conteúdo:** `text` (string)
-
-#### epigraph
-
-| Campo | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `componentId` | `string` | sim | |
-| `textStyleId` | `string` | sim | |
-| `authorStyleId` | `string` | sim | |
-| `authorTemplate` | `string` | sim | Template com `{author}` e `{source}` como marcadores |
-
-**Slots esperados no conteúdo:** `text` (string), `author` (string), `source` (string, opcional)
-
-#### resumo
-
-| Campo | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `componentId` | `string` | sim | |
-| `headingStyleId` | `string` | sim | |
-| `headingText` | `string` | sim | |
-| `textStyleId` | `string` | sim | |
-| `keywordsStyleId` | `string` | sim | |
-| `keywordsLabel` | `string` | sim | Label padrão — sobrescrito pelo slot `keywordsLabel` do conteúdo |
-| `keywordsSeparator` | `string` | sim | |
-| `keywordsTerminator` | `string` | sim | |
-| `blankLinesAfterHeading` | `int` | não (padrão 0) | |
-
-**Slots esperados no conteúdo:** `text` (string), `keywordsLabel` (string, opcional — sobrescreve
-o label do profile), `keywords` (lista de strings)
-
-#### abstract
-
-Mesma estrutura do `resumo` sem `headingText` — o título vem de cada entrada.
-
-**Slots esperados no conteúdo:** `entries` (lista de mapas, cada mapa com `headingText`, `text`,
-`keywords`, `keywordsLabel`)
-
-#### errata
-
-| Campo | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `componentId` | `string` | sim | |
-| `headingStyleId` | `string` | sim | |
-| `headingText` | `string` | sim | |
-| `tableHeaderStyleId` | `string` | sim | |
-| `tableCellStyleId` | `string` | sim | |
-| `tableHeaders` | `List<string>` | sim | Cabeçalhos das colunas — define o número de colunas |
-| `blankLinesAfterHeading` | `int` | não (padrão 0) | |
-
-**Slots esperados no conteúdo:** `rows` (lista de linhas, cada linha é lista de strings na
-mesma ordem que `tableHeaders`)
-
-#### glossary
-
-| Campo | Tipo | Obrigatório |
-|---|---|---|
-| `componentId` | `string` | sim |
-| `headingStyleId` | `string` | sim |
-| `headingText` | `string` | sim |
-| `entryStyleId` | `string` | sim |
-| `termSeparator` | `string` | sim |
-| `blankLinesAfterHeading` | `int` | não (padrão 0) |
-
-**Slots esperados no conteúdo:** `terms` (lista de strings), `definitions` (lista de strings
-paralela a `terms`, mesma dimensão)
+**Conteúdo:** mapa livre de slots (`Map<string, ContentValue>`). As chaves e tipos esperados são
+determinados pelos `FlowItem`s declarados na rule — não há schema fixo no engine.
 
 ---
 
-### Listas de índice
+### `ruleType: SECTIONED`
 
-#### listOfFigures, listOfTables, listOfFrames, listOfCharts, listOfCodeListings
+Componente com múltiplos itens sequenciais, cada um com letra gerada automaticamente (A, B,
+C…), título e seções internas com a mesma estrutura do `BODY_CONTENT`.
 
-Geradas automaticamente do `bodyContent`.
-
-| Campo | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `componentId` | `string` | sim | |
-| `headingStyleId` | `string` | sim | |
-| `headingText` | `string` | sim | |
-| `entryStyleId` | `string` | sim | |
-| `entryTemplate` | `string` | sim | Deve conter `{number}` e `{caption}` |
-| `blankLinesAfterHeading` | `int` | não (padrão 0) | |
-
-#### summary
-
-| Campo | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `headingStyleId` | `string` | sim | |
-| `headingText` | `string` | sim | |
-| `entryStyleIdsByLevel` | `List<string>` | sim, não vazio | Índice 0 = nível 1 |
-| `useTocField` | `boolean` | não | Usa campo TOC do DOCX — atualizado pelo pós-processamento |
-
-#### listOfAbbreviations
-
-| Campo extra | Tipo | Descrição |
-|---|---|---|
-| `headingStyleId` | `string` | sim |
-| `headingText` | `string` | sim |
-| `entryStyleId` | `string` | sim |
-| `termSeparator` | `string` | sim |
-| `sortAlphabetically` | `boolean` | não — ordena alfabeticamente se `true` |
-| `blankLinesAfterHeading` | `int` | não |
-
-Gerada dos inlines `ABBREVIATION` do `bodyContent`. Não requer dados no conteúdo da requisição.
-
-#### listOfSymbols
-
-Mesma estrutura de `listOfAbbreviations` sem `sortAlphabetically`.
-
-**Slots esperados no conteúdo:** `terms` (lista de strings), `definitions` (lista de strings
-paralela a `terms`)
-
----
-
-### appendix e annex
+```json
+"meu-componente": {
+  "ruleType": "SECTIONED",
+  "componentId": "meu-componente",
+  "headingTemplate": "{letter} — {title}",
+  "headingStyleId": "...",
+  "paragraphStyleId": "...",
+  "sectionTitleStyleIdsByLevel": ["estilo-nivel-1", "estilo-nivel-2"]
+}
+```
 
 | Campo | Tipo | Obrigatório | Descrição |
 |---|---|---|---|
@@ -795,6 +807,112 @@ paralela a `terms`)
 | `headingStyleId` | `string` | sim | |
 | `paragraphStyleId` | `string` | sim | |
 | `sectionTitleStyleIdsByLevel` | `List<string>` | sim, não vazio | |
+
+**Conteúdo esperado:** `items` (lista de objetos com `title` obrigatório e `sections` opcional —
+mesma estrutura que o conteúdo de `BODY_CONTENT`)
+
+---
+
+### `ruleType: ELEMENT_INDEX`
+
+Componente cujo conteúdo é derivado automaticamente de elementos textuais coletados de outro
+componente durante o Phase0. Não requer dados no campo `document` da requisição.
+
+`elementType` declara qual tipo de elemento textual coletar. É legítimo para o profile declarar
+esse tipo porque o engine conhece os tipos de elemento textual como mecanismo — não como
+conceito de domínio.
+
+```json
+"meu-componente": {
+  "ruleType": "ELEMENT_INDEX",
+  "componentId": "meu-componente",
+  "elementType": "FIGURE",
+  "sourceComponentId": "meu-conteudo",
+  "headingStyleId": "...",
+  "headingText": "...",
+  "entryStyleId": "...",
+  "entryTemplate": "{number} — {caption}",
+  "blankLinesAfterHeading": 0
+}
+```
+
+| Campo | Tipo | Obrigatório | Descrição |
+|---|---|---|---|
+| `componentId` | `string` | sim | |
+| `elementType` | `enum` | sim | `FIGURE` \| `TABLE` \| `FRAME` \| `CHART` \| `CODE_LISTING` |
+| `sourceComponentId` | `string` | sim | ID do componente `BODY_CONTENT` ou `SECTIONED` de onde derivar |
+| `headingStyleId` | `string` | sim | |
+| `headingText` | `string` | sim | |
+| `entryStyleId` | `string` | sim | |
+| `entryTemplate` | `string` | sim | Deve conter `{number}` e `{caption}` |
+| `blankLinesAfterHeading` | `int` | não (padrão 0) | |
+
+`sourceComponentId` deve referenciar um componente com `ruleType` `BODY_CONTENT` ou `SECTIONED`.
+Referência incompatível retorna 400 ao carregar o profile.
+
+---
+
+### `ruleType: SECTION_INDEX`
+
+Componente cujo conteúdo é derivado automaticamente da estrutura de seções de outro componente.
+Não requer dados no campo `document` da requisição.
+
+```json
+"meu-componente": {
+  "ruleType": "SECTION_INDEX",
+  "componentId": "meu-componente",
+  "sourceComponentId": "meu-conteudo",
+  "headingStyleId": "...",
+  "headingText": "...",
+  "entryStyleIdsByLevel": ["estilo-nivel-1", "estilo-nivel-2"],
+  "useTocField": false
+}
+```
+
+| Campo | Tipo | Obrigatório | Descrição |
+|---|---|---|---|
+| `componentId` | `string` | sim | |
+| `sourceComponentId` | `string` | sim | ID do componente `BODY_CONTENT` de onde derivar |
+| `headingStyleId` | `string` | sim | |
+| `headingText` | `string` | sim | |
+| `entryStyleIdsByLevel` | `List<string>` | sim, não vazio | Índice 0 = nível 1 |
+| `useTocField` | `boolean` | não | Usa campo TOC do DOCX — atualizado pelo pós-processamento |
+
+`sourceComponentId` deve referenciar um componente com `ruleType` `BODY_CONTENT`. Referência
+incompatível retorna 400 ao carregar o profile.
+
+---
+
+## Exemplos de componentRules — profile ABNT UNIP
+
+Os exemplos abaixo mostram como o profile ABNT UNIP usa os tipos de rule acima. **Nenhum desses
+IDs é obrigatório, reconhecido pelo engine, ou reservado.** São escolhas deste profile específico
+e servem como referência de como mapear um `ruleType` a um componente concreto.
+
+| ID no profile ABNT UNIP | `ruleType` |
+|---|---|
+| `cover` | `SINGLE_PAGE` |
+| `titlePage` | `SINGLE_PAGE` |
+| `approvalSheet` | `SINGLE_PAGE` |
+| `bodyContent` | `BODY_CONTENT` |
+| `references` | `REFERENCE_LIST` |
+| `dedication` | `FLOW_TEXTUAL` |
+| `acknowledgments` | `FLOW_TEXTUAL` |
+| `epigraph` | `FLOW_TEXTUAL` |
+| `resumo` | `FLOW_TEXTUAL` |
+| `abstract` | `FLOW_TEXTUAL` |
+| `errata` | `FLOW_TEXTUAL` |
+| `glossary` | `FLOW_TEXTUAL` |
+| `listOfSymbols` | `FLOW_TEXTUAL` |
+| `listOfAbbreviations` | `FLOW_TEXTUAL` |
+| `listOfFigures` | `ELEMENT_INDEX` — `elementType: FIGURE` |
+| `listOfTables` | `ELEMENT_INDEX` — `elementType: TABLE` |
+| `listOfFrames` | `ELEMENT_INDEX` — `elementType: FRAME` |
+| `listOfCharts` | `ELEMENT_INDEX` — `elementType: CHART` |
+| `listOfCodeListings` | `ELEMENT_INDEX` — `elementType: CODE_LISTING` |
+| `summary` | `SECTION_INDEX` |
+| `appendix` | `SECTIONED` |
+| `annex` | `SECTIONED` |
 
 ---
 
@@ -813,7 +931,19 @@ Lista vazia renderiza todos os componentes que têm conteúdo em `document`.
 
 ## Input 3 — Content (`document`)
 
-### cover
+O campo `document` é um mapa onde cada chave é o ID de um componente declarado no profile. O
+formato do valor de cada chave é determinado pelo tipo de rule do componente correspondente —
+não pelo ID em si. O engine não conhece os IDs antecipadamente.
+
+As subseções abaixo documentam o formato de conteúdo de cada tipo de rule, usando os IDs do
+profile ABNT UNIP como exemplo. Um profile diferente com IDs distintos usaria os mesmos formatos
+de conteúdo desde que os tipos de rule sejam os mesmos.
+
+---
+
+## Exemplos de conteúdo — profile ABNT UNIP
+
+### cover (exemplo — `SinglePageComponentRule`)
 
 ```json
 "cover": {
@@ -829,7 +959,7 @@ Lista vazia renderiza todos os componentes que têm conteúdo em `document`.
 As chaves do mapa correspondem aos nomes dos slots declarados em `componentRules.cover.slots`.
 Samples: `docs/samples/cover/`
 
-### titlePage
+### titlePage (exemplo — `SinglePageComponentRule`)
 
 ```json
 "titlePage": {
@@ -851,7 +981,7 @@ Samples: `docs/samples/cover/`
 
 Samples: `docs/samples/title-page/`
 
-### approvalSheet
+### approvalSheet (exemplo — `SinglePageComponentRule`)
 
 ```json
 "approvalSheet": {
@@ -875,7 +1005,7 @@ Samples: `docs/samples/approval-sheet/`
 
 ---
 
-### bodyContent
+### bodyContent (exemplo — `BodyContentRule`)
 
 ```json
 "bodyContent": {
@@ -898,7 +1028,7 @@ Samples: `docs/samples/approval-sheet/`
 | Campo | Tipo | Obrigatório | Descrição |
 |---|---|---|---|
 | `id` | `string` | sim | |
-| `level` | `int` 1–6 | sim | Nível 1 é o topo. Iniciar em nível 2 retorna 400. |
+| `level` | `int` ≥ 1 | sim | Nível hierárquico da seção. O nível máximo permitido é declarado no profile. |
 | `title` | `string` | não | Seção sem título é válida |
 | `blocks` | lista | não | Blocos de conteúdo da seção |
 | `subsections` | lista de seções | não | Sub-seções recursivas |
@@ -1089,7 +1219,8 @@ opcionais: `bold`, `italic`, `underline`, `superscript`, `subscript`.
 { "type": "ABBREVIATION", "text": "ABNT", "expansion": "Associação Brasileira de Normas Técnicas" }
 ```
 
-`text` e `expansion` obrigatórios. Alimenta automaticamente o componente `listOfAbbreviations`.
+`text` e `expansion` obrigatórios. Alimenta automaticamente qualquer componente com `ruleType`
+`FLOW_TEXTUAL` que use um `FlowItem` do tipo `PAIR_LIST` com `termsSlotName: "$abbreviations"`.
 
 **`FOOTNOTE`**
 
@@ -1202,7 +1333,7 @@ e ênfases dentro do texto citado.
 
 ---
 
-### references
+### references (exemplo — `ReferenceListRule`)
 
 ```json
 "references": {
@@ -1250,7 +1381,10 @@ Sample: `docs/samples/references/references-mixed.json`
 
 ---
 
-### Componentes textuais simples — conteúdo
+### Exemplos de conteúdo — `FLOW_TEXTUAL`
+
+O conteúdo de um componente `FLOW_TEXTUAL` é um mapa de slots cujas chaves são definidas pelos
+`FlowItem`s declarados na rule do profile. Os exemplos abaixo usam os IDs do profile ABNT UNIP.
 
 ```json
 "dedication":      { "text": "Dedico este trabalho à minha família." }
@@ -1290,42 +1424,46 @@ Sample: `docs/samples/references/references-mixed.json`
   "terms":       ["API", "TCC"],
   "definitions": ["Interface de Programação de Aplicações.", "Trabalho de Conclusão de Curso."]
 }
+
+"listOfSymbols": {
+  "terms":       ["λ", "μ"],
+  "definitions": ["Comprimento de onda.", "Coeficiente de atrito."]
+}
 ```
 
-**`errata`:** cada entrada é uma lista de strings na ordem das colunas declaradas em
-`componentRules.errata.tableHeaders`.
-
-**`glossary` e `listOfSymbols`:** `terms` e `definitions` são listas paralelas — índice 0 de
-`terms` corresponde ao índice 0 de `definitions`.
+As chaves de cada mapa (`text`, `author`, `rows`, `terms`, etc.) são os `slotName`s declarados
+nos `FlowItem`s da rule correspondente — o engine não conhece esses nomes antecipadamente.
 
 ---
 
-### Listas geradas automaticamente — conteúdo
+### Exemplos de conteúdo — `ELEMENT_INDEX` e `SECTION_INDEX`
+
+Componentes com `ruleType` `ELEMENT_INDEX` ou `SECTION_INDEX` derivam seu conteúdo de outro
+componente e não requerem dados no campo `document`. Para sinalizá-los como presentes, usa-se
+objeto vazio:
 
 ```json
-"listOfFigures":       {}
-"listOfTables":        {}
-"listOfFrames":        {}
-"listOfCharts":        {}
-"listOfCodeListings":  {}
+"listOfFigures":      {}
+"listOfTables":       {}
+"listOfFrames":       {}
+"listOfCharts":       {}
+"listOfCodeListings": {}
+"summary":            {}
 "listOfAbbreviations": {}
-"summary":             {}
 ```
 
-Objeto vazio `{}` sinaliza que o componente deve ser renderizado. Nenhum dado adicional é
-necessário.
-
-`listOfSymbols` é exceção — requer `terms` e `definitions` explícitos.
+Os IDs acima são exemplos do profile ABNT UNIP. O padrão é o mesmo para qualquer componente
+derivado — o ID é definido pelo profile, não pelo engine.
 
 ---
 
-### appendix e annex — conteúdo
+### Exemplos de conteúdo — `SECTIONED`
 
 ```json
 "appendix": {
   "items": [
     {
-      "title": "Título do Apêndice A",
+      "title": "Título do Item A",
       "sections": [
         {
           "id": "apx-s1",
@@ -1340,8 +1478,7 @@ necessário.
 ```
 
 `items` obrigatório, não vazio. Cada item tem `title` (obrigatório) e `sections` (opcional —
-mesma estrutura que `bodyContent.sections`). `blocks` nos parâmetros antigos não é suportado
-diretamente — o conteúdo vai dentro de `sections`.
+mesma estrutura que o conteúdo de `BODY_CONTENT`).
 
 Samples: `docs/samples/appendix/`, `docs/samples/annex/`
 
@@ -1350,10 +1487,10 @@ Samples: `docs/samples/appendix/`, `docs/samples/annex/`
 ## O que o work-service precisa saber
 
 Persistir o campo `document` como blob (JSONB ou equivalente). Extrair para colunas estruturadas
-apenas os campos necessários para busca — tipicamente `title` e `authors` de `titlePage`.
+apenas os campos necessários para busca — os IDs e campos relevantes dependem do profile usado.
 
-Os campos de `cover`, `titlePage` e `approvalSheet` são estáveis e podem ser persistidos
-estruturadamente.
+O `document` é um mapa aberto — as chaves são IDs de componentes definidos pelo profile, não
+pelo engine. O work-service não deve assumir que existem chaves fixas como `cover` ou `titlePage`.
 
 Não persistir o campo `work` — é ignorado pelo engine.
 
@@ -1374,4 +1511,5 @@ referência está em `src/main/resources/profiles/abnt-unip-profile.json`.
 classpath). Perfis enviados inline na requisição ignoram `postProcessing`.
 
 O formato do profile está estável. Novos perfis (APA, Vancouver, outros) declaram seus próprios
-`entryFormats`, `styleRules` e `componentRules` sem alterar código Java.
+`styleRules` e `componentRules` com qualquer combinação de `ruleType`s e IDs arbitrários, sem
+alterar código Java.
