@@ -36,9 +36,12 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.TableRule;
 import com.abntbuilder.formatter.profile.model.component.flowtextual.FlowItem;
 import com.abntbuilder.formatter.profile.model.component.flowtextual.FlowTextualComponentRule;
 import com.abntbuilder.formatter.profile.model.component.indexlist.IndexListComponentRule;
+import com.abntbuilder.formatter.profile.model.component.references.AuthorFormatRule;
+import com.abntbuilder.formatter.profile.model.component.references.EntrySegmentRule;
 import com.abntbuilder.formatter.profile.model.component.references.ReferencesComponentRule;
-import com.abntbuilder.formatter.profile.model.component.summary.SummaryComponentRule;
 import com.abntbuilder.formatter.profile.model.component.references.ReferencesFormattingRule;
+import com.abntbuilder.formatter.profile.model.component.summary.SummaryComponentRule;
+import com.abntbuilder.formatter.document.component.references.ReferenceType;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.HorizontalPlacementRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.HorizontalPlacementStrategy;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.LayoutGapRule;
@@ -56,6 +59,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -841,22 +845,50 @@ public record ProfileDefinition(
         }
     }
 
-    public record ReferencesFormattingRuleDefinition(
-            String availableAtLabel,
-            String accessedAtLabel,
-            String etAlLabel,
-            String inLabel,
-            String authorSurnameGivenSeparator,
-            String authorNameTerminator,
+    public record AuthorFormatRuleDefinition(
+            Boolean surnameUppercase,
+            String surnameGivenSeparator,
+            String nameTerminator,
             String multiAuthorJoiner,
-            Boolean authorSurnameUppercase
+            String etAlLabel,
+            Integer etAlThreshold
+    ) {
+        AuthorFormatRule toDomain() {
+            requireNonNull(surnameUppercase, "references.formattingRule.authorFormat.surnameUppercase");
+            requireNonNull(etAlThreshold, "references.formattingRule.authorFormat.etAlThreshold");
+            return new AuthorFormatRule(surnameUppercase, surnameGivenSeparator, nameTerminator,
+                    multiAuthorJoiner, etAlLabel, etAlThreshold);
+        }
+    }
+
+    public record EntrySegmentRuleDefinition(
+            String source,
+            boolean bold,
+            String prefix,
+            String suffix,
+            boolean optional
+    ) {
+        EntrySegmentRule toDomain() {
+            return new EntrySegmentRule(source, bold, prefix, suffix, optional);
+        }
+    }
+
+    public record ReferencesFormattingRuleDefinition(
+            AuthorFormatRuleDefinition authorFormat,
+            Map<String, List<EntrySegmentRuleDefinition>> entryFormats
     ) {
         ReferencesFormattingRule toDomain() {
-            requireNonNull(authorSurnameUppercase, "references.formattingRule.authorSurnameUppercase");
-            return new ReferencesFormattingRule(
-                    availableAtLabel, accessedAtLabel, etAlLabel, inLabel,
-                    authorSurnameGivenSeparator, authorNameTerminator, multiAuthorJoiner, authorSurnameUppercase
-            );
+            requireNonNull(authorFormat, "references.formattingRule.authorFormat");
+            requireNonNull(entryFormats, "references.formattingRule.entryFormats");
+            Map<ReferenceType, List<EntrySegmentRule>> domainFormats = new HashMap<>();
+            for (Map.Entry<String, List<EntrySegmentRuleDefinition>> e : entryFormats.entrySet()) {
+                ReferenceType type = ReferenceType.valueOf(e.getKey());
+                List<EntrySegmentRule> segments = e.getValue().stream()
+                        .map(EntrySegmentRuleDefinition::toDomain)
+                        .toList();
+                domainFormats.put(type, segments);
+            }
+            return new ReferencesFormattingRule(authorFormat.toDomain(), domainFormats);
         }
     }
 

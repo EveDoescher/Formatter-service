@@ -1,26 +1,18 @@
 package com.abntbuilder.formatter.profile.model.component.references;
 
+import com.abntbuilder.formatter.document.component.references.ReferenceType;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 public record ReferencesFormattingRule(
-        String availableAtLabel,
-        String accessedAtLabel,
-        String etAlLabel,
-        String inLabel,
-        String authorSurnameGivenSeparator,
-        String authorNameTerminator,
-        String multiAuthorJoiner,
-        boolean authorSurnameUppercase
+        AuthorFormatRule authorFormat,
+        Map<ReferenceType, List<EntrySegmentRule>> entryFormats
 ) {
     public ReferencesFormattingRule {
-        requireNonBlank(availableAtLabel, "availableAtLabel");
-        requireNonBlank(accessedAtLabel, "accessedAtLabel");
-        requireNonBlank(etAlLabel, "etAlLabel");
-        requireNonBlank(inLabel, "inLabel");
-        requireNonBlank(authorSurnameGivenSeparator, "authorSurnameGivenSeparator");
-        requireNonBlank(authorNameTerminator, "authorNameTerminator");
-        requireNonBlank(multiAuthorJoiner, "multiAuthorJoiner");
-    }
-
-    private static void requireNonBlank(String v, String f) {
-        if (v == null || v.isBlank()) throw new IllegalArgumentException(f + " must not be blank.");
+        Objects.requireNonNull(authorFormat, "authorFormat must not be null");
+        Objects.requireNonNull(entryFormats, "entryFormats must not be null");
+        entryFormats = Map.copyOf(entryFormats);
     }
 }
