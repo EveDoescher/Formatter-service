@@ -177,6 +177,10 @@ public final class SinglePageLayoutAssembler {
                 }
                 yield resolveSignatureBlock(content.componentId(), slotId, sigRule, sblv);
             }
+            case com.abntbuilder.formatter.document.component.singlepage.TableValue ignored ->
+                throw new com.abntbuilder.formatter.shared.exception.InvalidSinglePageContentException(
+                        "TableValue is not supported in single-page layout components (slot '" + slotId
+                        + "' in '" + content.componentId() + "').");
         };
     }
 

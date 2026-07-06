@@ -1,6 +1,7 @@
 package com.abntbuilder.formatter.rendering.component;
 
 import com.abntbuilder.formatter.document.component.DocumentComponent;
+import com.abntbuilder.formatter.document.component.flowtextual.FlowTextualContent;
 import com.abntbuilder.formatter.document.component.singlepage.SinglePageContent;
 import com.abntbuilder.formatter.shared.exception.MissingComponentRendererException;
 
@@ -28,9 +29,10 @@ public final class ComponentRendererRegistry {
                 throw new IllegalArgumentException("Duplicate component renderer id: " + renderer.componentId());
             }
 
-            // SinglePageContent renderers share the same Java type but differ by componentId —
-            // skip the type-map duplicate check for them.
-            if (renderer.componentType() != SinglePageContent.class) {
+            // SinglePageContent and FlowTextualContent renderers share the same Java type but differ by
+            // componentId — skip the type-map duplicate check for them.
+            if (renderer.componentType() != SinglePageContent.class
+                    && renderer.componentType() != FlowTextualContent.class) {
                 if (resolvedRenderersByType.put(renderer.componentType(), renderer) != null) {
                     throw new IllegalArgumentException(
                             "Duplicate component renderer type: " + renderer.componentType().getSimpleName()
@@ -60,12 +62,18 @@ public final class ComponentRendererRegistry {
     public String componentIdFor(DocumentComponent component) {
         Objects.requireNonNull(component, "component must not be null");
 
-        // SinglePageContent carries its own componentId.
+        // SinglePageContent and FlowTextualContent carry their own componentId.
         if (component instanceof SinglePageContent singlePage) {
             if (!renderersByComponentId.containsKey(singlePage.componentId())) {
                 throw new MissingComponentRendererException(singlePage.componentId());
             }
             return singlePage.componentId();
+        }
+        if (component instanceof FlowTextualContent flowTextual) {
+            if (!renderersByComponentId.containsKey(flowTextual.componentId())) {
+                throw new MissingComponentRendererException(flowTextual.componentId());
+            }
+            return flowTextual.componentId();
         }
 
         ComponentRenderer<?> renderer = renderersByComponentType.get(component.getClass());

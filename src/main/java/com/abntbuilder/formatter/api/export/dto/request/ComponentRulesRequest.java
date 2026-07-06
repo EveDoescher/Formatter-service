@@ -1,6 +1,7 @@
 package com.abntbuilder.formatter.api.export.dto.request;
 
 import com.abntbuilder.formatter.profile.model.component.ComponentRule;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 
 import java.util.ArrayList;
@@ -11,24 +12,24 @@ public record ComponentRulesRequest(
         @Valid SinglePageComponentRuleRequest titlePage,
         @Valid SinglePageComponentRuleRequest approvalSheet,
         @Valid BodyContentComponentRuleRequest bodyContent,
-        @Valid ErrataComponentRuleRequest errata,
-        @Valid DedicationComponentRuleRequest dedication,
-        @Valid EpigraphComponentRuleRequest epigraph,
-        @Valid AcknowledgmentsComponentRuleRequest acknowledgments,
-        @Valid ResumoComponentRuleRequest resumo,
-        @Valid AbstractComponentRuleRequest abstractEn,
+        @Valid FlowTextualComponentRuleRequest errata,
+        @Valid FlowTextualComponentRuleRequest dedication,
+        @Valid FlowTextualComponentRuleRequest epigraph,
+        @Valid FlowTextualComponentRuleRequest acknowledgments,
+        @Valid FlowTextualComponentRuleRequest resumo,
+        @JsonProperty("abstract") @Valid AbstractComponentRuleRequest abstractEn,
         @Valid ReferencesComponentRuleRequest references,
         @Valid AppendixComponentRuleRequest appendix,
         @Valid AnnexComponentRuleRequest annex,
-        @Valid GlossaryComponentRuleRequest glossary,
+        @Valid FlowTextualComponentRuleRequest glossary,
         @Valid SummaryComponentRuleRequest summary,
         @Valid IndexListComponentRuleRequest listOfFigures,
         @Valid IndexListComponentRuleRequest listOfTables,
         @Valid IndexListComponentRuleRequest listOfFrames,
         @Valid IndexListComponentRuleRequest listOfCharts,
         @Valid IndexListComponentRuleRequest listOfCodeListings,
-        @Valid ListOfAbbreviationsComponentRuleRequest listOfAbbreviations,
-        @Valid ListOfSymbolsComponentRuleRequest listOfSymbols
+        @Valid FlowTextualComponentRuleRequest listOfAbbreviations,
+        @Valid FlowTextualComponentRuleRequest listOfSymbols
 ) {
     public List<ComponentRule> toDomain() {
         List<ComponentRule> rules = new ArrayList<>();
@@ -53,8 +54,8 @@ public record ComponentRulesRequest(
         if (listOfFrames != null) rules.add(listOfFrames.toDomain("listOfFrames"));
         if (listOfCharts != null) rules.add(listOfCharts.toDomain("listOfCharts"));
         if (listOfCodeListings != null) rules.add(listOfCodeListings.toDomain("listOfCodeListings"));
-        if (listOfAbbreviations != null) rules.add(listOfAbbreviations.toDomain("listOfAbbreviations"));
-        if (listOfSymbols != null) rules.add(listOfSymbols.toDomain("listOfSymbols"));
+        if (listOfAbbreviations != null) rules.add(listOfAbbreviations.toDomain());
+        if (listOfSymbols != null) rules.add(listOfSymbols.toDomain());
 
         return List.copyOf(rules);
     }

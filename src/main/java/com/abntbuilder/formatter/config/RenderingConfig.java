@@ -4,23 +4,16 @@ import com.abntbuilder.formatter.profile.resolution.ProfileProvider;
 import com.abntbuilder.formatter.rendering.component.ComponentRenderer;
 import com.abntbuilder.formatter.rendering.component.ComponentRendererRegistry;
 import com.abntbuilder.formatter.rendering.component.abstracten.AbstractRenderer;
-import com.abntbuilder.formatter.rendering.component.acknowledgments.AcknowledgmentsRenderer;
 import com.abntbuilder.formatter.rendering.component.annex.AnnexRenderer;
 import com.abntbuilder.formatter.rendering.component.appendix.AppendixRenderer;
 import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentRenderer;
-import com.abntbuilder.formatter.rendering.component.dedication.DedicationRenderer;
-import com.abntbuilder.formatter.rendering.component.epigraph.EpigraphRenderer;
-import com.abntbuilder.formatter.rendering.component.errata.ErrataRenderer;
-import com.abntbuilder.formatter.rendering.component.glossary.GlossaryRenderer;
-import com.abntbuilder.formatter.rendering.component.listofabbreviations.ListOfAbbreviationsRenderer;
+import com.abntbuilder.formatter.rendering.component.flowtextual.FlowTextualRenderer;
 import com.abntbuilder.formatter.rendering.component.listofcharts.ListOfChartsRenderer;
 import com.abntbuilder.formatter.rendering.component.listofcodelistings.ListOfCodeListingsRenderer;
 import com.abntbuilder.formatter.rendering.component.listoffigures.ListOfFiguresRenderer;
 import com.abntbuilder.formatter.rendering.component.listofframes.ListOfFramesRenderer;
 import com.abntbuilder.formatter.rendering.component.listoftables.ListOfTablesRenderer;
-import com.abntbuilder.formatter.rendering.component.listofsymbols.ListOfSymbolsRenderer;
 import com.abntbuilder.formatter.rendering.component.references.ReferencesRenderer;
-import com.abntbuilder.formatter.rendering.component.resumo.ResumoRenderer;
 import com.abntbuilder.formatter.rendering.component.singlepage.SinglePageContentValidator;
 import com.abntbuilder.formatter.rendering.component.singlepage.SinglePageLayoutAssembler;
 import com.abntbuilder.formatter.rendering.component.singlepage.SinglePageLayoutCalculator;
@@ -150,28 +143,28 @@ public class RenderingConfig {
     }
 
     @Bean
-    public ErrataRenderer errataRenderer() {
-        return new ErrataRenderer();
+    public FlowTextualRenderer errataRenderer() {
+        return new FlowTextualRenderer("errata");
     }
 
     @Bean
-    public DedicationRenderer dedicationRenderer() {
-        return new DedicationRenderer();
+    public FlowTextualRenderer dedicationRenderer() {
+        return new FlowTextualRenderer("dedication");
     }
 
     @Bean
-    public EpigraphRenderer epigraphRenderer() {
-        return new EpigraphRenderer();
+    public FlowTextualRenderer epigraphRenderer() {
+        return new FlowTextualRenderer("epigraph");
     }
 
     @Bean
-    public AcknowledgmentsRenderer acknowledgmentsRenderer() {
-        return new AcknowledgmentsRenderer();
+    public FlowTextualRenderer acknowledgmentsRenderer() {
+        return new FlowTextualRenderer("acknowledgments");
     }
 
     @Bean
-    public ResumoRenderer resumoRenderer() {
-        return new ResumoRenderer();
+    public FlowTextualRenderer resumoRenderer() {
+        return new FlowTextualRenderer("resumo");
     }
 
     @Bean
@@ -195,8 +188,8 @@ public class RenderingConfig {
     }
 
     @Bean
-    public GlossaryRenderer glossaryRenderer() {
-        return new GlossaryRenderer();
+    public FlowTextualRenderer glossaryRenderer() {
+        return new FlowTextualRenderer("glossary");
     }
 
     @Bean
@@ -230,13 +223,13 @@ public class RenderingConfig {
     }
 
     @Bean
-    public ListOfAbbreviationsRenderer listOfAbbreviationsRenderer() {
-        return new ListOfAbbreviationsRenderer();
+    public FlowTextualRenderer listOfAbbreviationsRenderer() {
+        return new FlowTextualRenderer("listOfAbbreviations");
     }
 
     @Bean
-    public ListOfSymbolsRenderer listOfSymbolsRenderer() {
-        return new ListOfSymbolsRenderer();
+    public FlowTextualRenderer listOfSymbolsRenderer() {
+        return new FlowTextualRenderer("listOfSymbols");
     }
 
     @Bean

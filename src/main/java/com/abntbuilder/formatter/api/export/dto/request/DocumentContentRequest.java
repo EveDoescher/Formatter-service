@@ -16,24 +16,24 @@ public record DocumentContentRequest(
         @Valid SinglePageContentRequest titlePage,
         @Valid SinglePageContentRequest approvalSheet,
         @Valid BodyContentRequest bodyContent,
-        @Valid ErrataRequest errata,
-        @Valid DedicationRequest dedication,
-        @Valid EpigraphRequest epigraph,
-        @Valid AcknowledgmentsRequest acknowledgments,
-        @Valid ResumoRequest resumo,
+        @Valid FlowTextualContentRequest errata,
+        @Valid FlowTextualContentRequest dedication,
+        @Valid FlowTextualContentRequest epigraph,
+        @Valid FlowTextualContentRequest acknowledgments,
+        @Valid FlowTextualContentRequest resumo,
         @JsonProperty("abstract") @Valid AbstractRequest abstractEn,
         @Valid ReferencesRequest references,
         @Valid AppendixRequest appendix,
         @Valid AnnexRequest annex,
-        @Valid GlossaryRequest glossary,
+        @Valid FlowTextualContentRequest glossary,
         @Valid SummaryRequest summary,
         @Valid ListOfFiguresRequest listOfFigures,
         @Valid ListOfTablesRequest listOfTables,
         @Valid ListOfFramesRequest listOfFrames,
         @Valid ListOfChartsRequest listOfCharts,
         @Valid ListOfCodeListingsRequest listOfCodeListings,
-        @Valid ListOfAbbreviationsRequest listOfAbbreviations,
-        @Valid ListOfSymbolsRequest listOfSymbols
+        @Valid FlowTextualContentRequest listOfAbbreviations,
+        @Valid FlowTextualContentRequest listOfSymbols
 ) {
     public List<DocumentComponent> toComponents() {
         return toComponents(null);
@@ -52,7 +52,7 @@ public record DocumentContentRequest(
         }
 
         if (errata != null) {
-            components.add(errata.toDomain());
+            components.add(errata.toDomain("errata"));
         }
 
         if (approvalSheet != null && approvalSheet.hasSlots()) {
@@ -60,19 +60,19 @@ public record DocumentContentRequest(
         }
 
         if (dedication != null) {
-            components.add(dedication.toDomain());
+            components.add(dedication.toDomain("dedication"));
         }
 
         if (epigraph != null) {
-            components.add(epigraph.toDomain());
+            components.add(epigraph.toDomain("epigraph"));
         }
 
         if (acknowledgments != null) {
-            components.add(acknowledgments.toDomain());
+            components.add(acknowledgments.toDomain("acknowledgments"));
         }
 
         if (resumo != null) {
-            components.add(resumo.toDomain());
+            components.add(resumo.toDomain("resumo"));
         }
 
         if (abstractEn != null) {
@@ -80,11 +80,11 @@ public record DocumentContentRequest(
         }
 
         if (listOfAbbreviations != null) {
-            components.add(listOfAbbreviations.toDomain());
+            components.add(listOfAbbreviations.toDomain("listOfAbbreviations"));
         }
 
         if (listOfSymbols != null) {
-            components.add(listOfSymbols.toDomain());
+            components.add(listOfSymbols.toDomain("listOfSymbols"));
         }
 
         if (summary != null) {
@@ -133,7 +133,7 @@ public record DocumentContentRequest(
         }
 
         if (glossary != null) {
-            components.add(glossary.toDomain());
+            components.add(glossary.toDomain("glossary"));
         }
 
         return List.copyOf(components);

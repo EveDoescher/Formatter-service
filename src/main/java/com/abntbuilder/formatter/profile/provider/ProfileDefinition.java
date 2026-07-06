@@ -17,7 +17,6 @@ import com.abntbuilder.formatter.profile.model.component.singlepage.SlotRule;
 import com.abntbuilder.formatter.profile.model.component.singlepage.TextListSlotRule;
 import com.abntbuilder.formatter.profile.model.component.singlepage.TextSlotRule;
 import com.abntbuilder.formatter.profile.model.component.abstracten.AbstractComponentRule;
-import com.abntbuilder.formatter.profile.model.component.acknowledgments.AcknowledgmentsComponentRule;
 import com.abntbuilder.formatter.profile.model.component.annex.AnnexComponentRule;
 import com.abntbuilder.formatter.profile.model.component.appendix.AppendixComponentRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentComponentRule;
@@ -33,17 +32,12 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.ChartRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.NumberingStrategy;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.TableRule;
-import com.abntbuilder.formatter.profile.model.component.dedication.DedicationComponentRule;
-import com.abntbuilder.formatter.profile.model.component.epigraph.EpigraphComponentRule;
-import com.abntbuilder.formatter.profile.model.component.errata.ErrataComponentRule;
-import com.abntbuilder.formatter.profile.model.component.glossary.GlossaryComponentRule;
+import com.abntbuilder.formatter.profile.model.component.flowtextual.FlowItem;
+import com.abntbuilder.formatter.profile.model.component.flowtextual.FlowTextualComponentRule;
 import com.abntbuilder.formatter.profile.model.component.indexlist.IndexListComponentRule;
-import com.abntbuilder.formatter.profile.model.component.listofabbreviations.ListOfAbbreviationsComponentRule;
-import com.abntbuilder.formatter.profile.model.component.listofsymbols.ListOfSymbolsComponentRule;
 import com.abntbuilder.formatter.profile.model.component.references.ReferencesComponentRule;
 import com.abntbuilder.formatter.profile.model.component.summary.SummaryComponentRule;
 import com.abntbuilder.formatter.profile.model.component.references.ReferencesFormattingRule;
-import com.abntbuilder.formatter.profile.model.component.resumo.ResumoComponentRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.HorizontalPlacementRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.HorizontalPlacementStrategy;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.LayoutGapRule;
@@ -747,11 +741,14 @@ public record ProfileDefinition(
             List<String> tableHeaders,
             Integer blankLinesAfterHeading
     ) {
-        ErrataComponentRule toDomain() {
+        FlowTextualComponentRule toDomain() {
             requireNonNull(tableHeaders, "errata.tableHeaders");
-            return new ErrataComponentRule(componentId, headingStyleId, headingText,
-                    tableHeaderStyleId, tableCellStyleId, tableHeaders,
-                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0);
+            int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
+            List<FlowItem> items = new ArrayList<>();
+            items.add(new FlowItem.HeadingItem(headingStyleId, headingText));
+            if (blankLines > 0) items.add(new FlowItem.BlankLinesItem(headingStyleId, blankLines));
+            items.add(new FlowItem.TableBlockItem(tableHeaderStyleId, tableCellStyleId, tableHeaders, "rows"));
+            return new FlowTextualComponentRule(componentId, items);
         }
     }
 
@@ -760,9 +757,12 @@ public record ProfileDefinition(
             String textStyleId,
             Integer blankLinesBefore
     ) {
-        DedicationComponentRule toDomain() {
+        FlowTextualComponentRule toDomain() {
             requireNonNull(blankLinesBefore, "dedication.blankLinesBefore");
-            return new DedicationComponentRule(componentId, textStyleId, blankLinesBefore);
+            List<FlowItem> items = new ArrayList<>();
+            if (blankLinesBefore > 0) items.add(new FlowItem.BlankLinesItem(textStyleId, blankLinesBefore));
+            items.add(new FlowItem.PlainTextItem(textStyleId, "text"));
+            return new FlowTextualComponentRule(componentId, items);
         }
     }
 
@@ -772,8 +772,11 @@ public record ProfileDefinition(
             String authorStyleId,
             String authorTemplate
     ) {
-        EpigraphComponentRule toDomain() {
-            return new EpigraphComponentRule(componentId, textStyleId, authorStyleId, authorTemplate);
+        FlowTextualComponentRule toDomain() {
+            List<FlowItem> items = new ArrayList<>();
+            items.add(new FlowItem.PlainTextItem(textStyleId, "text"));
+            items.add(new FlowItem.TemplatedTextItem(authorStyleId, authorTemplate, List.of("author", "source")));
+            return new FlowTextualComponentRule(componentId, items);
         }
     }
 
@@ -784,9 +787,13 @@ public record ProfileDefinition(
             String textStyleId,
             Integer blankLinesAfterHeading
     ) {
-        AcknowledgmentsComponentRule toDomain() {
-            return new AcknowledgmentsComponentRule(componentId, headingStyleId, headingText, textStyleId,
-                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0);
+        FlowTextualComponentRule toDomain() {
+            int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
+            List<FlowItem> items = new ArrayList<>();
+            items.add(new FlowItem.HeadingItem(headingStyleId, headingText));
+            if (blankLines > 0) items.add(new FlowItem.BlankLinesItem(headingStyleId, blankLines));
+            items.add(new FlowItem.PlainTextItem(textStyleId, "text"));
+            return new FlowTextualComponentRule(componentId, items);
         }
     }
 
@@ -801,11 +808,16 @@ public record ProfileDefinition(
             String keywordsTerminator,
             Integer blankLinesAfterHeading
     ) {
-        ResumoComponentRule toDomain() {
+        FlowTextualComponentRule toDomain() {
             requireNonNull(keywordsTerminator, "resumo.keywordsTerminator");
-            return new ResumoComponentRule(componentId, headingStyleId, headingText,
-                    textStyleId, keywordsStyleId, keywordsLabel, keywordsSeparator, keywordsTerminator,
-                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0);
+            int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
+            List<FlowItem> items = new ArrayList<>();
+            items.add(new FlowItem.HeadingItem(headingStyleId, headingText));
+            if (blankLines > 0) items.add(new FlowItem.BlankLinesItem(headingStyleId, blankLines));
+            items.add(new FlowItem.PlainTextItem(textStyleId, "text"));
+            items.add(new FlowItem.BoldLabeledKeywordsItem(
+                    keywordsStyleId, "keywordsLabel", "keywords", keywordsSeparator, keywordsTerminator));
+            return new FlowTextualComponentRule(componentId, items);
         }
     }
 
@@ -899,9 +911,13 @@ public record ProfileDefinition(
             String termSeparator,
             Integer blankLinesAfterHeading
     ) {
-        GlossaryComponentRule toDomain() {
-            return new GlossaryComponentRule(componentId, headingStyleId, headingText, entryStyleId, termSeparator,
-                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0);
+        FlowTextualComponentRule toDomain() {
+            int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
+            List<FlowItem> items = new ArrayList<>();
+            items.add(new FlowItem.HeadingItem(headingStyleId, headingText));
+            if (blankLines > 0) items.add(new FlowItem.BlankLinesItem(headingStyleId, blankLines));
+            items.add(new FlowItem.PairListItem(entryStyleId, "terms", "definitions", termSeparator));
+            return new FlowTextualComponentRule(componentId, items);
         }
     }
 
@@ -970,16 +986,15 @@ public record ProfileDefinition(
             Boolean sortAlphabetically,
             Integer blankLinesAfterHeading
     ) {
-        ListOfAbbreviationsComponentRule toDomain() {
-            return new ListOfAbbreviationsComponentRule(
-                    componentId,
-                    headingStyleId,
-                    headingText,
-                    entryStyleId,
-                    termSeparator,
-                    sortAlphabetically != null && sortAlphabetically,
-                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0
-            );
+        FlowTextualComponentRule toDomain() {
+            int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
+            boolean sort = sortAlphabetically != null && sortAlphabetically;
+            // termsSlotName "$abbreviations" signals Phase0 source; definitionsSlotName "$sort" signals sorting.
+            List<FlowItem> items = new ArrayList<>();
+            items.add(new FlowItem.HeadingItem(headingStyleId, headingText));
+            if (blankLines > 0) items.add(new FlowItem.BlankLinesItem(headingStyleId, blankLines));
+            items.add(new FlowItem.PairListItem(entryStyleId, "$abbreviations", sort ? "$sort" : "$nosort", termSeparator));
+            return new FlowTextualComponentRule(componentId, items);
         }
     }
 
@@ -991,15 +1006,13 @@ public record ProfileDefinition(
             String termSeparator,
             Integer blankLinesAfterHeading
     ) {
-        ListOfSymbolsComponentRule toDomain() {
-            return new ListOfSymbolsComponentRule(
-                    componentId,
-                    headingStyleId,
-                    headingText,
-                    entryStyleId,
-                    termSeparator,
-                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0
-            );
+        FlowTextualComponentRule toDomain() {
+            int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
+            List<FlowItem> items = new ArrayList<>();
+            items.add(new FlowItem.HeadingItem(headingStyleId, headingText));
+            if (blankLines > 0) items.add(new FlowItem.BlankLinesItem(headingStyleId, blankLines));
+            items.add(new FlowItem.PairListItem(entryStyleId, "terms", "definitions", termSeparator));
+            return new FlowTextualComponentRule(componentId, items);
         }
     }
 }
