@@ -1281,7 +1281,7 @@ Sample: `docs/samples/references/references-mixed.json`
 }
 
 "errata": {
-  "entries": [
+  "rows": [
     ["23", "5", "analize", "análise"]
   ]
 }
