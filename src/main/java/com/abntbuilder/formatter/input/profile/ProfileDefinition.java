@@ -374,7 +374,10 @@ public record ProfileDefinition(
             String numericRangeSeparator,
             String numericListSeparator,
             Boolean numericRangeCollapse,
-            String multiSourceSeparator
+            String multiSourceSeparator,
+            String ibidLabel,
+            String noteStyleId,
+            com.abntbuilder.formatter.engine.model.profile.component.bodycontent.CitationFormattingRule.FootnoteRestartPolicy footnoteRestartPolicy
     ) {
         com.abntbuilder.formatter.engine.model.profile.component.bodycontent.CitationFormattingRule toDomain() {
             return new com.abntbuilder.formatter.engine.model.profile.component.bodycontent.CitationFormattingRule(
@@ -387,7 +390,10 @@ public record ProfileDefinition(
                     Optional.ofNullable(numericRangeSeparator),
                     Optional.ofNullable(numericListSeparator),
                     numericRangeCollapse != null && numericRangeCollapse,
-                    multiSourceSeparator
+                    multiSourceSeparator,
+                    Optional.ofNullable(ibidLabel),
+                    Optional.ofNullable(noteStyleId),
+                    footnoteRestartPolicy
             );
         }
     }
@@ -901,19 +907,31 @@ public record ProfileDefinition(
 
     public record ReferencesFormattingRuleDefinition(
             AuthorFormatRuleDefinition authorFormat,
-            Map<String, List<EntrySegmentRuleDefinition>> entryFormats
+            Map<String, List<EntrySegmentRuleDefinition>> entryFormats,
+            Map<String, List<EntrySegmentRuleDefinition>> noteFormats,
+            Map<String, List<EntrySegmentRuleDefinition>> shortNoteFormats,
+            Boolean ibidEnabled
     ) {
         ReferencesFormattingRule toDomain() {
             requireNonNull(authorFormat, "references.formattingRule.authorFormat");
             requireNonNull(entryFormats, "references.formattingRule.entryFormats");
-            Map<String, List<EntrySegmentRule>> domainFormats = new HashMap<>();
-            for (Map.Entry<String, List<EntrySegmentRuleDefinition>> e : entryFormats.entrySet()) {
-                List<EntrySegmentRule> segments = e.getValue().stream()
-                        .map(EntrySegmentRuleDefinition::toDomain)
-                        .toList();
-                domainFormats.put(e.getKey(), segments);
+            return new ReferencesFormattingRule(
+                    authorFormat.toDomain(),
+                    toSegmentMap(entryFormats),
+                    noteFormats != null ? toSegmentMap(noteFormats) : Map.of(),
+                    shortNoteFormats != null ? toSegmentMap(shortNoteFormats) : Map.of(),
+                    ibidEnabled != null && ibidEnabled
+            );
+        }
+
+        private static Map<String, List<EntrySegmentRule>> toSegmentMap(
+                Map<String, List<EntrySegmentRuleDefinition>> source
+        ) {
+            Map<String, List<EntrySegmentRule>> result = new HashMap<>();
+            for (Map.Entry<String, List<EntrySegmentRuleDefinition>> e : source.entrySet()) {
+                result.put(e.getKey(), e.getValue().stream().map(EntrySegmentRuleDefinition::toDomain).toList());
             }
-            return new ReferencesFormattingRule(authorFormat.toDomain(), domainFormats);
+            return result;
         }
     }
 
@@ -924,14 +942,16 @@ public record ProfileDefinition(
             String entryStyleId,
             Integer blankLinesBetweenEntries,
             Integer blankLinesAfterHeading,
-            ReferencesFormattingRuleDefinition formattingRule
+            ReferencesFormattingRuleDefinition formattingRule,
+            ReferencesComponentRule.ReferenceSortOrder sortOrder
     ) {
         ReferencesComponentRule toDomain() {
             requireNonNull(blankLinesBetweenEntries, "references.blankLinesBetweenEntries");
             requireNonNull(formattingRule, "references.formattingRule");
             return new ReferencesComponentRule(componentId, headingStyleId, headingText,
                     entryStyleId, blankLinesBetweenEntries, formattingRule.toDomain(),
-                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0);
+                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0,
+                    sortOrder != null ? sortOrder : ReferencesComponentRule.ReferenceSortOrder.AS_GIVEN);
         }
     }
 

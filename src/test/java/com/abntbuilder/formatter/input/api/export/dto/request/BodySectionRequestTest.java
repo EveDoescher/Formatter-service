@@ -105,6 +105,7 @@ class BodySectionRequestTest {
                                         null,
                                         null,
                                         null,
+                                        null,
                                         null
                                 ),
                                 new BodyInlineRequest(
@@ -115,6 +116,7 @@ class BodySectionRequestTest {
                                         BodyCitationType.DIRECT_SHORT,
                                         BodyCitationMode.NARRATIVE,
                                         new CitationSourceRequest(List.of(author("Sobrenome Teste Um")), "2020", "10"),
+                                        null,
                                         null,
                                         null,
                                         null,
@@ -137,6 +139,7 @@ class BodySectionRequestTest {
                                         null,
                                         null,
                                         null,
+                                        null,
                                         null
                                 ),
                                 new BodyInlineRequest(
@@ -144,6 +147,7 @@ class BodySectionRequestTest {
                                         "a organizacao documental depende de criterios formais",
                                         null,
                                         BodyQuoteType.SHORT,
+                                        null,
                                         null,
                                         null,
                                         null,

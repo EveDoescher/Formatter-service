@@ -6,5 +6,6 @@ public enum BodyCitationType {
     INDIRECT,
     CITATION_OF_CITATION,
     VERBAL,
-    NUMERIC
+    NUMERIC,
+    NOTE_BIBLIOGRAPHY
 }

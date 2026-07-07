@@ -26,6 +26,7 @@ public record BodyInlineRequest(
         @Valid CitationSourceRequest originalSource,
         @Valid CitationSourceRequest consultedSource,
         List<String> numericReferenceIds,
+        String noteReferenceId,
         InlineFormattingRequest formatting,
         @Valid java.util.List<BodyQuoteMarkerRequest> markers,
         @Valid java.util.List<BodyInlineRequest> content,
@@ -50,6 +51,7 @@ public record BodyInlineRequest(
                     originalSource == null ? Optional.empty() : Optional.of(originalSource.toDomain()),
                     consultedSource == null ? Optional.empty() : Optional.of(consultedSource.toDomain()),
                     numericReferenceIds == null ? java.util.List.of() : numericReferenceIds,
+                    Optional.ofNullable(noteReferenceId),
                     false, false
             );
             case ABBREVIATION -> {

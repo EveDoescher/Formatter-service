@@ -22,7 +22,10 @@ public record CitationFormattingRuleRequest(
         String numericRangeSeparator,
         String numericListSeparator,
         Boolean numericRangeCollapse,
-        String multiSourceSeparator
+        String multiSourceSeparator,
+        String ibidLabel,
+        String noteStyleId,
+        CitationFormattingRule.FootnoteRestartPolicy footnoteRestartPolicy
 ) {
 
     public CitationFormattingRule toDomain() {
@@ -36,7 +39,10 @@ public record CitationFormattingRuleRequest(
                 java.util.Optional.ofNullable(numericRangeSeparator),
                 java.util.Optional.ofNullable(numericListSeparator),
                 numericRangeCollapse != null && numericRangeCollapse,
-                multiSourceSeparator
+                multiSourceSeparator,
+                java.util.Optional.ofNullable(ibidLabel),
+                java.util.Optional.ofNullable(noteStyleId),
+                footnoteRestartPolicy
         );
     }
 }

@@ -21,8 +21,17 @@ public record CitationFormattingRule(
         Optional<String> numericRangeSeparator,
         Optional<String> numericListSeparator,
         boolean numericRangeCollapse,
-        String multiSourceSeparator
+        String multiSourceSeparator,
+        Optional<String> ibidLabel,
+        Optional<String> noteStyleId,
+        FootnoteRestartPolicy footnoteRestartPolicy
 ) {
+
+    public enum FootnoteRestartPolicy {
+        DOCUMENT,
+        PAGE,
+        SECTION
+    }
 
     public CitationFormattingRule {
         requireNonBlank(pagePrefix, "pagePrefix");
@@ -42,6 +51,9 @@ public record CitationFormattingRule(
         if (numericRangeSeparator == null) numericRangeSeparator = Optional.of("–");
         if (numericListSeparator == null) numericListSeparator = Optional.of(",");
         if (multiSourceSeparator == null) multiSourceSeparator = "; ";
+        if (ibidLabel == null) ibidLabel = Optional.empty();
+        if (noteStyleId == null) noteStyleId = Optional.empty();
+        if (footnoteRestartPolicy == null) footnoteRestartPolicy = FootnoteRestartPolicy.DOCUMENT;
     }
 
     public CitationFormattingRule(
@@ -61,7 +73,8 @@ public record CitationFormattingRule(
         this(pagePrefix, multiAuthorJoiner, etAl, apudConnector, suppressionMarker,
                 emphasisOursLabel, emphasisAuthorLabel, verbalCitationLabel,
                 authorYearSeparator, pageReferenceSeparator, parenOpen, parenClose, false,
-                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), false, null);
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), false, null,
+                null, null, null);
     }
 
     public CitationFormattingRule(
@@ -82,7 +95,8 @@ public record CitationFormattingRule(
         this(pagePrefix, multiAuthorJoiner, etAl, apudConnector, suppressionMarker,
                 emphasisOursLabel, emphasisAuthorLabel, verbalCitationLabel,
                 authorYearSeparator, pageReferenceSeparator, parenOpen, parenClose, etAlItalic,
-                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), false, null);
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), false, null,
+                null, null, null);
     }
 
     private static void requireNonBlank(String value, String fieldName) {

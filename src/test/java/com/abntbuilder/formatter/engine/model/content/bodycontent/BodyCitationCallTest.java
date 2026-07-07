@@ -123,6 +123,38 @@ class BodyCitationCallTest {
     }
 
     @Test
+    void shouldRenderNoteBibliographyPlaceholder() {
+        BodyCitationCall call = new BodyCitationCall(
+                BodyCitationType.NOTE_BIBLIOGRAPHY,
+                BodyCitationMode.PARENTHETICAL,
+                FORMATTING,
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                List.of(),
+                Optional.of("refId-1"),
+                false, false
+        );
+        assertThat(call.renderedText()).isEqualTo("[note?]");
+    }
+
+    @Test
+    void shouldRejectNoteBibliographyWithoutNoteReferenceId() {
+        assertThatThrownBy(() -> new BodyCitationCall(
+                BodyCitationType.NOTE_BIBLIOGRAPHY,
+                BodyCitationMode.PARENTHETICAL,
+                FORMATTING,
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                List.of(),
+                Optional.empty(),
+                false, false
+        )).isInstanceOf(IllegalArgumentException.class)
+          .hasMessageContaining("noteReferenceId");
+    }
+
+    @Test
     void shouldRejectDirectShortWithoutPage() {
         CitationSource noPage = new CitationSource(
                 List.of(CitationAuthor.person("Sobrenome")),

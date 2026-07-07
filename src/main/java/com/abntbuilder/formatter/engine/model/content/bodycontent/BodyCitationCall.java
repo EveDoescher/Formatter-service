@@ -14,6 +14,7 @@ public record BodyCitationCall(
         Optional<CitationSource> originalSource,
         Optional<CitationSource> consultedSource,
         List<String> numericReferenceIds,
+        Optional<String> noteReferenceId,
         boolean emphasisOurs,
         boolean emphasisAuthor
 ) implements BodyInline {
@@ -26,7 +27,7 @@ public record BodyCitationCall(
             Optional<CitationSource> originalSource,
             Optional<CitationSource> consultedSource
     ) {
-        this(citationType, mode, formatting, source, originalSource, consultedSource, List.of(), false, false);
+        this(citationType, mode, formatting, source, originalSource, consultedSource, List.of(), Optional.empty(), false, false);
     }
 
     public BodyCitationCall(
@@ -39,7 +40,7 @@ public record BodyCitationCall(
             boolean emphasisOurs,
             boolean emphasisAuthor
     ) {
-        this(citationType, mode, formatting, source, originalSource, consultedSource, List.of(), emphasisOurs, emphasisAuthor);
+        this(citationType, mode, formatting, source, originalSource, consultedSource, List.of(), Optional.empty(), emphasisOurs, emphasisAuthor);
     }
 
     public BodyCitationCall {
@@ -50,9 +51,10 @@ public record BodyCitationCall(
         Objects.requireNonNull(originalSource, "originalSource must not be null");
         Objects.requireNonNull(consultedSource, "consultedSource must not be null");
         Objects.requireNonNull(numericReferenceIds, "numericReferenceIds must not be null");
+        Objects.requireNonNull(noteReferenceId, "noteReferenceId must not be null");
         numericReferenceIds = List.copyOf(numericReferenceIds);
 
-        validateSources(citationType, source, originalSource, consultedSource, numericReferenceIds);
+        validateSources(citationType, source, originalSource, consultedSource, numericReferenceIds, noteReferenceId);
     }
 
     @Override
@@ -62,6 +64,7 @@ public record BodyCitationCall(
             case CITATION_OF_CITATION -> renderCitationOfCitation();
             case VERBAL -> renderVerbalCitation();
             case NUMERIC -> "[?]";
+            case NOTE_BIBLIOGRAPHY -> "[note?]";
         };
     }
 
@@ -120,7 +123,8 @@ public record BodyCitationCall(
             Optional<CitationSource> source,
             Optional<CitationSource> originalSource,
             Optional<CitationSource> consultedSource,
-            List<String> numericReferenceIds
+            List<String> numericReferenceIds,
+            Optional<String> noteReferenceId
     ) {
         switch (citationType) {
             case DIRECT_SHORT, DIRECT_LONG -> {
@@ -151,6 +155,14 @@ public record BodyCitationCall(
             case NUMERIC -> {
                 if (numericReferenceIds.isEmpty()) {
                     throw new IllegalArgumentException("NUMERIC citation must have at least one numericReferenceId.");
+                }
+                requireAbsent(source, "source");
+                requireAbsent(originalSource, "originalSource");
+                requireAbsent(consultedSource, "consultedSource");
+            }
+            case NOTE_BIBLIOGRAPHY -> {
+                if (noteReferenceId.isEmpty()) {
+                    throw new IllegalArgumentException("NOTE_BIBLIOGRAPHY citation must have a noteReferenceId.");
                 }
                 requireAbsent(source, "source");
                 requireAbsent(originalSource, "originalSource");
