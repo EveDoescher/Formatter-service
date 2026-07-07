@@ -8,6 +8,7 @@
   },
   "document": {
     "appendix": {
+      "contentType": "SECTIONED",
       "items": [
         {
           "title": "Questionário Aplicado",

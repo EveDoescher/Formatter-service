@@ -26,19 +26,25 @@
   },
   "document": {
     "cover": {
+      "contentType": "SINGLE_PAGE",
       "institutionalLines": [
         "UNIVERSIDADE FICTÍCIA DE LIMEIRA",
         "INSTITUTO DE CIÊNCIAS EXATAS E TECNOLOGIA",
         "CURSO DE ANÁLISE E DESENVOLVIMENTO DE SISTEMAS"
       ],
-      "authors": ["PESSOA AUTORA TESTE 01"],
+      "authors": [
+        "PESSOA AUTORA TESTE 01"
+      ],
       "title": "FORMATAÇÃO AUTOMÁTICA DE TRABALHOS ACADÊMICOS",
       "subtitle": "Uma proposta orientada por perfis institucionais",
       "city": "Limeira",
       "year": "2026"
     },
     "titlePage": {
-      "authors": ["Pessoa Autora Teste 01"],
+      "contentType": "SINGLE_PAGE",
+      "authors": [
+        "Pessoa Autora Teste 01"
+      ],
       "title": "Formatação Automática de Trabalhos Acadêmicos",
       "subtitle": "Uma proposta orientada por perfis institucionais",
       "nature": {
@@ -55,12 +61,21 @@
       "year": "2026"
     },
     "errata": {
+      "contentType": "FLOW_TEXTUAL",
       "rows": [
-        ["12", "3", "formatção", "formatação"]
+        [
+          "12",
+          "3",
+          "formatção",
+          "formatação"
+        ]
       ]
     },
     "approvalSheet": {
-      "authors": ["Pessoa Autora Teste 01"],
+      "contentType": "SINGLE_PAGE",
+      "authors": [
+        "Pessoa Autora Teste 01"
+      ],
       "title": "Formatação Automática de Trabalhos Acadêmicos",
       "nature": {
         "workType": "Trabalho de conclusão de curso",
@@ -86,46 +101,81 @@
       ]
     },
     "dedication": {
+      "contentType": "FLOW_TEXTUAL",
       "text": "Aos que tornaram esta jornada possível."
     },
     "acknowledgments": {
+      "contentType": "FLOW_TEXTUAL",
       "text": "Agradeço à orientação recebida e ao suporte da família durante todo o percurso."
     },
     "epigraph": {
+      "contentType": "FLOW_TEXTUAL",
       "text": "A clareza na escrita é o reflexo da clareza no pensamento.",
       "author": "Autor Fictício",
       "source": "Obra Fictícia, 2024"
     },
     "resumo": {
+      "contentType": "FLOW_TEXTUAL",
       "text": "Este trabalho apresenta uma proposta de motor de formatação automática de documentos acadêmicos, orientado por perfis institucionais declarativos. A abordagem elimina lógica hardcoded dos componentes de renderização, permitindo que novos perfis sejam criados sem alterações de código.",
       "keywordsLabel": "Palavras-chave:",
-      "keywords": ["formatação automática", "documentos acadêmicos", "perfis institucionais"]
+      "keywords": [
+        "formatação automática",
+        "documentos acadêmicos",
+        "perfis institucionais"
+      ]
     },
     "abstract": {
+      "contentType": "FLOW_TEXTUAL",
       "entries": [
         {
           "headingText": "ABSTRACT",
           "text": "This work presents a proposal for an automatic formatting engine for academic documents, driven by declarative institutional profiles. The approach eliminates hardcoded logic from rendering components, enabling new profiles to be created without code changes.",
-          "keywords": ["automatic formatting", "academic documents", "institutional profiles"],
+          "keywords": [
+            "automatic formatting",
+            "academic documents",
+            "institutional profiles"
+          ],
           "keywordsLabel": "Keywords:"
         },
         {
           "headingText": "RESUMEN",
           "text": "Este trabajo presenta una propuesta de motor de formateo automático de documentos académicos, orientado por perfiles institucionales declarativos. El enfoque elimina la lógica codificada de los componentes de renderizado.",
-          "keywords": ["formateo automático", "documentos académicos", "perfiles institucionales"],
+          "keywords": [
+            "formateo automático",
+            "documentos académicos",
+            "perfiles institucionales"
+          ],
           "keywordsLabel": "Palabras clave:"
         }
       ]
     },
-    "listOfAbbreviations": {},
-    "listOfSymbols": {
-      "terms": ["α", "β", "n"],
-      "definitions": ["Nível de significância", "Coeficiente de regressão", "Tamanho da amostra"]
+    "listOfAbbreviations": {
+      "contentType": "FLOW_TEXTUAL"
     },
-    "summary": {},
-    "listOfFigures": {},
-    "listOfTables": {},
+    "listOfSymbols": {
+      "contentType": "FLOW_TEXTUAL",
+      "terms": [
+        "α",
+        "β",
+        "n"
+      ],
+      "definitions": [
+        "Nível de significância",
+        "Coeficiente de regressão",
+        "Tamanho da amostra"
+      ]
+    },
+    "summary": {
+      "contentType": "SECTION_INDEX"
+    },
+    "listOfFigures": {
+      "contentType": "ELEMENT_INDEX"
+    },
+    "listOfTables": {
+      "contentType": "ELEMENT_INDEX"
+    },
     "bodyContent": {
+      "contentType": "BODY_CONTENT",
       "sections": [
         {
           "id": "s1",
@@ -179,20 +229,44 @@
                 "caption": "Componentes do documento ABNT avaliados",
                 "source": "Elaboração teste",
                 "columns": [
-                  {"header": "Componente"},
-                  {"header": "Tipo"}
+                  {
+                    "header": "Componente"
+                  },
+                  {
+                    "header": "Tipo"
+                  }
                 ],
                 "rows": [
                   {
                     "cells": [
-                      {"text": "Capa", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false},
-                      {"text": "Single-page", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false}
+                      {
+                        "text": "Capa",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Single-page",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      }
                     ]
                   },
                   {
                     "cells": [
-                      {"text": "Resumo", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false},
-                      {"text": "Flow-textual", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false}
+                      {
+                        "text": "Resumo",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Flow-textual",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      }
                     ]
                   }
                 ]
@@ -214,12 +288,16 @@
       ]
     },
     "references": {
+      "contentType": "REFERENCES",
       "entries": [
         {
           "id": "ref1",
           "type": "BOOK",
           "authors": [
-            {"surname": "Lima", "givenNames": "Carlos Eduardo"}
+            {
+              "surname": "Lima",
+              "givenNames": "Carlos Eduardo"
+            }
           ],
           "title": "Fundamentos de Formatação Documental",
           "year": "2021",
@@ -229,6 +307,7 @@
       ]
     },
     "appendix": {
+      "contentType": "SECTIONED",
       "items": [
         {
           "title": "Questionário de Validação",
@@ -249,6 +328,7 @@
       ]
     },
     "annex": {
+      "contentType": "SECTIONED",
       "items": [
         {
           "title": "Norma de Referência Utilizada",
@@ -269,7 +349,12 @@
       ]
     },
     "glossary": {
-      "terms": ["ABNT", "TCC", "Perfil"],
+      "contentType": "FLOW_TEXTUAL",
+      "terms": [
+        "ABNT",
+        "TCC",
+        "Perfil"
+      ],
       "definitions": [
         "Associação Brasileira de Normas Técnicas.",
         "Trabalho de Conclusão de Curso.",

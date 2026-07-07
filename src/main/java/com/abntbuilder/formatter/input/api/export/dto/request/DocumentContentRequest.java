@@ -5,137 +5,57 @@ import com.abntbuilder.formatter.engine.model.profile.DocumentProfile;
 import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.BodyContentComponentRule;
 import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.CitationFormattingRule;
 import com.abntbuilder.formatter.input.profile.ComponentRuleResolver;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.Valid;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
-public record DocumentContentRequest(
-        @Valid SinglePageContentRequest cover,
-        @Valid SinglePageContentRequest titlePage,
-        @Valid SinglePageContentRequest approvalSheet,
-        @Valid BodyContentRequest bodyContent,
-        @Valid FlowTextualContentRequest errata,
-        @Valid FlowTextualContentRequest dedication,
-        @Valid FlowTextualContentRequest epigraph,
-        @Valid FlowTextualContentRequest acknowledgments,
-        @Valid FlowTextualContentRequest resumo,
-        @JsonProperty("abstract") @Valid FlowTextualContentRequest abstractEn,
-        @Valid ReferencesRequest references,
-        @Valid AppendixRequest appendix,
-        @Valid AnnexRequest annex,
-        @Valid FlowTextualContentRequest glossary,
-        @Valid SummaryRequest summary,
-        @Valid ListOfFiguresRequest listOfFigures,
-        @Valid ListOfTablesRequest listOfTables,
-        @Valid ListOfFramesRequest listOfFrames,
-        @Valid ListOfChartsRequest listOfCharts,
-        @Valid ListOfCodeListingsRequest listOfCodeListings,
-        @Valid FlowTextualContentRequest listOfAbbreviations,
-        @Valid FlowTextualContentRequest listOfSymbols
-) {
+public final class DocumentContentRequest {
+
+    private final Map<String, ComponentContentRequest> components = new LinkedHashMap<>();
+
+    @JsonAnySetter
+    public void addComponent(String key, ComponentContentRequest value) {
+        if (value != null) components.put(key, value);
+    }
+
     public List<DocumentComponent> toComponents() {
         return toComponents(null);
     }
 
     public List<DocumentComponent> toComponents(DocumentProfile profile) {
-        List<DocumentComponent> components = new ArrayList<>();
         ComponentRuleResolver ruleResolver = profile == null ? null : new ComponentRuleResolver(profile);
+        List<DocumentComponent> result = new ArrayList<>();
 
-        if (cover != null && cover.hasSlots()) {
-            components.add(cover.toDomain("cover"));
-        }
+        for (Map.Entry<String, ComponentContentRequest> entry : components.entrySet()) {
+            String componentId = entry.getKey();
+            ComponentContentRequest request = entry.getValue();
 
-        if (titlePage != null && titlePage.hasSlots()) {
-            components.add(titlePage.toDomain("titlePage"));
-        }
-
-        if (errata != null) {
-            components.add(errata.toDomain("errata"));
-        }
-
-        if (approvalSheet != null && approvalSheet.hasSlots()) {
-            components.add(approvalSheet.toDomain("approvalSheet"));
-        }
-
-        if (dedication != null) {
-            components.add(dedication.toDomain("dedication"));
-        }
-
-        if (epigraph != null) {
-            components.add(epigraph.toDomain("epigraph"));
-        }
-
-        if (acknowledgments != null) {
-            components.add(acknowledgments.toDomain("acknowledgments"));
-        }
-
-        if (resumo != null) {
-            components.add(resumo.toDomain("resumo"));
-        }
-
-        if (abstractEn != null) {
-            components.add(abstractEn.toDomain("abstract"));
-        }
-
-        if (listOfAbbreviations != null) {
-            components.add(listOfAbbreviations.toDomain("listOfAbbreviations"));
-        }
-
-        if (listOfSymbols != null) {
-            components.add(listOfSymbols.toDomain("listOfSymbols"));
-        }
-
-        if (summary != null) {
-            components.add(summary.toDomain());
-        }
-
-        if (listOfFigures != null) {
-            components.add(listOfFigures.toDomain());
-        }
-
-        if (listOfTables != null) {
-            components.add(listOfTables.toDomain());
-        }
-
-        if (listOfFrames != null) {
-            components.add(listOfFrames.toDomain());
-        }
-
-        if (listOfCharts != null) {
-            components.add(listOfCharts.toDomain());
-        }
-
-        if (listOfCodeListings != null) {
-            components.add(listOfCodeListings.toDomain());
-        }
-
-        if (bodyContent != null || appendix != null || annex != null) {
-            CitationFormattingRule citationFormatting = ruleResolver == null ? null
-                    : ruleResolver.resolve("bodyContent", BodyContentComponentRule.class).citationFormatting();
-
-            if (bodyContent != null) {
-                components.add(bodyContent.toDomain(citationFormatting));
+            CitationFormattingRule citationFormatting = null;
+            if (ruleResolver != null && request instanceof BodyContentRequest) {
+                citationFormatting = ruleResolver
+                        .resolve(componentId, BodyContentComponentRule.class)
+                        .citationFormatting();
+            }
+            if (ruleResolver != null && request instanceof SectionedContentRequest) {
+                try {
+                    citationFormatting = ruleResolver
+                            .resolve("bodyContent", BodyContentComponentRule.class)
+                            .citationFormatting();
+                } catch (Exception ignored) {
+                    // bodyContent may not be in this profile
+                }
             }
 
-            if (appendix != null) {
-                components.add(appendix.toDomain(citationFormatting));
+            if (request instanceof SinglePageContentRequest sp && !sp.hasSlots()) {
+                continue;
             }
 
-            if (annex != null) {
-                components.add(annex.toDomain(citationFormatting));
-            }
+            result.add(request.toDomain(componentId, citationFormatting));
         }
 
-        if (references != null) {
-            components.add(references.toDomain());
-        }
-
-        if (glossary != null) {
-            components.add(glossary.toDomain("glossary"));
-        }
-
-        return List.copyOf(components);
+        return List.copyOf(result);
     }
 }

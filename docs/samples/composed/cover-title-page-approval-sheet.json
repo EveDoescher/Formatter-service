@@ -10,6 +10,7 @@
   },
   "document": {
     "cover": {
+      "contentType": "SINGLE_PAGE",
       "institutionalLines": [
         "UNIVERSIDADE FICTÍCIA DE LIMEIRA",
         "INSTITUTO DE CIÊNCIAS EXATAS E TECNOLOGIA",
@@ -24,6 +25,7 @@
       "year": "2026"
     },
     "titlePage": {
+      "contentType": "SINGLE_PAGE",
       "authors": [
         "Pessoa Autora Teste 01"
       ],
@@ -43,6 +45,7 @@
       "year": "2026"
     },
     "approvalSheet": {
+      "contentType": "SINGLE_PAGE",
       "authors": [
         "Pessoa Autora Teste 01"
       ],

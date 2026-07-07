@@ -23,4 +23,9 @@ public final class InMemoryProfileProvider implements ProfileProvider {
 
         return profile;
     }
+
+    @Override
+    public java.util.Collection<DocumentProfile> allProfiles() {
+        return profiles.values();
+    }
 }

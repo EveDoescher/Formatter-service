@@ -8,6 +8,7 @@
   },
   "document": {
     "errata": {
+      "contentType": "FLOW_TEXTUAL",
       "rows": []
     }
   },

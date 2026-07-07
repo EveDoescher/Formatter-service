@@ -1,24 +1,31 @@
 package com.abntbuilder.formatter.input.api.export.dto.request;
 
+import com.abntbuilder.formatter.engine.model.content.DocumentComponent;
 import com.abntbuilder.formatter.engine.model.content.flowtextual.FlowTextualContent;
 import com.abntbuilder.formatter.engine.model.content.singlepage.ContentValue;
 import com.abntbuilder.formatter.engine.model.content.singlepage.EntryListValue;
 import com.abntbuilder.formatter.engine.model.content.singlepage.TableValue;
 import com.abntbuilder.formatter.engine.model.content.singlepage.TextListValue;
 import com.abntbuilder.formatter.engine.model.content.singlepage.TextValue;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.CitationFormattingRule;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class FlowTextualContentRequest {
+public final class FlowTextualContentRequest implements ComponentContentRequest {
 
     private final Map<String, Object> rawSlots = new HashMap<>();
 
     @JsonAnySetter
     public void setSlot(String key, Object value) {
         rawSlots.put(key, value);
+    }
+
+    @Override
+    public DocumentComponent toDomain(String componentId, CitationFormattingRule citationFormatting) {
+        return toDomain(componentId);
     }
 
     public FlowTextualContent toDomain(String componentId) {

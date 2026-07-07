@@ -8,6 +8,7 @@
   },
   "document": {
     "acknowledgments": {
+      "contentType": "FLOW_TEXTUAL",
       "text": "Agradeço à minha orientadora pela dedicação e paciência ao longo do desenvolvimento deste trabalho. Agradeço também aos colegas do laboratório e à minha família pelo suporte constante."
     }
   },

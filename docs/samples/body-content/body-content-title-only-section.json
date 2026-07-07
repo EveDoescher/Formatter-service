@@ -28,6 +28,7 @@
   },
   "document": {
     "bodyContent": {
+      "contentType": "BODY_CONTENT",
       "sections": [
         {
           "id": "desenvolvimento",
@@ -60,6 +61,7 @@
       ]
     },
     "titlePage": {
+      "contentType": "SINGLE_PAGE",
       "authors": [
         "Pessoa Autora Teste 01"
       ],

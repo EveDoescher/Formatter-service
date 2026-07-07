@@ -2,11 +2,18 @@
   "fileName": "list-of-abbreviations-with-body.docx",
   "profileId": "abnt-unip-profile",
   "options": {
-    "selectedComponents": ["titlePage", "listOfAbbreviations", "bodyContent"]
+    "selectedComponents": [
+      "titlePage",
+      "listOfAbbreviations",
+      "bodyContent"
+    ]
   },
   "document": {
     "titlePage": {
-      "authors": ["Pessoa Autora Teste 01"],
+      "contentType": "SINGLE_PAGE",
+      "authors": [
+        "Pessoa Autora Teste 01"
+      ],
       "title": "Estudo de Abreviações em Documentos Acadêmicos",
       "nature": {
         "workType": "Trabalho de conclusão de curso",
@@ -21,8 +28,11 @@
       "city": "Limeira",
       "year": "2026"
     },
-    "listOfAbbreviations": {},
+    "listOfAbbreviations": {
+      "contentType": "FLOW_TEXTUAL"
+    },
     "bodyContent": {
+      "contentType": "BODY_CONTENT",
       "sections": [
         {
           "id": "s1",

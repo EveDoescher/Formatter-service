@@ -1,8 +1,8 @@
 package com.abntbuilder.formatter.config;
 
-import com.abntbuilder.formatter.output.docx.api.DocxPostProcessor;
-import com.abntbuilder.formatter.output.docx.postprocess.LibreOfficeDocxPostProcessor;
-import com.abntbuilder.formatter.output.docx.postprocess.NoOpDocxPostProcessor;
+import com.abntbuilder.formatter.engine.contract.DocxPostProcessor;
+import com.abntbuilder.formatter.output.docx.LibreOfficeDocxPostProcessor;
+import com.abntbuilder.formatter.output.docx.NoOpDocxPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

@@ -1,6 +1,6 @@
 package com.abntbuilder.formatter.shared.exception;
 
-import com.abntbuilder.formatter.profile.model.component.ComponentRule;
+import com.abntbuilder.formatter.engine.model.profile.component.ComponentRule;
 
 public class ComponentRuleTypeMismatchException extends RuntimeException {
 

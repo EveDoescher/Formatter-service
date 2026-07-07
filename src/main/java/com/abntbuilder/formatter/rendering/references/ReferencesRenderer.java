@@ -15,6 +15,7 @@ import com.abntbuilder.formatter.input.profile.StyleResolver;
 import com.abntbuilder.formatter.engine.contract.ComponentRenderer;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,8 +52,9 @@ public final class ReferencesRenderer implements ComponentRenderer<ReferencesCom
             blocks.add(new DocxBlankLine(headingStyle));
         }
 
+        List<ReferenceEntry> orderedEntries = sortEntries(component.entries(), rule);
         boolean first = true;
-        for (ReferenceEntry entry : component.entries()) {
+        for (ReferenceEntry entry : orderedEntries) {
             if (!first && rule.blankLinesBetweenEntries() > 0) {
                 for (int i = 0; i < rule.blankLinesBetweenEntries(); i++) {
                     blocks.add(new DocxBlankLine(entryStyle));
@@ -72,5 +74,21 @@ public final class ReferencesRenderer implements ComponentRenderer<ReferencesCom
         }
 
         return List.copyOf(blocks);
+    }
+
+    private static List<ReferenceEntry> sortEntries(
+            List<ReferenceEntry> entries, ReferencesComponentRule rule) {
+        return switch (rule.sortOrder()) {
+            case AS_GIVEN -> entries;
+            case ALPHABETICAL -> entries.stream()
+                    .sorted(Comparator.comparing(e -> {
+                        String surname = e.authors().isEmpty() ? e.title()
+                                : e.authors().get(0).surname();
+                        return rule.formattingRule().authorFormat().surnameUppercase()
+                                ? surname.toUpperCase() : surname;
+                    }))
+                    .toList();
+            case CITATION_ORDER -> entries;
+        };
     }
 }

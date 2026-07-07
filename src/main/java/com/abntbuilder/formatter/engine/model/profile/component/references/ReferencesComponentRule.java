@@ -12,8 +12,16 @@ public record ReferencesComponentRule(
         String entryStyleId,
         int blankLinesBetweenEntries,
         ReferencesFormattingRule formattingRule,
-        int blankLinesAfterHeading
+        int blankLinesAfterHeading,
+        ReferenceSortOrder sortOrder
 ) implements ComponentRule {
+
+    public enum ReferenceSortOrder {
+        AS_GIVEN,
+        ALPHABETICAL,
+        CITATION_ORDER
+    }
+
     public ReferencesComponentRule {
         requireNonBlank(componentId, "componentId");
         requireNonBlank(headingStyleId, "headingStyleId");
@@ -22,6 +30,15 @@ public record ReferencesComponentRule(
         if (blankLinesBetweenEntries < 0) throw new IllegalArgumentException("blankLinesBetweenEntries must be >= 0.");
         Objects.requireNonNull(formattingRule, "formattingRule must not be null");
         if (blankLinesAfterHeading < 0) throw new IllegalArgumentException("blankLinesAfterHeading must be >= 0.");
+        if (sortOrder == null) sortOrder = ReferenceSortOrder.AS_GIVEN;
+    }
+
+    public ReferencesComponentRule(
+            String componentId, String headingStyleId, String headingText, String entryStyleId,
+            int blankLinesBetweenEntries, ReferencesFormattingRule formattingRule, int blankLinesAfterHeading
+    ) {
+        this(componentId, headingStyleId, headingText, entryStyleId, blankLinesBetweenEntries,
+                formattingRule, blankLinesAfterHeading, ReferenceSortOrder.AS_GIVEN);
     }
 
     public Map<String, String> contentBindings() { return Map.of(); }

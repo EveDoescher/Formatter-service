@@ -7,7 +7,9 @@
     ]
   },
   "work": {
-    "authors": ["PESSOA AUTORA TESTE 01"],
+    "authors": [
+      "PESSOA AUTORA TESTE 01"
+    ],
     "title": "FORMATAÇÃO INLINE INVÁLIDA",
     "nature": {
       "workType": "Trabalho de conclusão de curso",
@@ -23,8 +25,11 @@
     "year": "2026"
   },
   "document": {
-    "titlePage": {},
+    "titlePage": {
+      "contentType": "SINGLE_PAGE"
+    },
     "bodyContent": {
+      "contentType": "BODY_CONTENT",
       "sections": [
         {
           "id": "s1",

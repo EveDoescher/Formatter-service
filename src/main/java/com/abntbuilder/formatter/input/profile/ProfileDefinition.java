@@ -53,6 +53,8 @@ import com.abntbuilder.formatter.engine.model.profile.layout.singlepage.SpacerSt
 import com.abntbuilder.formatter.shared.exception.InvalidProfileStructureException;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -180,57 +182,41 @@ public record ProfileDefinition(
         }
     }
 
-    public record ComponentRulesDefinition(
-            SinglePageComponentRuleDefinition cover,
-            SinglePageComponentRuleDefinition titlePage,
-            SinglePageComponentRuleDefinition approvalSheet,
-            BodyContentComponentRuleDefinition bodyContent,
-            ErrataComponentRuleDefinition errata,
-            DedicationComponentRuleDefinition dedication,
-            EpigraphComponentRuleDefinition epigraph,
-            AcknowledgmentsComponentRuleDefinition acknowledgments,
-            ResumoComponentRuleDefinition resumo,
-            @JsonProperty("abstract") AbstractComponentRuleDefinition abstractEn,
-            ReferencesComponentRuleDefinition references,
-            SectionedComponentRuleDefinition appendix,
-            SectionedComponentRuleDefinition annex,
-            GlossaryComponentRuleDefinition glossary,
-            SectionIndexComponentRuleDefinition summary,
-            ElementIndexComponentRuleDefinition listOfFigures,
-            ElementIndexComponentRuleDefinition listOfTables,
-            ElementIndexComponentRuleDefinition listOfFrames,
-            ElementIndexComponentRuleDefinition listOfCharts,
-            ElementIndexComponentRuleDefinition listOfCodeListings,
-            ListOfAbbreviationsComponentRuleDefinition listOfAbbreviations,
-            ListOfSymbolsComponentRuleDefinition listOfSymbols
-    ) {
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "ruleType")
+    @JsonSubTypes({
+            @JsonSubTypes.Type(value = SinglePageComponentRuleDefinition.class, name = "SINGLE_PAGE"),
+            @JsonSubTypes.Type(value = BodyContentComponentRuleDefinition.class, name = "BODY_CONTENT"),
+            @JsonSubTypes.Type(value = ReferencesComponentRuleDefinition.class, name = "REFERENCES"),
+            @JsonSubTypes.Type(value = SectionedComponentRuleDefinition.class, name = "SECTIONED"),
+            @JsonSubTypes.Type(value = SectionIndexComponentRuleDefinition.class, name = "SECTION_INDEX"),
+            @JsonSubTypes.Type(value = ElementIndexComponentRuleDefinition.class, name = "ELEMENT_INDEX"),
+            @JsonSubTypes.Type(value = ErrataComponentRuleDefinition.class, name = "ERRATA"),
+            @JsonSubTypes.Type(value = DedicationComponentRuleDefinition.class, name = "DEDICATION"),
+            @JsonSubTypes.Type(value = EpigraphComponentRuleDefinition.class, name = "EPIGRAPH"),
+            @JsonSubTypes.Type(value = AcknowledgmentsComponentRuleDefinition.class, name = "ACKNOWLEDGMENTS"),
+            @JsonSubTypes.Type(value = ResumoComponentRuleDefinition.class, name = "RESUMO"),
+            @JsonSubTypes.Type(value = AbstractComponentRuleDefinition.class, name = "ABSTRACT"),
+            @JsonSubTypes.Type(value = GlossaryComponentRuleDefinition.class, name = "GLOSSARY"),
+            @JsonSubTypes.Type(value = ListOfAbbreviationsComponentRuleDefinition.class, name = "LIST_OF_ABBREVIATIONS"),
+            @JsonSubTypes.Type(value = ListOfSymbolsComponentRuleDefinition.class, name = "LIST_OF_SYMBOLS"),
+    })
+    public interface ComponentRuleDefinition {
+        ComponentRule toDomain();
+    }
+
+    public static final class ComponentRulesDefinition {
+
+        private final Map<String, ComponentRuleDefinition> rules = new java.util.LinkedHashMap<>();
+
+        @com.fasterxml.jackson.annotation.JsonAnySetter
+        public void addRule(String key, ComponentRuleDefinition value) {
+            if (value != null) rules.put(key, value);
+        }
+
         List<ComponentRule> toDomain() {
-            List<ComponentRule> rules = new ArrayList<>();
-
-            if (cover != null) rules.add(cover.toDomain());
-            if (titlePage != null) rules.add(titlePage.toDomain());
-            if (approvalSheet != null) rules.add(approvalSheet.toDomain());
-            if (bodyContent != null) rules.add(bodyContent.toDomain());
-            if (errata != null) rules.add(errata.toDomain());
-            if (dedication != null) rules.add(dedication.toDomain());
-            if (epigraph != null) rules.add(epigraph.toDomain());
-            if (acknowledgments != null) rules.add(acknowledgments.toDomain());
-            if (resumo != null) rules.add(resumo.toDomain());
-            if (abstractEn != null) rules.add(abstractEn.toDomain());
-            if (references != null) rules.add(references.toDomain());
-            if (appendix != null) rules.add(appendix.toDomain());
-            if (annex != null) rules.add(annex.toDomain());
-            if (glossary != null) rules.add(glossary.toDomain());
-            if (summary != null) rules.add(summary.toDomain());
-            if (listOfFigures != null) rules.add(listOfFigures.toDomain());
-            if (listOfTables != null) rules.add(listOfTables.toDomain());
-            if (listOfFrames != null) rules.add(listOfFrames.toDomain());
-            if (listOfCharts != null) rules.add(listOfCharts.toDomain());
-            if (listOfCodeListings != null) rules.add(listOfCodeListings.toDomain());
-            if (listOfAbbreviations != null) rules.add(listOfAbbreviations.toDomain());
-            if (listOfSymbols != null) rules.add(listOfSymbols.toDomain());
-
-            return List.copyOf(rules);
+            return rules.values().stream()
+                    .map(ComponentRuleDefinition::toDomain)
+                    .collect(java.util.stream.Collectors.toList());
         }
     }
 
@@ -239,8 +225,8 @@ public record ProfileDefinition(
             Map<String, SlotRuleDefinition> slots,
             Map<String, String> styleMapping,
             SinglePageLayoutRuleDefinition layoutRule
-    ) {
-        SinglePageComponentRule toDomain() {
+    ) implements ComponentRuleDefinition {
+        public SinglePageComponentRule toDomain() {
             requireNonNull(slots, componentId + ".slots");
             requireNonNull(styleMapping, componentId + ".styleMapping");
             requireNonNull(layoutRule, componentId + ".layoutRule");
@@ -304,8 +290,8 @@ public record ProfileDefinition(
             ChartRuleDefinition chart,
             CitationFormattingRuleDefinition citationFormatting,
             CrossReferenceLabelsRuleDefinition crossReferenceLabels
-    ) {
-        BodyContentComponentRule toDomain() {
+    ) implements ComponentRuleDefinition {
+        public BodyContentComponentRule toDomain() {
             requireNonNull(styleMapping, "bodyContent.styleMapping");
             requireNonNull(numbering, "bodyContent.numbering");
             requireNonNull(layout, "bodyContent.layout");
@@ -763,8 +749,8 @@ public record ProfileDefinition(
             String tableCellStyleId,
             List<String> tableHeaders,
             Integer blankLinesAfterHeading
-    ) {
-        FlowTextualComponentRule toDomain() {
+    ) implements ComponentRuleDefinition {
+        public FlowTextualComponentRule toDomain() {
             requireNonNull(tableHeaders, "errata.tableHeaders");
             int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
             List<FlowItem> items = new ArrayList<>();
@@ -779,8 +765,8 @@ public record ProfileDefinition(
             String componentId,
             String textStyleId,
             Integer blankLinesBefore
-    ) {
-        FlowTextualComponentRule toDomain() {
+    ) implements ComponentRuleDefinition {
+        public FlowTextualComponentRule toDomain() {
             requireNonNull(blankLinesBefore, "dedication.blankLinesBefore");
             List<FlowItem> items = new ArrayList<>();
             if (blankLinesBefore > 0) items.add(new FlowItem.BlankLinesItem(textStyleId, blankLinesBefore));
@@ -794,8 +780,8 @@ public record ProfileDefinition(
             String textStyleId,
             String authorStyleId,
             String authorTemplate
-    ) {
-        FlowTextualComponentRule toDomain() {
+    ) implements ComponentRuleDefinition {
+        public FlowTextualComponentRule toDomain() {
             List<FlowItem> items = new ArrayList<>();
             items.add(new FlowItem.PlainTextItem(textStyleId, "text"));
             items.add(new FlowItem.TemplatedTextItem(authorStyleId, authorTemplate, List.of("author", "source")));
@@ -809,8 +795,8 @@ public record ProfileDefinition(
             String headingText,
             String textStyleId,
             Integer blankLinesAfterHeading
-    ) {
-        FlowTextualComponentRule toDomain() {
+    ) implements ComponentRuleDefinition {
+        public FlowTextualComponentRule toDomain() {
             int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
             List<FlowItem> items = new ArrayList<>();
             items.add(new FlowItem.HeadingItem(headingStyleId, headingText));
@@ -830,8 +816,8 @@ public record ProfileDefinition(
             String keywordsSeparator,
             String keywordsTerminator,
             Integer blankLinesAfterHeading
-    ) {
-        FlowTextualComponentRule toDomain() {
+    ) implements ComponentRuleDefinition {
+        public FlowTextualComponentRule toDomain() {
             requireNonNull(keywordsTerminator, "resumo.keywordsTerminator");
             int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
             List<FlowItem> items = new ArrayList<>();
@@ -852,8 +838,8 @@ public record ProfileDefinition(
             String keywordsSeparator,
             String keywordsTerminator,
             Integer blankLinesAfterHeading
-    ) {
-        FlowTextualComponentRule toDomain() {
+    ) implements ComponentRuleDefinition {
+        public FlowTextualComponentRule toDomain() {
             requireNonNull(keywordsTerminator, "abstract.keywordsTerminator");
             int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
             List<FlowItem> group = new ArrayList<>();
@@ -944,8 +930,8 @@ public record ProfileDefinition(
             Integer blankLinesAfterHeading,
             ReferencesFormattingRuleDefinition formattingRule,
             ReferencesComponentRule.ReferenceSortOrder sortOrder
-    ) {
-        ReferencesComponentRule toDomain() {
+    ) implements ComponentRuleDefinition {
+        public ReferencesComponentRule toDomain() {
             requireNonNull(blankLinesBetweenEntries, "references.blankLinesBetweenEntries");
             requireNonNull(formattingRule, "references.formattingRule");
             return new ReferencesComponentRule(componentId, headingStyleId, headingText,
@@ -962,8 +948,8 @@ public record ProfileDefinition(
             String paragraphStyleId,
             List<String> sectionTitleStyleIdsByLevel,
             SectionedComponentRule.IndexingStyle indexingStyle
-    ) {
-        SectionedComponentRule toDomain() {
+    ) implements ComponentRuleDefinition {
+        public SectionedComponentRule toDomain() {
             requireNonNull(sectionTitleStyleIdsByLevel, componentId + ".sectionTitleStyleIdsByLevel");
             return new SectionedComponentRule(componentId, headingTemplate, headingStyleId,
                     paragraphStyleId, sectionTitleStyleIdsByLevel,
@@ -978,8 +964,8 @@ public record ProfileDefinition(
             String entryStyleId,
             String termSeparator,
             Integer blankLinesAfterHeading
-    ) {
-        FlowTextualComponentRule toDomain() {
+    ) implements ComponentRuleDefinition {
+        public FlowTextualComponentRule toDomain() {
             int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
             List<FlowItem> items = new ArrayList<>();
             items.add(new FlowItem.HeadingItem(headingStyleId, headingText));
@@ -1075,8 +1061,8 @@ public record ProfileDefinition(
             String headingText,
             List<String> entryStyleIdsByLevel,
             Boolean useTocField
-    ) {
-        SectionIndexComponentRule toDomain() {
+    ) implements ComponentRuleDefinition {
+        public SectionIndexComponentRule toDomain() {
             return new SectionIndexComponentRule(
                     componentId,
                     headingStyleId,
@@ -1095,8 +1081,8 @@ public record ProfileDefinition(
             String entryStyleId,
             String entryTemplate,
             Integer blankLinesAfterHeading
-    ) {
-        ElementIndexComponentRule toDomain() {
+    ) implements ComponentRuleDefinition {
+        public ElementIndexComponentRule toDomain() {
             requireNonNull(elementType, componentId + ".elementType");
             return new ElementIndexComponentRule(
                     componentId,
@@ -1118,8 +1104,8 @@ public record ProfileDefinition(
             String termSeparator,
             Boolean sortAlphabetically,
             Integer blankLinesAfterHeading
-    ) {
-        FlowTextualComponentRule toDomain() {
+    ) implements ComponentRuleDefinition {
+        public FlowTextualComponentRule toDomain() {
             int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
             boolean sort = sortAlphabetically != null && sortAlphabetically;
             // termsSlotName "$abbreviations" signals Phase0 source; definitionsSlotName "$sort" signals sorting.
@@ -1138,8 +1124,8 @@ public record ProfileDefinition(
             String entryStyleId,
             String termSeparator,
             Integer blankLinesAfterHeading
-    ) {
-        FlowTextualComponentRule toDomain() {
+    ) implements ComponentRuleDefinition {
+        public FlowTextualComponentRule toDomain() {
             int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
             List<FlowItem> items = new ArrayList<>();
             items.add(new FlowItem.HeadingItem(headingStyleId, headingText));

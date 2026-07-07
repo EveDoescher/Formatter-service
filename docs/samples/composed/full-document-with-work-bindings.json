@@ -11,6 +11,7 @@
   },
   "document": {
     "cover": {
+      "contentType": "SINGLE_PAGE",
       "institutionalLines": [
         "UNIVERSIDADE FICTÍCIA DE LIMEIRA",
         "INSTITUTO DE CIÊNCIAS EXATAS E TECNOLOGIA",
@@ -26,6 +27,7 @@
       "year": "2026"
     },
     "titlePage": {
+      "contentType": "SINGLE_PAGE",
       "authors": [
         "PESSOA AUTORA TESTE 01",
         "PESSOA AUTORA TESTE 02"
@@ -50,6 +52,7 @@
       "year": "2026"
     },
     "approvalSheet": {
+      "contentType": "SINGLE_PAGE",
       "authors": [
         "PESSOA AUTORA TESTE 01",
         "PESSOA AUTORA TESTE 02"
@@ -86,6 +89,7 @@
       ]
     },
     "bodyContent": {
+      "contentType": "BODY_CONTENT",
       "sections": [
         {
           "id": "introducao",

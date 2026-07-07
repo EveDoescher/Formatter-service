@@ -8,6 +8,7 @@
   },
   "document": {
     "approvalSheet": {
+      "contentType": "SINGLE_PAGE",
       "authors": [
         "Autor Teste de Overflow Linha 01",
         "Autor Teste de Overflow Linha 02",

@@ -1,9 +1,9 @@
 package com.abntbuilder.formatter.application.export;
 
-import com.abntbuilder.formatter.output.docx.api.DocxDocument;
-import com.abntbuilder.formatter.output.docx.api.DocxPostProcessor;
-import com.abntbuilder.formatter.output.docx.api.DocxWriter;
-import com.abntbuilder.formatter.output.docx.api.PostProcessorResult;
+import com.abntbuilder.formatter.engine.model.output.DocxDocument;
+import com.abntbuilder.formatter.engine.contract.DocxPostProcessor;
+import com.abntbuilder.formatter.engine.contract.DocxWriter;
+import com.abntbuilder.formatter.engine.contract.PostProcessorResult;
 import com.abntbuilder.formatter.rendering.orchestration.DocumentRenderer;
 import com.abntbuilder.formatter.shared.exception.MissingGeneratedDocxExportException;
 import org.springframework.stereotype.Service;

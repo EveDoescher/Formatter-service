@@ -1,7 +1,7 @@
 package com.abntbuilder.formatter.application.export;
 
-import com.abntbuilder.formatter.document.component.DocumentComponent;
-import com.abntbuilder.formatter.profile.model.DocumentProfile;
+import com.abntbuilder.formatter.engine.model.content.DocumentComponent;
+import com.abntbuilder.formatter.engine.model.profile.DocumentProfile;
 
 import java.util.List;
 import java.util.Objects;

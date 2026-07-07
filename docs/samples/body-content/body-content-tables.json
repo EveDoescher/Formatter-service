@@ -28,6 +28,7 @@
   },
   "document": {
     "bodyContent": {
+      "contentType": "BODY_CONTENT",
       "sections": [
         {
           "id": "tabelas",
@@ -265,6 +266,7 @@
       ]
     },
     "titlePage": {
+      "contentType": "SINGLE_PAGE",
       "authors": [
         "Pessoa Autora Teste 01"
       ],

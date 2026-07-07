@@ -1,6 +1,6 @@
 package com.abntbuilder.formatter.shared.exception;
 
-import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutFailureDiagnostic;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageLayoutFailureDiagnostic;
 
 import java.math.BigDecimal;
 import java.util.Optional;

@@ -8,12 +8,16 @@
   },
   "document": {
     "references": {
+      "contentType": "REFERENCES",
       "entries": [
         {
           "id": "ref1",
           "type": "BOOK",
           "authors": [
-            {"surname": "Lima", "givenNames": "Carlos Eduardo"}
+            {
+              "surname": "Lima",
+              "givenNames": "Carlos Eduardo"
+            }
           ],
           "title": "Fundamentos de Sistemas Distribuídos",
           "year": "2021",
@@ -24,8 +28,14 @@
           "id": "ref2",
           "type": "BOOK",
           "authors": [
-            {"surname": "Rocha", "givenNames": "Beatriz"},
-            {"surname": "Souza", "givenNames": "Ana Paula"}
+            {
+              "surname": "Rocha",
+              "givenNames": "Beatriz"
+            },
+            {
+              "surname": "Souza",
+              "givenNames": "Ana Paula"
+            }
           ],
           "title": "Arquiteturas de Software Modernas",
           "subtitle": "padrões e práticas",
@@ -38,10 +48,22 @@
           "id": "ref3",
           "type": "BOOK",
           "authors": [
-            {"surname": "Ferreira", "givenNames": "João"},
-            {"surname": "Alves", "givenNames": "Maria"},
-            {"surname": "Costa", "givenNames": "Pedro"},
-            {"surname": "Nunes", "givenNames": "Laura"}
+            {
+              "surname": "Ferreira",
+              "givenNames": "João"
+            },
+            {
+              "surname": "Alves",
+              "givenNames": "Maria"
+            },
+            {
+              "surname": "Costa",
+              "givenNames": "Pedro"
+            },
+            {
+              "surname": "Nunes",
+              "givenNames": "Laura"
+            }
           ],
           "title": "Computação em Nuvem",
           "year": "2020",

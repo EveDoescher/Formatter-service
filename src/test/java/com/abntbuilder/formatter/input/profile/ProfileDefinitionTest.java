@@ -285,6 +285,7 @@ class ProfileDefinitionTest {
                   ],
                   "componentRules": {
                     "cover": {
+                      "ruleType": "SINGLE_PAGE",
                       "componentId": "cover",
                       "slots": {
                         "institutionalLines": {"type": "TEXT_LIST", "required": true}

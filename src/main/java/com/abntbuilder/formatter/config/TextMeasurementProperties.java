@@ -1,6 +1,6 @@
 package com.abntbuilder.formatter.config;
 
-import com.abntbuilder.formatter.rendering.layout.text.MissingFontPolicy;
+import com.abntbuilder.formatter.rendering.text.MissingFontPolicy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "formatter.text-measurement")

@@ -1,35 +1,48 @@
 package com.abntbuilder.formatter.config;
 
-import com.abntbuilder.formatter.profile.resolution.ProfileProvider;
-import com.abntbuilder.formatter.rendering.component.ComponentRenderer;
-import com.abntbuilder.formatter.rendering.component.ComponentRendererRegistry;
-import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentRenderer;
-import com.abntbuilder.formatter.rendering.component.elementindex.ElementIndexRenderer;
-import com.abntbuilder.formatter.rendering.component.flowtextual.FlowTextualRenderer;
-import com.abntbuilder.formatter.rendering.component.references.ReferencesRenderer;
-import com.abntbuilder.formatter.rendering.component.sectionindex.SectionIndexRenderer;
-import com.abntbuilder.formatter.rendering.component.sectioned.SectionedRenderer;
-import com.abntbuilder.formatter.rendering.component.singlepage.SinglePageContentValidator;
-import com.abntbuilder.formatter.rendering.component.singlepage.SinglePageLayoutAssembler;
-import com.abntbuilder.formatter.rendering.component.singlepage.SinglePageLayoutCalculator;
-import com.abntbuilder.formatter.rendering.component.singlepage.SinglePageRenderer;
-import com.abntbuilder.formatter.rendering.layout.singlepage.HorizontalPlacementResolver;
-import com.abntbuilder.formatter.rendering.layout.singlepage.MarginBasedSinglePageSafetyPolicy;
-import com.abntbuilder.formatter.rendering.layout.singlepage.OrderedLayoutGapResolver;
-import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageGapDistributor;
-import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutEngine;
-import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutLineMetrics;
-import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageLayoutRenderer;
-import com.abntbuilder.formatter.rendering.layout.singlepage.SinglePageSafetyPolicy;
+import com.abntbuilder.formatter.input.profile.ClasspathJsonProfileProvider;
+import com.abntbuilder.formatter.input.profile.ProfileProvider;
+import com.abntbuilder.formatter.engine.contract.ComponentRenderer;
+import com.abntbuilder.formatter.engine.contract.ComponentRendererRegistry;
+import com.abntbuilder.formatter.engine.model.profile.DocumentProfile;
+import com.abntbuilder.formatter.engine.model.profile.component.ComponentRule;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.BodyContentComponentRule;
+import com.abntbuilder.formatter.engine.model.profile.component.elementindex.ElementIndexComponentRule;
+import com.abntbuilder.formatter.engine.model.profile.component.flowtextual.FlowTextualComponentRule;
+import com.abntbuilder.formatter.engine.model.profile.component.references.ReferencesComponentRule;
+import com.abntbuilder.formatter.engine.model.profile.component.sectionindex.SectionIndexComponentRule;
+import com.abntbuilder.formatter.engine.model.profile.component.sectioned.SectionedComponentRule;
+import com.abntbuilder.formatter.engine.model.profile.component.singlepage.SinglePageComponentRule;
+import com.abntbuilder.formatter.rendering.bodycontent.BodyContentRenderer;
+import com.abntbuilder.formatter.rendering.elementindex.ElementIndexRenderer;
+import com.abntbuilder.formatter.rendering.flowtextual.FlowTextualRenderer;
+import com.abntbuilder.formatter.rendering.references.ReferencesRenderer;
+import com.abntbuilder.formatter.rendering.sectionindex.SectionIndexRenderer;
+import com.abntbuilder.formatter.rendering.sectioned.SectionedRenderer;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageContentValidator;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageLayoutAssembler;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageLayoutCalculator;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageRenderer;
+import com.abntbuilder.formatter.rendering.singlepage.HorizontalPlacementResolver;
+import com.abntbuilder.formatter.rendering.singlepage.MarginBasedSinglePageSafetyPolicy;
+import com.abntbuilder.formatter.rendering.singlepage.OrderedLayoutGapResolver;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageGapDistributor;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageLayoutEngine;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageLayoutLineMetrics;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageLayoutRenderer;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageSafetyPolicy;
 import com.abntbuilder.formatter.rendering.orchestration.ComponentSelectionResolver;
 import com.abntbuilder.formatter.rendering.orchestration.DocumentRenderer;
-import com.abntbuilder.formatter.rendering.layout.text.FontMetricsTextMeasurer;
-import com.abntbuilder.formatter.rendering.layout.text.TextMeasurer;
+import com.abntbuilder.formatter.rendering.text.FontMetricsTextMeasurer;
+import com.abntbuilder.formatter.rendering.text.TextMeasurer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Configuration
 @EnableConfigurationProperties(TextMeasurementProperties.class)
@@ -108,122 +121,37 @@ public class RenderingConfig {
     }
 
     @Bean
-    public SinglePageRenderer coverRenderer(
-            SinglePageLayoutCalculator layoutCalculator,
-            SinglePageLayoutRenderer layoutRenderer
+    public List<ComponentRenderer<?>> componentRenderers(
+            ProfileProvider profileProvider,
+            SinglePageLayoutCalculator singlePageLayoutCalculator,
+            SinglePageLayoutRenderer singlePageLayoutRenderer
     ) {
-        return new SinglePageRenderer("cover", layoutCalculator, layoutRenderer);
-    }
+        Set<String> registered = new LinkedHashSet<>();
+        List<ComponentRenderer<?>> renderers = new ArrayList<>();
 
-    @Bean
-    public SinglePageRenderer titlePageRenderer(
-            SinglePageLayoutCalculator layoutCalculator,
-            SinglePageLayoutRenderer layoutRenderer
-    ) {
-        return new SinglePageRenderer("titlePage", layoutCalculator, layoutRenderer);
-    }
+        for (DocumentProfile profile : profileProvider.allProfiles()) {
+            for (ComponentRule rule : profile.componentRules()) {
+                String id = rule.componentId();
+                if (!registered.add(id)) continue;
 
-    @Bean
-    public SinglePageRenderer approvalSheetRenderer(
-            SinglePageLayoutCalculator layoutCalculator,
-            SinglePageLayoutRenderer layoutRenderer
-    ) {
-        return new SinglePageRenderer("approvalSheet", layoutCalculator, layoutRenderer);
-    }
+                ComponentRenderer<?> renderer = switch (rule) {
+                    case SinglePageComponentRule ignored ->
+                            new SinglePageRenderer(id, singlePageLayoutCalculator, singlePageLayoutRenderer);
+                    case FlowTextualComponentRule ignored -> new FlowTextualRenderer(id);
+                    case BodyContentComponentRule ignored -> new BodyContentRenderer(id);
+                    case ReferencesComponentRule ignored -> new ReferencesRenderer(id);
+                    case SectionedComponentRule ignored -> new SectionedRenderer(id);
+                    case SectionIndexComponentRule ignored -> new SectionIndexRenderer(id);
+                    case ElementIndexComponentRule ignored -> new ElementIndexRenderer(id);
+                    default -> throw new IllegalStateException(
+                            "No renderer factory for ComponentRule type: " + rule.getClass().getSimpleName()
+                    );
+                };
+                renderers.add(renderer);
+            }
+        }
 
-    @Bean
-    public BodyContentRenderer bodyContentRenderer() {
-        return new BodyContentRenderer("bodyContent");
-    }
-
-    @Bean
-    public FlowTextualRenderer errataRenderer() {
-        return new FlowTextualRenderer("errata");
-    }
-
-    @Bean
-    public FlowTextualRenderer dedicationRenderer() {
-        return new FlowTextualRenderer("dedication");
-    }
-
-    @Bean
-    public FlowTextualRenderer epigraphRenderer() {
-        return new FlowTextualRenderer("epigraph");
-    }
-
-    @Bean
-    public FlowTextualRenderer acknowledgmentsRenderer() {
-        return new FlowTextualRenderer("acknowledgments");
-    }
-
-    @Bean
-    public FlowTextualRenderer resumoRenderer() {
-        return new FlowTextualRenderer("resumo");
-    }
-
-    @Bean
-    public FlowTextualRenderer abstractRenderer() {
-        return new FlowTextualRenderer("abstract");
-    }
-
-    @Bean
-    public ReferencesRenderer referencesRenderer() {
-        return new ReferencesRenderer("references");
-    }
-
-    @Bean
-    public SectionedRenderer appendixRenderer() {
-        return new SectionedRenderer("appendix");
-    }
-
-    @Bean
-    public SectionedRenderer annexRenderer() {
-        return new SectionedRenderer("annex");
-    }
-
-    @Bean
-    public FlowTextualRenderer glossaryRenderer() {
-        return new FlowTextualRenderer("glossary");
-    }
-
-    @Bean
-    public SectionIndexRenderer summaryRenderer() {
-        return new SectionIndexRenderer("summary");
-    }
-
-    @Bean
-    public ElementIndexRenderer listOfFiguresRenderer() {
-        return new ElementIndexRenderer("listOfFigures");
-    }
-
-    @Bean
-    public ElementIndexRenderer listOfTablesRenderer() {
-        return new ElementIndexRenderer("listOfTables");
-    }
-
-    @Bean
-    public ElementIndexRenderer listOfFramesRenderer() {
-        return new ElementIndexRenderer("listOfFrames");
-    }
-
-    @Bean
-    public ElementIndexRenderer listOfChartsRenderer() {
-        return new ElementIndexRenderer("listOfCharts");
-    }
-
-    @Bean
-    public ElementIndexRenderer listOfCodeListingsRenderer() {
-        return new ElementIndexRenderer("listOfCodeListings");
-    }
-
-    @Bean
-    public FlowTextualRenderer listOfAbbreviationsRenderer() {
-        return new FlowTextualRenderer("listOfAbbreviations");
-    }
-
-    @Bean
-    public FlowTextualRenderer listOfSymbolsRenderer() {
-        return new FlowTextualRenderer("listOfSymbols");
+        return renderers;
     }
 
     @Bean

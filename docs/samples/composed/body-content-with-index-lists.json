@@ -14,7 +14,10 @@
   },
   "document": {
     "titlePage": {
-      "authors": ["Pessoa Autora Teste 01"],
+      "contentType": "SINGLE_PAGE",
+      "authors": [
+        "Pessoa Autora Teste 01"
+      ],
       "title": "Documento com Todas as Listas de Ilustrações",
       "nature": {
         "workType": "Trabalho de conclusão de curso",
@@ -29,12 +32,23 @@
       "city": "Limeira",
       "year": "2026"
     },
-    "listOfFigures": {},
-    "listOfTables": {},
-    "listOfFrames": {},
-    "listOfCharts": {},
-    "listOfCodeListings": {},
+    "listOfFigures": {
+      "contentType": "ELEMENT_INDEX"
+    },
+    "listOfTables": {
+      "contentType": "ELEMENT_INDEX"
+    },
+    "listOfFrames": {
+      "contentType": "ELEMENT_INDEX"
+    },
+    "listOfCharts": {
+      "contentType": "ELEMENT_INDEX"
+    },
+    "listOfCodeListings": {
+      "contentType": "ELEMENT_INDEX"
+    },
     "bodyContent": {
+      "contentType": "BODY_CONTENT",
       "sections": [
         {
           "id": "s1",
@@ -61,14 +75,28 @@
                 "caption": "Dados de desempenho do sistema",
                 "source": "Elaboração teste",
                 "columns": [
-                  {"header": "Métrica"},
-                  {"header": "Valor"}
+                  {
+                    "header": "Métrica"
+                  },
+                  {
+                    "header": "Valor"
+                  }
                 ],
                 "rows": [
                   {
                     "cells": [
-                      {"text": "Latência média", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false},
-                      {"text": "42 ms", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false}
+                      {
+                        "text": "Latência média",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "42 ms",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      }
                     ]
                   }
                 ]
@@ -81,14 +109,28 @@
                 "caption": "Comparação de abordagens metodológicas",
                 "source": "Elaboração teste",
                 "columns": [
-                  {"header": "Abordagem"},
-                  {"header": "Característica"}
+                  {
+                    "header": "Abordagem"
+                  },
+                  {
+                    "header": "Característica"
+                  }
                 ],
                 "rows": [
                   {
                     "cells": [
-                      {"text": "Quantitativa", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false},
-                      {"text": "Mensurável", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false}
+                      {
+                        "text": "Quantitativa",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      },
+                      {
+                        "text": "Mensurável",
+                        "colspan": 1,
+                        "rowspanStart": false,
+                        "rowspanContinuation": false
+                      }
                     ]
                   }
                 ]

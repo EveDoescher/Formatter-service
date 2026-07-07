@@ -8,6 +8,7 @@
   },
   "document": {
     "approvalSheet": {
+      "contentType": "SINGLE_PAGE",
       "authors": [
         "Pessoa Autora Teste 01"
       ],

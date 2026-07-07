@@ -8,6 +8,7 @@
   },
   "document": {
     "cover": {
+      "contentType": "SINGLE_PAGE",
       "institutionalLines": [
         "Universidade Fictícia de Limeira",
         "Curso de Sistemas de Informacao"

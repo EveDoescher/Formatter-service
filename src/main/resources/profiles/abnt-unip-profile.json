@@ -1055,6 +1055,7 @@
   ],
   "componentRules": {
     "cover": {
+      "ruleType": "SINGLE_PAGE",
       "componentId": "cover",
       "slots": {
         "institutionalLines": {
@@ -1187,6 +1188,7 @@
       }
     },
     "titlePage": {
+      "ruleType": "SINGLE_PAGE",
       "componentId": "titlePage",
       "slots": {
         "authors": {
@@ -1362,6 +1364,7 @@
       }
     },
     "approvalSheet": {
+      "ruleType": "SINGLE_PAGE",
       "componentId": "approvalSheet",
       "slots": {
         "authors": {
@@ -1548,6 +1551,7 @@
       }
     },
     "bodyContent": {
+      "ruleType": "BODY_CONTENT",
       "componentId": "bodyContent",
       "styleMapping": {
         "sectionTitleStyleIdsByLevel": [
@@ -1715,6 +1719,7 @@
       }
     },
     "errata": {
+      "ruleType": "ERRATA",
       "componentId": "errata",
       "headingStyleId": "errata.heading",
       "headingText": "ERRATA",
@@ -1729,17 +1734,20 @@
       "blankLinesAfterHeading": 1
     },
     "dedication": {
+      "ruleType": "DEDICATION",
       "componentId": "dedication",
       "textStyleId": "dedication.text",
       "blankLinesBefore": 10
     },
     "epigraph": {
+      "ruleType": "EPIGRAPH",
       "componentId": "epigraph",
       "textStyleId": "epigraph.text",
       "authorStyleId": "epigraph.author",
       "authorTemplate": "— {author}, {source}"
     },
     "acknowledgments": {
+      "ruleType": "ACKNOWLEDGMENTS",
       "componentId": "acknowledgments",
       "headingStyleId": "acknowledgments.heading",
       "headingText": "AGRADECIMENTOS",
@@ -1747,6 +1755,7 @@
       "blankLinesAfterHeading": 1
     },
     "resumo": {
+      "ruleType": "RESUMO",
       "componentId": "resumo",
       "headingStyleId": "resumo.heading",
       "headingText": "RESUMO",
@@ -1758,6 +1767,7 @@
       "blankLinesAfterHeading": 1
     },
     "abstract": {
+      "ruleType": "ABSTRACT",
       "componentId": "abstract",
       "headingStyleId": "resumo.heading",
       "textStyleId": "resumo.text",
@@ -1767,12 +1777,14 @@
       "blankLinesAfterHeading": 1
     },
     "references": {
+      "ruleType": "REFERENCES",
       "componentId": "references",
       "headingStyleId": "references.heading",
       "headingText": "REFERÊNCIAS",
       "entryStyleId": "references.entry",
       "blankLinesBetweenEntries": 1,
       "blankLinesAfterHeading": 1,
+      "sortOrder": "ALPHABETICAL",
       "formattingRule": {
         "authorFormat": {
           "surnameUppercase": true,
@@ -1784,87 +1796,448 @@
         },
         "entryFormats": {
           "BOOK": [
-            { "source": "authors",       "bold": false, "prefix": "",    "suffix": "",    "optional": false },
-            { "source": "title",         "bold": true,  "prefix": "",    "suffix": "",    "optional": false },
-            { "source": "subtitle",      "bold": false, "prefix": ": ",  "suffix": "",    "optional": true  },
-            { "source": "edition",       "bold": false, "prefix": ". ",  "suffix": ". ed.", "optional": true },
-            { "source": "city",          "bold": false, "prefix": ". ", "suffix": ": ",  "optional": true  },
-            { "source": "publisher",     "bold": false, "prefix": "",    "suffix": ", ",  "optional": true  },
-            { "source": "year",          "bold": false, "prefix": "",    "suffix": ".",   "optional": false }
+            {
+              "source": "authors",
+              "bold": false,
+              "prefix": "",
+              "suffix": "",
+              "optional": false
+            },
+            {
+              "source": "title",
+              "bold": true,
+              "prefix": "",
+              "suffix": "",
+              "optional": false
+            },
+            {
+              "source": "subtitle",
+              "bold": false,
+              "prefix": ": ",
+              "suffix": "",
+              "optional": true
+            },
+            {
+              "source": "edition",
+              "bold": false,
+              "prefix": ". ",
+              "suffix": ". ed.",
+              "optional": true
+            },
+            {
+              "source": "city",
+              "bold": false,
+              "prefix": ". ",
+              "suffix": ": ",
+              "optional": true
+            },
+            {
+              "source": "publisher",
+              "bold": false,
+              "prefix": "",
+              "suffix": ", ",
+              "optional": true
+            },
+            {
+              "source": "year",
+              "bold": false,
+              "prefix": "",
+              "suffix": ".",
+              "optional": false
+            }
           ],
           "BOOK_CHAPTER": [
-            { "source": "authors",       "bold": false, "prefix": "",      "suffix": "",    "optional": false },
-            { "source": "title",         "bold": true,  "prefix": "",      "suffix": "",    "optional": false },
-            { "source": "literal:In: ",  "bold": false, "prefix": "",      "suffix": "",    "optional": false },
-            { "source": "bookAuthors",   "bold": false, "prefix": "",      "suffix": "",    "optional": true  },
-            { "source": "bookTitle",     "bold": true,  "prefix": "",      "suffix": ". ",  "optional": true  },
-            { "source": "edition",       "bold": false, "prefix": "",      "suffix": ". ed. ", "optional": true },
-            { "source": "city",          "bold": false, "prefix": "",      "suffix": ": ",  "optional": true  },
-            { "source": "publisher",     "bold": false, "prefix": "",      "suffix": ", ",  "optional": true  },
-            { "source": "year",          "bold": false, "prefix": "",      "suffix": ".",   "optional": false },
-            { "source": "pages",         "bold": false, "prefix": " p. ", "suffix": ".",   "optional": true  }
+            {
+              "source": "authors",
+              "bold": false,
+              "prefix": "",
+              "suffix": "",
+              "optional": false
+            },
+            {
+              "source": "title",
+              "bold": true,
+              "prefix": "",
+              "suffix": "",
+              "optional": false
+            },
+            {
+              "source": "literal:In: ",
+              "bold": false,
+              "prefix": "",
+              "suffix": "",
+              "optional": false
+            },
+            {
+              "source": "bookAuthors",
+              "bold": false,
+              "prefix": "",
+              "suffix": "",
+              "optional": true
+            },
+            {
+              "source": "bookTitle",
+              "bold": true,
+              "prefix": "",
+              "suffix": ". ",
+              "optional": true
+            },
+            {
+              "source": "edition",
+              "bold": false,
+              "prefix": "",
+              "suffix": ". ed. ",
+              "optional": true
+            },
+            {
+              "source": "city",
+              "bold": false,
+              "prefix": "",
+              "suffix": ": ",
+              "optional": true
+            },
+            {
+              "source": "publisher",
+              "bold": false,
+              "prefix": "",
+              "suffix": ", ",
+              "optional": true
+            },
+            {
+              "source": "year",
+              "bold": false,
+              "prefix": "",
+              "suffix": ".",
+              "optional": false
+            },
+            {
+              "source": "pages",
+              "bold": false,
+              "prefix": " p. ",
+              "suffix": ".",
+              "optional": true
+            }
           ],
           "JOURNAL": [
-            { "source": "authors",       "bold": false, "prefix": "",    "suffix": "",    "optional": false },
-            { "source": "title",         "bold": true,  "prefix": "",    "suffix": "",    "optional": false },
-            { "source": "subtitle",      "bold": false, "prefix": ": ",  "suffix": "",    "optional": true  },
-            { "source": "publisher",     "bold": false, "prefix": " ",   "suffix": "",    "optional": true  },
-            { "source": "volume",        "bold": false, "prefix": ", v. ", "suffix": "",  "optional": true  },
-            { "source": "issue",         "bold": false, "prefix": ", n. ", "suffix": "",  "optional": true  },
-            { "source": "pages",         "bold": false, "prefix": ", p. ", "suffix": "",  "optional": true  },
-            { "source": "year",          "bold": false, "prefix": ", ",  "suffix": ".",   "optional": false },
-            { "source": "doi",           "bold": false, "prefix": " ",   "suffix": ".",   "optional": true  }
+            {
+              "source": "authors",
+              "bold": false,
+              "prefix": "",
+              "suffix": "",
+              "optional": false
+            },
+            {
+              "source": "title",
+              "bold": true,
+              "prefix": "",
+              "suffix": "",
+              "optional": false
+            },
+            {
+              "source": "subtitle",
+              "bold": false,
+              "prefix": ": ",
+              "suffix": "",
+              "optional": true
+            },
+            {
+              "source": "publisher",
+              "bold": false,
+              "prefix": " ",
+              "suffix": "",
+              "optional": true
+            },
+            {
+              "source": "volume",
+              "bold": false,
+              "prefix": ", v. ",
+              "suffix": "",
+              "optional": true
+            },
+            {
+              "source": "issue",
+              "bold": false,
+              "prefix": ", n. ",
+              "suffix": "",
+              "optional": true
+            },
+            {
+              "source": "pages",
+              "bold": false,
+              "prefix": ", p. ",
+              "suffix": "",
+              "optional": true
+            },
+            {
+              "source": "year",
+              "bold": false,
+              "prefix": ", ",
+              "suffix": ".",
+              "optional": false
+            },
+            {
+              "source": "doi",
+              "bold": false,
+              "prefix": " ",
+              "suffix": ".",
+              "optional": true
+            }
           ],
           "WEBSITE": [
-            { "source": "authors",       "bold": false, "prefix": "",    "suffix": "",    "optional": true  },
-            { "source": "title",         "bold": true,  "prefix": "",    "suffix": "",    "optional": false },
-            { "source": "subtitle",      "bold": false, "prefix": ": ",  "suffix": "",    "optional": true  },
-            { "source": "url",           "bold": false, "prefix": " Disponível em: ", "suffix": ".", "optional": true },
-            { "source": "accessDate",    "bold": false, "prefix": " Acesso em: ", "suffix": ".", "optional": true }
+            {
+              "source": "authors",
+              "bold": false,
+              "prefix": "",
+              "suffix": "",
+              "optional": true
+            },
+            {
+              "source": "title",
+              "bold": true,
+              "prefix": "",
+              "suffix": "",
+              "optional": false
+            },
+            {
+              "source": "subtitle",
+              "bold": false,
+              "prefix": ": ",
+              "suffix": "",
+              "optional": true
+            },
+            {
+              "source": "url",
+              "bold": false,
+              "prefix": " Disponível em: ",
+              "suffix": ".",
+              "optional": true
+            },
+            {
+              "source": "accessDate",
+              "bold": false,
+              "prefix": " Acesso em: ",
+              "suffix": ".",
+              "optional": true
+            }
           ],
           "LEGISLATION": [
-            { "source": "title",         "bold": false, "prefix": "",    "suffix": "",    "optional": false },
-            { "source": "subtitle",      "bold": false, "prefix": ". ",  "suffix": "",    "optional": true  },
-            { "source": "year",          "bold": false, "prefix": ". ",  "suffix": ".",   "optional": false },
-            { "source": "url",           "bold": false, "prefix": " Disponível em: ", "suffix": ".", "optional": true }
+            {
+              "source": "title",
+              "bold": false,
+              "prefix": "",
+              "suffix": "",
+              "optional": false
+            },
+            {
+              "source": "subtitle",
+              "bold": false,
+              "prefix": ". ",
+              "suffix": "",
+              "optional": true
+            },
+            {
+              "source": "year",
+              "bold": false,
+              "prefix": ". ",
+              "suffix": ".",
+              "optional": false
+            },
+            {
+              "source": "url",
+              "bold": false,
+              "prefix": " Disponível em: ",
+              "suffix": ".",
+              "optional": true
+            }
           ],
           "THESIS": [
-            { "source": "authors",       "bold": false, "prefix": "",    "suffix": "",    "optional": false },
-            { "source": "title",         "bold": true,  "prefix": "",    "suffix": "",    "optional": false },
-            { "source": "subtitle",      "bold": false, "prefix": ": ",  "suffix": "",    "optional": true  },
-            { "source": "year",          "bold": false, "prefix": ". ",  "suffix": ".",   "optional": false },
-            { "source": "degree",        "bold": false, "prefix": " ",   "suffix": ".",   "optional": true  },
-            { "source": "institutionName", "bold": false, "prefix": " ", "suffix": ".",   "optional": true  }
+            {
+              "source": "authors",
+              "bold": false,
+              "prefix": "",
+              "suffix": "",
+              "optional": false
+            },
+            {
+              "source": "title",
+              "bold": true,
+              "prefix": "",
+              "suffix": "",
+              "optional": false
+            },
+            {
+              "source": "subtitle",
+              "bold": false,
+              "prefix": ": ",
+              "suffix": "",
+              "optional": true
+            },
+            {
+              "source": "year",
+              "bold": false,
+              "prefix": ". ",
+              "suffix": ".",
+              "optional": false
+            },
+            {
+              "source": "degree",
+              "bold": false,
+              "prefix": " ",
+              "suffix": ".",
+              "optional": true
+            },
+            {
+              "source": "institutionName",
+              "bold": false,
+              "prefix": " ",
+              "suffix": ".",
+              "optional": true
+            }
           ],
           "CONFERENCE_PAPER": [
-            { "source": "authors",       "bold": false, "prefix": "",    "suffix": "",    "optional": false },
-            { "source": "title",         "bold": true,  "prefix": "",    "suffix": "",    "optional": false },
-            { "source": "literal:In: ",  "bold": false, "prefix": ". ",  "suffix": "",    "optional": false },
-            { "source": "publisher",     "bold": false, "prefix": "",    "suffix": ". ",  "optional": true  },
-            { "source": "city",          "bold": false, "prefix": "",    "suffix": ": ",  "optional": true  },
-            { "source": "year",          "bold": false, "prefix": "",    "suffix": ".",   "optional": false },
-            { "source": "pages",         "bold": false, "prefix": " p. ", "suffix": ".", "optional": true  }
+            {
+              "source": "authors",
+              "bold": false,
+              "prefix": "",
+              "suffix": "",
+              "optional": false
+            },
+            {
+              "source": "title",
+              "bold": true,
+              "prefix": "",
+              "suffix": "",
+              "optional": false
+            },
+            {
+              "source": "literal:In: ",
+              "bold": false,
+              "prefix": ". ",
+              "suffix": "",
+              "optional": false
+            },
+            {
+              "source": "publisher",
+              "bold": false,
+              "prefix": "",
+              "suffix": ". ",
+              "optional": true
+            },
+            {
+              "source": "city",
+              "bold": false,
+              "prefix": "",
+              "suffix": ": ",
+              "optional": true
+            },
+            {
+              "source": "year",
+              "bold": false,
+              "prefix": "",
+              "suffix": ".",
+              "optional": false
+            },
+            {
+              "source": "pages",
+              "bold": false,
+              "prefix": " p. ",
+              "suffix": ".",
+              "optional": true
+            }
           ],
           "REPORT": [
-            { "source": "authors",       "bold": false, "prefix": "",    "suffix": "",    "optional": false },
-            { "source": "title",         "bold": true,  "prefix": "",    "suffix": "",    "optional": false },
-            { "source": "subtitle",      "bold": false, "prefix": ": ",  "suffix": "",    "optional": true  },
-            { "source": "city",          "bold": false, "prefix": ". ",  "suffix": ": ",  "optional": true  },
-            { "source": "institutionName", "bold": false, "prefix": "", "suffix": ", ",   "optional": true  },
-            { "source": "year",          "bold": false, "prefix": "",    "suffix": ".",   "optional": false },
-            { "source": "issue",         "bold": false, "prefix": " (Relatório técnico, n. ", "suffix": ")", "optional": true }
+            {
+              "source": "authors",
+              "bold": false,
+              "prefix": "",
+              "suffix": "",
+              "optional": false
+            },
+            {
+              "source": "title",
+              "bold": true,
+              "prefix": "",
+              "suffix": "",
+              "optional": false
+            },
+            {
+              "source": "subtitle",
+              "bold": false,
+              "prefix": ": ",
+              "suffix": "",
+              "optional": true
+            },
+            {
+              "source": "city",
+              "bold": false,
+              "prefix": ". ",
+              "suffix": ": ",
+              "optional": true
+            },
+            {
+              "source": "institutionName",
+              "bold": false,
+              "prefix": "",
+              "suffix": ", ",
+              "optional": true
+            },
+            {
+              "source": "year",
+              "bold": false,
+              "prefix": "",
+              "suffix": ".",
+              "optional": false
+            },
+            {
+              "source": "issue",
+              "bold": false,
+              "prefix": " (Relatório técnico, n. ",
+              "suffix": ")",
+              "optional": true
+            }
           ],
           "STANDARD": [
-            { "source": "authors",       "bold": false, "prefix": "",    "suffix": "",    "optional": true  },
-            { "source": "title",         "bold": false, "prefix": "",    "suffix": "",    "optional": false },
-            { "source": "subtitle",      "bold": false, "prefix": ": ",  "suffix": "",    "optional": true  },
-            { "source": "city",          "bold": false, "prefix": ". ",  "suffix": ", ",  "optional": true  },
-            { "source": "year",          "bold": false, "prefix": "",    "suffix": ".",   "optional": false }
+            {
+              "source": "authors",
+              "bold": false,
+              "prefix": "",
+              "suffix": "",
+              "optional": true
+            },
+            {
+              "source": "title",
+              "bold": false,
+              "prefix": "",
+              "suffix": "",
+              "optional": false
+            },
+            {
+              "source": "subtitle",
+              "bold": false,
+              "prefix": ": ",
+              "suffix": "",
+              "optional": true
+            },
+            {
+              "source": "city",
+              "bold": false,
+              "prefix": ". ",
+              "suffix": ", ",
+              "optional": true
+            },
+            {
+              "source": "year",
+              "bold": false,
+              "prefix": "",
+              "suffix": ".",
+              "optional": false
+            }
           ]
         }
       }
     },
     "appendix": {
+      "ruleType": "SECTIONED",
       "componentId": "appendix",
       "headingTemplate": "APÊNDICE {letter} – {title}",
       "headingStyleId": "appendix.heading",
@@ -1876,6 +2249,7 @@
       "indexingStyle": "ALPHABETIC"
     },
     "annex": {
+      "ruleType": "SECTIONED",
       "componentId": "annex",
       "headingTemplate": "ANEXO {letter} – {title}",
       "headingStyleId": "annex.heading",
@@ -1887,6 +2261,7 @@
       "indexingStyle": "ALPHABETIC"
     },
     "glossary": {
+      "ruleType": "GLOSSARY",
       "componentId": "glossary",
       "headingStyleId": "glossary.heading",
       "headingText": "GLOSSÁRIO",
@@ -1895,6 +2270,7 @@
       "blankLinesAfterHeading": 1
     },
     "summary": {
+      "ruleType": "SECTION_INDEX",
       "componentId": "summary",
       "headingStyleId": "list.heading",
       "headingText": "SUMÁRIO",
@@ -1909,6 +2285,7 @@
       "useTocField": true
     },
     "listOfFigures": {
+      "ruleType": "ELEMENT_INDEX",
       "componentId": "listOfFigures",
       "elementType": "FIGURE",
       "headingStyleId": "list.heading",
@@ -1918,6 +2295,7 @@
       "blankLinesAfterHeading": 1
     },
     "listOfTables": {
+      "ruleType": "ELEMENT_INDEX",
       "componentId": "listOfTables",
       "elementType": "TABLE",
       "headingStyleId": "list.heading",
@@ -1927,6 +2305,7 @@
       "blankLinesAfterHeading": 1
     },
     "listOfFrames": {
+      "ruleType": "ELEMENT_INDEX",
       "componentId": "listOfFrames",
       "elementType": "FRAME",
       "headingStyleId": "list.heading",
@@ -1936,6 +2315,7 @@
       "blankLinesAfterHeading": 1
     },
     "listOfCharts": {
+      "ruleType": "ELEMENT_INDEX",
       "componentId": "listOfCharts",
       "elementType": "CHART",
       "headingStyleId": "list.heading",
@@ -1945,6 +2325,7 @@
       "blankLinesAfterHeading": 1
     },
     "listOfCodeListings": {
+      "ruleType": "ELEMENT_INDEX",
       "componentId": "listOfCodeListings",
       "elementType": "CODE_LISTING",
       "headingStyleId": "list.heading",
@@ -1954,6 +2335,7 @@
       "blankLinesAfterHeading": 1
     },
     "listOfAbbreviations": {
+      "ruleType": "LIST_OF_ABBREVIATIONS",
       "componentId": "listOfAbbreviations",
       "headingStyleId": "list.heading",
       "headingText": "LISTA DE ABREVIATURAS E SIGLAS",
@@ -1963,6 +2345,7 @@
       "blankLinesAfterHeading": 1
     },
     "listOfSymbols": {
+      "ruleType": "LIST_OF_SYMBOLS",
       "componentId": "listOfSymbols",
       "headingStyleId": "list.heading",
       "headingText": "LISTA DE SÍMBOLOS",

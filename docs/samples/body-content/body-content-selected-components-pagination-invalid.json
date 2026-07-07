@@ -8,6 +8,7 @@
   },
   "document": {
     "bodyContent": {
+      "contentType": "BODY_CONTENT",
       "sections": [
         {
           "id": "introducao",

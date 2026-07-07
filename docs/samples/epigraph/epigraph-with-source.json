@@ -8,6 +8,7 @@
   },
   "document": {
     "epigraph": {
+      "contentType": "FLOW_TEXTUAL",
       "text": "O valor de uma ideia está na sua aplicação prática, não apenas na sua formulação.",
       "author": "Caio Moreira",
       "source": "Ensaios sobre Tecnologia e Criação, 2018"

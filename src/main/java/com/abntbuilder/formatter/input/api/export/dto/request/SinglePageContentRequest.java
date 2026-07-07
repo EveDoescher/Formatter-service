@@ -1,18 +1,20 @@
 package com.abntbuilder.formatter.input.api.export.dto.request;
 
+import com.abntbuilder.formatter.engine.model.content.DocumentComponent;
 import com.abntbuilder.formatter.engine.model.content.singlepage.ComposedTextValue;
 import com.abntbuilder.formatter.engine.model.content.singlepage.ContentValue;
 import com.abntbuilder.formatter.engine.model.content.singlepage.SignatureBlockListValue;
 import com.abntbuilder.formatter.engine.model.content.singlepage.SinglePageContent;
 import com.abntbuilder.formatter.engine.model.content.singlepage.TextListValue;
 import com.abntbuilder.formatter.engine.model.content.singlepage.TextValue;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.CitationFormattingRule;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class SinglePageContentRequest {
+public final class SinglePageContentRequest implements ComponentContentRequest {
 
     private final Map<String, Object> rawSlots = new HashMap<>();
 
@@ -23,6 +25,11 @@ public final class SinglePageContentRequest {
 
     public boolean hasSlots() {
         return !rawSlots.isEmpty();
+    }
+
+    @Override
+    public DocumentComponent toDomain(String componentId, CitationFormattingRule citationFormatting) {
+        return toDomain(componentId);
     }
 
     public SinglePageContent toDomain(String componentId) {

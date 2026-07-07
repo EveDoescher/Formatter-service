@@ -41,6 +41,11 @@ public final class ClasspathJsonProfileProvider implements ProfileProvider {
         return profile;
     }
 
+    @Override
+    public java.util.Collection<DocumentProfile> allProfiles() {
+        return profiles.values();
+    }
+
     private static Map<String, DocumentProfile> loadProfiles(ObjectMapper objectMapper, String resourcePattern) {
         try {
             Resource[] resources = new PathMatchingResourcePatternResolver().getResources(resourcePattern);

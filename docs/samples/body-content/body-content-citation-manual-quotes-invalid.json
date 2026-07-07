@@ -27,6 +27,7 @@
   },
   "document": {
     "bodyContent": {
+      "contentType": "BODY_CONTENT",
       "sections": [
         {
           "id": "citacao-direta",
@@ -67,6 +68,7 @@
       ]
     },
     "titlePage": {
+      "contentType": "SINGLE_PAGE",
       "authors": [
         "Pessoa Autora Teste 01"
       ],

@@ -1,5 +1,6 @@
 package com.abntbuilder.formatter.input.api.export.dto.request;
 
+import com.abntbuilder.formatter.engine.model.content.DocumentComponent;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyContentComponent;
 import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.CitationFormattingRule;
 import jakarta.validation.Valid;
@@ -9,9 +10,10 @@ import java.util.List;
 
 public record BodyContentRequest(
         @Valid @NotEmpty List<BodySectionRequest> sections
-) {
+) implements ComponentContentRequest {
 
-    public BodyContentComponent toDomain(String componentId, CitationFormattingRule citationFormatting) {
+    @Override
+    public DocumentComponent toDomain(String componentId, CitationFormattingRule citationFormatting) {
         return new BodyContentComponent(
                 componentId,
                 sections.stream()
@@ -20,15 +22,15 @@ public record BodyContentRequest(
         );
     }
 
-    public BodyContentComponent toDomain(String componentId) {
-        return toDomain(componentId, null);
+    public BodyContentComponent toBodyContent(String componentId) {
+        return (BodyContentComponent) toDomain(componentId, null);
     }
 
-    public BodyContentComponent toDomain(CitationFormattingRule citationFormatting) {
-        return toDomain("bodyContent", citationFormatting);
+    public BodyContentComponent toBodyContent(CitationFormattingRule citationFormatting) {
+        return (BodyContentComponent) toDomain("bodyContent", citationFormatting);
     }
 
-    public BodyContentComponent toDomain() {
-        return toDomain("bodyContent", null);
+    public BodyContentComponent toBodyContent() {
+        return (BodyContentComponent) toDomain("bodyContent", null);
     }
 }

@@ -8,6 +8,7 @@
   },
   "document": {
     "epigraph": {
+      "contentType": "FLOW_TEXTUAL",
       "text": "O conhecimento é a única riqueza que, quanto mais se distribui, mais aumenta.",
       "author": "Autor Fictício"
     }

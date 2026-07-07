@@ -8,9 +8,20 @@
   },
   "document": {
     "errata": {
+      "contentType": "FLOW_TEXTUAL",
       "rows": [
-        ["23", "5", "analize", "análise"],
-        ["47", "12", "metodologia quantitiva", "metodologia quantitativa"]
+        [
+          "23",
+          "5",
+          "analize",
+          "análise"
+        ],
+        [
+          "47",
+          "12",
+          "metodologia quantitiva",
+          "metodologia quantitativa"
+        ]
       ]
     }
   }

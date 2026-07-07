@@ -26,6 +26,7 @@
   },
   "document": {
     "titlePage": {
+      "contentType": "SINGLE_PAGE",
       "authors": [
         "Pessoa Autora Teste 01"
       ],
@@ -45,6 +46,7 @@
       "year": "2026"
     },
     "bodyContent": {
+      "contentType": "BODY_CONTENT",
       "sections": [
         {
           "id": "s1",

@@ -9,6 +9,7 @@
   },
   "document": {
     "bodyContent": {
+      "contentType": "BODY_CONTENT",
       "sections": [
         {
           "id": "tabela-invalida",
@@ -60,6 +61,7 @@
       ]
     },
     "titlePage": {
+      "contentType": "SINGLE_PAGE",
       "authors": [
         "Pessoa Autora Teste 01"
       ],

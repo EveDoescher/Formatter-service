@@ -418,6 +418,7 @@ class DocxExportControllerIntegrationTest {
                     ],
                     "componentRules": {
                       "cover": {
+                        "ruleType": "SINGLE_PAGE",
                         "componentId": "cover",
                         "slots": {
                           "institutionalLines": { "type": "TEXT_LIST", "required": true },
@@ -444,7 +445,7 @@ class DocxExportControllerIntegrationTest {
                                 {
                                   "id": "institutionalLines",
                                   "required": true,
-                                  "horizontalPlacement": "FULL_CONTENT_WIDTH"
+                                  "horizontalPlacement": {"strategy": "FULL_CONTENT_WIDTH"}
                                 }
                               ]
                             },
@@ -455,7 +456,7 @@ class DocxExportControllerIntegrationTest {
                                 {
                                   "id": "authors",
                                   "required": false,
-                                  "horizontalPlacement": "FULL_CONTENT_WIDTH"
+                                  "horizontalPlacement": {"strategy": "FULL_CONTENT_WIDTH"}
                                 }
                               ]
                             },
@@ -466,12 +467,12 @@ class DocxExportControllerIntegrationTest {
                                 {
                                   "id": "title",
                                   "required": true,
-                                  "horizontalPlacement": "FULL_CONTENT_WIDTH"
+                                  "horizontalPlacement": {"strategy": "FULL_CONTENT_WIDTH"}
                                 },
                                 {
                                   "id": "subtitle",
                                   "required": false,
-                                  "horizontalPlacement": "FULL_CONTENT_WIDTH"
+                                  "horizontalPlacement": {"strategy": "FULL_CONTENT_WIDTH"}
                                 }
                               ]
                             },
@@ -483,13 +484,13 @@ class DocxExportControllerIntegrationTest {
                                   "id": "city",
                                   "required": true,
                                   "maxVisualLinesPerValue": 1,
-                                  "horizontalPlacement": "FULL_CONTENT_WIDTH"
+                                  "horizontalPlacement": {"strategy": "FULL_CONTENT_WIDTH"}
                                 },
                                 {
                                   "id": "year",
                                   "required": true,
                                   "maxVisualLinesPerValue": 1,
-                                  "horizontalPlacement": "FULL_CONTENT_WIDTH"
+                                  "horizontalPlacement": {"strategy": "FULL_CONTENT_WIDTH"}
                                 }
                               ]
                             }
@@ -523,6 +524,7 @@ class DocxExportControllerIntegrationTest {
                   },
                   "document": {
                     "cover": {
+                      "contentType": "SINGLE_PAGE",
                       "institutionalLines": [
                         "UNIVERSIDADE PAULISTA"
                       ],

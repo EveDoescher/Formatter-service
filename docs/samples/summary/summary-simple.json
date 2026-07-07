@@ -2,11 +2,17 @@
   "fileName": "summary-simple.docx",
   "profileId": "abnt-unip-profile",
   "options": {
-    "selectedComponents": ["titlePage", "summary"]
+    "selectedComponents": [
+      "titlePage",
+      "summary"
+    ]
   },
   "document": {
     "titlePage": {
-      "authors": ["Pessoa Autora Teste 01"],
+      "contentType": "SINGLE_PAGE",
+      "authors": [
+        "Pessoa Autora Teste 01"
+      ],
       "title": "Documento com Sumário Automático",
       "nature": {
         "workType": "Trabalho de conclusão de curso",
@@ -21,6 +27,8 @@
       "city": "Limeira",
       "year": "2026"
     },
-    "summary": {}
+    "summary": {
+      "contentType": "SECTION_INDEX"
+    }
   }
 }

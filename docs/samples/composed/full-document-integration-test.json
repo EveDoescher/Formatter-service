@@ -11,6 +11,7 @@
   },
   "document": {
     "cover": {
+      "contentType": "SINGLE_PAGE",
       "institutionalLines": [
         "UNIVERSIDADE FICTÍCIA DE LIMEIRA",
         "INSTITUTO DE CIÊNCIAS EXATAS E TECNOLOGIA",
@@ -26,6 +27,7 @@
       "year": "2026"
     },
     "titlePage": {
+      "contentType": "SINGLE_PAGE",
       "authors": [
         "Autor Um da Silva",
         "Autora Dois Costa"
@@ -50,6 +52,7 @@
       "year": "2026"
     },
     "approvalSheet": {
+      "contentType": "SINGLE_PAGE",
       "authors": [
         "Autor Um da Silva",
         "Autora Dois Costa"
@@ -80,6 +83,7 @@
       "committeeHeading": "BANCA EXAMINADORA"
     },
     "bodyContent": {
+      "contentType": "BODY_CONTENT",
       "sections": [
         {
           "id": "s1",
