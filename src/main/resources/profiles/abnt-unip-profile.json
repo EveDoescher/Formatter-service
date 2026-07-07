@@ -1697,7 +1697,11 @@
         "suppressionMarker": "[...]",
         "emphasisOursLabel": "grifo nosso",
         "emphasisAuthorLabel": "grifo do autor",
-        "verbalCitationLabel": "informação verbal"
+        "verbalCitationLabel": "informação verbal",
+        "authorYearSeparator": ", ",
+        "pageReferenceSeparator": ", ",
+        "parenOpen": "(",
+        "parenClose": ")"
       },
       "crossReferenceLabels": {
         "sectionLabel": "Seção",
@@ -1867,7 +1871,8 @@
       "sectionTitleStyleIdsByLevel": [
         "bodyContent.heading1",
         "bodyContent.heading2"
-      ]
+      ],
+      "indexingStyle": "ALPHABETIC"
     },
     "annex": {
       "componentId": "annex",
@@ -1877,7 +1882,8 @@
       "sectionTitleStyleIdsByLevel": [
         "bodyContent.heading1",
         "bodyContent.heading2"
-      ]
+      ],
+      "indexingStyle": "ALPHABETIC"
     },
     "glossary": {
       "componentId": "glossary",

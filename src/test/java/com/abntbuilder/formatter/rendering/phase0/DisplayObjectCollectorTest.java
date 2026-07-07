@@ -1,36 +1,37 @@
 package com.abntbuilder.formatter.rendering.phase0;
 
-import com.abntbuilder.formatter.document.component.bodycontent.BodyContentComponent;
-import com.abntbuilder.formatter.document.component.bodycontent.BodyFigure;
-import com.abntbuilder.formatter.document.component.bodycontent.BodyImageSource;
-import com.abntbuilder.formatter.document.component.bodycontent.BodySection;
-import com.abntbuilder.formatter.document.component.bodycontent.BodyTable;
-import com.abntbuilder.formatter.document.component.bodycontent.BodyTableCell;
-import com.abntbuilder.formatter.document.component.bodycontent.BodyTableColumn;
-import com.abntbuilder.formatter.document.component.bodycontent.BodyTableRow;
-import com.abntbuilder.formatter.document.component.bodycontent.ImageSourceType;
-import com.abntbuilder.formatter.profile.model.DocumentProfile;
-import com.abntbuilder.formatter.profile.model.PageOrientation;
-import com.abntbuilder.formatter.profile.model.PageRule;
-import com.abntbuilder.formatter.profile.model.StyleRule;
-import com.abntbuilder.formatter.profile.model.StyleType;
-import com.abntbuilder.formatter.profile.model.TextAlignment;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentComponentRule;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentLayoutRule;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentNumberingRule;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentStyleMapping;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.ChartRule;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.CitationFormattingRule;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.CodeListingRule;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.CrossReferenceLabelsRule;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectContinuationLabels;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.DisplayObjectSourcePlacement;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.FigureRule;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.FrameRule;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.NumberingStrategy;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.TableRule;
-import com.abntbuilder.formatter.rendering.component.bodycontent.BodyDisplayObjectMetadata;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyContentComponent;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyFigure;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyImageSource;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodySection;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyTable;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyTableCell;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyTableColumn;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyTableRow;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.ImageSourceType;
+import com.abntbuilder.formatter.engine.model.profile.DocumentProfile;
+import com.abntbuilder.formatter.engine.model.profile.PageOrientation;
+import com.abntbuilder.formatter.engine.model.profile.PageRule;
+import com.abntbuilder.formatter.engine.model.profile.StyleRule;
+import com.abntbuilder.formatter.engine.model.profile.StyleType;
+import com.abntbuilder.formatter.engine.model.profile.TextAlignment;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.BodyContentComponentRule;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.BodyContentLayoutRule;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.BodyContentNumberingRule;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.BodyContentStyleMapping;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.ChartRule;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.CitationFormattingRule;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.CodeListingRule;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.CrossReferenceLabelsRule;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.DisplayObjectContinuationLabels;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.DisplayObjectSourcePlacement;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.FigureRule;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.FrameRule;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.ImageFitPolicy;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.NumberingStrategy;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.TableRule;
+import com.abntbuilder.formatter.engine.model.profile.component.elementindex.ElementType;
+import com.abntbuilder.formatter.rendering.bodycontent.BodyDisplayObjectMetadata;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -51,25 +52,25 @@ class DisplayObjectCollectorTest {
         BodyFigure fig1 = figure("fig-1", "Diagrama de arquitetura");
         BodyFigure fig2 = figure("fig-2", "Fluxo de dados");
         BodySection section = new BodySection("sec-1", 1, Optional.of("Capítulo 1"), List.of(fig1, fig2));
-        BodyContentComponent component = new BodyContentComponent(List.of(section));
+        BodyContentComponent component = new BodyContentComponent("bodyContent", List.of(section));
 
         Phase0Index index = collector.collect(List.of(component), profile());
 
-        assertThat(index.figures()).hasSize(2);
-        assertThat(index.figures().get("fig-1").number()).isEqualTo(1);
-        assertThat(index.figures().get("fig-2").number()).isEqualTo(2);
+        assertThat(index.elements(ElementType.FIGURE)).hasSize(2);
+        assertThat(index.elements(ElementType.FIGURE).get("fig-1").number()).isEqualTo(1);
+        assertThat(index.elements(ElementType.FIGURE).get("fig-2").number()).isEqualTo(2);
     }
 
     @Test
     void shouldIndexTablesWithCorrectCaptions() {
         BodyTable table = table("tbl-1", "Comparação de resultados");
         BodySection section = new BodySection("sec-1", 1, Optional.of("Resultados"), List.of(table));
-        BodyContentComponent component = new BodyContentComponent(List.of(section));
+        BodyContentComponent component = new BodyContentComponent("bodyContent", List.of(section));
 
         Phase0Index index = collector.collect(List.of(component), profile());
 
-        assertThat(index.tables()).hasSize(1);
-        BodyDisplayObjectMetadata meta = index.tables().get("tbl-1");
+        assertThat(index.elements(ElementType.TABLE)).hasSize(1);
+        BodyDisplayObjectMetadata meta = index.elements(ElementType.TABLE).get("tbl-1");
         assertThat(meta.number()).isEqualTo(1);
         assertThat(meta.caption()).isEqualTo("Comparação de resultados");
     }
@@ -78,7 +79,7 @@ class DisplayObjectCollectorTest {
     void shouldIndexSectionsWithNumberedTitles() {
         BodySection s1 = new BodySection("sec-intro", 1, Optional.of("Introdução"), List.of());
         BodySection s2 = new BodySection("sec-dev", 1, Optional.of("Desenvolvimento"), List.of());
-        BodyContentComponent component = new BodyContentComponent(List.of(s1, s2));
+        BodyContentComponent component = new BodyContentComponent("bodyContent", List.of(s1, s2));
 
         Phase0Index index = collector.collect(List.of(component), profile());
 
@@ -93,8 +94,8 @@ class DisplayObjectCollectorTest {
     void shouldReturnEmptyIndexWhenNoBodyContentPresent() {
         Phase0Index index = collector.collect(List.of(), profile());
 
-        assertThat(index.figures()).isEmpty();
-        assertThat(index.tables()).isEmpty();
+        assertThat(index.elements(ElementType.FIGURE)).isEmpty();
+        assertThat(index.elements(ElementType.TABLE)).isEmpty();
         assertThat(index.sections()).isEmpty();
     }
 
@@ -107,12 +108,12 @@ class DisplayObjectCollectorTest {
                 Optional.of("Autoria própria"),
                 new BodyImageSource(ImageSourceType.DATA_URI, ONE_PIXEL_PNG, "Parte 2"));
         BodySection section = new BodySection("sec-1", 1, Optional.of("Seção"), List.of(figPart1, figPart2));
-        BodyContentComponent component = new BodyContentComponent(List.of(section));
+        BodyContentComponent component = new BodyContentComponent("bodyContent", List.of(section));
 
         Phase0Index index = collector.collect(List.of(component), profile());
 
-        assertThat(index.figures()).hasSize(1);
-        assertThat(index.figures().values().iterator().next().number()).isEqualTo(1);
+        assertThat(index.elements(ElementType.FIGURE)).hasSize(1);
+        assertThat(index.elements(ElementType.FIGURE).values().iterator().next().number()).isEqualTo(1);
     }
 
     private static BodyFigure figure(String id, String caption) {
@@ -177,7 +178,7 @@ class DisplayObjectCollectorTest {
                         frameRule(),
                         codeListingRule(),
                         chartRule(),
-                        new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor", "informação verbal"),
+                        new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor", "informação verbal", ", ", ", ", "(", ")"),
                         new CrossReferenceLabelsRule("Seção", "Figura", "Tabela", "Quadro", "Gráfico", "Listagem", "Equação")
                 )),
                 List.of("bodyContent")

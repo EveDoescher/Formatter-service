@@ -1,10 +1,11 @@
 package com.abntbuilder.formatter.rendering.phase0;
 
-import com.abntbuilder.formatter.document.component.bodycontent.CrossReferenceDisplayMode;
-import com.abntbuilder.formatter.document.component.bodycontent.CrossReferenceTargetType;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.CrossReferenceLabelsRule;
-import com.abntbuilder.formatter.rendering.component.bodycontent.BodyDisplayObjectMetadata;
-import com.abntbuilder.formatter.rendering.component.bodycontent.BodySectionMetadata;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.CrossReferenceDisplayMode;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.CrossReferenceTargetType;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.CrossReferenceLabelsRule;
+import com.abntbuilder.formatter.engine.model.profile.component.elementindex.ElementType;
+import com.abntbuilder.formatter.rendering.bodycontent.BodyDisplayObjectMetadata;
+import com.abntbuilder.formatter.rendering.bodycontent.BodySectionMetadata;
 import com.abntbuilder.formatter.shared.exception.InvalidBodyContentException;
 import org.junit.jupiter.api.Test;
 
@@ -110,24 +111,24 @@ class Phase0IndexTest {
     private static Phase0Index indexWithFigure(String id, int number, String caption) {
         return new Phase0Index(
                 Map.of(),
-                Map.of(id, new BodyDisplayObjectMetadata(id, number, caption)),
-                Map.of(), Map.of(), Map.of(), Map.of(), List.of()
+                Map.of(ElementType.FIGURE, Map.of(id, new BodyDisplayObjectMetadata(id, number, caption))),
+                List.of()
         );
     }
 
     private static Phase0Index indexWithTable(String id, int number, String caption) {
         return new Phase0Index(
                 Map.of(),
-                Map.of(),
-                Map.of(id, new BodyDisplayObjectMetadata(id, number, caption)),
-                Map.of(), Map.of(), Map.of(), List.of()
+                Map.of(ElementType.TABLE, Map.of(id, new BodyDisplayObjectMetadata(id, number, caption))),
+                List.of()
         );
     }
 
     private static Phase0Index indexWithSection(String id, int level, String renderedTitle, String renderedNumber) {
         return new Phase0Index(
                 Map.of(id, new BodySectionMetadata(id, level, renderedTitle, renderedNumber)),
-                Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), List.of()
+                Map.of(),
+                List.of()
         );
     }
 }

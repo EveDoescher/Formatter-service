@@ -1,26 +1,28 @@
 package com.abntbuilder.formatter.rendering.phase0;
 
-import com.abntbuilder.formatter.document.component.DocumentComponent;
-import com.abntbuilder.formatter.document.component.bodycontent.BodyBlock;
-import com.abntbuilder.formatter.document.component.bodycontent.BodyChart;
-import com.abntbuilder.formatter.document.component.bodycontent.BodyCodeListing;
-import com.abntbuilder.formatter.document.component.bodycontent.BodyContentComponent;
-import com.abntbuilder.formatter.document.component.bodycontent.BodyFigure;
-import com.abntbuilder.formatter.document.component.bodycontent.BodyFrame;
-import com.abntbuilder.formatter.document.component.bodycontent.BodySection;
-import com.abntbuilder.formatter.document.component.bodycontent.BodyTable;
-import com.abntbuilder.formatter.profile.model.DocumentProfile;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentComponentRule;
-import com.abntbuilder.formatter.profile.model.component.bodycontent.NumberingStrategy;
-import com.abntbuilder.formatter.profile.resolution.ComponentRuleResolver;
-import com.abntbuilder.formatter.rendering.component.bodycontent.BodyAbbreviationMetadata;
-import com.abntbuilder.formatter.rendering.component.bodycontent.BodyDisplayObjectMetadata;
-import com.abntbuilder.formatter.rendering.component.bodycontent.BodySectionMetadata;
-import com.abntbuilder.formatter.rendering.component.bodycontent.DisplayObjectContinuationPart;
-import com.abntbuilder.formatter.rendering.component.bodycontent.DisplayObjectRenderingState;
-import com.abntbuilder.formatter.rendering.component.bodycontent.SectionNumberingState;
+import com.abntbuilder.formatter.engine.model.content.DocumentComponent;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyBlock;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyChart;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyCodeListing;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyContentComponent;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyFigure;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyFrame;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodySection;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyTable;
+import com.abntbuilder.formatter.engine.model.profile.DocumentProfile;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.BodyContentComponentRule;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.NumberingStrategy;
+import com.abntbuilder.formatter.engine.model.profile.component.elementindex.ElementType;
+import com.abntbuilder.formatter.input.profile.ComponentRuleResolver;
+import com.abntbuilder.formatter.rendering.bodycontent.BodyAbbreviationMetadata;
+import com.abntbuilder.formatter.rendering.bodycontent.BodyDisplayObjectMetadata;
+import com.abntbuilder.formatter.rendering.bodycontent.BodySectionMetadata;
+import com.abntbuilder.formatter.rendering.bodycontent.DisplayObjectContinuationPart;
+import com.abntbuilder.formatter.rendering.bodycontent.DisplayObjectRenderingState;
+import com.abntbuilder.formatter.rendering.bodycontent.SectionNumberingState;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -145,15 +147,14 @@ public final class DisplayObjectCollector {
             }
         }
 
-        return new Phase0Index(
-                Map.copyOf(sectionIndex),
-                Map.copyOf(figureIndex),
-                Map.copyOf(tableIndex),
-                Map.copyOf(frameIndex),
-                Map.copyOf(chartIndex),
-                Map.copyOf(codeListingIndex),
-                List.copyOf(abbreviations)
-        );
+        Map<ElementType, Map<String, BodyDisplayObjectMetadata>> elementMap = new EnumMap<>(ElementType.class);
+        if (!figureIndex.isEmpty()) elementMap.put(ElementType.FIGURE, figureIndex);
+        if (!tableIndex.isEmpty()) elementMap.put(ElementType.TABLE, tableIndex);
+        if (!frameIndex.isEmpty()) elementMap.put(ElementType.FRAME, frameIndex);
+        if (!chartIndex.isEmpty()) elementMap.put(ElementType.CHART, chartIndex);
+        if (!codeListingIndex.isEmpty()) elementMap.put(ElementType.CODE_LISTING, codeListingIndex);
+
+        return new Phase0Index(Map.copyOf(sectionIndex), elementMap, List.copyOf(abbreviations));
     }
 
     private static int resolveNumber(int globalNumber, int chapterLevel,

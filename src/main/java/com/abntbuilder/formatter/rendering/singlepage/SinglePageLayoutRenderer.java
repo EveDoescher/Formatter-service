@@ -1,0 +1,55 @@
+package com.abntbuilder.formatter.rendering.singlepage;
+
+import com.abntbuilder.formatter.engine.model.output.DocxBlankLine;
+import com.abntbuilder.formatter.engine.model.output.DocxBlock;
+import com.abntbuilder.formatter.engine.model.output.DocxParagraph;
+import com.abntbuilder.formatter.engine.model.output.DocxRun;
+import com.abntbuilder.formatter.shared.measurement.MeasurementConverter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+public final class SinglePageLayoutRenderer {
+
+    public List<DocxBlock> render(SinglePageLayoutPlan plan) {
+        Objects.requireNonNull(plan, "plan must not be null");
+
+        List<DocxBlock> blocks = new ArrayList<>();
+
+        for (SinglePageLayoutElement element : plan.elements()) {
+            switch (element) {
+                case SinglePageTextLines textLines -> addTextLines(blocks, textLines);
+                case SinglePageSpacerLines spacerLines -> addSpacerLines(blocks, spacerLines);
+            }
+        }
+
+        return List.copyOf(blocks);
+    }
+
+    private static void addTextLines(
+            List<DocxBlock> blocks,
+            SinglePageTextLines textLines
+    ) {
+        blocks.add(new DocxParagraph(
+                List.of(DocxRun.of(textLines.paragraphText(), textLines.styleRule())),
+                textLines.styleRule(),
+                Optional.empty(),
+                Optional.of(textLines.exactLineHeightPt()),
+                Optional.of(textLines.layoutOverride())
+        ));
+    }
+
+    private static void addSpacerLines(
+            List<DocxBlock> blocks,
+            SinglePageSpacerLines spacerLines
+    ) {
+        for (int lineHeightTwips : spacerLines.distributedLineHeightTwips()) {
+            blocks.add(new DocxBlankLine(
+                    spacerLines.styleRule(),
+                    Optional.of(MeasurementConverter.twipsToPoints(lineHeightTwips))
+            ));
+        }
+    }
+}
