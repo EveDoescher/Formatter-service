@@ -61,6 +61,7 @@ public record BodyContentStyleMapping(
             case DIRECT_LONG -> directLongQuoteStyleId;
             case INDIRECT, VERBAL -> indirectCitationStyleId;
             case CITATION_OF_CITATION -> citationOfCitationStyleId;
+            case NUMERIC -> indirectCitationStyleId;
         };
     }
 

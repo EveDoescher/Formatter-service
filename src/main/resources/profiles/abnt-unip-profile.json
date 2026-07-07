@@ -1701,7 +1701,8 @@
         "authorYearSeparator": ", ",
         "pageReferenceSeparator": ", ",
         "parenOpen": "(",
-        "parenClose": ")"
+        "parenClose": ")",
+        "multiSourceSeparator": "; "
       },
       "crossReferenceLabels": {
         "sectionLabel": "Seção",

@@ -368,23 +368,26 @@ public record ProfileDefinition(
             String pageReferenceSeparator,
             String parenOpen,
             String parenClose,
-            Boolean etAlItalic
+            Boolean etAlItalic,
+            String numericPrefix,
+            String numericSuffix,
+            String numericRangeSeparator,
+            String numericListSeparator,
+            Boolean numericRangeCollapse,
+            String multiSourceSeparator
     ) {
         com.abntbuilder.formatter.engine.model.profile.component.bodycontent.CitationFormattingRule toDomain() {
             return new com.abntbuilder.formatter.engine.model.profile.component.bodycontent.CitationFormattingRule(
-                    pagePrefix,
-                    multiAuthorJoiner,
-                    etAl,
-                    apudConnector,
-                    suppressionMarker,
-                    emphasisOursLabel,
-                    emphasisAuthorLabel,
-                    verbalCitationLabel,
-                    authorYearSeparator,
-                    pageReferenceSeparator,
-                    parenOpen,
-                    parenClose,
-                    etAlItalic != null && etAlItalic
+                    pagePrefix, multiAuthorJoiner, etAl, apudConnector, suppressionMarker,
+                    emphasisOursLabel, emphasisAuthorLabel, verbalCitationLabel,
+                    authorYearSeparator, pageReferenceSeparator, parenOpen, parenClose,
+                    etAlItalic != null && etAlItalic,
+                    Optional.ofNullable(numericPrefix),
+                    Optional.ofNullable(numericSuffix),
+                    Optional.ofNullable(numericRangeSeparator),
+                    Optional.ofNullable(numericListSeparator),
+                    numericRangeCollapse != null && numericRangeCollapse,
+                    multiSourceSeparator
             );
         }
     }

@@ -57,8 +57,8 @@ class DisplayObjectCollectorTest {
         Phase0Index index = collector.collect(List.of(component), profile());
 
         assertThat(index.elements(ElementType.FIGURE)).hasSize(2);
-        assertThat(index.elements(ElementType.FIGURE).get("fig-1").number()).isEqualTo(1);
-        assertThat(index.elements(ElementType.FIGURE).get("fig-2").number()).isEqualTo(2);
+        assertThat(index.elements(ElementType.FIGURE).get("fig-1").number()).isEqualTo("1");
+        assertThat(index.elements(ElementType.FIGURE).get("fig-2").number()).isEqualTo("2");
     }
 
     @Test
@@ -71,7 +71,7 @@ class DisplayObjectCollectorTest {
 
         assertThat(index.elements(ElementType.TABLE)).hasSize(1);
         BodyDisplayObjectMetadata meta = index.elements(ElementType.TABLE).get("tbl-1");
-        assertThat(meta.number()).isEqualTo(1);
+        assertThat(meta.number()).isEqualTo("1");
         assertThat(meta.caption()).isEqualTo("Comparação de resultados");
     }
 
@@ -113,7 +113,7 @@ class DisplayObjectCollectorTest {
         Phase0Index index = collector.collect(List.of(component), profile());
 
         assertThat(index.elements(ElementType.FIGURE)).hasSize(1);
-        assertThat(index.elements(ElementType.FIGURE).values().iterator().next().number()).isEqualTo(1);
+        assertThat(index.elements(ElementType.FIGURE).values().iterator().next().number()).isEqualTo("1");
     }
 
     private static BodyFigure figure(String id, String caption) {

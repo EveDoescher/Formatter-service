@@ -2,6 +2,7 @@ package com.abntbuilder.formatter.engine.model.content.bodycontent;
 
 import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.CitationFormattingRule;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ public record BodyCitationCall(
         Optional<CitationSource> source,
         Optional<CitationSource> originalSource,
         Optional<CitationSource> consultedSource,
+        List<String> numericReferenceIds,
         boolean emphasisOurs,
         boolean emphasisAuthor
 ) implements BodyInline {
@@ -24,7 +26,20 @@ public record BodyCitationCall(
             Optional<CitationSource> originalSource,
             Optional<CitationSource> consultedSource
     ) {
-        this(citationType, mode, formatting, source, originalSource, consultedSource, false, false);
+        this(citationType, mode, formatting, source, originalSource, consultedSource, List.of(), false, false);
+    }
+
+    public BodyCitationCall(
+            BodyCitationType citationType,
+            BodyCitationMode mode,
+            CitationFormattingRule formatting,
+            Optional<CitationSource> source,
+            Optional<CitationSource> originalSource,
+            Optional<CitationSource> consultedSource,
+            boolean emphasisOurs,
+            boolean emphasisAuthor
+    ) {
+        this(citationType, mode, formatting, source, originalSource, consultedSource, List.of(), emphasisOurs, emphasisAuthor);
     }
 
     public BodyCitationCall {
@@ -34,8 +49,10 @@ public record BodyCitationCall(
         Objects.requireNonNull(source, "source must not be null");
         Objects.requireNonNull(originalSource, "originalSource must not be null");
         Objects.requireNonNull(consultedSource, "consultedSource must not be null");
+        Objects.requireNonNull(numericReferenceIds, "numericReferenceIds must not be null");
+        numericReferenceIds = List.copyOf(numericReferenceIds);
 
-        validateSources(citationType, source, originalSource, consultedSource);
+        validateSources(citationType, source, originalSource, consultedSource, numericReferenceIds);
     }
 
     @Override
@@ -44,6 +61,7 @@ public record BodyCitationCall(
             case DIRECT_SHORT, DIRECT_LONG, INDIRECT -> renderRegularCitation();
             case CITATION_OF_CITATION -> renderCitationOfCitation();
             case VERBAL -> renderVerbalCitation();
+            case NUMERIC -> "[?]";
         };
     }
 
@@ -101,7 +119,8 @@ public record BodyCitationCall(
             BodyCitationType citationType,
             Optional<CitationSource> source,
             Optional<CitationSource> originalSource,
-            Optional<CitationSource> consultedSource
+            Optional<CitationSource> consultedSource,
+            List<String> numericReferenceIds
     ) {
         switch (citationType) {
             case DIRECT_SHORT, DIRECT_LONG -> {
@@ -128,6 +147,14 @@ public record BodyCitationCall(
                         new IllegalArgumentException("CITATION_OF_CITATION consultedSource must be provided.")
                 );
                 consulted.requirePage(citationType.name());
+            }
+            case NUMERIC -> {
+                if (numericReferenceIds.isEmpty()) {
+                    throw new IllegalArgumentException("NUMERIC citation must have at least one numericReferenceId.");
+                }
+                requireAbsent(source, "source");
+                requireAbsent(originalSource, "originalSource");
+                requireAbsent(consultedSource, "consultedSource");
             }
         }
     }

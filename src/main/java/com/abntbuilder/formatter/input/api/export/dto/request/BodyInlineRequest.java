@@ -12,6 +12,7 @@ import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.Cita
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
 import java.util.Optional;
 
 public record BodyInlineRequest(
@@ -24,6 +25,7 @@ public record BodyInlineRequest(
         @Valid CitationSourceRequest source,
         @Valid CitationSourceRequest originalSource,
         @Valid CitationSourceRequest consultedSource,
+        List<String> numericReferenceIds,
         InlineFormattingRequest formatting,
         @Valid java.util.List<BodyQuoteMarkerRequest> markers,
         @Valid java.util.List<BodyInlineRequest> content,
@@ -46,7 +48,9 @@ public record BodyInlineRequest(
                     requireCitationFormatting(citationFormatting),
                     source == null ? Optional.empty() : Optional.of(source.toDomain()),
                     originalSource == null ? Optional.empty() : Optional.of(originalSource.toDomain()),
-                    consultedSource == null ? Optional.empty() : Optional.of(consultedSource.toDomain())
+                    consultedSource == null ? Optional.empty() : Optional.of(consultedSource.toDomain()),
+                    numericReferenceIds == null ? java.util.List.of() : numericReferenceIds,
+                    false, false
             );
             case ABBREVIATION -> {
                 if (text == null || text.isBlank()) {

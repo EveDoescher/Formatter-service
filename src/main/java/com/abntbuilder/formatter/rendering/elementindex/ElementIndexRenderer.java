@@ -51,7 +51,7 @@ public final class ElementIndexRenderer implements MetadataConsumingRenderer<Ele
 
         for (BodyDisplayObjectMetadata item : resolveCollection(rule, phase0Index)) {
             String text = rule.entryTemplate()
-                    .replace("{number}", String.valueOf(item.number()))
+                    .replace("{number}", item.number())
                     .replace("{caption}", item.caption());
             blocks.add(new DocxParagraph(List.of(DocxRun.of(text, entryStyle)), entryStyle));
         }

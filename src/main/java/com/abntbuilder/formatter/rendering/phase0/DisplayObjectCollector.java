@@ -3,10 +3,14 @@ package com.abntbuilder.formatter.rendering.phase0;
 import com.abntbuilder.formatter.engine.model.content.DocumentComponent;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyBlock;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyChart;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyCitationCall;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyCitationType;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyCodeListing;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyContentComponent;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyFigure;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyFrame;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyInline;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyParagraph;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodySection;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyTable;
 import com.abntbuilder.formatter.engine.model.profile.DocumentProfile;
@@ -154,15 +158,36 @@ public final class DisplayObjectCollector {
         if (!chartIndex.isEmpty()) elementMap.put(ElementType.CHART, chartIndex);
         if (!codeListingIndex.isEmpty()) elementMap.put(ElementType.CODE_LISTING, codeListingIndex);
 
-        return new Phase0Index(Map.copyOf(sectionIndex), elementMap, List.copyOf(abbreviations));
+        Map<String, Integer> numericCitationNumbers = collectNumericCitationNumbers(component.sections());
+
+        return new Phase0Index(Map.copyOf(sectionIndex), elementMap, List.copyOf(abbreviations), numericCitationNumbers);
     }
 
-    private static int resolveNumber(int globalNumber, int chapterLevel,
-                                     NumberingStrategy strategy, String separator) {
+    private static String resolveNumber(int globalNumber, int chapterLevel,
+                                       NumberingStrategy strategy, String separator) {
         return switch (strategy) {
-            case GLOBAL_SEQUENTIAL -> globalNumber;
-            case BY_CHAPTER -> globalNumber;
+            case GLOBAL_SEQUENTIAL -> String.valueOf(globalNumber);
+            case BY_CHAPTER -> chapterLevel + separator + globalNumber;
         };
+    }
+
+    private static Map<String, Integer> collectNumericCitationNumbers(List<BodySection> sections) {
+        Map<String, Integer> numbers = new LinkedHashMap<>();
+        for (BodySection section : sections) {
+            for (BodyBlock block : section.blocks()) {
+                if (block instanceof BodyParagraph paragraph) {
+                    for (BodyInline inline : paragraph.content()) {
+                        if (inline instanceof BodyCitationCall citation
+                                && citation.citationType() == BodyCitationType.NUMERIC) {
+                            for (String refId : citation.numericReferenceIds()) {
+                                numbers.computeIfAbsent(refId, k -> numbers.size() + 1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Map.copyOf(numbers);
     }
 
     private static List<BodyFigure> figuresFrom(List<BodySection> sections) {

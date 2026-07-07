@@ -84,7 +84,7 @@ class BodyContentRendererMetadataTest {
 
         assertThat(result.metadata().figures()).hasSize(1);
         assertThat(result.metadata().figures().get(0).id()).isEqualTo("fig-1");
-        assertThat(result.metadata().figures().get(0).number()).isEqualTo(1);
+        assertThat(result.metadata().figures().get(0).number()).isEqualTo("1");
         assertThat(result.metadata().figures().get(0).caption()).isEqualTo("Diagrama de componentes");
     }
 

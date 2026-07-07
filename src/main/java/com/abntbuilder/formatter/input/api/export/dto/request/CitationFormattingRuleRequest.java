@@ -16,24 +16,27 @@ public record CitationFormattingRuleRequest(
         String pageReferenceSeparator,
         String parenOpen,
         String parenClose,
-        Boolean etAlItalic
+        Boolean etAlItalic,
+        String numericPrefix,
+        String numericSuffix,
+        String numericRangeSeparator,
+        String numericListSeparator,
+        Boolean numericRangeCollapse,
+        String multiSourceSeparator
 ) {
 
     public CitationFormattingRule toDomain() {
         return new CitationFormattingRule(
-                pagePrefix,
-                multiAuthorJoiner,
-                etAl,
-                apudConnector,
-                suppressionMarker,
-                emphasisOursLabel,
-                emphasisAuthorLabel,
-                verbalCitationLabel,
-                authorYearSeparator,
-                pageReferenceSeparator,
-                parenOpen,
-                parenClose,
-                etAlItalic != null && etAlItalic
+                pagePrefix, multiAuthorJoiner, etAl, apudConnector, suppressionMarker,
+                emphasisOursLabel, emphasisAuthorLabel, verbalCitationLabel,
+                authorYearSeparator, pageReferenceSeparator, parenOpen, parenClose,
+                etAlItalic != null && etAlItalic,
+                java.util.Optional.ofNullable(numericPrefix),
+                java.util.Optional.ofNullable(numericSuffix),
+                java.util.Optional.ofNullable(numericRangeSeparator),
+                java.util.Optional.ofNullable(numericListSeparator),
+                numericRangeCollapse != null && numericRangeCollapse,
+                multiSourceSeparator
         );
     }
 }

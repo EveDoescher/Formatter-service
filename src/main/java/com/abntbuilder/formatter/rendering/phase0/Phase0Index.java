@@ -19,13 +19,15 @@ import java.util.Objects;
 public record Phase0Index(
         Map<String, BodySectionMetadata> sections,
         Map<ElementType, Map<String, BodyDisplayObjectMetadata>> elements,
-        List<BodyAbbreviationMetadata> abbreviations
+        List<BodyAbbreviationMetadata> abbreviations,
+        Map<String, Integer> numericCitationNumbers
 ) {
 
     public Phase0Index {
         Objects.requireNonNull(sections, "sections must not be null");
         Objects.requireNonNull(elements, "elements must not be null");
         Objects.requireNonNull(abbreviations, "abbreviations must not be null");
+        Objects.requireNonNull(numericCitationNumbers, "numericCitationNumbers must not be null");
         sections = Map.copyOf(sections);
         Map<ElementType, Map<String, BodyDisplayObjectMetadata>> immutableElements = new EnumMap<>(ElementType.class);
         for (Map.Entry<ElementType, Map<String, BodyDisplayObjectMetadata>> e : elements.entrySet()) {
@@ -33,14 +35,30 @@ public record Phase0Index(
         }
         elements = Map.copyOf(immutableElements);
         abbreviations = List.copyOf(abbreviations);
+        numericCitationNumbers = Map.copyOf(numericCitationNumbers);
+    }
+
+    public Phase0Index(
+            Map<String, BodySectionMetadata> sections,
+            Map<ElementType, Map<String, BodyDisplayObjectMetadata>> elements,
+            List<BodyAbbreviationMetadata> abbreviations
+    ) {
+        this(sections, elements, abbreviations, Map.of());
     }
 
     public static Phase0Index empty() {
-        return new Phase0Index(Map.of(), Map.of(), List.of());
+        return new Phase0Index(Map.of(), Map.of(), List.of(), Map.of());
     }
 
     public Map<String, BodyDisplayObjectMetadata> elements(ElementType type) {
         return elements.getOrDefault(type, Map.of());
+    }
+
+    public int numericCitationNumber(String referenceId) {
+        Integer n = numericCitationNumbers.get(referenceId);
+        if (n == null) throw new IllegalArgumentException(
+                "No numeric citation number assigned for referenceId: '" + referenceId + "'");
+        return n;
     }
 
     public Phase0Index mergedWith(Phase0Index other) {
@@ -57,10 +75,15 @@ public record Phase0Index(
 
         List<BodyAbbreviationMetadata> mergedAbbreviations = new ArrayList<>(abbreviations);
         mergedAbbreviations.addAll(other.abbreviations);
+
+        Map<String, Integer> mergedNumeric = new LinkedHashMap<>(numericCitationNumbers);
+        mergedNumeric.putAll(other.numericCitationNumbers);
+
         return new Phase0Index(
                 Map.copyOf(mergedSections),
                 mergedElements,
-                List.copyOf(mergedAbbreviations)
+                List.copyOf(mergedAbbreviations),
+                Map.copyOf(mergedNumeric)
         );
     }
 
@@ -99,7 +122,7 @@ public record Phase0Index(
         BodyDisplayObjectMetadata m = elements(type).get(targetId);
         if (m == null) throw new InvalidBodyContentException(
                 "CROSS_REFERENCE targetId not found: '" + targetId + "' (type: " + typeName + ").");
-        return String.valueOf(m.number());
+        return m.number();
     }
 
     private String resolveCaption(String targetId, CrossReferenceTargetType targetType) {

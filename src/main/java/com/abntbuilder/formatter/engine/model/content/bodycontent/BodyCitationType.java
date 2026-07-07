@@ -5,5 +5,6 @@ public enum BodyCitationType {
     DIRECT_LONG,
     INDIRECT,
     CITATION_OF_CITATION,
-    VERBAL
+    VERBAL,
+    NUMERIC
 }

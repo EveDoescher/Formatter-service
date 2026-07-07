@@ -135,7 +135,7 @@ class ComponentRulesRequestTest {
                         "Gráfico",
                         null
                 ),
-                new CitationFormattingRuleRequest("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor", "informação verbal", ", ", ", ", "(", ")", null),
+                new CitationFormattingRuleRequest("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor", "informação verbal", ", ", ", ", "(", ")", null, null, null, null, null, null, null),
                 new CrossReferenceLabelsRuleRequest("Seção", "Figura", "Tabela", "Quadro", "Gráfico", "Listagem", "Equação")
         );
     }

@@ -1,5 +1,7 @@
 package com.abntbuilder.formatter.engine.model.profile.component.bodycontent;
 
+import java.util.Optional;
+
 public record CitationFormattingRule(
         String pagePrefix,
         String multiAuthorJoiner,
@@ -13,7 +15,13 @@ public record CitationFormattingRule(
         String pageReferenceSeparator,
         String parenOpen,
         String parenClose,
-        boolean etAlItalic
+        boolean etAlItalic,
+        Optional<String> numericPrefix,
+        Optional<String> numericSuffix,
+        Optional<String> numericRangeSeparator,
+        Optional<String> numericListSeparator,
+        boolean numericRangeCollapse,
+        String multiSourceSeparator
 ) {
 
     public CitationFormattingRule {
@@ -29,6 +37,11 @@ public record CitationFormattingRule(
         if (pageReferenceSeparator == null) pageReferenceSeparator = ", ";
         if (parenOpen == null) parenOpen = "(";
         if (parenClose == null) parenClose = ")";
+        if (numericPrefix == null) numericPrefix = Optional.of("(");
+        if (numericSuffix == null) numericSuffix = Optional.of(")");
+        if (numericRangeSeparator == null) numericRangeSeparator = Optional.of("–");
+        if (numericListSeparator == null) numericListSeparator = Optional.of(",");
+        if (multiSourceSeparator == null) multiSourceSeparator = "; ";
     }
 
     public CitationFormattingRule(
@@ -47,7 +60,29 @@ public record CitationFormattingRule(
     ) {
         this(pagePrefix, multiAuthorJoiner, etAl, apudConnector, suppressionMarker,
                 emphasisOursLabel, emphasisAuthorLabel, verbalCitationLabel,
-                authorYearSeparator, pageReferenceSeparator, parenOpen, parenClose, false);
+                authorYearSeparator, pageReferenceSeparator, parenOpen, parenClose, false,
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), false, null);
+    }
+
+    public CitationFormattingRule(
+            String pagePrefix,
+            String multiAuthorJoiner,
+            String etAl,
+            String apudConnector,
+            String suppressionMarker,
+            String emphasisOursLabel,
+            String emphasisAuthorLabel,
+            String verbalCitationLabel,
+            String authorYearSeparator,
+            String pageReferenceSeparator,
+            String parenOpen,
+            String parenClose,
+            boolean etAlItalic
+    ) {
+        this(pagePrefix, multiAuthorJoiner, etAl, apudConnector, suppressionMarker,
+                emphasisOursLabel, emphasisAuthorLabel, verbalCitationLabel,
+                authorYearSeparator, pageReferenceSeparator, parenOpen, parenClose, etAlItalic,
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), false, null);
     }
 
     private static void requireNonBlank(String value, String fieldName) {

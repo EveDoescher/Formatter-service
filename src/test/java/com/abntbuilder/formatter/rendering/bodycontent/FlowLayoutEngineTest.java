@@ -137,7 +137,7 @@ class FlowLayoutEngineTest {
 
         assertEquals(1, ctx.figureMetas().size());
         assertEquals("fig1", ctx.figureMetas().get(0).id());
-        assertEquals(1, ctx.figureMetas().get(0).number());
+        assertEquals("1", ctx.figureMetas().get(0).number());
     }
 
     @Test
