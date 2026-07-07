@@ -1,7 +1,7 @@
 package com.abntbuilder.formatter.api.export.dto.request;
 
-import com.abntbuilder.formatter.document.component.listoftables.ListOfTablesComponent;
+import com.abntbuilder.formatter.document.component.elementindex.ElementIndexContent;
 
 public record ListOfTablesRequest() {
-    public ListOfTablesComponent toDomain() { return new ListOfTablesComponent(); }
+    public ElementIndexContent toDomain() { return new ElementIndexContent("listOfTables"); }
 }

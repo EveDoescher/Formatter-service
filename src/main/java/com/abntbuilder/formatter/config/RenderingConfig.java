@@ -3,21 +3,16 @@ package com.abntbuilder.formatter.config;
 import com.abntbuilder.formatter.profile.resolution.ProfileProvider;
 import com.abntbuilder.formatter.rendering.component.ComponentRenderer;
 import com.abntbuilder.formatter.rendering.component.ComponentRendererRegistry;
-import com.abntbuilder.formatter.rendering.component.annex.AnnexRenderer;
-import com.abntbuilder.formatter.rendering.component.appendix.AppendixRenderer;
 import com.abntbuilder.formatter.rendering.component.bodycontent.BodyContentRenderer;
+import com.abntbuilder.formatter.rendering.component.elementindex.ElementIndexRenderer;
 import com.abntbuilder.formatter.rendering.component.flowtextual.FlowTextualRenderer;
-import com.abntbuilder.formatter.rendering.component.listofcharts.ListOfChartsRenderer;
-import com.abntbuilder.formatter.rendering.component.listofcodelistings.ListOfCodeListingsRenderer;
-import com.abntbuilder.formatter.rendering.component.listoffigures.ListOfFiguresRenderer;
-import com.abntbuilder.formatter.rendering.component.listofframes.ListOfFramesRenderer;
-import com.abntbuilder.formatter.rendering.component.listoftables.ListOfTablesRenderer;
 import com.abntbuilder.formatter.rendering.component.references.ReferencesRenderer;
+import com.abntbuilder.formatter.rendering.component.sectionindex.SectionIndexRenderer;
+import com.abntbuilder.formatter.rendering.component.sectioned.SectionedRenderer;
 import com.abntbuilder.formatter.rendering.component.singlepage.SinglePageContentValidator;
 import com.abntbuilder.formatter.rendering.component.singlepage.SinglePageLayoutAssembler;
 import com.abntbuilder.formatter.rendering.component.singlepage.SinglePageLayoutCalculator;
 import com.abntbuilder.formatter.rendering.component.singlepage.SinglePageRenderer;
-import com.abntbuilder.formatter.rendering.component.summary.SummaryRenderer;
 import com.abntbuilder.formatter.rendering.layout.singlepage.HorizontalPlacementResolver;
 import com.abntbuilder.formatter.rendering.layout.singlepage.MarginBasedSinglePageSafetyPolicy;
 import com.abntbuilder.formatter.rendering.layout.singlepage.OrderedLayoutGapResolver;
@@ -138,7 +133,7 @@ public class RenderingConfig {
 
     @Bean
     public BodyContentRenderer bodyContentRenderer() {
-        return new BodyContentRenderer();
+        return new BodyContentRenderer("bodyContent");
     }
 
     @Bean
@@ -173,17 +168,17 @@ public class RenderingConfig {
 
     @Bean
     public ReferencesRenderer referencesRenderer() {
-        return new ReferencesRenderer();
+        return new ReferencesRenderer("references");
     }
 
     @Bean
-    public AppendixRenderer appendixRenderer() {
-        return new AppendixRenderer();
+    public SectionedRenderer appendixRenderer() {
+        return new SectionedRenderer("appendix");
     }
 
     @Bean
-    public AnnexRenderer annexRenderer() {
-        return new AnnexRenderer();
+    public SectionedRenderer annexRenderer() {
+        return new SectionedRenderer("annex");
     }
 
     @Bean
@@ -192,33 +187,33 @@ public class RenderingConfig {
     }
 
     @Bean
-    public SummaryRenderer summaryRenderer() {
-        return new SummaryRenderer();
+    public SectionIndexRenderer summaryRenderer() {
+        return new SectionIndexRenderer("summary");
     }
 
     @Bean
-    public ListOfFiguresRenderer listOfFiguresRenderer() {
-        return new ListOfFiguresRenderer();
+    public ElementIndexRenderer listOfFiguresRenderer() {
+        return new ElementIndexRenderer("listOfFigures");
     }
 
     @Bean
-    public ListOfTablesRenderer listOfTablesRenderer() {
-        return new ListOfTablesRenderer();
+    public ElementIndexRenderer listOfTablesRenderer() {
+        return new ElementIndexRenderer("listOfTables");
     }
 
     @Bean
-    public ListOfFramesRenderer listOfFramesRenderer() {
-        return new ListOfFramesRenderer();
+    public ElementIndexRenderer listOfFramesRenderer() {
+        return new ElementIndexRenderer("listOfFrames");
     }
 
     @Bean
-    public ListOfChartsRenderer listOfChartsRenderer() {
-        return new ListOfChartsRenderer();
+    public ElementIndexRenderer listOfChartsRenderer() {
+        return new ElementIndexRenderer("listOfCharts");
     }
 
     @Bean
-    public ListOfCodeListingsRenderer listOfCodeListingsRenderer() {
-        return new ListOfCodeListingsRenderer();
+    public ElementIndexRenderer listOfCodeListingsRenderer() {
+        return new ElementIndexRenderer("listOfCodeListings");
     }
 
     @Bean

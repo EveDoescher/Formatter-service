@@ -8,6 +8,8 @@ import com.abntbuilder.formatter.rendering.component.bodycontent.BodyDisplayObje
 import com.abntbuilder.formatter.rendering.component.bodycontent.BodySectionMetadata;
 import com.abntbuilder.formatter.shared.exception.InvalidBodyContentException;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -42,6 +44,33 @@ public record Phase0Index(
     public static Phase0Index empty() {
         return new Phase0Index(
                 Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), List.of()
+        );
+    }
+
+    public Phase0Index mergedWith(Phase0Index other) {
+        Objects.requireNonNull(other, "other must not be null");
+        Map<String, BodySectionMetadata> mergedSections = new LinkedHashMap<>(sections);
+        mergedSections.putAll(other.sections);
+        Map<String, BodyDisplayObjectMetadata> mergedFigures = new LinkedHashMap<>(figures);
+        mergedFigures.putAll(other.figures);
+        Map<String, BodyDisplayObjectMetadata> mergedTables = new LinkedHashMap<>(tables);
+        mergedTables.putAll(other.tables);
+        Map<String, BodyDisplayObjectMetadata> mergedFrames = new LinkedHashMap<>(frames);
+        mergedFrames.putAll(other.frames);
+        Map<String, BodyDisplayObjectMetadata> mergedCharts = new LinkedHashMap<>(charts);
+        mergedCharts.putAll(other.charts);
+        Map<String, BodyDisplayObjectMetadata> mergedCodeListings = new LinkedHashMap<>(codeListings);
+        mergedCodeListings.putAll(other.codeListings);
+        List<BodyAbbreviationMetadata> mergedAbbreviations = new ArrayList<>(abbreviations);
+        mergedAbbreviations.addAll(other.abbreviations);
+        return new Phase0Index(
+                Map.copyOf(mergedSections),
+                Map.copyOf(mergedFigures),
+                Map.copyOf(mergedTables),
+                Map.copyOf(mergedFrames),
+                Map.copyOf(mergedCharts),
+                Map.copyOf(mergedCodeListings),
+                List.copyOf(mergedAbbreviations)
         );
     }
 

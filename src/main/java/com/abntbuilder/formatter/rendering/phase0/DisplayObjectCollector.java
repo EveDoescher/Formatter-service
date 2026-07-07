@@ -32,20 +32,15 @@ public final class DisplayObjectCollector {
         Objects.requireNonNull(selectedComponents, "selectedComponents must not be null");
         Objects.requireNonNull(profile, "profile must not be null");
 
-        BodyContentComponent bodyContent = selectedComponents.stream()
-                .filter(c -> c instanceof BodyContentComponent)
-                .map(BodyContentComponent.class::cast)
-                .findFirst()
-                .orElse(null);
+        Phase0Index merged = Phase0Index.empty();
+        for (DocumentComponent component : selectedComponents) {
+            if (!(component instanceof BodyContentComponent bodyContent)) continue;
 
-        if (bodyContent == null) {
-            return Phase0Index.empty();
+            BodyContentComponentRule rule = new ComponentRuleResolver(profile)
+                    .resolve(bodyContent.componentId(), BodyContentComponentRule.class);
+            merged = merged.mergedWith(collectFromBodyContent(bodyContent, rule));
         }
-
-        BodyContentComponentRule rule = new ComponentRuleResolver(profile)
-                .resolve("bodyContent", BodyContentComponentRule.class);
-
-        return collectFromBodyContent(bodyContent, rule);
+        return merged;
     }
 
     Phase0Index collectFromBodyContent(BodyContentComponent component, BodyContentComponentRule rule) {

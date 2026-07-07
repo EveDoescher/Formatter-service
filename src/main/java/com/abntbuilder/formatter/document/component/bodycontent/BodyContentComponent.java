@@ -9,10 +9,17 @@ import java.util.Objects;
 import java.util.Set;
 
 public record BodyContentComponent(
+        String componentId,
         List<BodySection> sections
 ) implements DocumentComponent {
 
+    public BodyContentComponent(List<BodySection> sections) {
+        this("bodyContent", sections);
+    }
+
     public BodyContentComponent {
+        if (componentId == null || componentId.isBlank())
+            throw new IllegalArgumentException("componentId must not be blank.");
         Objects.requireNonNull(sections, "sections must not be null");
 
         if (sections.isEmpty()) {

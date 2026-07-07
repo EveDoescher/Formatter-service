@@ -25,11 +25,17 @@ import java.util.Objects;
 public final class BodyContentRenderer
         implements Phase0ConsumingRenderer<BodyContentComponent, BodyContentRenderResult> {
 
-    public static final String COMPONENT_ID = "bodyContent";
+    private final String componentId;
+
+    public BodyContentRenderer(String componentId) {
+        if (componentId == null || componentId.isBlank())
+            throw new IllegalArgumentException("BodyContentRenderer.componentId must not be blank.");
+        this.componentId = componentId;
+    }
 
     @Override
     public String componentId() {
-        return COMPONENT_ID;
+        return componentId;
     }
 
     @Override
@@ -45,7 +51,7 @@ public final class BodyContentRenderer
         Objects.requireNonNull(phase0Index, "phase0Index must not be null");
 
         BodyContentComponentRule rule = new ComponentRuleResolver(profile)
-                .resolve(COMPONENT_ID, BodyContentComponentRule.class);
+                .resolve(component.componentId(), BodyContentComponentRule.class);
         StyleResolver styleResolver = new StyleResolver(profile);
 
         FlowRenderingContext ctx = new FlowRenderingContext(

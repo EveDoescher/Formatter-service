@@ -1,7 +1,7 @@
 package com.abntbuilder.formatter.api.export.dto.request;
 
-import com.abntbuilder.formatter.document.component.listoffigures.ListOfFiguresComponent;
+import com.abntbuilder.formatter.document.component.elementindex.ElementIndexContent;
 
 public record ListOfFiguresRequest() {
-    public ListOfFiguresComponent toDomain() { return new ListOfFiguresComponent(); }
+    public ElementIndexContent toDomain() { return new ElementIndexContent("listOfFigures"); }
 }

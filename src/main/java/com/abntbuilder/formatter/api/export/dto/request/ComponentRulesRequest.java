@@ -19,15 +19,15 @@ public record ComponentRulesRequest(
         @Valid FlowTextualComponentRuleRequest resumo,
         @JsonProperty("abstract") @Valid FlowTextualComponentRuleRequest abstractEn,
         @Valid ReferencesComponentRuleRequest references,
-        @Valid AppendixComponentRuleRequest appendix,
-        @Valid AnnexComponentRuleRequest annex,
+        @Valid SectionedComponentRuleRequest appendix,
+        @Valid SectionedComponentRuleRequest annex,
         @Valid FlowTextualComponentRuleRequest glossary,
-        @Valid SummaryComponentRuleRequest summary,
-        @Valid IndexListComponentRuleRequest listOfFigures,
-        @Valid IndexListComponentRuleRequest listOfTables,
-        @Valid IndexListComponentRuleRequest listOfFrames,
-        @Valid IndexListComponentRuleRequest listOfCharts,
-        @Valid IndexListComponentRuleRequest listOfCodeListings,
+        @Valid SectionIndexComponentRuleRequest summary,
+        @Valid ElementIndexComponentRuleRequest listOfFigures,
+        @Valid ElementIndexComponentRuleRequest listOfTables,
+        @Valid ElementIndexComponentRuleRequest listOfFrames,
+        @Valid ElementIndexComponentRuleRequest listOfCharts,
+        @Valid ElementIndexComponentRuleRequest listOfCodeListings,
         @Valid FlowTextualComponentRuleRequest listOfAbbreviations,
         @Valid FlowTextualComponentRuleRequest listOfSymbols
 ) {
@@ -54,6 +54,7 @@ public record ComponentRulesRequest(
         if (listOfFrames != null) rules.add(listOfFrames.toDomain("listOfFrames"));
         if (listOfCharts != null) rules.add(listOfCharts.toDomain("listOfCharts"));
         if (listOfCodeListings != null) rules.add(listOfCodeListings.toDomain("listOfCodeListings"));
+
         if (listOfAbbreviations != null) rules.add(listOfAbbreviations.toDomain());
         if (listOfSymbols != null) rules.add(listOfSymbols.toDomain());
 

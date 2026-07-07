@@ -1,7 +1,10 @@
 package com.abntbuilder.formatter.rendering.component;
 
 import com.abntbuilder.formatter.document.component.DocumentComponent;
+import com.abntbuilder.formatter.document.component.elementindex.ElementIndexContent;
 import com.abntbuilder.formatter.document.component.flowtextual.FlowTextualContent;
+import com.abntbuilder.formatter.document.component.sectionindex.SectionIndexContent;
+import com.abntbuilder.formatter.document.component.sectioned.SectionedContent;
 import com.abntbuilder.formatter.document.component.singlepage.SinglePageContent;
 import com.abntbuilder.formatter.shared.exception.MissingComponentRendererException;
 
@@ -29,10 +32,13 @@ public final class ComponentRendererRegistry {
                 throw new IllegalArgumentException("Duplicate component renderer id: " + renderer.componentId());
             }
 
-            // SinglePageContent and FlowTextualContent renderers share the same Java type but differ by
+            // Components that carry their own componentId share the same Java type but differ by
             // componentId — skip the type-map duplicate check for them.
             if (renderer.componentType() != SinglePageContent.class
-                    && renderer.componentType() != FlowTextualContent.class) {
+                    && renderer.componentType() != FlowTextualContent.class
+                    && renderer.componentType() != SectionedContent.class
+                    && renderer.componentType() != SectionIndexContent.class
+                    && renderer.componentType() != ElementIndexContent.class) {
                 if (resolvedRenderersByType.put(renderer.componentType(), renderer) != null) {
                     throw new IllegalArgumentException(
                             "Duplicate component renderer type: " + renderer.componentType().getSimpleName()
@@ -62,18 +68,13 @@ public final class ComponentRendererRegistry {
     public String componentIdFor(DocumentComponent component) {
         Objects.requireNonNull(component, "component must not be null");
 
-        // SinglePageContent and FlowTextualContent carry their own componentId.
-        if (component instanceof SinglePageContent singlePage) {
-            if (!renderersByComponentId.containsKey(singlePage.componentId())) {
-                throw new MissingComponentRendererException(singlePage.componentId());
+        // Components that carry their own componentId: resolve by id rather than by class.
+        String selfId = selfComponentId(component);
+        if (selfId != null) {
+            if (!renderersByComponentId.containsKey(selfId)) {
+                throw new MissingComponentRendererException(selfId);
             }
-            return singlePage.componentId();
-        }
-        if (component instanceof FlowTextualContent flowTextual) {
-            if (!renderersByComponentId.containsKey(flowTextual.componentId())) {
-                throw new MissingComponentRendererException(flowTextual.componentId());
-            }
-            return flowTextual.componentId();
+            return selfId;
         }
 
         ComponentRenderer<?> renderer = renderersByComponentType.get(component.getClass());
@@ -83,5 +84,14 @@ public final class ComponentRendererRegistry {
         }
 
         return renderer.componentId();
+    }
+
+    private static String selfComponentId(DocumentComponent component) {
+        if (component instanceof SinglePageContent c) return c.componentId();
+        if (component instanceof FlowTextualContent c) return c.componentId();
+        if (component instanceof SectionedContent c) return c.componentId();
+        if (component instanceof SectionIndexContent c) return c.componentId();
+        if (component instanceof ElementIndexContent c) return c.componentId();
+        return null;
     }
 }

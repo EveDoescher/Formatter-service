@@ -48,7 +48,7 @@ class BodyContentRendererMetadataTest {
     private static final String ONE_PIXEL_PNG =
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=";
 
-    private final BodyContentRenderer renderer = new BodyContentRenderer();
+    private final BodyContentRenderer renderer = new BodyContentRenderer("bodyContent");
     private final DisplayObjectCollector collector = new DisplayObjectCollector();
 
     @Test

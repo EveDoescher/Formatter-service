@@ -20,10 +20,16 @@ import java.util.Optional;
 
 public final class ReferencesRenderer implements ComponentRenderer<ReferencesComponent> {
 
-    public static final String COMPONENT_ID = "references";
+    private final String componentId;
+
+    public ReferencesRenderer(String componentId) {
+        if (componentId == null || componentId.isBlank())
+            throw new IllegalArgumentException("ReferencesRenderer.componentId must not be blank.");
+        this.componentId = componentId;
+    }
 
     @Override
-    public String componentId() { return COMPONENT_ID; }
+    public String componentId() { return componentId; }
 
     @Override
     public Class<ReferencesComponent> componentType() { return ReferencesComponent.class; }
@@ -31,7 +37,7 @@ public final class ReferencesRenderer implements ComponentRenderer<ReferencesCom
     @Override
     public List<DocxBlock> render(ReferencesComponent component, DocumentProfile profile) {
         ReferencesComponentRule rule = new ComponentRuleResolver(profile)
-                .resolve(COMPONENT_ID, ReferencesComponentRule.class);
+                .resolve(componentId, ReferencesComponentRule.class);
         ReferencesEntryFormatter formatter = new ReferencesEntryFormatter(rule.formattingRule());
         StyleResolver styleResolver = new StyleResolver(profile);
         StyleRule headingStyle = styleResolver.resolve(rule.headingStyleId());

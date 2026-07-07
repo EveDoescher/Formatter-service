@@ -17,9 +17,6 @@ import com.abntbuilder.formatter.profile.model.component.singlepage.SinglePageCo
 import com.abntbuilder.formatter.profile.model.component.singlepage.SlotRule;
 import com.abntbuilder.formatter.profile.model.component.singlepage.TextListSlotRule;
 import com.abntbuilder.formatter.profile.model.component.singlepage.TextSlotRule;
-// AbstractComponentRule removed — abstract is now a FlowTextualComponentRule
-import com.abntbuilder.formatter.profile.model.component.annex.AnnexComponentRule;
-import com.abntbuilder.formatter.profile.model.component.appendix.AppendixComponentRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentComponentRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentLayoutRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.BodyContentNumberingRule;
@@ -33,14 +30,16 @@ import com.abntbuilder.formatter.profile.model.component.bodycontent.ChartRule;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.ImageFitPolicy;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.NumberingStrategy;
 import com.abntbuilder.formatter.profile.model.component.bodycontent.TableRule;
+import com.abntbuilder.formatter.profile.model.component.elementindex.ElementIndexComponentRule;
+import com.abntbuilder.formatter.profile.model.component.elementindex.ElementType;
 import com.abntbuilder.formatter.profile.model.component.flowtextual.FlowItem;
 import com.abntbuilder.formatter.profile.model.component.flowtextual.FlowTextualComponentRule;
-import com.abntbuilder.formatter.profile.model.component.indexlist.IndexListComponentRule;
 import com.abntbuilder.formatter.profile.model.component.references.AuthorFormatRule;
 import com.abntbuilder.formatter.profile.model.component.references.EntrySegmentRule;
 import com.abntbuilder.formatter.profile.model.component.references.ReferencesComponentRule;
 import com.abntbuilder.formatter.profile.model.component.references.ReferencesFormattingRule;
-import com.abntbuilder.formatter.profile.model.component.summary.SummaryComponentRule;
+import com.abntbuilder.formatter.profile.model.component.sectionindex.SectionIndexComponentRule;
+import com.abntbuilder.formatter.profile.model.component.sectioned.SectionedComponentRule;
 import com.abntbuilder.formatter.document.component.references.ReferenceType;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.HorizontalPlacementRule;
 import com.abntbuilder.formatter.profile.model.layout.singlepage.HorizontalPlacementStrategy;
@@ -195,15 +194,15 @@ public record ProfileDefinition(
             ResumoComponentRuleDefinition resumo,
             @JsonProperty("abstract") AbstractComponentRuleDefinition abstractEn,
             ReferencesComponentRuleDefinition references,
-            AppendixComponentRuleDefinition appendix,
-            AnnexComponentRuleDefinition annex,
+            SectionedComponentRuleDefinition appendix,
+            SectionedComponentRuleDefinition annex,
             GlossaryComponentRuleDefinition glossary,
-            SummaryComponentRuleDefinition summary,
-            IndexListComponentRuleDefinition listOfFigures,
-            IndexListComponentRuleDefinition listOfTables,
-            IndexListComponentRuleDefinition listOfFrames,
-            IndexListComponentRuleDefinition listOfCharts,
-            IndexListComponentRuleDefinition listOfCodeListings,
+            SectionIndexComponentRuleDefinition summary,
+            ElementIndexComponentRuleDefinition listOfFigures,
+            ElementIndexComponentRuleDefinition listOfTables,
+            ElementIndexComponentRuleDefinition listOfFrames,
+            ElementIndexComponentRuleDefinition listOfCharts,
+            ElementIndexComponentRuleDefinition listOfCodeListings,
             ListOfAbbreviationsComponentRuleDefinition listOfAbbreviations,
             ListOfSymbolsComponentRuleDefinition listOfSymbols
     ) {
@@ -225,11 +224,11 @@ public record ProfileDefinition(
             if (annex != null) rules.add(annex.toDomain());
             if (glossary != null) rules.add(glossary.toDomain());
             if (summary != null) rules.add(summary.toDomain());
-            if (listOfFigures != null) rules.add(listOfFigures.toDomain("listOfFigures"));
-            if (listOfTables != null) rules.add(listOfTables.toDomain("listOfTables"));
-            if (listOfFrames != null) rules.add(listOfFrames.toDomain("listOfFrames"));
-            if (listOfCharts != null) rules.add(listOfCharts.toDomain("listOfCharts"));
-            if (listOfCodeListings != null) rules.add(listOfCodeListings.toDomain("listOfCodeListings"));
+            if (listOfFigures != null) rules.add(listOfFigures.toDomain());
+            if (listOfTables != null) rules.add(listOfTables.toDomain());
+            if (listOfFrames != null) rules.add(listOfFrames.toDomain());
+            if (listOfCharts != null) rules.add(listOfCharts.toDomain());
+            if (listOfCodeListings != null) rules.add(listOfCodeListings.toDomain());
             if (listOfAbbreviations != null) rules.add(listOfAbbreviations.toDomain());
             if (listOfSymbols != null) rules.add(listOfSymbols.toDomain());
 
@@ -916,30 +915,16 @@ public record ProfileDefinition(
         }
     }
 
-    public record AppendixComponentRuleDefinition(
+    public record SectionedComponentRuleDefinition(
             String componentId,
             String headingTemplate,
             String headingStyleId,
             String paragraphStyleId,
             List<String> sectionTitleStyleIdsByLevel
     ) {
-        AppendixComponentRule toDomain() {
-            requireNonNull(sectionTitleStyleIdsByLevel, "appendix.sectionTitleStyleIdsByLevel");
-            return new AppendixComponentRule(componentId, headingTemplate, headingStyleId,
-                    paragraphStyleId, sectionTitleStyleIdsByLevel);
-        }
-    }
-
-    public record AnnexComponentRuleDefinition(
-            String componentId,
-            String headingTemplate,
-            String headingStyleId,
-            String paragraphStyleId,
-            List<String> sectionTitleStyleIdsByLevel
-    ) {
-        AnnexComponentRule toDomain() {
-            requireNonNull(sectionTitleStyleIdsByLevel, "annex.sectionTitleStyleIdsByLevel");
-            return new AnnexComponentRule(componentId, headingTemplate, headingStyleId,
+        SectionedComponentRule toDomain() {
+            requireNonNull(sectionTitleStyleIdsByLevel, componentId + ".sectionTitleStyleIdsByLevel");
+            return new SectionedComponentRule(componentId, headingTemplate, headingStyleId,
                     paragraphStyleId, sectionTitleStyleIdsByLevel);
         }
     }
@@ -1046,15 +1031,15 @@ public record ProfileDefinition(
         }
     }
 
-    public record SummaryComponentRuleDefinition(
+    public record SectionIndexComponentRuleDefinition(
             String componentId,
             String headingStyleId,
             String headingText,
             List<String> entryStyleIdsByLevel,
             Boolean useTocField
     ) {
-        SummaryComponentRule toDomain() {
-            return new SummaryComponentRule(
+        SectionIndexComponentRule toDomain() {
+            return new SectionIndexComponentRule(
                     componentId,
                     headingStyleId,
                     headingText,
@@ -1064,17 +1049,20 @@ public record ProfileDefinition(
         }
     }
 
-    public record IndexListComponentRuleDefinition(
+    public record ElementIndexComponentRuleDefinition(
             String componentId,
+            ElementType elementType,
             String headingStyleId,
             String headingText,
             String entryStyleId,
             String entryTemplate,
             Integer blankLinesAfterHeading
     ) {
-        IndexListComponentRule toDomain(String resolvedComponentId) {
-            return new IndexListComponentRule(
-                    resolvedComponentId,
+        ElementIndexComponentRule toDomain() {
+            requireNonNull(elementType, componentId + ".elementType");
+            return new ElementIndexComponentRule(
+                    componentId,
+                    elementType,
                     headingStyleId,
                     headingText,
                     entryStyleId,
