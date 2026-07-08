@@ -17,8 +17,10 @@ import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.FooterPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
+import org.docx4j.openpackaging.parts.WordprocessingML.DocumentSettingsPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.StyleDefinitionsPart;
 import org.docx4j.relationships.Relationship;
+import org.docx4j.wml.CTSettings;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyListType;
 import org.docx4j.openpackaging.parts.WordprocessingML.NumberingDefinitionsPart;
 import org.docx4j.wml.Numbering;
@@ -101,6 +103,9 @@ public class Docx4jWriter implements DocxWriter {
             clearDefaultBodyContent(wordPackage);
             applyHeadingStyleDefinitions(wordPackage, document.blocks());
             applyTocStyleDefinitions(wordPackage, document.blocks());
+            if (hasTocOrPageRef(document.blocks())) {
+                applyUpdateFieldsSetting(wordPackage);
+            }
 
             Optional<DocxPageNumbering> currentSectionPageNumbering = document.initialPageNumbering();
 
@@ -882,6 +887,26 @@ public class Docx4jWriter implements DocxWriter {
         wordPackage.getMainDocumentPart().addObject(paragraph);
     }
 
+    private static boolean hasTocOrPageRef(List<DocxBlock> blocks) {
+        return blocks.stream().anyMatch(b -> b instanceof DocxTocBlock || b instanceof DocxIndexEntryParagraph);
+    }
+
+    private void applyUpdateFieldsSetting(WordprocessingMLPackage wordPackage) throws Exception {
+        DocumentSettingsPart settingsPart = wordPackage.getMainDocumentPart().getDocumentSettingsPart();
+        if (settingsPart == null) {
+            settingsPart = new DocumentSettingsPart();
+            wordPackage.getMainDocumentPart().addTargetPart(settingsPart);
+        }
+        CTSettings settings = settingsPart.getJaxbElement();
+        if (settings == null) {
+            settings = objectFactory.createCTSettings();
+            settingsPart.setJaxbElement(settings);
+        }
+        BooleanDefaultTrue updateFields = objectFactory.createBooleanDefaultTrue();
+        updateFields.setVal(true);
+        settings.setUpdateFields(updateFields);
+    }
+
     private void writeToc(WordprocessingMLPackage wordPackage, DocxTocBlock tocBlock) {
         P p = objectFactory.createP();
         PPr pPr = createParagraphProperties(tocBlock.styleRule(), Optional.empty(), Optional.empty(), Optional.empty());
@@ -900,6 +925,12 @@ public class Docx4jWriter implements DocxWriter {
         instrText.setSpace("preserve");
         instrRun.getContent().add(objectFactory.createRInstrText(instrText));
         p.getContent().add(instrRun);
+
+        R separateRun = objectFactory.createR();
+        FldChar separateFldChar = objectFactory.createFldChar();
+        separateFldChar.setFldCharType(STFldCharType.SEPARATE);
+        separateRun.getContent().add(objectFactory.createRFldChar(separateFldChar));
+        p.getContent().add(separateRun);
 
         R endRun = objectFactory.createR();
         FldChar endFldChar = objectFactory.createFldChar();
@@ -1274,6 +1305,7 @@ public class Docx4jWriter implements DocxWriter {
         R beginPageRef = objectFactory.createR();
         FldChar beginFldChar = objectFactory.createFldChar();
         beginFldChar.setFldCharType(STFldCharType.BEGIN);
+        beginFldChar.setDirty(true);
         beginPageRef.getContent().add(objectFactory.createRFldChar(beginFldChar));
         p.getContent().add(beginPageRef);
 
@@ -1283,6 +1315,20 @@ public class Docx4jWriter implements DocxWriter {
         instrText.setSpace("preserve");
         instrRun.getContent().add(objectFactory.createRInstrText(instrText));
         p.getContent().add(instrRun);
+
+        R separatePageRef = objectFactory.createR();
+        FldChar separateFldChar = objectFactory.createFldChar();
+        separateFldChar.setFldCharType(STFldCharType.SEPARATE);
+        separatePageRef.getContent().add(objectFactory.createRFldChar(separateFldChar));
+        p.getContent().add(separatePageRef);
+
+        R cacheRun = objectFactory.createR();
+        cacheRun.setRPr(createRunProperties(entry.styleRule()));
+        Text cacheText = objectFactory.createText();
+        cacheText.setValue("??");
+        cacheText.setSpace("preserve");
+        cacheRun.getContent().add(cacheText);
+        p.getContent().add(cacheRun);
 
         R endPageRef = objectFactory.createR();
         FldChar endFldChar = objectFactory.createFldChar();

@@ -48,7 +48,7 @@ public final class SectionIndexRenderer implements MetadataConsumingRenderer<Sec
 
         if (rule.useTocField()) {
             int maxLevel = rule.entryStyleIdsByLevel().size();
-            String tocInstruction = "TOC \\o \"1-" + maxLevel + "\" \\h \\z \\u";
+            String tocInstruction = "TOC \\o \"1-" + maxLevel + "\" \\h \\z";
             List<StyleRule> entryStyles = rule.entryStyleIdsByLevel().stream()
                     .map(styleResolver::resolve)
                     .toList();
