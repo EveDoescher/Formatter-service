@@ -13,11 +13,13 @@ public record SectionedComponentRuleRequest(
         @NotBlank String headingStyleId,
         @NotBlank String paragraphStyleId,
         @NotEmpty List<String> sectionTitleStyleIdsByLevel,
-        IndexingStyle indexingStyle
+        IndexingStyle indexingStyle,
+        @NotBlank String bodyContentComponentId
 ) {
     public SectionedComponentRule toDomain() {
         return new SectionedComponentRule(componentId, headingTemplate, headingStyleId,
                 paragraphStyleId, sectionTitleStyleIdsByLevel,
-                indexingStyle != null ? indexingStyle : IndexingStyle.ALPHABETIC);
+                indexingStyle != null ? indexingStyle : IndexingStyle.ALPHABETIC,
+                bodyContentComponentId);
     }
 }

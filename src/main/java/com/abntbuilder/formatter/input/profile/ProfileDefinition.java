@@ -186,19 +186,11 @@ public record ProfileDefinition(
     @JsonSubTypes({
             @JsonSubTypes.Type(value = SinglePageComponentRuleDefinition.class, name = "SINGLE_PAGE"),
             @JsonSubTypes.Type(value = BodyContentComponentRuleDefinition.class, name = "BODY_CONTENT"),
-            @JsonSubTypes.Type(value = ReferencesComponentRuleDefinition.class, name = "REFERENCES"),
+            @JsonSubTypes.Type(value = ReferencesComponentRuleDefinition.class, name = "BIBLIOGRAPHY"),
             @JsonSubTypes.Type(value = SectionedComponentRuleDefinition.class, name = "SECTIONED"),
             @JsonSubTypes.Type(value = SectionIndexComponentRuleDefinition.class, name = "SECTION_INDEX"),
             @JsonSubTypes.Type(value = ElementIndexComponentRuleDefinition.class, name = "ELEMENT_INDEX"),
-            @JsonSubTypes.Type(value = ErrataComponentRuleDefinition.class, name = "ERRATA"),
-            @JsonSubTypes.Type(value = DedicationComponentRuleDefinition.class, name = "DEDICATION"),
-            @JsonSubTypes.Type(value = EpigraphComponentRuleDefinition.class, name = "EPIGRAPH"),
-            @JsonSubTypes.Type(value = AcknowledgmentsComponentRuleDefinition.class, name = "ACKNOWLEDGMENTS"),
-            @JsonSubTypes.Type(value = ResumoComponentRuleDefinition.class, name = "RESUMO"),
-            @JsonSubTypes.Type(value = AbstractComponentRuleDefinition.class, name = "ABSTRACT"),
-            @JsonSubTypes.Type(value = GlossaryComponentRuleDefinition.class, name = "GLOSSARY"),
-            @JsonSubTypes.Type(value = ListOfAbbreviationsComponentRuleDefinition.class, name = "LIST_OF_ABBREVIATIONS"),
-            @JsonSubTypes.Type(value = ListOfSymbolsComponentRuleDefinition.class, name = "LIST_OF_SYMBOLS"),
+            @JsonSubTypes.Type(value = FlowTextualComponentRuleDefinition.class, name = "FLOW_TEXTUAL"),
     })
     public interface ComponentRuleDefinition {
         ComponentRule toDomain();
@@ -741,115 +733,93 @@ public record ProfileDefinition(
         }
     }
 
-    public record ErrataComponentRuleDefinition(
+    public record FlowTextualComponentRuleDefinition(
             String componentId,
-            String headingStyleId,
-            String headingText,
-            String tableHeaderStyleId,
-            String tableCellStyleId,
-            List<String> tableHeaders,
-            Integer blankLinesAfterHeading
+            List<FlowItemDefinition> items
     ) implements ComponentRuleDefinition {
         public FlowTextualComponentRule toDomain() {
-            requireNonNull(tableHeaders, "errata.tableHeaders");
-            int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
-            List<FlowItem> items = new ArrayList<>();
-            items.add(new FlowItem.HeadingItem(headingStyleId, headingText));
-            if (blankLines > 0) items.add(new FlowItem.BlankLinesItem(headingStyleId, blankLines));
-            items.add(new FlowItem.TableBlockItem(tableHeaderStyleId, tableCellStyleId, tableHeaders, "rows"));
-            return new FlowTextualComponentRule(componentId, items);
+            requireNonNull(items, componentId + ".items");
+            if (items.isEmpty())
+                throw new InvalidProfileStructureException(componentId + ".items must not be empty.");
+            return new FlowTextualComponentRule(
+                    componentId,
+                    items.stream().map(FlowItemDefinition::toDomain).toList()
+            );
         }
     }
 
-    public record DedicationComponentRuleDefinition(
-            String componentId,
-            String textStyleId,
-            Integer blankLinesBefore
-    ) implements ComponentRuleDefinition {
-        public FlowTextualComponentRule toDomain() {
-            requireNonNull(blankLinesBefore, "dedication.blankLinesBefore");
-            List<FlowItem> items = new ArrayList<>();
-            if (blankLinesBefore > 0) items.add(new FlowItem.BlankLinesItem(textStyleId, blankLinesBefore));
-            items.add(new FlowItem.PlainTextItem(textStyleId, "text"));
-            return new FlowTextualComponentRule(componentId, items);
-        }
-    }
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "itemType")
+    @JsonSubTypes({
+            @JsonSubTypes.Type(value = FlowItemDefinition.HeadingItemDefinition.class,            name = "HEADING"),
+            @JsonSubTypes.Type(value = FlowItemDefinition.BlankLinesItemDefinition.class,         name = "BLANK_LINES"),
+            @JsonSubTypes.Type(value = FlowItemDefinition.PlainTextItemDefinition.class,          name = "PLAIN_TEXT"),
+            @JsonSubTypes.Type(value = FlowItemDefinition.TemplatedTextItemDefinition.class,      name = "TEMPLATED_TEXT"),
+            @JsonSubTypes.Type(value = FlowItemDefinition.BoldLabeledKeywordsItemDefinition.class, name = "BOLD_LABELED_KEYWORDS"),
+            @JsonSubTypes.Type(value = FlowItemDefinition.PairListItemDefinition.class,           name = "PAIR_LIST"),
+            @JsonSubTypes.Type(value = FlowItemDefinition.TableBlockItemDefinition.class,         name = "TABLE_BLOCK"),
+            @JsonSubTypes.Type(value = FlowItemDefinition.RepeatGroupItemDefinition.class,        name = "REPEAT_GROUP"),
+    })
+    public interface FlowItemDefinition {
+        FlowItem toDomain();
 
-    public record EpigraphComponentRuleDefinition(
-            String componentId,
-            String textStyleId,
-            String authorStyleId,
-            String authorTemplate
-    ) implements ComponentRuleDefinition {
-        public FlowTextualComponentRule toDomain() {
-            List<FlowItem> items = new ArrayList<>();
-            items.add(new FlowItem.PlainTextItem(textStyleId, "text"));
-            items.add(new FlowItem.TemplatedTextItem(authorStyleId, authorTemplate, List.of("author", "source")));
-            return new FlowTextualComponentRule(componentId, items);
+        record HeadingItemDefinition(String styleId, String text) implements FlowItemDefinition {
+            public FlowItem toDomain() { return new FlowItem.HeadingItem(styleId, text); }
         }
-    }
 
-    public record AcknowledgmentsComponentRuleDefinition(
-            String componentId,
-            String headingStyleId,
-            String headingText,
-            String textStyleId,
-            Integer blankLinesAfterHeading
-    ) implements ComponentRuleDefinition {
-        public FlowTextualComponentRule toDomain() {
-            int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
-            List<FlowItem> items = new ArrayList<>();
-            items.add(new FlowItem.HeadingItem(headingStyleId, headingText));
-            if (blankLines > 0) items.add(new FlowItem.BlankLinesItem(headingStyleId, blankLines));
-            items.add(new FlowItem.PlainTextItem(textStyleId, "text"));
-            return new FlowTextualComponentRule(componentId, items);
+        record BlankLinesItemDefinition(String styleId, int count) implements FlowItemDefinition {
+            public FlowItem toDomain() { return new FlowItem.BlankLinesItem(styleId, count); }
         }
-    }
 
-    public record ResumoComponentRuleDefinition(
-            String componentId,
-            String headingStyleId,
-            String headingText,
-            String textStyleId,
-            String keywordsStyleId,
-            String keywordsLabel,
-            String keywordsSeparator,
-            String keywordsTerminator,
-            Integer blankLinesAfterHeading
-    ) implements ComponentRuleDefinition {
-        public FlowTextualComponentRule toDomain() {
-            requireNonNull(keywordsTerminator, "resumo.keywordsTerminator");
-            int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
-            List<FlowItem> items = new ArrayList<>();
-            items.add(new FlowItem.HeadingItem(headingStyleId, headingText));
-            if (blankLines > 0) items.add(new FlowItem.BlankLinesItem(headingStyleId, blankLines));
-            items.add(new FlowItem.PlainTextItem(textStyleId, "text"));
-            items.add(new FlowItem.BoldLabeledKeywordsItem(
-                    keywordsStyleId, "keywordsLabel", "keywords", keywordsSeparator, keywordsTerminator));
-            return new FlowTextualComponentRule(componentId, items);
+        record PlainTextItemDefinition(String styleId, String slotName) implements FlowItemDefinition {
+            public FlowItem toDomain() { return new FlowItem.PlainTextItem(styleId, slotName); }
         }
-    }
 
-    public record AbstractComponentRuleDefinition(
-            String componentId,
-            String headingStyleId,
-            String textStyleId,
-            String keywordsStyleId,
-            String keywordsSeparator,
-            String keywordsTerminator,
-            Integer blankLinesAfterHeading
-    ) implements ComponentRuleDefinition {
-        public FlowTextualComponentRule toDomain() {
-            requireNonNull(keywordsTerminator, "abstract.keywordsTerminator");
-            int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
-            List<FlowItem> group = new ArrayList<>();
-            group.add(new FlowItem.PlainTextItem(headingStyleId, "headingText"));
-            if (blankLines > 0) group.add(new FlowItem.BlankLinesItem(headingStyleId, blankLines));
-            group.add(new FlowItem.PlainTextItem(textStyleId, "text"));
-            group.add(new FlowItem.BoldLabeledKeywordsItem(
-                    keywordsStyleId, "keywordsLabel", "keywords", keywordsSeparator, keywordsTerminator));
-            return new FlowTextualComponentRule(componentId, List.of(
-                    new FlowItem.RepeatGroupItem("entries", true, group)));
+        record TemplatedTextItemDefinition(
+                String styleId, String template, List<String> fieldNames
+        ) implements FlowItemDefinition {
+            public FlowItem toDomain() {
+                return new FlowItem.TemplatedTextItem(styleId, template, fieldNames);
+            }
+        }
+
+        record BoldLabeledKeywordsItemDefinition(
+                String styleId, String labelSlotName, String keywordsSlotName,
+                String separator, String terminator
+        ) implements FlowItemDefinition {
+            public FlowItem toDomain() {
+                return new FlowItem.BoldLabeledKeywordsItem(styleId, labelSlotName, keywordsSlotName,
+                        separator, terminator);
+            }
+        }
+
+        record PairListItemDefinition(
+                String styleId, String termsSlotName, String definitionsSlotName, String separator
+        ) implements FlowItemDefinition {
+            public FlowItem toDomain() {
+                return new FlowItem.PairListItem(styleId, termsSlotName, definitionsSlotName, separator);
+            }
+        }
+
+        record TableBlockItemDefinition(
+                String headerStyleId, String cellStyleId,
+                List<String> headers, String rowsSlotName
+        ) implements FlowItemDefinition {
+            public FlowItem toDomain() {
+                return new FlowItem.TableBlockItem(headerStyleId, cellStyleId, headers, rowsSlotName);
+            }
+        }
+
+        record RepeatGroupItemDefinition(
+                String entriesSlotName, boolean pageBreakBetweenEntries,
+                List<FlowItemDefinition> group
+        ) implements FlowItemDefinition {
+            public FlowItem toDomain() {
+                return new FlowItem.RepeatGroupItem(
+                        entriesSlotName,
+                        pageBreakBetweenEntries,
+                        group.stream().map(FlowItemDefinition::toDomain).toList()
+                );
+            }
         }
     }
 
@@ -867,8 +837,8 @@ public record ProfileDefinition(
             Boolean initialsSpaced
     ) {
         AuthorFormatRule toDomain() {
-            requireNonNull(surnameUppercase, "references.formattingRule.authorFormat.surnameUppercase");
-            requireNonNull(etAlThreshold, "references.formattingRule.authorFormat.etAlThreshold");
+            requireNonNull(surnameUppercase, "bibliography.formattingRule.authorFormat.surnameUppercase");
+            requireNonNull(etAlThreshold, "bibliography.formattingRule.authorFormat.etAlThreshold");
             return new AuthorFormatRule(surnameUppercase, surnameGivenSeparator, nameTerminator,
                     multiAuthorJoiner, etAlLabel, etAlThreshold,
                     Optional.ofNullable(lastAuthorJoiner),
@@ -932,8 +902,8 @@ public record ProfileDefinition(
             ReferencesComponentRule.ReferenceSortOrder sortOrder
     ) implements ComponentRuleDefinition {
         public ReferencesComponentRule toDomain() {
-            requireNonNull(blankLinesBetweenEntries, "references.blankLinesBetweenEntries");
-            requireNonNull(formattingRule, "references.formattingRule");
+            requireNonNull(blankLinesBetweenEntries, "bibliography.blankLinesBetweenEntries");
+            requireNonNull(formattingRule, "bibliography.formattingRule");
             return new ReferencesComponentRule(componentId, headingStyleId, headingText,
                     entryStyleId, blankLinesBetweenEntries, formattingRule.toDomain(),
                     blankLinesAfterHeading != null ? blankLinesAfterHeading : 0,
@@ -947,31 +917,16 @@ public record ProfileDefinition(
             String headingStyleId,
             String paragraphStyleId,
             List<String> sectionTitleStyleIdsByLevel,
-            SectionedComponentRule.IndexingStyle indexingStyle
+            SectionedComponentRule.IndexingStyle indexingStyle,
+            String bodyContentComponentId
     ) implements ComponentRuleDefinition {
         public SectionedComponentRule toDomain() {
             requireNonNull(sectionTitleStyleIdsByLevel, componentId + ".sectionTitleStyleIdsByLevel");
+            requireNonNull(bodyContentComponentId, componentId + ".bodyContentComponentId");
             return new SectionedComponentRule(componentId, headingTemplate, headingStyleId,
                     paragraphStyleId, sectionTitleStyleIdsByLevel,
-                    indexingStyle != null ? indexingStyle : SectionedComponentRule.IndexingStyle.ALPHABETIC);
-        }
-    }
-
-    public record GlossaryComponentRuleDefinition(
-            String componentId,
-            String headingStyleId,
-            String headingText,
-            String entryStyleId,
-            String termSeparator,
-            Integer blankLinesAfterHeading
-    ) implements ComponentRuleDefinition {
-        public FlowTextualComponentRule toDomain() {
-            int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
-            List<FlowItem> items = new ArrayList<>();
-            items.add(new FlowItem.HeadingItem(headingStyleId, headingText));
-            if (blankLines > 0) items.add(new FlowItem.BlankLinesItem(headingStyleId, blankLines));
-            items.add(new FlowItem.PairListItem(entryStyleId, "terms", "definitions", termSeparator));
-            return new FlowTextualComponentRule(componentId, items);
+                    indexingStyle != null ? indexingStyle : SectionedComponentRule.IndexingStyle.ALPHABETIC,
+                    bodyContentComponentId);
         }
     }
 
@@ -1096,42 +1051,4 @@ public record ProfileDefinition(
         }
     }
 
-    public record ListOfAbbreviationsComponentRuleDefinition(
-            String componentId,
-            String headingStyleId,
-            String headingText,
-            String entryStyleId,
-            String termSeparator,
-            Boolean sortAlphabetically,
-            Integer blankLinesAfterHeading
-    ) implements ComponentRuleDefinition {
-        public FlowTextualComponentRule toDomain() {
-            int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
-            boolean sort = sortAlphabetically != null && sortAlphabetically;
-            // termsSlotName "$abbreviations" signals Phase0 source; definitionsSlotName "$sort" signals sorting.
-            List<FlowItem> items = new ArrayList<>();
-            items.add(new FlowItem.HeadingItem(headingStyleId, headingText));
-            if (blankLines > 0) items.add(new FlowItem.BlankLinesItem(headingStyleId, blankLines));
-            items.add(new FlowItem.PairListItem(entryStyleId, "$abbreviations", sort ? "$sort" : "$nosort", termSeparator));
-            return new FlowTextualComponentRule(componentId, items);
-        }
-    }
-
-    public record ListOfSymbolsComponentRuleDefinition(
-            String componentId,
-            String headingStyleId,
-            String headingText,
-            String entryStyleId,
-            String termSeparator,
-            Integer blankLinesAfterHeading
-    ) implements ComponentRuleDefinition {
-        public FlowTextualComponentRule toDomain() {
-            int blankLines = blankLinesAfterHeading != null ? blankLinesAfterHeading : 0;
-            List<FlowItem> items = new ArrayList<>();
-            items.add(new FlowItem.HeadingItem(headingStyleId, headingText));
-            if (blankLines > 0) items.add(new FlowItem.BlankLinesItem(headingStyleId, blankLines));
-            items.add(new FlowItem.PairListItem(entryStyleId, "terms", "definitions", termSeparator));
-            return new FlowTextualComponentRule(componentId, items);
-        }
-    }
 }

@@ -1719,65 +1719,93 @@
       }
     },
     "errata": {
-      "ruleType": "ERRATA",
+      "ruleType": "FLOW_TEXTUAL",
       "componentId": "errata",
-      "headingStyleId": "errata.heading",
-      "headingText": "ERRATA",
-      "tableHeaderStyleId": "errata.tableHeader",
-      "tableCellStyleId": "errata.tableCell",
-      "tableHeaders": [
-        "Folha",
-        "Linha",
-        "Onde se lê",
-        "Leia-se"
-      ],
-      "blankLinesAfterHeading": 1
+      "items": [
+        { "itemType": "HEADING", "styleId": "errata.heading", "text": "ERRATA" },
+        { "itemType": "BLANK_LINES", "styleId": "errata.heading", "count": 1 },
+        {
+          "itemType": "TABLE_BLOCK",
+          "headerStyleId": "errata.tableHeader",
+          "cellStyleId": "errata.tableCell",
+          "headers": ["Folha", "Linha", "Onde se lê", "Leia-se"],
+          "rowsSlotName": "rows"
+        }
+      ]
     },
     "dedication": {
-      "ruleType": "DEDICATION",
+      "ruleType": "FLOW_TEXTUAL",
       "componentId": "dedication",
-      "textStyleId": "dedication.text",
-      "blankLinesBefore": 10
+      "items": [
+        { "itemType": "BLANK_LINES", "styleId": "dedication.text", "count": 10 },
+        { "itemType": "PLAIN_TEXT", "styleId": "dedication.text", "slotName": "text" }
+      ]
     },
     "epigraph": {
-      "ruleType": "EPIGRAPH",
+      "ruleType": "FLOW_TEXTUAL",
       "componentId": "epigraph",
-      "textStyleId": "epigraph.text",
-      "authorStyleId": "epigraph.author",
-      "authorTemplate": "— {author}, {source}"
+      "items": [
+        { "itemType": "PLAIN_TEXT", "styleId": "epigraph.text", "slotName": "text" },
+        {
+          "itemType": "TEMPLATED_TEXT",
+          "styleId": "epigraph.author",
+          "template": "— {author}, {source}",
+          "fieldNames": ["author", "source"]
+        }
+      ]
     },
     "acknowledgments": {
-      "ruleType": "ACKNOWLEDGMENTS",
+      "ruleType": "FLOW_TEXTUAL",
       "componentId": "acknowledgments",
-      "headingStyleId": "acknowledgments.heading",
-      "headingText": "AGRADECIMENTOS",
-      "textStyleId": "acknowledgments.text",
-      "blankLinesAfterHeading": 1
+      "items": [
+        { "itemType": "HEADING", "styleId": "acknowledgments.heading", "text": "AGRADECIMENTOS" },
+        { "itemType": "BLANK_LINES", "styleId": "acknowledgments.heading", "count": 1 },
+        { "itemType": "PLAIN_TEXT", "styleId": "acknowledgments.text", "slotName": "text" }
+      ]
     },
     "resumo": {
-      "ruleType": "RESUMO",
+      "ruleType": "FLOW_TEXTUAL",
       "componentId": "resumo",
-      "headingStyleId": "resumo.heading",
-      "headingText": "RESUMO",
-      "textStyleId": "resumo.text",
-      "keywordsStyleId": "resumo.keywords",
-      "keywordsLabel": "Palavras-chave:",
-      "keywordsSeparator": "; ",
-      "keywordsTerminator": ".",
-      "blankLinesAfterHeading": 1
+      "items": [
+        { "itemType": "HEADING", "styleId": "resumo.heading", "text": "RESUMO" },
+        { "itemType": "BLANK_LINES", "styleId": "resumo.heading", "count": 1 },
+        { "itemType": "PLAIN_TEXT", "styleId": "resumo.text", "slotName": "text" },
+        {
+          "itemType": "BOLD_LABELED_KEYWORDS",
+          "styleId": "resumo.keywords",
+          "labelSlotName": "keywordsLabel",
+          "keywordsSlotName": "keywords",
+          "separator": "; ",
+          "terminator": "."
+        }
+      ]
     },
     "abstract": {
-      "ruleType": "ABSTRACT",
+      "ruleType": "FLOW_TEXTUAL",
       "componentId": "abstract",
-      "headingStyleId": "resumo.heading",
-      "textStyleId": "resumo.text",
-      "keywordsStyleId": "resumo.keywords",
-      "keywordsSeparator": "; ",
-      "keywordsTerminator": ".",
-      "blankLinesAfterHeading": 1
+      "items": [
+        {
+          "itemType": "REPEAT_GROUP",
+          "entriesSlotName": "entries",
+          "pageBreakBetweenEntries": true,
+          "group": [
+            { "itemType": "PLAIN_TEXT", "styleId": "resumo.heading", "slotName": "headingText" },
+            { "itemType": "BLANK_LINES", "styleId": "resumo.heading", "count": 1 },
+            { "itemType": "PLAIN_TEXT", "styleId": "resumo.text", "slotName": "text" },
+            {
+              "itemType": "BOLD_LABELED_KEYWORDS",
+              "styleId": "resumo.keywords",
+              "labelSlotName": "keywordsLabel",
+              "keywordsSlotName": "keywords",
+              "separator": "; ",
+              "terminator": "."
+            }
+          ]
+        }
+      ]
     },
     "references": {
-      "ruleType": "REFERENCES",
+      "ruleType": "BIBLIOGRAPHY",
       "componentId": "references",
       "headingStyleId": "references.heading",
       "headingText": "REFERÊNCIAS",
@@ -2246,7 +2274,8 @@
         "bodyContent.heading1",
         "bodyContent.heading2"
       ],
-      "indexingStyle": "ALPHABETIC"
+      "indexingStyle": "ALPHABETIC",
+      "bodyContentComponentId": "bodyContent"
     },
     "annex": {
       "ruleType": "SECTIONED",
@@ -2258,16 +2287,23 @@
         "bodyContent.heading1",
         "bodyContent.heading2"
       ],
-      "indexingStyle": "ALPHABETIC"
+      "indexingStyle": "ALPHABETIC",
+      "bodyContentComponentId": "bodyContent"
     },
     "glossary": {
-      "ruleType": "GLOSSARY",
+      "ruleType": "FLOW_TEXTUAL",
       "componentId": "glossary",
-      "headingStyleId": "glossary.heading",
-      "headingText": "GLOSSÁRIO",
-      "entryStyleId": "glossary.entry",
-      "termSeparator": " — ",
-      "blankLinesAfterHeading": 1
+      "items": [
+        { "itemType": "HEADING", "styleId": "glossary.heading", "text": "GLOSSÁRIO" },
+        { "itemType": "BLANK_LINES", "styleId": "glossary.heading", "count": 1 },
+        {
+          "itemType": "PAIR_LIST",
+          "styleId": "glossary.entry",
+          "termsSlotName": "terms",
+          "definitionsSlotName": "definitions",
+          "separator": " — "
+        }
+      ]
     },
     "summary": {
       "ruleType": "SECTION_INDEX",
@@ -2335,23 +2371,39 @@
       "blankLinesAfterHeading": 1
     },
     "listOfAbbreviations": {
-      "ruleType": "LIST_OF_ABBREVIATIONS",
+      "ruleType": "FLOW_TEXTUAL",
       "componentId": "listOfAbbreviations",
-      "headingStyleId": "list.heading",
-      "headingText": "LISTA DE ABREVIATURAS E SIGLAS",
-      "entryStyleId": "list.entry",
-      "termSeparator": " — ",
-      "sortAlphabetically": true,
-      "blankLinesAfterHeading": 1
+      "items": [
+        { "itemType": "HEADING", "styleId": "list.heading", "text": "LISTA DE ABREVIATURAS E SIGLAS" },
+        { "itemType": "BLANK_LINES", "styleId": "list.heading", "count": 1 },
+        {
+          "itemType": "PAIR_LIST",
+          "styleId": "list.entry",
+          "termsSlotName": "$abbreviations",
+          "definitionsSlotName": "$sort",
+          "separator": " — "
+        }
+      ]
     },
     "listOfSymbols": {
-      "ruleType": "LIST_OF_SYMBOLS",
+      "ruleType": "FLOW_TEXTUAL",
       "componentId": "listOfSymbols",
-      "headingStyleId": "list.heading",
-      "headingText": "LISTA DE SÍMBOLOS",
-      "entryStyleId": "list.entry",
-      "termSeparator": " — ",
-      "blankLinesAfterHeading": 1
+      "items": [
+        { "itemType": "HEADING", "styleId": "list.heading", "text": "LISTA DE SÍMBOLOS" },
+        { "itemType": "BLANK_LINES", "styleId": "list.heading", "count": 1 },
+        {
+          "itemType": "PAIR_LIST",
+          "styleId": "list.entry",
+          "termsSlotName": "terms",
+          "definitionsSlotName": "definitions",
+          "separator": " — "
+        }
+      ]
+    }
+  },
+  "postProcessing": {
+    "orphanTitleCorrection": {
+      "enabled": true
     }
   }
 }

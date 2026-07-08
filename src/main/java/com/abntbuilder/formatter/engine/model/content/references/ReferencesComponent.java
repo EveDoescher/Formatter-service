@@ -14,5 +14,5 @@ public record ReferencesComponent(List<ReferenceEntry> entries) implements Docum
     }
 
     @Override
-    public ComponentType type() { return ComponentType.REFERENCES; }
+    public ComponentType type() { return ComponentType.BIBLIOGRAPHY; }
 }

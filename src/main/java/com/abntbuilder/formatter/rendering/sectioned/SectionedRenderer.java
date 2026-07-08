@@ -45,8 +45,9 @@ public final class SectionedRenderer
         StyleResolver styleResolver = new StyleResolver(profile);
         StyleRule headingStyle = styleResolver.resolve(rule.headingStyleId());
 
+        String bodyContentId = rule.bodyContentComponentId();
         List<DocxBlock> blocks = new ArrayList<>();
-        BodyContentRenderer contentRenderer = new BodyContentRenderer("bodyContent");
+        BodyContentRenderer contentRenderer = new BodyContentRenderer(bodyContentId);
         for (int i = 0; i < component.items().size(); i++) {
             SectionedItem item = component.items().get(i);
             String marker = resolveMarker(rule.indexingStyle(), i);
@@ -57,7 +58,7 @@ public final class SectionedRenderer
             blocks.add(new DocxParagraph(List.of(DocxRun.of(heading, headingStyle)), headingStyle));
 
             if (!item.sections().isEmpty()) {
-                BodyContentComponent sectionContent = new BodyContentComponent("bodyContent", item.sections());
+                BodyContentComponent sectionContent = new BodyContentComponent(bodyContentId, item.sections());
                 blocks.addAll(contentRenderer.renderWithPhase0(sectionContent, profile, phase0Index).blocks());
             }
         }

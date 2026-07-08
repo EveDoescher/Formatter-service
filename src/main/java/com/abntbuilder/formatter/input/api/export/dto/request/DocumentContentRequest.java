@@ -4,6 +4,7 @@ import com.abntbuilder.formatter.engine.model.content.DocumentComponent;
 import com.abntbuilder.formatter.engine.model.profile.DocumentProfile;
 import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.BodyContentComponentRule;
 import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.CitationFormattingRule;
+import com.abntbuilder.formatter.engine.model.profile.component.sectioned.SectionedComponentRule;
 import com.abntbuilder.formatter.input.profile.ComponentRuleResolver;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 
@@ -41,11 +42,13 @@ public final class DocumentContentRequest {
             }
             if (ruleResolver != null && request instanceof SectionedContentRequest) {
                 try {
+                    SectionedComponentRule sectionedRule = ruleResolver
+                            .resolve(componentId, SectionedComponentRule.class);
                     citationFormatting = ruleResolver
-                            .resolve("bodyContent", BodyContentComponentRule.class)
+                            .resolve(sectionedRule.bodyContentComponentId(), BodyContentComponentRule.class)
                             .citationFormatting();
                 } catch (Exception ignored) {
-                    // bodyContent may not be in this profile
+                    // body content rule may not be in this profile
                 }
             }
 

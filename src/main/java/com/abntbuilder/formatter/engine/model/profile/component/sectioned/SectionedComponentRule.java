@@ -12,7 +12,8 @@ public record SectionedComponentRule(
         String headingStyleId,
         String paragraphStyleId,
         List<String> sectionTitleStyleIdsByLevel,
-        IndexingStyle indexingStyle
+        IndexingStyle indexingStyle,
+        String bodyContentComponentId
 ) implements ComponentRule {
 
     public enum IndexingStyle {
@@ -30,6 +31,7 @@ public record SectionedComponentRule(
         requireNonBlank(paragraphStyleId, "paragraphStyleId");
         Objects.requireNonNull(sectionTitleStyleIdsByLevel, "sectionTitleStyleIdsByLevel must not be null");
         Objects.requireNonNull(indexingStyle, "indexingStyle must not be null");
+        requireNonBlank(bodyContentComponentId, "bodyContentComponentId");
         sectionTitleStyleIdsByLevel = List.copyOf(sectionTitleStyleIdsByLevel);
     }
 

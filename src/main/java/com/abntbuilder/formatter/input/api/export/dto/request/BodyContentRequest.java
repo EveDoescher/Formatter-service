@@ -25,12 +25,4 @@ public record BodyContentRequest(
     public BodyContentComponent toBodyContent(String componentId) {
         return (BodyContentComponent) toDomain(componentId, null);
     }
-
-    public BodyContentComponent toBodyContent(CitationFormattingRule citationFormatting) {
-        return (BodyContentComponent) toDomain("bodyContent", citationFormatting);
-    }
-
-    public BodyContentComponent toBodyContent() {
-        return (BodyContentComponent) toDomain("bodyContent", null);
-    }
 }

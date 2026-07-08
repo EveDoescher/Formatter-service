@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = SinglePageContentRequest.class, name = "SINGLE_PAGE"),
         @JsonSubTypes.Type(value = FlowTextualContentRequest.class, name = "FLOW_TEXTUAL"),
         @JsonSubTypes.Type(value = BodyContentRequest.class, name = "BODY_CONTENT"),
-        @JsonSubTypes.Type(value = ReferencesRequest.class, name = "REFERENCES"),
+        @JsonSubTypes.Type(value = ReferencesRequest.class, name = "BIBLIOGRAPHY"),
         @JsonSubTypes.Type(value = SectionedContentRequest.class, name = "SECTIONED"),
         @JsonSubTypes.Type(value = SectionIndexContentRequest.class, name = "SECTION_INDEX"),
         @JsonSubTypes.Type(value = ElementIndexContentRequest.class, name = "ELEMENT_INDEX"),

@@ -4,7 +4,7 @@ public enum ComponentType {
     SINGLE_PAGE,
     FLOW_TEXTUAL,
     BODY_CONTENT,
-    REFERENCES,
+    BIBLIOGRAPHY,
     SECTIONED,
     ELEMENT_INDEX,
     SECTION_INDEX
