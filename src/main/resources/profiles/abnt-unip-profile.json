@@ -2443,7 +2443,8 @@
         "summary.entry.secondary",
         "summary.entry.secondary"
       ],
-      "useTocField": true
+      "useTocField": true,
+      "blankLinesAfterHeading": 1
     },
     "listOfFigures": {
       "ruleType": "ELEMENT_INDEX",

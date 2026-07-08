@@ -1,6 +1,7 @@
 package com.abntbuilder.formatter.rendering.sectionindex;
 
 import com.abntbuilder.formatter.engine.model.content.sectionindex.SectionIndexContent;
+import com.abntbuilder.formatter.engine.model.output.DocxBlankLine;
 import com.abntbuilder.formatter.engine.model.output.DocxBlock;
 import com.abntbuilder.formatter.engine.model.output.DocxParagraph;
 import com.abntbuilder.formatter.engine.model.output.DocxRun;
@@ -45,6 +46,9 @@ public final class SectionIndexRenderer implements MetadataConsumingRenderer<Sec
         blocks.add(new DocxParagraph(
                 List.of(DocxRun.of(rule.headingText(), headingStyle)), headingStyle
         ));
+        for (int i = 0; i < rule.blankLinesAfterHeading(); i++) {
+            blocks.add(new DocxBlankLine(headingStyle));
+        }
 
         if (rule.useTocField()) {
             int maxLevel = rule.entryStyleIdsByLevel().size();

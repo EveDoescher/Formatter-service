@@ -10,10 +10,11 @@ public record SectionIndexComponentRuleRequest(
         @NotBlank String headingStyleId,
         @NotBlank String headingText,
         @NotEmpty List<String> entryStyleIdsByLevel,
-        boolean useTocField
+        boolean useTocField,
+        int blankLinesAfterHeading
 ) {
     public SectionIndexComponentRule toDomain(String componentId) {
         return new SectionIndexComponentRule(componentId, headingStyleId, headingText,
-                entryStyleIdsByLevel, useTocField);
+                entryStyleIdsByLevel, useTocField, blankLinesAfterHeading);
     }
 }

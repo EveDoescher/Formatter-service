@@ -1015,7 +1015,8 @@ public record ProfileDefinition(
             String headingStyleId,
             String headingText,
             List<String> entryStyleIdsByLevel,
-            Boolean useTocField
+            Boolean useTocField,
+            Integer blankLinesAfterHeading
     ) implements ComponentRuleDefinition {
         public SectionIndexComponentRule toDomain() {
             return new SectionIndexComponentRule(
@@ -1023,7 +1024,8 @@ public record ProfileDefinition(
                     headingStyleId,
                     headingText,
                     entryStyleIdsByLevel,
-                    useTocField != null && useTocField
+                    useTocField != null && useTocField,
+                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0
             );
         }
     }

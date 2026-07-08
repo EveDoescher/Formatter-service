@@ -10,7 +10,8 @@ public record SectionIndexComponentRule(
         String headingStyleId,
         String headingText,
         List<String> entryStyleIdsByLevel,
-        boolean useTocField
+        boolean useTocField,
+        int blankLinesAfterHeading
 ) implements ComponentRule {
 
     public SectionIndexComponentRule {
@@ -20,6 +21,8 @@ public record SectionIndexComponentRule(
         if (entryStyleIdsByLevel == null || entryStyleIdsByLevel.isEmpty())
             throw new IllegalArgumentException("entryStyleIdsByLevel must not be empty.");
         entryStyleIdsByLevel = List.copyOf(entryStyleIdsByLevel);
+        if (blankLinesAfterHeading < 0)
+            throw new IllegalArgumentException("blankLinesAfterHeading must be >= 0.");
     }
 
     public Map<String, String> contentBindings() { return Map.of(); }
