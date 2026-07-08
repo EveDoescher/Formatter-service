@@ -1320,7 +1320,7 @@ public class Docx4jWriter implements DocxWriter {
 
         R instrRun = objectFactory.createR();
         Text instrText = objectFactory.createText();
-        instrText.setValue(" PAGEREF " + entry.bookmarkName() + " \\* MERGEFORMAT ");
+        instrText.setValue(" PAGEREF " + entry.bookmarkName() + " ");
         instrText.setSpace("preserve");
         instrRun.getContent().add(objectFactory.createRInstrText(instrText));
         p.getContent().add(instrRun);
