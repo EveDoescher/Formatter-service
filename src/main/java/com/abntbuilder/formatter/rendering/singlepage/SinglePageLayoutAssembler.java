@@ -213,6 +213,9 @@ public final class SinglePageLayoutAssembler {
     ) {
         List<String> lines = new ArrayList<>();
         for (Map<String, String> entry : value.entries()) {
+            if (rule.signatureLineEnabled()) {
+                lines.add(rule.signatureLineText());
+            }
             for (String lineTemplate : rule.lineTemplates()) {
                 String line = lineTemplate;
                 for (String fieldName : rule.knownFieldNames()) {
@@ -223,9 +226,6 @@ public final class SinglePageLayoutAssembler {
                 if (!line.isBlank()) {
                     lines.add(line);
                 }
-            }
-            if (rule.signatureLineEnabled()) {
-                lines.add(rule.signatureLineText());
             }
         }
         return List.copyOf(lines);

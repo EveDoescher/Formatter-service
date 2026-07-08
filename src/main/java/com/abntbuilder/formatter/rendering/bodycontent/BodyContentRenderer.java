@@ -46,12 +46,25 @@ public final class BodyContentRenderer
     @Override
     public BodyContentRenderResult renderWithPhase0(
             BodyContentComponent component, DocumentProfile profile, Phase0Index phase0Index) {
+        BodyContentComponentRule rule = new ComponentRuleResolver(profile)
+                .resolve(component.componentId(), BodyContentComponentRule.class);
+        return renderWithRule(component, profile, phase0Index, rule);
+    }
+
+    public BodyContentRenderResult renderWithPhase0(
+            BodyContentComponent component, DocumentProfile profile, Phase0Index phase0Index,
+            BodyContentComponentRule ruleOverride) {
+        Objects.requireNonNull(ruleOverride, "ruleOverride must not be null");
+        return renderWithRule(component, profile, phase0Index, ruleOverride);
+    }
+
+    private BodyContentRenderResult renderWithRule(
+            BodyContentComponent component, DocumentProfile profile,
+            Phase0Index phase0Index, BodyContentComponentRule rule) {
         Objects.requireNonNull(component, "component must not be null");
         Objects.requireNonNull(profile, "profile must not be null");
         Objects.requireNonNull(phase0Index, "phase0Index must not be null");
 
-        BodyContentComponentRule rule = new ComponentRuleResolver(profile)
-                .resolve(component.componentId(), BodyContentComponentRule.class);
         StyleResolver styleResolver = new StyleResolver(profile);
 
         FlowRenderingContext ctx = new FlowRenderingContext(

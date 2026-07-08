@@ -910,7 +910,7 @@
     },
     {
       "id": "references.heading",
-      "type": "PARAGRAPH",
+      "type": "HEADING_1",
       "fontFamily": "Times New Roman",
       "fontSizePt": 12,
       "bold": true,
@@ -941,8 +941,40 @@
       "spacingAfterPt": 0
     },
     {
-      "id": "appendix.heading",
+      "id": "sectioned.heading1",
       "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": true,
+      "italic": false,
+      "uppercase": true,
+      "alignment": "LEFT",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "sectioned.heading2",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": true,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "LEFT",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "appendix.heading",
+      "type": "HEADING_1",
       "fontFamily": "Times New Roman",
       "fontSizePt": 12,
       "bold": true,
@@ -958,7 +990,7 @@
     },
     {
       "id": "annex.heading",
-      "type": "PARAGRAPH",
+      "type": "HEADING_1",
       "fontFamily": "Times New Roman",
       "fontSizePt": 12,
       "bold": true,
@@ -974,7 +1006,7 @@
     },
     {
       "id": "glossary.heading",
-      "type": "PARAGRAPH",
+      "type": "HEADING_1",
       "fontFamily": "Times New Roman",
       "fontSizePt": 12,
       "bold": true,
@@ -2364,8 +2396,8 @@
       "headingStyleId": "appendix.heading",
       "paragraphStyleId": "bodyContent.paragraph",
       "sectionTitleStyleIdsByLevel": [
-        "bodyContent.heading1",
-        "bodyContent.heading2"
+        "sectioned.heading1",
+        "sectioned.heading2"
       ],
       "indexingStyle": "ALPHABETIC",
       "bodyContentComponentId": "bodyContent"
@@ -2377,8 +2409,8 @@
       "headingStyleId": "annex.heading",
       "paragraphStyleId": "bodyContent.paragraph",
       "sectionTitleStyleIdsByLevel": [
-        "bodyContent.heading1",
-        "bodyContent.heading2"
+        "sectioned.heading1",
+        "sectioned.heading2"
       ],
       "indexingStyle": "ALPHABETIC",
       "bodyContentComponentId": "bodyContent"

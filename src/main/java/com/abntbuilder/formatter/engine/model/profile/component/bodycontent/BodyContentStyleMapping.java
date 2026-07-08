@@ -55,6 +55,19 @@ public record BodyContentStyleMapping(
         return sectionTitleStyleIdsByLevel.get(level - 1);
     }
 
+    public BodyContentStyleMapping withSectionTitleStyleIds(List<String> overrideStyleIds) {
+        Objects.requireNonNull(overrideStyleIds, "overrideStyleIds must not be null");
+        if (overrideStyleIds.isEmpty()) throw new InvalidProfileStructureException(
+                "overrideStyleIds must not be empty.");
+        return new BodyContentStyleMapping(
+                overrideStyleIds,
+                paragraphStyleId, directShortQuoteStyleId, directLongQuoteStyleId,
+                indirectCitationStyleId, citationOfCitationStyleId,
+                listOrderedStyleId, listUnorderedStyleId,
+                equationStyleId, footnoteCallStyleId, footnoteTextStyleId
+        );
+    }
+
     public String styleIdForCitation(BodyCitationType type) {
         return switch (type) {
             case DIRECT_SHORT -> directShortQuoteStyleId;

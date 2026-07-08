@@ -8,6 +8,7 @@ import com.abntbuilder.formatter.engine.model.output.DocxParagraph;
 import com.abntbuilder.formatter.engine.model.output.DocxRun;
 import com.abntbuilder.formatter.engine.model.profile.DocumentProfile;
 import com.abntbuilder.formatter.engine.model.profile.StyleRule;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.BodyContentComponentRule;
 import com.abntbuilder.formatter.engine.model.profile.component.sectioned.SectionedComponentRule;
 import com.abntbuilder.formatter.engine.model.profile.component.sectioned.SectionedComponentRule.IndexingStyle;
 import com.abntbuilder.formatter.input.profile.ComponentRuleResolver;
@@ -46,6 +47,9 @@ public final class SectionedRenderer
         StyleRule headingStyle = styleResolver.resolve(rule.headingStyleId());
 
         String bodyContentId = rule.bodyContentComponentId();
+        BodyContentComponentRule bodyContentRule = new ComponentRuleResolver(profile)
+                .resolve(bodyContentId, BodyContentComponentRule.class)
+                .withSectionTitleStyleIds(rule.sectionTitleStyleIdsByLevel());
         List<DocxBlock> blocks = new ArrayList<>();
         BodyContentRenderer contentRenderer = new BodyContentRenderer(bodyContentId);
         for (int i = 0; i < component.items().size(); i++) {
@@ -59,7 +63,8 @@ public final class SectionedRenderer
 
             if (!item.sections().isEmpty()) {
                 BodyContentComponent sectionContent = new BodyContentComponent(bodyContentId, item.sections());
-                blocks.addAll(contentRenderer.renderWithPhase0(sectionContent, profile, phase0Index).blocks());
+                blocks.addAll(contentRenderer.renderWithPhase0(
+                        sectionContent, profile, phase0Index, bodyContentRule).blocks());
             }
         }
         return () -> List.copyOf(blocks);

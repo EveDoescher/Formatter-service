@@ -144,11 +144,11 @@ class SinglePageLayoutAssemblerTest {
         SinglePageLayoutInput input = assembler.assemble(content, profile, rule);
 
         List<SinglePageLayoutItem> items = allItems(input);
-        // name + role + signature line = 3 items
+        // signature line + name + role = 3 items
         assertEquals(3, items.size());
-        assertEquals("Prof. Dr. Carlos Lima", items.get(0).paragraphText());
-        assertEquals("Orientador", items.get(1).paragraphText());
-        assertEquals("________", items.get(2).paragraphText());
+        assertEquals("________", items.get(0).paragraphText());
+        assertEquals("Prof. Dr. Carlos Lima", items.get(1).paragraphText());
+        assertEquals("Orientador", items.get(2).paragraphText());
     }
 
     // --- Optional slot absent ---

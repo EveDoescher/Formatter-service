@@ -481,13 +481,7 @@ public class Docx4jWriter implements DocxWriter {
         for (DocxBlock block : blocks) {
             if (block instanceof DocxParagraph paragraph && isHeadingStyle(paragraph.styleRule())) {
                 String headingStyleId = resolveHeadingStyleId(paragraph.styleRule()).orElseThrow();
-                StyleRule previousRule = headingRulesByStyleId.putIfAbsent(headingStyleId, paragraph.styleRule());
-
-                if (previousRule != null && !previousRule.equals(paragraph.styleRule())) {
-                    throw new IllegalArgumentException(
-                            "Multiple style rules target the same Word heading style: " + headingStyleId
-                    );
-                }
+                headingRulesByStyleId.putIfAbsent(headingStyleId, paragraph.styleRule());
             }
         }
 
@@ -667,6 +661,10 @@ public class Docx4jWriter implements DocxWriter {
         PPrBase.PStyle paragraphStyle = objectFactory.createPPrBasePStyle();
         paragraphStyle.setVal(resolveHeadingStyleId(styleRule).orElseThrow());
         paragraphProperties.setPStyle(paragraphStyle);
+
+        Jc justification = objectFactory.createJc();
+        justification.setVal(mapTextAlignment(styleRule.alignment()));
+        paragraphProperties.setJc(justification);
 
         return paragraphProperties;
     }
