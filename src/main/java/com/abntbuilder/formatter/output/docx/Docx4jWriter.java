@@ -908,37 +908,46 @@ public class Docx4jWriter implements DocxWriter {
     }
 
     private void writeToc(WordprocessingMLPackage wordPackage, DocxTocBlock tocBlock) {
-        P p = objectFactory.createP();
         PPr pPr = createParagraphProperties(tocBlock.styleRule(), Optional.empty(), Optional.empty(), Optional.empty());
-        p.setPPr(pPr);
+
+        // TOC field spans two paragraphs: BEGIN+instrText+SEPARATE in the first,
+        // END in the second. Word needs to be able to insert new paragraphs between
+        // SEPARATE and END when it populates the table of contents.
+        P firstParagraph = objectFactory.createP();
+        firstParagraph.setPPr(pPr);
 
         R beginRun = objectFactory.createR();
         FldChar beginFldChar = objectFactory.createFldChar();
         beginFldChar.setFldCharType(STFldCharType.BEGIN);
         beginFldChar.setDirty(true);
         beginRun.getContent().add(objectFactory.createRFldChar(beginFldChar));
-        p.getContent().add(beginRun);
+        firstParagraph.getContent().add(beginRun);
 
         R instrRun = objectFactory.createR();
         Text instrText = objectFactory.createText();
         instrText.setValue(tocBlock.tocInstruction());
         instrText.setSpace("preserve");
         instrRun.getContent().add(objectFactory.createRInstrText(instrText));
-        p.getContent().add(instrRun);
+        firstParagraph.getContent().add(instrRun);
 
         R separateRun = objectFactory.createR();
         FldChar separateFldChar = objectFactory.createFldChar();
         separateFldChar.setFldCharType(STFldCharType.SEPARATE);
         separateRun.getContent().add(objectFactory.createRFldChar(separateFldChar));
-        p.getContent().add(separateRun);
+        firstParagraph.getContent().add(separateRun);
+
+        wordPackage.getMainDocumentPart().addObject(firstParagraph);
+
+        P endParagraph = objectFactory.createP();
+        endParagraph.setPPr(pPr);
 
         R endRun = objectFactory.createR();
         FldChar endFldChar = objectFactory.createFldChar();
         endFldChar.setFldCharType(STFldCharType.END);
         endRun.getContent().add(objectFactory.createRFldChar(endFldChar));
-        p.getContent().add(endRun);
+        endParagraph.getContent().add(endRun);
 
-        wordPackage.getMainDocumentPart().addObject(p);
+        wordPackage.getMainDocumentPart().addObject(endParagraph);
     }
 
     private void addPageNumberingReference(
@@ -1311,7 +1320,7 @@ public class Docx4jWriter implements DocxWriter {
 
         R instrRun = objectFactory.createR();
         Text instrText = objectFactory.createText();
-        instrText.setValue(" PAGEREF " + entry.bookmarkName() + " \\h \\* MERGEFORMAT ");
+        instrText.setValue(" PAGEREF " + entry.bookmarkName() + " \\* MERGEFORMAT ");
         instrText.setSpace("preserve");
         instrRun.getContent().add(objectFactory.createRInstrText(instrText));
         p.getContent().add(instrRun);
