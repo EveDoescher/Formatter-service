@@ -273,8 +273,8 @@
                 "caption": "Arquitetura geral do motor de formatação orientado por perfis",
                 "source": "Elaboração da autora",
                 "image": {
-                  "sourceType": "DATA_URI",
-                  "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
+                  "sourceType": "URL",
+                  "url": "https://picsum.photos/seed/fig1/800/400",
                   "altText": "Diagrama de arquitetura geral do motor"
                 }
               }
@@ -854,8 +854,8 @@
                 "caption": "Distribuição dos tipos de bloco utilizados no documento de validação",
                 "source": "Elaboração da autora",
                 "image": {
-                  "sourceType": "DATA_URI",
-                  "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
+                  "sourceType": "URL",
+                  "url": "https://picsum.photos/seed/gra1/800/400",
                   "altText": "Gráfico de distribuição de tipos de bloco"
                 }
               }
@@ -1141,8 +1141,8 @@
                     "caption": "Diagrama de camadas do motor de renderização",
                     "source": "Elaboração da autora",
                     "image": {
-                      "sourceType": "DATA_URI",
-                      "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
+                      "sourceType": "URL",
+                      "url": "https://picsum.photos/seed/fig2/800/400",
                       "altText": "Diagrama de camadas do motor"
                     }
                   }

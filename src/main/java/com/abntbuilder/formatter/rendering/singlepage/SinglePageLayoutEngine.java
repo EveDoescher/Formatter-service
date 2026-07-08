@@ -65,9 +65,7 @@ public final class SinglePageLayoutEngine {
             ));
         }
 
-        int availableGapHeightTwips = input.gaps().isEmpty()
-                ? 0
-                : renderableArea.safeHeightTwips() - contentHeightTwips;
+        int availableGapHeightTwips = renderableArea.safeHeightTwips() - contentHeightTwips;
         int[] gapHeightTwips = input.gaps().isEmpty()
                 ? new int[0]
                 : gapDistributor.distribute(
@@ -75,10 +73,16 @@ public final class SinglePageLayoutEngine {
                         input.gaps().stream().map(ResolvedLayoutGap::weight).toList()
                 );
         int[] gapLineCounts = createGapLineCounts(gapHeightTwips, lineHeightTwips);
-        int availableGapLines = sum(gapLineCounts);
+        int anchorSpacerLineCount = input.gaps().isEmpty() && availableGapHeightTwips > 0
+                ? Math.max(1, availableGapHeightTwips / lineHeightTwips)
+                : 0;
+        int availableGapLines = input.gaps().isEmpty()
+                ? anchorSpacerLineCount
+                : sum(gapLineCounts);
         Map<String, Integer> gapLineCountMap = createGapLineCounts(input.gaps(), gapLineCounts);
         Map<String, Integer> gapHeightTwipsMap = createGapLineCounts(input.gaps(), gapHeightTwips);
-        List<SinglePageLayoutElement> elements = assembleElements(input, gapLineCounts, gapHeightTwips, lineHeightTwips);
+        List<SinglePageLayoutElement> elements = assembleElements(
+                input, gapLineCounts, gapHeightTwips, availableGapHeightTwips, anchorSpacerLineCount, lineHeightTwips);
         SinglePageLayoutDiagnostic diagnostic = new SinglePageLayoutDiagnostic(
                 renderableArea,
                 contentLineCount,
@@ -97,7 +101,7 @@ public final class SinglePageLayoutEngine {
 
         return new SinglePageLayoutPlan(
                 elements,
-                contentLineCount + sum(gapLineCountMap),
+                contentLineCount + availableGapLines,
                 renderableArea.safeLineCapacity(),
                 exactLineHeightPt,
                 diagnostic
@@ -164,9 +168,25 @@ public final class SinglePageLayoutEngine {
             SinglePageLayoutInput input,
             int[] gapLineCounts,
             int[] gapHeightTwips,
+            int anchorSpacerHeightTwips,
+            int anchorSpacerLineCount,
             int lineHeightTwips
     ) {
         List<SinglePageLayoutElement> elements = new ArrayList<>();
+
+        if (input.gaps().isEmpty() && anchorSpacerHeightTwips > 0 && anchorSpacerLineCount > 0) {
+            SinglePageLayoutGroup firstGroup = input.groups().getFirst();
+            StyleRule anchorStyle = firstGroup.firstItem().styleRule();
+            elements.add(new SinglePageSpacerLines(
+                    firstGroup.id() + ".anchorSpacer",
+                    firstGroup.id(),
+                    firstGroup.id(),
+                    anchorSpacerLineCount,
+                    anchorStyle,
+                    lineHeightTwips,
+                    anchorSpacerHeightTwips
+            ));
+        }
 
         for (int groupIndex = 0; groupIndex < input.groups().size(); groupIndex++) {
             SinglePageLayoutGroup group = input.groups().get(groupIndex);

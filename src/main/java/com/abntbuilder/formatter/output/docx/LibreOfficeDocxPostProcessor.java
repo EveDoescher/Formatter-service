@@ -7,9 +7,9 @@ import com.abntbuilder.formatter.engine.model.profile.DocumentProfile;
 import com.abntbuilder.formatter.engine.model.profile.PostProcessingRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,7 +19,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 public final class LibreOfficeDocxPostProcessor implements DocxPostProcessor {
 
@@ -43,7 +47,10 @@ public final class LibreOfficeDocxPostProcessor implements DocxPostProcessor {
 
             PostProcessingRule postProcessing = profile.postProcessingRule().orElse(null);
 
-            byte[] current = resolveFieldsViaLibreOffice(inputFile, workDir, docxBytes);
+            byte[] cleanedBytes = cleanDocxForLibreOffice(docxBytes);
+            Files.write(inputFile, cleanedBytes);
+
+            byte[] current = resolveFieldsViaLibreOffice(inputFile, workDir, cleanedBytes);
 
             List<String> warnings = new ArrayList<>();
 
@@ -84,23 +91,23 @@ public final class LibreOfficeDocxPostProcessor implements DocxPostProcessor {
         );
         pb.redirectErrorStream(true);
         Process process = pb.start();
-        process.getInputStream().transferTo(java.io.OutputStream.nullOutputStream());
+        String loOutput = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 
         boolean finished = process.waitFor(properties.getTimeoutSeconds(), TimeUnit.SECONDS);
         if (!finished) {
             process.destroyForcibly();
-            log.warn("LibreOffice field resolution timed out — returning original DOCX bytes.");
+            log.warn("LibreOffice field resolution timed out — returning original DOCX bytes. Output: {}", loOutput);
             return fallback;
         }
         if (process.exitValue() != 0) {
-            log.warn("LibreOffice field resolution exited with {} — returning original DOCX bytes.",
-                    process.exitValue());
+            log.warn("LibreOffice field resolution exited with {} — returning original DOCX bytes. Output: {}",
+                    process.exitValue(), loOutput);
             return fallback;
         }
 
         Path output = outDir.resolve("input.docx");
         if (!Files.exists(output)) {
-            log.warn("LibreOffice field resolution produced no output — returning original DOCX bytes.");
+            log.warn("LibreOffice field resolution produced no output — returning original DOCX bytes. Output: {}", loOutput);
             return fallback;
         }
         return Files.readAllBytes(output);
@@ -263,13 +270,9 @@ public final class LibreOfficeDocxPostProcessor implements DocxPostProcessor {
                         url = uno.systemPathToFileUrl(os.path.abspath(input_path))
                         props = []
                         p = PropertyValue()
-                        p.Name = "Hidden"
-                        p.Value = True
+                        p.Name = "MacroExecutionMode"
+                        p.Value = 4
                         props.append(p)
-                        p2 = PropertyValue()
-                        p2.Name = "MacroExecutionMode"
-                        p2.Value = 4
-                        props.append(p2)
 
                         doc = desktop.loadComponentFromURL(url, "_blank", 0, tuple(props))
 
@@ -281,6 +284,17 @@ public final class LibreOfficeDocxPostProcessor implements DocxPostProcessor {
 
                         if INTEGRITY_CHECK:
                             run_integrity_check(doc, CHECK_MARGIN_OVERFLOW, CHECK_FONT_SUBSTITUTION, MAX_PAGES, warnings)
+
+                        try:
+                            indexes = doc.getTextFields()
+                            if hasattr(doc, 'getIndexes'):
+                                idx_access = doc.getIndexes()
+                                for i in range(idx_access.getCount()):
+                                    idx = idx_access.getByIndex(i)
+                                    if hasattr(idx, 'update'):
+                                        idx.update()
+                        except Exception as e:
+                            warnings.append("TOC update failed: " + str(e))
 
                         save_props = []
                         sp = PropertyValue()
@@ -414,17 +428,50 @@ public final class LibreOfficeDocxPostProcessor implements DocxPostProcessor {
                     except Exception as e:
                         warnings.append("Integrity check failed: " + str(e))
                 """.formatted(
-                tableContinuation, orphanCorrection, integrityCheck,
-                checkMarginOverflow, checkFontSubstitution, maxPagesStr,
+                pyBool(tableContinuation), pyBool(orphanCorrection), pyBool(integrityCheck),
+                pyBool(checkMarginOverflow), pyBool(checkFontSubstitution), maxPagesStr,
                 pyStr(continuesLabel), pyStr(continuationLabel), pyStr(conclusionLabel), pyStr(labelStyleId)
         );
 
         Files.writeString(scriptFile, script, StandardCharsets.UTF_8);
     }
 
+    private static String pyBool(boolean value) {
+        return value ? "True" : "False";
+    }
+
     private static String pyStr(String value) {
         if (value == null || value.isEmpty()) return "\"\"";
         return "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+    }
+
+    private static final Pattern LATENT_STYLES = Pattern.compile(
+            "<w:latentStyles\\b[^>]*>.*?</w:latentStyles>", Pattern.DOTALL);
+
+    private static byte[] cleanDocxForLibreOffice(byte[] docxBytes) {
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            try (ZipInputStream zin = new ZipInputStream(new ByteArrayInputStream(docxBytes));
+                 ZipOutputStream zout = new ZipOutputStream(out)) {
+                ZipEntry entry;
+                while ((entry = zin.getNextEntry()) != null) {
+                    byte[] entryBytes = zin.readAllBytes();
+                    if (entry.getName().equals("word/styles.xml")) {
+                        String xml = new String(entryBytes, StandardCharsets.UTF_8);
+                        xml = LATENT_STYLES.matcher(xml).replaceAll("");
+                        entryBytes = xml.getBytes(StandardCharsets.UTF_8);
+                    }
+                    ZipEntry newEntry = new ZipEntry(entry.getName());
+                    zout.putNextEntry(newEntry);
+                    zout.write(entryBytes);
+                    zout.closeEntry();
+                }
+            }
+            return out.toByteArray();
+        } catch (Exception e) {
+            log.warn("DOCX cleanup for LibreOffice failed — using original bytes. Cause: {}", e.getMessage());
+            return docxBytes;
+        }
     }
 
     private static void deleteSilently(Path path) {

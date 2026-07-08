@@ -21,7 +21,7 @@ public class PostProcessingConfig {
     @Bean
     @ConditionalOnProperty(
             name = "formatter.libreoffice.enabled",
-            havingValue = "true",
+            havingValue = "false",
             matchIfMissing = true
     )
     public DocxPostProcessor noOpDocxPostProcessor() {

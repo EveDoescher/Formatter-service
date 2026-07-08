@@ -11,14 +11,14 @@
     "epigraph",
     "resumo",
     "abstract",
-    "listOfAbbreviations",
-    "listOfSymbols",
-    "summary",
     "listOfFigures",
     "listOfTables",
     "listOfFrames",
     "listOfCharts",
     "listOfCodeListings",
+    "listOfAbbreviations",
+    "listOfSymbols",
+    "summary",
     "bodyContent",
     "references",
     "appendix",
@@ -48,7 +48,7 @@
       "id": "pageNumber",
       "type": "PARAGRAPH",
       "fontFamily": "Times New Roman",
-      "fontSizePt": 12,
+      "fontSizePt": 10,
       "alignment": "RIGHT",
       "lineSpacing": 1,
       "firstLineIndentCm": 0,
@@ -193,7 +193,7 @@
       "type": "PARAGRAPH",
       "fontFamily": "Times New Roman",
       "fontSizePt": 12,
-      "alignment": "JUSTIFIED",
+      "alignment": "LEFT",
       "lineSpacing": 1,
       "firstLineIndentCm": 0,
       "leftIndentCm": 0,
@@ -250,7 +250,7 @@
       "spacingAfterPt": 0,
       "bold": false,
       "italic": false,
-      "uppercase": false
+      "uppercase": true
     },
     {
       "id": "approvalSheet.author",
@@ -305,7 +305,7 @@
       "type": "PARAGRAPH",
       "fontFamily": "Times New Roman",
       "fontSizePt": 12,
-      "alignment": "JUSTIFIED",
+      "alignment": "LEFT",
       "lineSpacing": 1,
       "firstLineIndentCm": 0,
       "leftIndentCm": 0,
@@ -408,7 +408,7 @@
       "rightIndentCm": 0,
       "spacingBeforePt": 0,
       "spacingAfterPt": 0,
-      "bold": true,
+      "bold": false,
       "italic": false,
       "uppercase": false
     },
@@ -424,7 +424,7 @@
       "rightIndentCm": 0,
       "spacingBeforePt": 0,
       "spacingAfterPt": 0,
-      "bold": true,
+      "bold": false,
       "italic": false,
       "uppercase": false
     },
@@ -440,7 +440,7 @@
       "rightIndentCm": 0,
       "spacingBeforePt": 0,
       "spacingAfterPt": 0,
-      "bold": true,
+      "bold": false,
       "italic": false,
       "uppercase": false
     },
@@ -456,7 +456,7 @@
       "rightIndentCm": 0,
       "spacingBeforePt": 0,
       "spacingAfterPt": 0,
-      "bold": true,
+      "bold": false,
       "italic": false,
       "uppercase": false
     },
@@ -749,22 +749,6 @@
       "spacingAfterPt": 0
     },
     {
-      "id": "errata.entry",
-      "type": "PARAGRAPH",
-      "fontFamily": "Times New Roman",
-      "fontSizePt": 12,
-      "bold": false,
-      "italic": false,
-      "uppercase": false,
-      "alignment": "JUSTIFIED",
-      "lineSpacing": 1.5,
-      "firstLineIndentCm": 0,
-      "leftIndentCm": 0,
-      "rightIndentCm": 0,
-      "spacingBeforePt": 0,
-      "spacingAfterPt": 0
-    },
-    {
       "id": "errata.tableHeader",
       "type": "PARAGRAPH",
       "fontFamily": "Times New Roman",
@@ -823,7 +807,7 @@
       "alignment": "LEFT",
       "lineSpacing": 1.0,
       "firstLineIndentCm": 0,
-      "leftIndentCm": 9,
+      "leftIndentCm": 0,
       "rightIndentCm": 0,
       "spacingBeforePt": 0,
       "spacingAfterPt": 0
@@ -839,7 +823,7 @@
       "alignment": "LEFT",
       "lineSpacing": 1.0,
       "firstLineIndentCm": 0,
-      "leftIndentCm": 9,
+      "leftIndentCm": 0,
       "rightIndentCm": 0,
       "spacingBeforePt": 0,
       "spacingAfterPt": 0
@@ -901,7 +885,7 @@
       "italic": false,
       "uppercase": false,
       "alignment": "JUSTIFIED",
-      "lineSpacing": 1.0,
+      "lineSpacing": 1.5,
       "firstLineIndentCm": 0,
       "leftIndentCm": 0,
       "rightIndentCm": 0,
@@ -917,7 +901,7 @@
       "italic": false,
       "uppercase": false,
       "alignment": "JUSTIFIED",
-      "lineSpacing": 1.0,
+      "lineSpacing": 1.5,
       "firstLineIndentCm": 0,
       "leftIndentCm": 0,
       "rightIndentCm": 0,
@@ -1013,6 +997,38 @@
       "italic": false,
       "uppercase": false,
       "alignment": "JUSTIFIED",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "summary.entry.primary",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": true,
+      "italic": false,
+      "uppercase": true,
+      "alignment": "LEFT",
+      "lineSpacing": 1.5,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "summary.entry.secondary",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "LEFT",
       "lineSpacing": 1.5,
       "firstLineIndentCm": 0,
       "leftIndentCm": 0,
@@ -1587,7 +1603,7 @@
       "figure": {
         "captionStyleId": "bodyContent.figure.caption",
         "sourceStyleId": "bodyContent.figure.source",
-        "captionTemplate": "Figura {number} - {caption}",
+        "captionTemplate": "Figura {number} – {caption}",
         "sourceTemplate": "Fonte: {source}",
         "continuationLabels": {
           "first": "continua",
@@ -1610,7 +1626,7 @@
         "sourceStyleId": "bodyContent.table.source",
         "headerStyleId": "bodyContent.table.header",
         "cellStyleId": "bodyContent.table.cell",
-        "captionTemplate": "Tabela {number} - {caption}",
+        "captionTemplate": "Tabela {number} – {caption}",
         "sourceTemplate": "Fonte: {source}",
         "continuationLabels": {
           "first": "continua",
@@ -1629,7 +1645,7 @@
         "sourceStyleId": "bodyContent.frame.source",
         "headerStyleId": "bodyContent.frame.header",
         "cellStyleId": "bodyContent.frame.cell",
-        "captionTemplate": "Quadro {number} - {caption}",
+        "captionTemplate": "Quadro {number} – {caption}",
         "sourceTemplate": "Fonte: {source}",
         "continuationLabels": {
           "first": "continua",
@@ -1647,7 +1663,7 @@
         "captionStyleId": "bodyContent.figure.caption",
         "sourceStyleId": "bodyContent.figure.source",
         "codeStyleId": "bodyContent.codeListing.code",
-        "captionTemplate": "Código-fonte {number} - {caption}",
+        "captionTemplate": "Código-fonte {number} – {caption}",
         "sourceTemplate": "Fonte: {source}",
         "continuationLabels": {
           "first": "continua",
@@ -1661,7 +1677,7 @@
       "chart": {
         "captionStyleId": "bodyContent.figure.caption",
         "sourceStyleId": "bodyContent.figure.source",
-        "captionTemplate": "Gráfico {number} - {caption}",
+        "captionTemplate": "Gráfico {number} – {caption}",
         "sourceTemplate": "Fonte: {source}",
         "continuationLabels": {
           "first": "continua",
@@ -1672,7 +1688,7 @@
         "imageRule": {
           "captionStyleId": "bodyContent.figure.caption",
           "sourceStyleId": "bodyContent.figure.source",
-          "captionTemplate": "Gráfico {number} - {caption}",
+          "captionTemplate": "Gráfico {number} – {caption}",
           "sourceTemplate": "Fonte: {source}",
           "continuationLabels": {
             "first": "continua",
@@ -1734,25 +1750,102 @@
       ]
     },
     "dedication": {
-      "ruleType": "FLOW_TEXTUAL",
+      "ruleType": "SINGLE_PAGE",
       "componentId": "dedication",
-      "items": [
-        { "itemType": "BLANK_LINES", "styleId": "dedication.text", "count": 10 },
-        { "itemType": "PLAIN_TEXT", "styleId": "dedication.text", "slotName": "text" }
-      ]
+      "slots": {
+        "text": {
+          "type": "TEXT",
+          "required": true
+        }
+      },
+      "styleMapping": {
+        "text": "dedication.text"
+      },
+      "layoutRule": {
+        "groups": [
+          {
+            "id": "dedication.text",
+            "required": true,
+            "items": [
+              {
+                "id": "text",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FROM_PAGE_CENTER_TO_RIGHT_MARGIN"
+                }
+              }
+            ]
+          }
+        ],
+        "gapRules": [],
+        "policy": {
+          "anchorStrategy": "LAST_GROUP_AT_SAFE_AREA_END",
+          "lineHeightStrategy": "MAX_EXACT_LINE_HEIGHT",
+          "spacerStylePolicy": "NEXT_GROUP_STYLE",
+          "safetyPolicy": "MARGIN_BASED"
+        }
+      }
     },
     "epigraph": {
-      "ruleType": "FLOW_TEXTUAL",
+      "ruleType": "SINGLE_PAGE",
       "componentId": "epigraph",
-      "items": [
-        { "itemType": "PLAIN_TEXT", "styleId": "epigraph.text", "slotName": "text" },
-        {
-          "itemType": "TEMPLATED_TEXT",
-          "styleId": "epigraph.author",
-          "template": "— {author}, {source}",
-          "fieldNames": ["author", "source"]
+      "slots": {
+        "text": {
+          "type": "TEXT",
+          "required": true
+        },
+        "author": {
+          "type": "TEXT",
+          "required": false
+        },
+        "source": {
+          "type": "TEXT",
+          "required": false
         }
-      ]
+      },
+      "styleMapping": {
+        "text": "epigraph.text",
+        "author": "epigraph.author",
+        "source": "epigraph.author"
+      },
+      "layoutRule": {
+        "groups": [
+          {
+            "id": "epigraph.block",
+            "required": true,
+            "items": [
+              {
+                "id": "text",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FROM_PAGE_CENTER_TO_RIGHT_MARGIN"
+                }
+              },
+              {
+                "id": "author",
+                "required": false,
+                "horizontalPlacement": {
+                  "strategy": "FROM_PAGE_CENTER_TO_RIGHT_MARGIN"
+                }
+              },
+              {
+                "id": "source",
+                "required": false,
+                "horizontalPlacement": {
+                  "strategy": "FROM_PAGE_CENTER_TO_RIGHT_MARGIN"
+                }
+              }
+            ]
+          }
+        ],
+        "gapRules": [],
+        "policy": {
+          "anchorStrategy": "LAST_GROUP_AT_SAFE_AREA_END",
+          "lineHeightStrategy": "MAX_EXACT_LINE_HEIGHT",
+          "spacerStylePolicy": "NEXT_GROUP_STYLE",
+          "safetyPolicy": "MARGIN_BASED"
+        }
+      }
     },
     "acknowledgments": {
       "ruleType": "FLOW_TEXTUAL",
@@ -1884,7 +1977,7 @@
             },
             {
               "source": "title",
-              "bold": true,
+              "bold": false,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -1892,7 +1985,7 @@
             {
               "source": "literal:In: ",
               "bold": false,
-              "prefix": "",
+              "prefix": ". ",
               "suffix": "",
               "optional": false
             },
@@ -1956,7 +2049,7 @@
             },
             {
               "source": "title",
-              "bold": true,
+              "bold": false,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -1970,8 +2063,8 @@
             },
             {
               "source": "publisher",
-              "bold": false,
-              "prefix": " ",
+              "bold": true,
+              "prefix": ". ",
               "suffix": "",
               "optional": true
             },
@@ -2051,7 +2144,7 @@
           "LEGISLATION": [
             {
               "source": "title",
-              "bold": false,
+              "bold": true,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -2132,7 +2225,7 @@
             },
             {
               "source": "title",
-              "bold": true,
+              "bold": false,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -2146,7 +2239,7 @@
             },
             {
               "source": "publisher",
-              "bold": false,
+              "bold": true,
               "prefix": "",
               "suffix": ". ",
               "optional": true
@@ -2234,7 +2327,7 @@
             },
             {
               "source": "title",
-              "bold": false,
+              "bold": true,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -2311,12 +2404,12 @@
       "headingStyleId": "list.heading",
       "headingText": "SUMÁRIO",
       "entryStyleIdsByLevel": [
-        "list.entry",
-        "list.entry",
-        "list.entry",
-        "list.entry",
-        "list.entry",
-        "list.entry"
+        "summary.entry.primary",
+        "summary.entry.secondary",
+        "summary.entry.secondary",
+        "summary.entry.secondary",
+        "summary.entry.secondary",
+        "summary.entry.secondary"
       ],
       "useTocField": true
     },

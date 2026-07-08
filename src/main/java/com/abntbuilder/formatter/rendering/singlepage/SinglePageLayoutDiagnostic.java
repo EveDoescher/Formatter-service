@@ -96,7 +96,7 @@ public record SinglePageLayoutDiagnostic(
             throw new IllegalArgumentException("itemLineCounts must sum to contentLineCount.");
         }
 
-        if (sum(gapLineCounts) != availableGapLines) {
+        if (!gapLineCounts.isEmpty() && sum(gapLineCounts) != availableGapLines) {
             throw new IllegalArgumentException("gapLineCounts must sum to availableGapLines.");
         }
 

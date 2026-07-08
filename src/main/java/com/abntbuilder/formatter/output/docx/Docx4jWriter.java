@@ -105,17 +105,20 @@ public class Docx4jWriter implements DocxWriter {
                     .anyMatch(b -> b instanceof DocxListItemParagraph);
             ListNumIds listNumIds = hasLists ? createListNumIds(wordPackage) : null;
 
+            PageRule pageRule = document.pageRule();
+            long textWidthTwips = MeasurementConverter.centimetersToTwips(pageRule.usableWidthCm());
+
             for (DocxBlock block : document.blocks()) {
                 if (block instanceof DocxSectionBreak sectionBreak) {
-                    writeSectionBreak(wordPackage, document.pageRule(), currentSectionPageNumbering);
+                    writeSectionBreak(wordPackage, pageRule, currentSectionPageNumbering);
                     currentSectionPageNumbering = Optional.of(sectionBreak.pageNumbering());
                     continue;
                 }
 
-                writeBlock(wordPackage, block, listNumIds);
+                writeBlock(wordPackage, block, listNumIds, textWidthTwips);
             }
 
-            applyPageRule(wordPackage, document.pageRule(), currentSectionPageNumbering);
+            applyPageRule(wordPackage, pageRule, currentSectionPageNumbering);
 
             try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
                 wordPackage.save(outputStream);
@@ -190,15 +193,15 @@ public class Docx4jWriter implements DocxWriter {
         return sectionProperties;
     }
 
-    private void writeBlock(WordprocessingMLPackage wordPackage, DocxBlock block, ListNumIds listNumIds) {
+    private void writeBlock(WordprocessingMLPackage wordPackage, DocxBlock block, ListNumIds listNumIds, long textWidthTwips) {
         switch (block) {
             case DocxParagraph paragraph -> writeParagraph(wordPackage, paragraph);
             case DocxPageBreak ignored -> writePageBreak(wordPackage);
             case DocxBlankLine blankLine -> writeBlankLine(wordPackage, blankLine);
             case DocxImageBlock imageBlock -> writeImage(wordPackage, imageBlock);
-            case DocxTableBlock tableBlock -> writeTable(wordPackage, tableBlock);
+            case DocxTableBlock tableBlock -> writeTable(wordPackage, tableBlock, textWidthTwips);
             case DocxListItemParagraph listItem -> writeListItem(wordPackage, listItem, listNumIds);
-            case com.abntbuilder.formatter.engine.model.output.DocxFootnoteReferenceBlock fnBlock -> writeFootnoteReferenceBlock(wordPackage, fnBlock, listNumIds);
+            case com.abntbuilder.formatter.engine.model.output.DocxFootnoteReferenceBlock fnBlock -> writeFootnoteReferenceBlock(wordPackage, fnBlock, listNumIds, textWidthTwips);
             case DocxTocBlock tocBlock -> writeToc(wordPackage, tocBlock);
             case DocxSectionBreak ignored -> throw new IllegalArgumentException(
                     "Section breaks must be handled by the document section state."
@@ -284,15 +287,17 @@ public class Docx4jWriter implements DocxWriter {
         }
     }
 
-    private void writeTable(WordprocessingMLPackage wordPackage, DocxTableBlock tableBlock) {
+    private void writeTable(WordprocessingMLPackage wordPackage, DocxTableBlock tableBlock, long textWidthTwips) {
+        long tableWidthTwips = percentToTwips(tableBlock.widthPercent(), textWidthTwips).longValue();
         Tbl table = objectFactory.createTbl();
-        table.setTblPr(createTableProperties(tableBlock));
+        table.setTblPr(createTableProperties(tableBlock, textWidthTwips));
 
         Tr headerRow = createTableRow(
                 tableBlock.headers(),
                 tableBlock.headerStyleRule(),
                 tableBlock.headers().size(),
-                tableBlock.repeatHeaderOnPageBreak()
+                tableBlock.repeatHeaderOnPageBreak(),
+                tableWidthTwips
         );
         table.getContent().add(headerRow);
 
@@ -301,19 +306,20 @@ public class Docx4jWriter implements DocxWriter {
                     row,
                     tableBlock.cellStyleRule(),
                     tableBlock.headers().size(),
-                    false
+                    false,
+                    tableWidthTwips
             ));
         }
 
         wordPackage.getMainDocumentPart().addObject(table);
     }
 
-    private TblPr createTableProperties(DocxTableBlock tableBlock) {
+    private TblPr createTableProperties(DocxTableBlock tableBlock, long textWidthTwips) {
         TblPr tableProperties = objectFactory.createTblPr();
 
         TblWidth tableWidth = objectFactory.createTblWidth();
-        tableWidth.setType("pct");
-        tableWidth.setW(tableWidthPercentValue(tableBlock.widthPercent()));
+        tableWidth.setType("dxa");
+        tableWidth.setW(percentToTwips(tableBlock.widthPercent(), textWidthTwips));
         tableProperties.setTblW(tableWidth);
 
         Jc justification = objectFactory.createJc();
@@ -342,7 +348,8 @@ public class Docx4jWriter implements DocxWriter {
             List<String> cells,
             StyleRule styleRule,
             int columnCount,
-            boolean repeatHeaderOnPageBreak
+            boolean repeatHeaderOnPageBreak,
+            long tableWidthTwips
     ) {
         Tr row = objectFactory.createTr();
 
@@ -355,7 +362,7 @@ public class Docx4jWriter implements DocxWriter {
         }
 
         for (String cellText : cells) {
-            row.getContent().add(createTableCell(new com.abntbuilder.formatter.engine.model.output.DocxTableCell(cellText), styleRule, columnCount));
+            row.getContent().add(createTableCell(new com.abntbuilder.formatter.engine.model.output.DocxTableCell(cellText), styleRule, columnCount, tableWidthTwips));
         }
 
         return row;
@@ -365,7 +372,8 @@ public class Docx4jWriter implements DocxWriter {
             List<com.abntbuilder.formatter.engine.model.output.DocxTableCell> cells,
             StyleRule styleRule,
             int columnCount,
-            boolean repeatHeaderOnPageBreak
+            boolean repeatHeaderOnPageBreak,
+            long tableWidthTwips
     ) {
         Tr row = objectFactory.createTr();
 
@@ -378,19 +386,19 @@ public class Docx4jWriter implements DocxWriter {
         }
 
         for (com.abntbuilder.formatter.engine.model.output.DocxTableCell cell : cells) {
-            row.getContent().add(createTableCell(cell, styleRule, columnCount));
+            row.getContent().add(createTableCell(cell, styleRule, columnCount, tableWidthTwips));
         }
 
         return row;
     }
 
-    private Tc createTableCell(com.abntbuilder.formatter.engine.model.output.DocxTableCell docxCell, StyleRule styleRule, int columnCount) {
+    private Tc createTableCell(com.abntbuilder.formatter.engine.model.output.DocxTableCell docxCell, StyleRule styleRule, int columnCount, long tableWidthTwips) {
         Tc cell = objectFactory.createTc();
 
         TcPr cellProperties = objectFactory.createTcPr();
         TblWidth cellWidth = objectFactory.createTblWidth();
-        cellWidth.setType("pct");
-        cellWidth.setW(BigInteger.valueOf(5000L * docxCell.colspan() / columnCount));
+        cellWidth.setType("dxa");
+        cellWidth.setW(BigInteger.valueOf(tableWidthTwips * docxCell.colspan() / columnCount));
         cellProperties.setTcW(cellWidth);
 
         if (docxCell.colspan() > 1) {
@@ -440,11 +448,11 @@ public class Docx4jWriter implements DocxWriter {
         return border;
     }
 
-    private BigInteger tableWidthPercentValue(BigDecimal widthPercent) {
+    private static BigInteger percentToTwips(BigDecimal widthPercent, long textWidthTwips) {
         return widthPercent
-                .multiply(BigDecimal.valueOf(50))
-                .setScale(0, java.math.RoundingMode.HALF_UP)
-                .toBigIntegerExact();
+                .multiply(BigDecimal.valueOf(textWidthTwips))
+                .divide(BigDecimal.valueOf(100), 0, java.math.RoundingMode.HALF_UP)
+                .toBigInteger();
     }
 
     private void applyKeepOptions(PPr paragraphProperties, boolean keepWithNext, boolean keepLines) {
@@ -813,7 +821,7 @@ public class Docx4jWriter implements DocxWriter {
         };
     }
 
-    private void writeFootnoteReferenceBlock(WordprocessingMLPackage wordPackage, com.abntbuilder.formatter.engine.model.output.DocxFootnoteReferenceBlock fnBlock, ListNumIds listNumIds) {
+    private void writeFootnoteReferenceBlock(WordprocessingMLPackage wordPackage, com.abntbuilder.formatter.engine.model.output.DocxFootnoteReferenceBlock fnBlock, ListNumIds listNumIds, long textWidthTwips) {
         try {
             org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart fnPart = wordPackage.getMainDocumentPart().getFootnotesPart();
             if (fnPart == null) {
@@ -845,7 +853,7 @@ public class Docx4jWriter implements DocxWriter {
             throw new RuntimeException("Failed to add FootnotesPart", e);
         }
 
-        writeBlock(wordPackage, fnBlock.hostBlock(), listNumIds);
+        writeBlock(wordPackage, fnBlock.hostBlock(), listNumIds, textWidthTwips);
     }
 
     private JcEnumeration mapTextAlignment(TextAlignment alignment) {
