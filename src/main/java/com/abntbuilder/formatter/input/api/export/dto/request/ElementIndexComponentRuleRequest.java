@@ -11,10 +11,11 @@ public record ElementIndexComponentRuleRequest(
         @NotBlank String headingText,
         @NotBlank String entryStyleId,
         @NotBlank String entryTemplate,
-        int blankLinesAfterHeading
+        int blankLinesAfterHeading,
+        boolean pageReferenceEnabled
 ) {
     public ElementIndexComponentRule toDomain(String componentId) {
         return new ElementIndexComponentRule(componentId, elementType, headingStyleId,
-                headingText, entryStyleId, entryTemplate, blankLinesAfterHeading);
+                headingText, entryStyleId, entryTemplate, blankLinesAfterHeading, pageReferenceEnabled);
     }
 }

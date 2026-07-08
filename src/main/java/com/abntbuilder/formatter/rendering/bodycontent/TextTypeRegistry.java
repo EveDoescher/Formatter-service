@@ -15,6 +15,7 @@ import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyTable;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.ImageSourceType;
 import com.abntbuilder.formatter.engine.model.output.DocxBlankLine;
 import com.abntbuilder.formatter.engine.model.output.DocxBlock;
+import com.abntbuilder.formatter.engine.model.output.DocxBookmarkParagraph;
 import com.abntbuilder.formatter.engine.model.output.DocxFootnoteContent;
 import com.abntbuilder.formatter.engine.model.output.DocxFootnoteReferenceBlock;
 import com.abntbuilder.formatter.engine.model.output.DocxImageBlock;
@@ -104,10 +105,15 @@ final class TextTypeRegistry {
         boolean renderSource = shouldRenderSource(figure, rule, part, ctx.figureState);
         List<DocxBlock> blocks = new ArrayList<>();
         StyleRule captionStyle = ctx.styleResolver.resolve(rule.captionStyleId());
-        blocks.add(new DocxParagraph(
-                List.of(DocxRun.of(resolveCaptionText(figure.caption(), rule.captionTemplate(), part), captionStyle)),
-                captionStyle, Optional.empty(), Optional.empty(), Optional.empty(), true, true
-        ));
+        String captionText = resolveCaptionText(figure.caption(), rule.captionTemplate(), part);
+        if (part.continuationLabel().isEmpty()) {
+            blocks.add(new DocxBookmarkParagraph(
+                    List.of(DocxRun.of(captionText, captionStyle)), captionStyle, "elem_" + figure.id()));
+        } else {
+            blocks.add(new DocxParagraph(
+                    List.of(DocxRun.of(captionText, captionStyle)),
+                    captionStyle, Optional.empty(), Optional.empty(), Optional.empty(), true, true));
+        }
         blocks.add(renderImageBlock(figure.image(), rule, renderSource));
         if (renderSource) {
             String source = ctx.figureState.sourceFor(figure).orElseThrow();
@@ -129,10 +135,15 @@ final class TextTypeRegistry {
         boolean renderSource = shouldRenderSource(table, rule, part, ctx.tableState);
         List<DocxBlock> blocks = new ArrayList<>();
         StyleRule captionStyle = ctx.styleResolver.resolve(rule.captionStyleId());
-        blocks.add(new DocxParagraph(
-                List.of(DocxRun.of(resolveCaptionText(table.caption(), rule.captionTemplate(), part), captionStyle)),
-                captionStyle, Optional.empty(), Optional.empty(), Optional.empty(), true, true
-        ));
+        String tableCaptionText = resolveCaptionText(table.caption(), rule.captionTemplate(), part);
+        if (part.continuationLabel().isEmpty()) {
+            blocks.add(new DocxBookmarkParagraph(
+                    List.of(DocxRun.of(tableCaptionText, captionStyle)), captionStyle, "elem_" + table.id()));
+        } else {
+            blocks.add(new DocxParagraph(
+                    List.of(DocxRun.of(tableCaptionText, captionStyle)),
+                    captionStyle, Optional.empty(), Optional.empty(), Optional.empty(), true, true));
+        }
         blocks.add(new DocxTableBlock(
                 table.columns().stream().map(c -> c.header()).toList(),
                 table.rows().stream()
@@ -191,10 +202,15 @@ final class TextTypeRegistry {
         boolean renderSource = shouldRenderSource(frame, rule, part, ctx.frameState);
         List<DocxBlock> blocks = new ArrayList<>();
         StyleRule captionStyle = ctx.styleResolver.resolve(rule.captionStyleId());
-        blocks.add(new DocxParagraph(
-                List.of(DocxRun.of(resolveCaptionText(frame.caption(), rule.captionTemplate(), part), captionStyle)),
-                captionStyle, Optional.empty(), Optional.empty(), Optional.empty(), true, true
-        ));
+        String frameCaptionText = resolveCaptionText(frame.caption(), rule.captionTemplate(), part);
+        if (part.continuationLabel().isEmpty()) {
+            blocks.add(new DocxBookmarkParagraph(
+                    List.of(DocxRun.of(frameCaptionText, captionStyle)), captionStyle, "elem_" + frame.id()));
+        } else {
+            blocks.add(new DocxParagraph(
+                    List.of(DocxRun.of(frameCaptionText, captionStyle)),
+                    captionStyle, Optional.empty(), Optional.empty(), Optional.empty(), true, true));
+        }
         blocks.add(new DocxTableBlock(
                 frame.columns().stream().map(c -> c.header()).toList(),
                 frame.rows().stream()
@@ -231,10 +247,15 @@ final class TextTypeRegistry {
         }
         List<DocxBlock> blocks = new ArrayList<>();
         StyleRule captionStyle = ctx.styleResolver.resolve(rule.captionStyleId());
-        blocks.add(new DocxParagraph(
-                List.of(DocxRun.of(resolveCaptionText(codeListing.caption(), rule.captionTemplate(), part), captionStyle)),
-                captionStyle, Optional.empty(), Optional.empty(), Optional.empty(), true, true
-        ));
+        String codeListingCaptionText = resolveCaptionText(codeListing.caption(), rule.captionTemplate(), part);
+        if (part.continuationLabel().isEmpty()) {
+            blocks.add(new DocxBookmarkParagraph(
+                    List.of(DocxRun.of(codeListingCaptionText, captionStyle)), captionStyle, "elem_" + codeListing.id()));
+        } else {
+            blocks.add(new DocxParagraph(
+                    List.of(DocxRun.of(codeListingCaptionText, captionStyle)),
+                    captionStyle, Optional.empty(), Optional.empty(), Optional.empty(), true, true));
+        }
         StyleRule codeStyle = ctx.styleResolver.resolve(rule.codeStyleId());
         for (String line : codeListing.code().split("\n", -1)) {
             if (line.isBlank()) {
@@ -263,10 +284,15 @@ final class TextTypeRegistry {
         boolean renderSource = shouldRenderSource(chart, rule, part, ctx.chartState);
         List<DocxBlock> blocks = new ArrayList<>();
         StyleRule captionStyle = ctx.styleResolver.resolve(rule.captionStyleId());
-        blocks.add(new DocxParagraph(
-                List.of(DocxRun.of(resolveCaptionText(chart.caption(), rule.captionTemplate(), part), captionStyle)),
-                captionStyle, Optional.empty(), Optional.empty(), Optional.empty(), true, true
-        ));
+        String chartCaptionText = resolveCaptionText(chart.caption(), rule.captionTemplate(), part);
+        if (part.continuationLabel().isEmpty()) {
+            blocks.add(new DocxBookmarkParagraph(
+                    List.of(DocxRun.of(chartCaptionText, captionStyle)), captionStyle, "elem_" + chart.id()));
+        } else {
+            blocks.add(new DocxParagraph(
+                    List.of(DocxRun.of(chartCaptionText, captionStyle)),
+                    captionStyle, Optional.empty(), Optional.empty(), Optional.empty(), true, true));
+        }
         blocks.add(renderImageBlock(chart.image(), rule.imageRule(), renderSource));
         if (renderSource) {
             String source = ctx.chartState.sourceFor(chart).orElseThrow();

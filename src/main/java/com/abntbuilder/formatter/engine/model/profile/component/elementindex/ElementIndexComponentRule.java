@@ -13,7 +13,8 @@ public record ElementIndexComponentRule(
         String headingText,
         String entryStyleId,
         String entryTemplate,
-        int blankLinesAfterHeading
+        int blankLinesAfterHeading,
+        boolean pageReferenceEnabled
 ) implements ComponentRule {
 
     public ElementIndexComponentRule {
@@ -23,7 +24,7 @@ public record ElementIndexComponentRule(
         requireNonBlank(headingText, "headingText");
         requireNonBlank(entryStyleId, "entryStyleId");
         requireNonBlank(entryTemplate, "entryTemplate");
-        if (!entryTemplate.contains("{number}") || !entryTemplate.contains("{caption}")) {
+        if (!pageReferenceEnabled && (!entryTemplate.contains("{number}") || !entryTemplate.contains("{caption}"))) {
             throw new InvalidProfileStructureException(
                     "elementIndex.entryTemplate must contain {number} and {caption}.");
         }

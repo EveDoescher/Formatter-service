@@ -1035,7 +1035,8 @@ public record ProfileDefinition(
             String headingText,
             String entryStyleId,
             String entryTemplate,
-            Integer blankLinesAfterHeading
+            Integer blankLinesAfterHeading,
+            Boolean pageReferenceEnabled
     ) implements ComponentRuleDefinition {
         public ElementIndexComponentRule toDomain() {
             requireNonNull(elementType, componentId + ".elementType");
@@ -1046,7 +1047,8 @@ public record ProfileDefinition(
                     headingText,
                     entryStyleId,
                     entryTemplate,
-                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0
+                    blankLinesAfterHeading != null ? blankLinesAfterHeading : 0,
+                    pageReferenceEnabled != null && pageReferenceEnabled
             );
         }
     }

@@ -14,4 +14,8 @@ public record BodyDisplayObjectMetadata(
     public BodyDisplayObjectMetadata(String id, int number, String caption) {
         this(id, String.valueOf(number), caption);
     }
+
+    public String bookmarkName() {
+        return "elem_" + id;
+    }
 }

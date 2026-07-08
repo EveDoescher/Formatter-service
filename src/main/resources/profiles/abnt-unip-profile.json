@@ -2452,8 +2452,9 @@
       "headingStyleId": "list.heading",
       "headingText": "LISTA DE ILUSTRAÇÕES",
       "entryStyleId": "list.entry",
-      "entryTemplate": "{number} — {caption}",
-      "blankLinesAfterHeading": 1
+      "entryTemplate": "Figura {number} – {caption}",
+      "blankLinesAfterHeading": 1,
+      "pageReferenceEnabled": true
     },
     "listOfTables": {
       "ruleType": "ELEMENT_INDEX",
@@ -2462,8 +2463,9 @@
       "headingStyleId": "list.heading",
       "headingText": "LISTA DE TABELAS",
       "entryStyleId": "list.entry",
-      "entryTemplate": "{number} — {caption}",
-      "blankLinesAfterHeading": 1
+      "entryTemplate": "Tabela {number} – {caption}",
+      "blankLinesAfterHeading": 1,
+      "pageReferenceEnabled": true
     },
     "listOfFrames": {
       "ruleType": "ELEMENT_INDEX",
@@ -2472,8 +2474,9 @@
       "headingStyleId": "list.heading",
       "headingText": "LISTA DE QUADROS",
       "entryStyleId": "list.entry",
-      "entryTemplate": "{number} — {caption}",
-      "blankLinesAfterHeading": 1
+      "entryTemplate": "Quadro {number} – {caption}",
+      "blankLinesAfterHeading": 1,
+      "pageReferenceEnabled": true
     },
     "listOfCharts": {
       "ruleType": "ELEMENT_INDEX",
@@ -2482,8 +2485,9 @@
       "headingStyleId": "list.heading",
       "headingText": "LISTA DE GRÁFICOS",
       "entryStyleId": "list.entry",
-      "entryTemplate": "{number} — {caption}",
-      "blankLinesAfterHeading": 1
+      "entryTemplate": "Gráfico {number} – {caption}",
+      "blankLinesAfterHeading": 1,
+      "pageReferenceEnabled": true
     },
     "listOfCodeListings": {
       "ruleType": "ELEMENT_INDEX",
@@ -2492,8 +2496,9 @@
       "headingStyleId": "list.heading",
       "headingText": "LISTA DE LISTAGENS",
       "entryStyleId": "list.entry",
-      "entryTemplate": "{number} — {caption}",
-      "blankLinesAfterHeading": 1
+      "entryTemplate": "Código-fonte {number} – {caption}",
+      "blankLinesAfterHeading": 1,
+      "pageReferenceEnabled": true
     },
     "listOfAbbreviations": {
       "ruleType": "FLOW_TEXTUAL",

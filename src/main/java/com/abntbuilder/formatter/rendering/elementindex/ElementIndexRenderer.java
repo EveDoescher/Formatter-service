@@ -3,6 +3,7 @@ package com.abntbuilder.formatter.rendering.elementindex;
 import com.abntbuilder.formatter.engine.model.content.elementindex.ElementIndexContent;
 import com.abntbuilder.formatter.engine.model.output.DocxBlankLine;
 import com.abntbuilder.formatter.engine.model.output.DocxBlock;
+import com.abntbuilder.formatter.engine.model.output.DocxIndexEntryParagraph;
 import com.abntbuilder.formatter.engine.model.output.DocxParagraph;
 import com.abntbuilder.formatter.engine.model.output.DocxRun;
 import com.abntbuilder.formatter.engine.model.profile.DocumentProfile;
@@ -49,11 +50,21 @@ public final class ElementIndexRenderer implements MetadataConsumingRenderer<Ele
             blocks.add(new DocxBlankLine(headingStyle));
         }
 
-        for (BodyDisplayObjectMetadata item : resolveCollection(rule, phase0Index)) {
-            String text = rule.entryTemplate()
-                    .replace("{number}", item.number())
-                    .replace("{caption}", item.caption());
-            blocks.add(new DocxParagraph(List.of(DocxRun.of(text, entryStyle)), entryStyle));
+        if (rule.pageReferenceEnabled()) {
+            java.math.BigDecimal contentWidthCm = profile.pageRule().usableWidthCm();
+            for (BodyDisplayObjectMetadata item : resolveCollection(rule, phase0Index)) {
+                String text = rule.entryTemplate()
+                        .replace("{number}", item.number())
+                        .replace("{caption}", item.caption());
+                blocks.add(new DocxIndexEntryParagraph(text, item.bookmarkName(), entryStyle, contentWidthCm));
+            }
+        } else {
+            for (BodyDisplayObjectMetadata item : resolveCollection(rule, phase0Index)) {
+                String text = rule.entryTemplate()
+                        .replace("{number}", item.number())
+                        .replace("{caption}", item.caption());
+                blocks.add(new DocxParagraph(List.of(DocxRun.of(text, entryStyle)), entryStyle));
+            }
         }
 
         return List.copyOf(blocks);

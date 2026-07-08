@@ -70,7 +70,7 @@ O `SectionedRenderer` precisa passar os `sectionTitleStyleIdsByLevel` da `Sectio
 
 ## Bug 3 — Listas de elementos sem líderes de pontos e número de página
 
-**Status:** pendente
+**Status:** implementado — aguardando resolução de campos PAGEREF via pós-processamento (ver sub-bug 4b)
 
 ### Sintoma
 As listas de ilustrações, quadros, gráficos e listagens aparecem com o formato simples:
@@ -158,4 +158,4 @@ O `SectionIndexRenderer` emite corretamente um `DocxTocBlock` com instrução `T
 
 Se o sumário está em branco no arquivo final, o LibreOffice não está atualizando o campo — seja porque não está instalado/acessível no ambiente, porque o processo falha silenciosamente e retorna o fallback, ou porque o `NoOpDocxPostProcessor` está sendo usado em vez do LibreOffice.
 
-**Resolução:** implementar junto do bug 3 (pós-processamento). Além da atualização do TOC, o LibreOffice deve resolver os campos `PAGEREF` emitidos pelas listas de elementos (bug 3). As duas operações acontecem no mesmo passo do pós-processamento. Requer diagnóstico do ambiente (verificar qual `DocxPostProcessor` está ativo, se o LibreOffice está acessível, checar logs de warning do pós-processamento).
+**Resolução:** o bug 3 já emite bookmarks e campos `PAGEREF` no DOCX. O LibreOffice deve resolver tanto o TOC quanto os campos `PAGEREF` das listas de elementos no mesmo passo do pós-processamento. Requer diagnóstico do ambiente (verificar qual `DocxPostProcessor` está ativo, se o LibreOffice está acessível, checar logs de warning do pós-processamento).

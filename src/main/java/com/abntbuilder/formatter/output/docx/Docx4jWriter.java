@@ -87,10 +87,13 @@ import java.util.Optional;
 public class Docx4jWriter implements DocxWriter {
 
     private final ObjectFactory objectFactory = Context.getWmlObjectFactory();
+    private int bookmarkIdCounter;
 
     @Override
     public byte[] write(DocxDocument document) {
         Objects.requireNonNull(document, "document must not be null");
+
+        bookmarkIdCounter = 0;
 
         try {
             WordprocessingMLPackage wordPackage = WordprocessingMLPackage.createPackage();
@@ -196,6 +199,8 @@ public class Docx4jWriter implements DocxWriter {
     private void writeBlock(WordprocessingMLPackage wordPackage, DocxBlock block, ListNumIds listNumIds, long textWidthTwips) {
         switch (block) {
             case DocxParagraph paragraph -> writeParagraph(wordPackage, paragraph);
+            case DocxBookmarkParagraph bookmarkParagraph -> writeBookmarkParagraph(wordPackage, bookmarkParagraph);
+            case DocxIndexEntryParagraph indexEntry -> writeIndexEntryParagraph(wordPackage, indexEntry);
             case DocxPageBreak ignored -> writePageBreak(wordPackage);
             case DocxBlankLine blankLine -> writeBlankLine(wordPackage, blankLine);
             case DocxImageBlock imageBlock -> writeImage(wordPackage, imageBlock);
@@ -1197,6 +1202,96 @@ public class Docx4jWriter implements DocxWriter {
     }
 
     private record ListNumIds(int orderedNumId, int unorderedNumId) {}
+
+    private void writeBookmarkParagraph(WordprocessingMLPackage wordPackage, DocxBookmarkParagraph paragraph) {
+        P p = objectFactory.createP();
+        p.setPPr(isHeadingStyle(paragraph.styleRule())
+                ? createHeadingParagraphProperties(paragraph.styleRule())
+                : createParagraphProperties(
+                        paragraph.styleRule(),
+                        paragraph.spacingBeforeOverridePt(),
+                        paragraph.exactLineHeightPt(),
+                        paragraph.layoutOverride()
+                ));
+        applyKeepOptions(p.getPPr(), paragraph.keepWithNext(), paragraph.keepLines());
+
+        int bookmarkId = bookmarkIdCounter++;
+
+        org.docx4j.wml.CTBookmark bookmarkStart = objectFactory.createCTBookmark();
+        bookmarkStart.setId(BigInteger.valueOf(bookmarkId));
+        bookmarkStart.setName(paragraph.bookmarkName());
+        p.getContent().add(objectFactory.createPBookmarkStart(bookmarkStart));
+
+        for (DocxRun docxRun : paragraph.runs()) {
+            R run = objectFactory.createR();
+            if (!isHeadingStyle(paragraph.styleRule())) {
+                run.setRPr(buildRunProperties(docxRun.baseStyle(), docxRun.formatting()));
+            }
+            Text t = objectFactory.createText();
+            t.setValue(resolveText(docxRun.text(), docxRun.baseStyle()));
+            t.setSpace("preserve");
+            run.getContent().add(t);
+            p.getContent().add(run);
+        }
+
+        org.docx4j.wml.CTMarkupRange bookmarkEnd = objectFactory.createCTMarkupRange();
+        bookmarkEnd.setId(BigInteger.valueOf(bookmarkId));
+        p.getContent().add(objectFactory.createPBookmarkEnd(bookmarkEnd));
+
+        wordPackage.getMainDocumentPart().addObject(p);
+    }
+
+    private void writeIndexEntryParagraph(WordprocessingMLPackage wordPackage, DocxIndexEntryParagraph entry) {
+        P p = objectFactory.createP();
+        PPr pPr = createParagraphProperties(
+                entry.styleRule(), Optional.empty(), Optional.empty(), Optional.empty());
+
+        long rightTabTwips = MeasurementConverter.centimetersToTwips(entry.contentWidthCm());
+        CTTabStop tabStop = objectFactory.createCTTabStop();
+        tabStop.setVal(STTabJc.RIGHT);
+        tabStop.setLeader(STTabTlc.DOT);
+        tabStop.setPos(BigInteger.valueOf(rightTabTwips));
+        Tabs tabs = objectFactory.createTabs();
+        tabs.getTab().add(tabStop);
+        pPr.setTabs(tabs);
+
+        p.setPPr(pPr);
+
+        R textRun = objectFactory.createR();
+        textRun.setRPr(createRunProperties(entry.styleRule()));
+        Text entryText = objectFactory.createText();
+        entryText.setValue(entry.entryText());
+        entryText.setSpace("preserve");
+        textRun.getContent().add(entryText);
+        p.getContent().add(textRun);
+
+        R tabRun = objectFactory.createR();
+        tabRun.setRPr(createRunProperties(entry.styleRule()));
+        org.docx4j.wml.R.Tab tab = objectFactory.createRTab();
+        tabRun.getContent().add(tab);
+        p.getContent().add(tabRun);
+
+        R beginPageRef = objectFactory.createR();
+        FldChar beginFldChar = objectFactory.createFldChar();
+        beginFldChar.setFldCharType(STFldCharType.BEGIN);
+        beginPageRef.getContent().add(objectFactory.createRFldChar(beginFldChar));
+        p.getContent().add(beginPageRef);
+
+        R instrRun = objectFactory.createR();
+        Text instrText = objectFactory.createText();
+        instrText.setValue(" PAGEREF " + entry.bookmarkName() + " \\h \\* MERGEFORMAT ");
+        instrText.setSpace("preserve");
+        instrRun.getContent().add(objectFactory.createRInstrText(instrText));
+        p.getContent().add(instrRun);
+
+        R endPageRef = objectFactory.createR();
+        FldChar endFldChar = objectFactory.createFldChar();
+        endFldChar.setFldCharType(STFldCharType.END);
+        endPageRef.getContent().add(objectFactory.createRFldChar(endFldChar));
+        p.getContent().add(endPageRef);
+
+        wordPackage.getMainDocumentPart().addObject(p);
+    }
 
     private void writeBlankLine(WordprocessingMLPackage wordPackage, DocxBlankLine blankLine) {
         P paragraph = objectFactory.createP();
