@@ -3,6 +3,7 @@ package com.abntbuilder.formatter.rendering.phase0;
 import com.abntbuilder.formatter.engine.model.content.DocumentComponent;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyBlock;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyChart;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyAbbreviation;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyCitationCall;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyCitationType;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyCodeListing;
@@ -87,7 +88,18 @@ public final class DisplayObjectCollector {
             }
 
             for (BodyBlock block : section.blocks()) {
-                if (block instanceof BodyFigure figure) {
+                if (block instanceof BodyParagraph paragraph) {
+                    for (BodyInline inline : paragraph.content()) {
+                        if (inline instanceof BodyAbbreviation abbr) {
+                            boolean alreadySeen = abbreviations.stream()
+                                    .anyMatch(m -> m.abbreviation().equals(abbr.abbreviation()));
+                            if (!alreadySeen) {
+                                abbreviations.add(new BodyAbbreviationMetadata(
+                                        abbr.abbreviation(), abbr.expansion()));
+                            }
+                        }
+                    }
+                } else if (block instanceof BodyFigure figure) {
                     DisplayObjectContinuationPart part = figureState.nextPart(
                             figure, rule.figure().continuationLabels());
                     if (part.index() == 1) {

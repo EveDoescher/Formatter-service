@@ -131,19 +131,17 @@ Anotar no sub-bug 4b que a resolução de campos `PAGEREF` pelo LibreOffice deve
 
 Dividido em dois sub-problemas com origens distintas.
 
-### Sub-bug 4a — Listas de elementos e abreviaturas vazias (Phase0)
+### Sub-bug 4a — Lista de abreviaturas vazia (Phase0)
 
-**Sintoma:** as listas de tabelas, listagens, gráficos, quadros e abreviaturas e siglas aparecem completamente vazias, mesmo o body content contendo tabelas, figuras, gráficos, listagens e abreviações.
+**Status:** resolvido
 
-**Origem:** a investigar em Java — `DisplayObjectCollector` e/ou pipeline de renderização.
+**Sintoma:** a lista de abreviaturas aparecia vazia mesmo com `BodyAbbreviation` presente no body content.
 
-O `DisplayObjectCollector.collect()` itera `command.documentComponents()` filtrando `instanceof BodyContentComponent`. O body content principal existe e deveria ser coletado. Hipóteses:
+**Origem:** `DisplayObjectCollector.collectFromBodyContent` percorria `section.blocks()` mas `BodyAbbreviation` é um `BodyInline` dentro de `BodyParagraph.content()` — o coletor nunca descia para os inlines.
 
-- O `componentId` do `BodyContentComponent` enviado não corresponde a uma chave que resolve para `BodyContentComponentRule`, causando falha silenciosa na coleta.
-- A coleta funciona mas o `Phase0Index` não está sendo passado corretamente para os renderers das listas (`ElementIndexRenderer`, `FlowTextualRenderer`).
-- O `DisplayObjectCollector` não está varrendo o conteúdo dos apêndices/anexos — `SectionedContent` não é `BodyContentComponent`, então figuras e tabelas dentro deles nunca entram no índice.
+**Correção:** adicionado loop em `BodyParagraph.content()` dentro do loop de blocos, coletando `BodyAbbreviation` sem duplicatas.
 
-**Passo de diagnóstico:** adicionar log temporário após `displayObjectCollector.collect()` no `DocumentRenderer` para imprimir o conteúdo do `Phase0Index` (contagem de elementos por tipo, contagem de abreviações).
+**Nota:** listas de figuras/tabelas/quadros/gráficos/listagens funcionavam corretamente — o coletor indexava esses tipos corretamente via `NumberedDisplayObject`. Listas vazias para esses tipos eram esperadas quando o body content não continha elementos do tipo correspondente.
 
 ### Sub-bug 4b — Sumário em branco (pós-processamento)
 

@@ -1,13 +1,16 @@
 package com.abntbuilder.formatter.rendering.phase0;
 
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyAbbreviation;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyContentComponent;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyFigure;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyImageSource;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyParagraph;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodySection;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyTable;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyTableCell;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyTableColumn;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyTableRow;
+import com.abntbuilder.formatter.engine.model.content.bodycontent.BodyText;
 import com.abntbuilder.formatter.engine.model.content.bodycontent.ImageSourceType;
 import com.abntbuilder.formatter.engine.model.profile.DocumentProfile;
 import com.abntbuilder.formatter.engine.model.profile.PageOrientation;
@@ -114,6 +117,38 @@ class DisplayObjectCollectorTest {
 
         assertThat(index.elements(ElementType.FIGURE)).hasSize(1);
         assertThat(index.elements(ElementType.FIGURE).values().iterator().next().number()).isEqualTo("1");
+    }
+
+    @Test
+    void shouldCollectAbbreviationsFromParagraphInlines() {
+        BodyParagraph paragraph = new BodyParagraph(List.of(
+                new BodyText("A sigla "),
+                new BodyAbbreviation("ABNT", "Associação Brasileira de Normas Técnicas"),
+                new BodyText(" e também "),
+                new BodyAbbreviation("NBR", "Norma Brasileira")
+        ));
+        BodySection section = new BodySection("sec-1", 1, Optional.of("Introdução"), List.of(paragraph));
+        BodyContentComponent component = new BodyContentComponent("bodyContent", List.of(section));
+
+        Phase0Index index = collector.collect(List.of(component), profile());
+
+        assertThat(index.abbreviations()).hasSize(2);
+        assertThat(index.abbreviations()).extracting("abbreviation")
+                .containsExactly("ABNT", "NBR");
+    }
+
+    @Test
+    void shouldNotDuplicateAbbreviationsAppearedMultipleTimes() {
+        BodyParagraph para1 = new BodyParagraph(List.of(
+                new BodyAbbreviation("ABNT", "Associação Brasileira de Normas Técnicas")));
+        BodyParagraph para2 = new BodyParagraph(List.of(
+                new BodyAbbreviation("ABNT", "Associação Brasileira de Normas Técnicas")));
+        BodySection section = new BodySection("sec-1", 1, Optional.of("Seção"), List.of(para1, para2));
+        BodyContentComponent component = new BodyContentComponent("bodyContent", List.of(section));
+
+        Phase0Index index = collector.collect(List.of(component), profile());
+
+        assertThat(index.abbreviations()).hasSize(1);
     }
 
     private static BodyFigure figure(String id, String caption) {
