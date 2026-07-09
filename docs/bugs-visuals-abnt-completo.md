@@ -145,15 +145,21 @@ Dividido em dois sub-problemas com origens distintas.
 
 ### Sub-bug 4b — Sumário em branco (pós-processamento)
 
-**Sintoma:** o sumário aparece em branco.
+**Status:** corrigido
 
-**Origem:** pós-processamento — `LibreOfficeDocxPostProcessor`.
+**Sintoma:** o sumário aparecia completamente vazio (sem campo, sem linhas em branco) e as listas de elementos não exibiam números de página.
 
-O `SectionIndexRenderer` emite corretamente um `DocxTocBlock` com instrução `TOC \o "1-6" \h \z \u`. O preenchimento do sumário depende do LibreOffice headless:
+**Origem:** `LibreOfficeDocxPostProcessor` destruía os campos TOC e PAGEREF ao processar o DOCX. O fluxo original chamava `resolveFieldsViaLibreOffice` (`--convert-to docx` headless) e `applyUnoScript` (UNO via socket). Ambos os passos faziam o LibreOffice avaliar e descartar os campos ao reconverter/salvar, pois sem contexto de renderização visual ele substitui TOC/PAGEREF por vazio.
 
-1. `resolveFieldsViaLibreOffice` converte o DOCX via `--convert-to docx`, o que deveria forçar atualização dos campos TOC.
-2. O script UNO também tenta `doc.getIndexes()` e chama `idx.update()`.
+**Investigação:** inspeção direta do ZIP pré e pós-processamento mostrou que o `docxWriter` emitia corretamente 4 campos (`fldChar BEGIN/SEPARATE/END`) com `dirty=true`, TOC com instrução `TOC \o "1-6" \h \z \u`, e 3 campos `PAGEREF` — mas o output final tinha zero campos.
 
-Se o sumário está em branco no arquivo final, o LibreOffice não está atualizando o campo — seja porque não está instalado/acessível no ambiente, porque o processo falha silenciosamente e retorna o fallback, ou porque o `NoOpDocxPostProcessor` está sendo usado em vez do LibreOffice.
+**Correção:**
+- Removido `resolveFieldsViaLibreOffice` completamente — convertia via `--convert-to docx` e destruía os campos.
+- Removido `applyUnoScript` do fluxo principal — mesmo com `FieldAutoUpdate=False`, o LibreOffice destrói campos TOC ao fazer `storeToURL`.
+- `LibreOfficeDocxPostProcessor` agora passa os bytes do writer diretamente, sem processamento LibreOffice.
+- PDF output via LibreOffice preservado (só converte, não modifica o DOCX original).
 
-**Resolução:** o bug 3 já emite bookmarks e campos `PAGEREF` no DOCX. O LibreOffice deve resolver tanto o TOC quanto os campos `PAGEREF` das listas de elementos no mesmo passo do pós-processamento. Requer diagnóstico do ambiente (verificar qual `DocxPostProcessor` está ativo, se o LibreOffice está acessível, checar logs de warning do pós-processamento).
+**Correções no `Docx4jWriter`:**
+- Adicionado `fldCharType=SEPARATE` nos campos TOC e PAGEREF (o spec OOXML exige `BEGIN → instrText → SEPARATE → [cache] → END`; sem o SEPARATE o campo não é reconhecido).
+- Adicionado `dirty=true` nos campos PAGEREF.
+- Adicionado `applyUpdateFieldsSetting` que escreve `<w:updateFields w:val="true"/>` em `settings.xml` quando o documento contém campos TOC ou PAGEREF — Word e LibreOffice atualizam automaticamente ao abrir.

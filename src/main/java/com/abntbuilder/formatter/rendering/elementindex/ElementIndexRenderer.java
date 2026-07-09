@@ -43,6 +43,11 @@ public final class ElementIndexRenderer implements MetadataConsumingRenderer<Ele
         StyleRule headingStyle = styleResolver.resolve(rule.headingStyleId());
         StyleRule entryStyle = styleResolver.resolve(rule.entryStyleId());
 
+        List<BodyDisplayObjectMetadata> items = resolveCollection(rule, phase0Index);
+        if (items.isEmpty()) {
+            return List.of();
+        }
+
         List<DocxBlock> blocks = new ArrayList<>();
         blocks.add(new DocxParagraph(
                 List.of(DocxRun.of(rule.headingText(), headingStyle)), headingStyle));
@@ -52,14 +57,14 @@ public final class ElementIndexRenderer implements MetadataConsumingRenderer<Ele
 
         if (rule.pageReferenceEnabled()) {
             java.math.BigDecimal contentWidthCm = profile.pageRule().usableWidthCm();
-            for (BodyDisplayObjectMetadata item : resolveCollection(rule, phase0Index)) {
+            for (BodyDisplayObjectMetadata item : items) {
                 String text = rule.entryTemplate()
                         .replace("{number}", item.number())
                         .replace("{caption}", item.caption());
                 blocks.add(new DocxIndexEntryParagraph(text, item.bookmarkName(), entryStyle, contentWidthCm));
             }
         } else {
-            for (BodyDisplayObjectMetadata item : resolveCollection(rule, phase0Index)) {
+            for (BodyDisplayObjectMetadata item : items) {
                 String text = rule.entryTemplate()
                         .replace("{number}", item.number())
                         .replace("{caption}", item.caption());
