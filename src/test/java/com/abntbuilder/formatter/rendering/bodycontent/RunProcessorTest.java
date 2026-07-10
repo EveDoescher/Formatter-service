@@ -213,7 +213,7 @@ class RunProcessorTest {
                                 "bodyContent.footnoteText"
                         ),
                         new BodyContentNumberingRule(true, ".", ""),
-                        new BodyContentLayoutRule(1, 1, false, "base"),
+                        new BodyContentLayoutRule(1, 1, false, false, "base"),
                         figureRule(), tableRule(), frameRule(), codeListingRule(), chartRule(),
                         new CitationFormattingRule("p. ", "; ", "et al.", " apud ", "[...]", "grifo nosso", "grifo do autor", "informação verbal", ", ", ", ", "(", ")"),
                         new CrossReferenceLabelsRule("Seção", "Figura", "Tabela", "Quadro", "Gráfico", "Listagem", "Equação")

@@ -11,6 +11,7 @@ public record BodyContentLayoutRuleRequest(
         @NotNull @Min(0) Integer blankLinesBeforeSectionTitleWhenPrecededByContent,
         @NotNull @Min(0) Integer blankLinesAfterSectionTitle,
         @NotNull Boolean pageBreakBeforePrimarySection,
+        Boolean keepWithNextOnHeadings,
         @NotBlank String blankLineStyleId
 ) {
 
@@ -28,6 +29,7 @@ public record BodyContentLayoutRuleRequest(
                         pageBreakBeforePrimarySection,
                         "bodyContent.layout.pageBreakBeforePrimarySection must not be null"
                 ),
+                keepWithNextOnHeadings != null && keepWithNextOnHeadings,
                 blankLineStyleId
         );
     }

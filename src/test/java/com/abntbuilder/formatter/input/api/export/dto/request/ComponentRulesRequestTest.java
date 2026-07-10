@@ -111,7 +111,7 @@ class ComponentRulesRequestTest {
                         "bodyContent.footnoteText"
                 ),
                 new ProfileDefinition.BodyContentNumberingRuleDefinition(true, ".", ""),
-                new ProfileDefinition.BodyContentLayoutRuleDefinition(1, 1, false, "bodyContent.paragraph"),
+                new ProfileDefinition.BodyContentLayoutRuleDefinition(1, 1, false, false, "bodyContent.paragraph"),
                 figureRuleDefinition(),
                 new ProfileDefinition.TableRuleDefinition(
                         "bodyContent.table.caption",

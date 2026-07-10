@@ -1630,6 +1630,7 @@
         "blankLinesBeforeSectionTitleWhenPrecededByContent": 1,
         "blankLinesAfterSectionTitle": 1,
         "pageBreakBeforePrimarySection": false,
+        "keepWithNextOnHeadings": true,
         "blankLineStyleId": "bodyContent.paragraph"
       },
       "figure": {
@@ -2533,8 +2534,12 @@
     }
   },
   "postProcessing": {
-    "orphanTitleCorrection": {
-      "enabled": true
+    "tableContinuationLabels": {
+      "enabled": true,
+      "continuesLabel": "continua",
+      "continuationLabel": "continuação",
+      "conclusionLabel": "conclusão",
+      "labelStyleId": "bodyContent.table.header"
     }
   }
 }

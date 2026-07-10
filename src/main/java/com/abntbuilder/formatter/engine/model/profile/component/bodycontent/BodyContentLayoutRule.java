@@ -6,6 +6,7 @@ public record BodyContentLayoutRule(
         int blankLinesBeforeSectionTitleWhenPrecededByContent,
         int blankLinesAfterSectionTitle,
         boolean pageBreakBeforePrimarySection,
+        boolean keepWithNextOnHeadings,
         String blankLineStyleId
 ) {
 

@@ -613,6 +613,7 @@ public record ProfileDefinition(
             Integer blankLinesBeforeSectionTitleWhenPrecededByContent,
             Integer blankLinesAfterSectionTitle,
             Boolean pageBreakBeforePrimarySection,
+            Boolean keepWithNextOnHeadings,
             String blankLineStyleId
     ) {
         BodyContentLayoutRule toDomain() {
@@ -627,6 +628,7 @@ public record ProfileDefinition(
                     blankLinesBeforeSectionTitleWhenPrecededByContent,
                     blankLinesAfterSectionTitle,
                     pageBreakBeforePrimarySection,
+                    keepWithNextOnHeadings != null && keepWithNextOnHeadings,
                     blankLineStyleId
             );
         }

@@ -238,7 +238,7 @@ class FlowLayoutEngineTest {
                                 "bodyContent.paragraph"
                         ),
                         new BodyContentNumberingRule(true, ".", ""),
-                        new BodyContentLayoutRule(1, 1, pageBreakBeforePrimary, "bodyContent.paragraph"),
+                        new BodyContentLayoutRule(1, 1, pageBreakBeforePrimary, false, "bodyContent.paragraph"),
                         figureRule(),
                         tableRule(),
                         frameRule(),

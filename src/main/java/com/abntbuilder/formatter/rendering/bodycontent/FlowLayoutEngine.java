@@ -14,6 +14,7 @@ import com.abntbuilder.formatter.rendering.bodycontent.BodySectionMetadata;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public final class FlowLayoutEngine {
 
@@ -42,9 +43,12 @@ public final class FlowLayoutEngine {
                         section.level(), section.title().orElseThrow()
                 );
                 String renderedNumber = ctx.sectionNumberingState.resolveNumber(section.level());
+                boolean keepWithNext = ctx.rule.layout().keepWithNextOnHeadings();
                 blocks.add(new DocxParagraph(
                         List.of(DocxRun.of(renderedTitle, titleStyle)),
-                        titleStyle
+                        titleStyle,
+                        Optional.empty(), Optional.empty(), Optional.empty(),
+                        keepWithNext, false
                 ));
                 ctx.sectionMetas.add(new BodySectionMetadata(
                         section.id(), section.level(), renderedTitle, renderedNumber
