@@ -1,5 +1,6 @@
 package com.abntbuilder.formatter.application.export;
 
+import com.abntbuilder.formatter.engine.model.FontPreferences;
 import com.abntbuilder.formatter.engine.model.content.DocumentComponent;
 import com.abntbuilder.formatter.engine.model.profile.DocumentProfile;
 
@@ -11,10 +12,21 @@ public record ExportDocxCommand(
         DocumentProfile profile,
         List<DocumentComponent> documentComponents,
         List<String> selectedComponents,
-        List<ParagraphCommand> paragraphs
+        List<ParagraphCommand> paragraphs,
+        FontPreferences fontPreferences
 ) {
     public ExportDocxCommand(String fileName, DocumentProfile profile, List<ParagraphCommand> paragraphs) {
-        this(fileName, profile, List.of(), List.of(), paragraphs);
+        this(fileName, profile, List.of(), List.of(), paragraphs, FontPreferences.NONE);
+    }
+
+    public ExportDocxCommand(
+            String fileName,
+            DocumentProfile profile,
+            List<DocumentComponent> documentComponents,
+            List<String> selectedComponents,
+            List<ParagraphCommand> paragraphs
+    ) {
+        this(fileName, profile, documentComponents, selectedComponents, paragraphs, FontPreferences.NONE);
     }
 
     public ExportDocxCommand {
@@ -23,6 +35,7 @@ public record ExportDocxCommand(
         Objects.requireNonNull(documentComponents, "documentComponents must not be null");
         Objects.requireNonNull(selectedComponents, "selectedComponents must not be null");
         Objects.requireNonNull(paragraphs, "paragraphs must not be null");
+        Objects.requireNonNull(fontPreferences, "fontPreferences must not be null");
 
         documentComponents = List.copyOf(documentComponents);
         selectedComponents = List.copyOf(selectedComponents);

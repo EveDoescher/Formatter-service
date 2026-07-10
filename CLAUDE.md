@@ -29,7 +29,7 @@ If you are about to write a value or a rule in Java that could come from the pro
 The service receives exactly three things:
 
 - **Profile** — declares everything: what components exist, how sections are structured, what each component may contain, all layout strategies, all labels, all defaults and allowed values.
-- **Preferences** — user choices within limits the profile allows (font choice, selected components, validation mode).
+- **Preferences** — user choices within limits the profile allows. Currently only `selectedComponents` is implemented. Font choice and validation mode are planned but not yet built.
 - **Content** — the actual document data (authors, title, sections, references, etc.).
 
 The service assembles these into a model and renders. It does not fetch, store, or infer anything.

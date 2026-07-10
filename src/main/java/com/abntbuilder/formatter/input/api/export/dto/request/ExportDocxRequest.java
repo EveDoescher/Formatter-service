@@ -1,6 +1,7 @@
 package com.abntbuilder.formatter.input.api.export.dto.request;
 
 import com.abntbuilder.formatter.application.export.ExportDocxCommand;
+import com.abntbuilder.formatter.engine.model.FontPreferences;
 import com.abntbuilder.formatter.engine.model.content.DocumentComponent;
 import com.abntbuilder.formatter.engine.model.profile.DocumentProfile;
 import com.abntbuilder.formatter.input.profile.ProfileProvider;
@@ -63,7 +64,8 @@ public record ExportDocxRequest(
                 options == null || options.selectedComponents() == null
                         ? List.of()
                         : options.selectedComponents(),
-                paragraphCommands
+                paragraphCommands,
+                options == null ? FontPreferences.NONE : options.toFontPreferences()
         );
     }
 

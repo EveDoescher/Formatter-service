@@ -55,7 +55,7 @@ public final class DocumentRenderer {
                 new LinkedHashSet<>(componentOrder)
         );
 
-        StyleResolver styleResolver = new StyleResolver(command.profile());
+        StyleResolver styleResolver = new StyleResolver(command.profile(), command.fontPreferences());
         List<DocxBlock> blocks = new ArrayList<>();
         Map<String, DocumentComponent> documentComponentsById = documentComponentsById(command);
         Optional<PageNumberingRule> pageNumberingRule = command.profile().pageNumberingRule()

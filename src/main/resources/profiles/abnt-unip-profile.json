@@ -2533,7 +2533,44 @@
       ]
     }
   },
+  "fontRoles": {
+    "baseFont": {
+      "default": "Times New Roman",
+      "allowedValues": ["Times New Roman", "Arial"],
+      "styleIds": [
+        "pageNumber",
+        "cover.top", "cover.author", "cover.title", "cover.subtitle", "cover.bottom",
+        "titlePage.author", "titlePage.title", "titlePage.subtitle", "titlePage.nature",
+        "titlePage.advisor", "titlePage.coadvisor", "titlePage.bottom",
+        "approvalSheet.author", "approvalSheet.title", "approvalSheet.subtitle",
+        "approvalSheet.nature", "approvalSheet.approval",
+        "approvalSheet.committee.heading", "approvalSheet.committee",
+        "bodyContent.heading1", "bodyContent.heading2", "bodyContent.heading3",
+        "bodyContent.heading4", "bodyContent.heading5", "bodyContent.heading6",
+        "bodyContent.paragraph", "bodyContent.longQuote",
+        "bodyContent.figure.caption", "bodyContent.figure.source",
+        "bodyContent.table.caption", "bodyContent.table.source",
+        "bodyContent.table.header", "bodyContent.table.cell",
+        "bodyContent.frame.caption", "bodyContent.frame.source",
+        "bodyContent.frame.header", "bodyContent.frame.cell",
+        "bodyContent.list.ordered", "bodyContent.list.unordered",
+        "bodyContent.footnoteCall", "bodyContent.footnoteText",
+        "errata.heading", "errata.tableHeader", "errata.tableCell",
+        "dedication.text",
+        "epigraph.text", "epigraph.author",
+        "acknowledgments.heading", "acknowledgments.text",
+        "resumo.heading", "resumo.text", "resumo.keywords",
+        "references.heading", "references.entry",
+        "sectioned.heading1", "sectioned.heading2",
+        "appendix.heading", "annex.heading",
+        "glossary.heading", "glossary.entry",
+        "summary.entry.primary", "summary.entry.secondary",
+        "list.heading", "list.entry"
+      ]
+    }
+  },
   "postProcessing": {
+    "orphanTitleCorrection": { "enabled": true },
     "tableContinuationLabels": {
       "enabled": true,
       "continuesLabel": "continua",

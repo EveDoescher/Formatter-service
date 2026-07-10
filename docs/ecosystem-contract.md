@@ -927,6 +927,9 @@ e servem como referência de como mapear um `ruleType` a um componente concreto.
 IDs devem existir no `componentOrder` do profile — caso contrário retorna 400.
 Lista vazia renderiza todos os componentes que têm conteúdo em `document`.
 
+Preferências planejadas mas não implementadas (font choice, validation mode) são descritas em
+`docs/planned-features.md`. Não enviar esses campos — são ignorados.
+
 ---
 
 ## Input 3 — Content (`document`)

@@ -61,12 +61,14 @@ The profile declares:
 
 Defines user choices within limits allowed by the profile.
 
-Examples:
+Currently implemented:
 
-- chosen base font (from allowed values);
-- chosen code font (from allowed values);
-- selected components;
-- output format;
+- selected components — which components to include in the generated document.
+
+Not yet implemented (planned):
+
+- chosen base font (from allowed values declared in the profile);
+- chosen code font (from allowed values declared in the profile);
 - validation mode (strict or flexible).
 
 ## 3.3 Content
@@ -221,70 +223,95 @@ com.abntbuilder.formatter
 │
 ├── config
 │
-├── api
-│   └── export
-│       ├── controller
-│       └── dto
-│           ├── request
-│           └── response
+├── input
+│   ├── api
+│   │   ├── export
+│   │   │   ├── controller
+│   │   │   └── dto
+│   │   │       ├── request
+│   │   │       └── response
+│   │   └── error
+│   └── profile
 │
 ├── application
 │   └── export
 │
-├── document
-│   ├── model
-│   └── component
-│
-├── profile
-│   ├── model
-│   ├── provider
-│   └── resolution
+├── engine
+│   ├── contract
+│   └── model
+│       ├── content
+│       │   ├── bodycontent
+│       │   ├── elementindex
+│       │   ├── flowtextual
+│       │   ├── references
+│       │   ├── sectioned
+│       │   ├── sectionindex
+│       │   └── singlepage
+│       ├── output
+│       └── profile
+│           ├── component
+│           │   ├── bodycontent
+│           │   ├── elementindex
+│           │   ├── flowtextual
+│           │   ├── references
+│           │   ├── sectioned
+│           │   ├── sectionindex
+│           │   └── singlepage
+│           └── layout
+│               └── singlepage
 │
 ├── rendering
 │   ├── orchestration
-│   ├── component
-│   │   ├── cover
-│   │   ├── titlepage
-│   │   ├── bodycontent
-│   │   └── shared
-│   └── layout
+│   ├── phase0
+│   ├── bodycontent
+│   ├── elementindex
+│   ├── flowtextual
+│   ├── references
+│   ├── sectioned
+│   ├── sectionindex
+│   ├── singlepage
+│   └── text
 │
 ├── output
-│   ├── docx
-│   │   ├── api
-│   │   └── docx4j
-│   └── pdf
-│       └── future
+│   └── docx
+│       ├── docx4j
+│       └── postprocess
 │
 └── shared
     ├── exception
     └── measurement
 ```
 
+**Nota sobre a camada `input/`:** separa a entrada de dados (HTTP, leitura de profile do classpath) do motor de renderização. Quando o feeder service e a integração com banco de dados chegarem, apenas a camada `input/` muda. O motor (`engine/`, `rendering/`, `output/`) não deve mudar.
+
+**Nota sobre `engine/`:** agrupa os modelos de conteúdo (o que foi entregue como dados) e os modelos de profile (as regras declaradas) num único lugar. Esses modelos são compartilhados entre `rendering/` e `application/`. Não contêm lógica de renderização nem dependências de docx4j.
+
 ---
 
 # 11. Dependency Direction Rules
 
-- `api` may depend on `application`;
-- `application` may coordinate `document`, `profile`, `rendering`, and output APIs;
-- `rendering` may depend on `document`, `profile`, and output APIs;
-- `output/docx/docx4j` may depend on `output/docx/api`, `profile`, and `shared`;
-- `document` must not depend on rendering, output, Spring, docx4j, or profile providers;
-- `profile/model` must not depend on rendering, output, Spring, or docx4j;
-- renderers must not import docx4j or OpenXML classes;
+- `input` may depend on `application` and `engine/model/profile`;
+- `application` may coordinate `engine`, `rendering`, and `output`;
+- `rendering` may depend on `engine` and `output/docx/docx4j` interfaces;
+- `output/docx/docx4j` may depend on `engine/model/output` and `shared`;
+- `engine/model` must not depend on rendering, output, Spring, or docx4j;
+- `input/profile` must not depend on rendering or output;
+- renderers must not import docx4j or OpenXML classes directly;
 - controllers must not import docx4j or OpenXML classes.
 
 ---
 
 # 12. Layer Responsibilities
 
-## 12.1 API Layer
+## 12.1 Input Layer
 
-Receives HTTP requests. Returns HTTP responses.
+Receives HTTP requests and resolves profiles from their source (currently: classpath).
 
-May: receive request DTOs, call application services, return files, set HTTP headers.
+May: receive request DTOs, resolve profile by ID, call application services, return files, set HTTP headers.
 
 Must not: invent content, invent rules, know ABNT, know docx4j, decide layout.
+
+This layer is the only one that changes when the feeder service and database integration arrive.
 
 ## 12.2 Application Layer
 
@@ -294,17 +321,14 @@ May: receive the generation request, assemble the full model from input sources 
 
 Must not: render components, contain docx4j code, hardcode academic rules.
 
-## 12.3 Document Layer
+## 12.3 Engine Layer
 
-Represents content structure.
+Contains two groups of models:
 
-Must not contain formatting logic, profile knowledge, or rendering concerns.
+- `engine/model/content` — represents what was provided as document data (sections, blocks, inline elements). Equivalent to the old `document/` layer.
+- `engine/model/profile` — represents declared rules, allowed values, defaults, component and section definitions. Equivalent to the old `profile/model`.
 
-## 12.4 Profile Layer
-
-Represents rules, options, allowed values, defaults, and component/section definitions.
-
-Must not contain docx4j-specific logic or rendering logic.
+Must not contain formatting logic, rendering concerns, or docx4j dependencies.
 
 ## 12.5 Rendering Layer
 
@@ -382,96 +406,19 @@ Each layer validates what is its responsibility:
 
 Redundancy across layers is intentional. Each validation has a distinct responsibility.
 
-Suggested modes:
-
-- `STRICT`: block generation when required profile rules are not met;
-- `FLEXIBLE`: allow generation with warnings when a document deviates from a complete profile model.
+Validation modes (`STRICT`/`FLEXIBLE`) are planned but not yet implemented. See `docs/planned-features.md`. Currently all validation behaves as strict — missing required values fail immediately with a clear exception.
 
 ---
 
 # 17. Shared Document Data
 
-Fields that appear in multiple components (authors, title, subtitle, advisor, city, year) must not be duplicated across components.
+Fields shared across components (authors, title, subtitle, advisor, city, year) must not be duplicated across components in the long run.
 
-Use `work` as the semantic source for shared data. Profiles declare `contentBindings` that map component fields to `work` fields.
+**Current state:** each component receives its own copy of all required data directly in the `document` field of the request. The `work` field is accepted by the API for backwards compatibility but is completely ignored by the rendering engine. Do not build integrations that depend on it.
 
-Do not infer that two component fields are equal because they have similar names.
+**Planned (not implemented):** a `contentBindings` mechanism in the profile that would allow declaring `"title": "work.title"` inside a component rule, so that the engine resolves shared fields automatically from a central `work` object. See the feature plan in `docs/planned-features.md` for scope and design notes.
 
-## 17.1 Resolution Rule
-
-```
-1. Explicit component value wins.
-2. If the component value is absent, use the profile binding.
-3. If the binding points to missing work data, the final component validation fails.
-4. Never infer equality between fields from different components.
-5. Never copy values from one component to another.
-```
-
-Example: if `work.title = "Título comum"` and `cover.title = "Título especial"`, then cover uses its explicit value and title page uses `work.title`. The two fields are independent — the cover override does not propagate.
-
-## 17.2 Request Shape
-
-```json
-{
-  "work": {
-    "authors": ["Nome do Aluno"],
-    "title": "Título do trabalho",
-    "subtitle": "Subtítulo do trabalho",
-    "nature": {
-      "workType": "Trabalho de conclusão de curso",
-      "degreeObjective": "obtenção do título de tecnólogo",
-      "courseName": "Análise e Desenvolvimento de Sistemas",
-      "institutionName": "Universidade Fictícia de Limeira"
-    },
-    "advisor": {
-      "academicTitle": "Prof. Dr.",
-      "name": "Nome Fictício do Orientador"
-    },
-    "city": "Limeira",
-    "year": "2026"
-  },
-  "document": {
-    "cover": {},
-    "titlePage": {},
-    "approvalSheet": {}
-  }
-}
-```
-
-An empty component object means the component is selected and resolves its content from `work` through profile bindings.
-
-## 17.3 Profile Bindings
-
-The profile declares `contentBindings` inside each component rule:
-
-```json
-{
-  "cover": {
-    "contentBindings": {
-      "institutionalLines": "work.institutionalLines",
-      "authors": "work.authors",
-      "title": "work.title",
-      "subtitle": "work.subtitle",
-      "city": "work.city",
-      "year": "work.year"
-    }
-  },
-  "titlePage": {
-    "contentBindings": {
-      "authors": "work.authors",
-      "title": "work.title",
-      "subtitle": "work.subtitle",
-      "nature": "work.nature",
-      "advisor": "work.advisor",
-      "coadvisor": "work.coadvisor",
-      "city": "work.city",
-      "year": "work.year"
-    }
-  }
-}
-```
-
-Valid binding sources are: `work.institutionalLines`, `work.authors`, `work.title`, `work.subtitle`, `work.nature`, `work.advisor`, `work.coadvisor`, `work.city`, `work.year`. An unknown source key must fail at profile validation time.
+Until `contentBindings` is implemented, each component in the request must carry all its required data explicitly.
 
 ---
 

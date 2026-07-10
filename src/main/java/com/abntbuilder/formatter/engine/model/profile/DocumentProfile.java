@@ -7,6 +7,7 @@ import com.abntbuilder.formatter.engine.model.profile.component.singlepage.Singl
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -19,7 +20,8 @@ public record DocumentProfile(
         Optional<PostProcessingRule> postProcessingRule,
         List<StyleRule> styleRules,
         List<ComponentRule> componentRules,
-        List<String> componentOrder
+        List<String> componentOrder,
+        Map<String, FontRoleRule> fontRoles
 ) {
     public static final String PARAGRAPHS_INTERNAL_COMPONENT_ID = "paragraphs";
     private static final Set<String> INTERNAL_COMPONENT_IDS = Set.of(PARAGRAPHS_INTERNAL_COMPONENT_ID);
@@ -33,6 +35,7 @@ public record DocumentProfile(
         Objects.requireNonNull(styleRules, "styleRules must not be null");
         Objects.requireNonNull(componentRules, "componentRules must not be null");
         Objects.requireNonNull(componentOrder, "componentOrder must not be null");
+        Objects.requireNonNull(fontRoles, "fontRoles must not be null");
 
         if (styleRules.isEmpty()) {
             throw new IllegalArgumentException("styleRules must not be empty.");
@@ -41,12 +44,14 @@ public record DocumentProfile(
         styleRules = List.copyOf(styleRules);
         componentRules = List.copyOf(componentRules);
         componentOrder = List.copyOf(componentOrder);
+        fontRoles = Map.copyOf(fontRoles);
 
         validateStyleRules(styleRules);
         validateComponentRules(componentRules);
         validateComponentOrder(componentRules, componentOrder);
         validateComponentStyleMappings(styleRules, componentRules);
         validatePageNumberingRule(styleRules, componentRules, componentOrder, pageNumberingRule);
+        validateFontRoles(styleRules, fontRoles);
     }
 
     public DocumentProfile(
@@ -57,7 +62,7 @@ public record DocumentProfile(
             List<ComponentRule> componentRules,
             List<String> componentOrder
     ) {
-        this(id, displayName, pageRule, Optional.empty(), Optional.empty(), styleRules, componentRules, componentOrder);
+        this(id, displayName, pageRule, Optional.empty(), Optional.empty(), styleRules, componentRules, componentOrder, Map.of());
     }
 
     public DocumentProfile(
@@ -69,7 +74,20 @@ public record DocumentProfile(
             List<ComponentRule> componentRules,
             List<String> componentOrder
     ) {
-        this(id, displayName, pageRule, pageNumberingRule, Optional.empty(), styleRules, componentRules, componentOrder);
+        this(id, displayName, pageRule, pageNumberingRule, Optional.empty(), styleRules, componentRules, componentOrder, Map.of());
+    }
+
+    public DocumentProfile(
+            String id,
+            String displayName,
+            PageRule pageRule,
+            Optional<PageNumberingRule> pageNumberingRule,
+            Optional<PostProcessingRule> postProcessingRule,
+            List<StyleRule> styleRules,
+            List<ComponentRule> componentRules,
+            List<String> componentOrder
+    ) {
+        this(id, displayName, pageRule, pageNumberingRule, postProcessingRule, styleRules, componentRules, componentOrder, Map.of());
     }
 
     private static void validateStyleRules(List<StyleRule> styleRules) {
@@ -216,6 +234,27 @@ public record DocumentProfile(
             }
             default -> List.of();
         };
+    }
+
+    private static void validateFontRoles(List<StyleRule> styleRules, Map<String, FontRoleRule> fontRoles) {
+        if (fontRoles.isEmpty()) {
+            return;
+        }
+
+        Set<String> styleIds = styleRules.stream()
+                .map(StyleRule::id)
+                .collect(java.util.stream.Collectors.toUnmodifiableSet());
+
+        for (Map.Entry<String, FontRoleRule> entry : fontRoles.entrySet()) {
+            String roleName = entry.getKey();
+            for (String styleId : entry.getValue().styleIds()) {
+                if (!styleIds.contains(styleId)) {
+                    throw new IllegalArgumentException(
+                            "fontRoles[" + roleName + "] references unknown style id: " + styleId
+                    );
+                }
+            }
+        }
     }
 
     private static void requireNonBlank(String value, String fieldName) {

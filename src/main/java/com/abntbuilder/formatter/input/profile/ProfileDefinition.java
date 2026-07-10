@@ -1,6 +1,7 @@
 package com.abntbuilder.formatter.input.profile;
 
 import com.abntbuilder.formatter.engine.model.profile.DocumentProfile;
+import com.abntbuilder.formatter.engine.model.profile.FontRoleRule;
 import com.abntbuilder.formatter.engine.model.profile.PageOrientation;
 import com.abntbuilder.formatter.engine.model.profile.PageNumberingPlacement;
 import com.abntbuilder.formatter.engine.model.profile.PageNumberingRule;
@@ -71,7 +72,8 @@ public record ProfileDefinition(
         PostProcessingDefinition postProcessing,
         List<StyleRuleDefinition> styleRules,
         ComponentRulesDefinition componentRules,
-        List<String> componentOrder
+        List<String> componentOrder,
+        Map<String, FontRoleDefinition> fontRoles
 ) {
 
     public DocumentProfile toDomain() {
@@ -81,6 +83,14 @@ public record ProfileDefinition(
         requireNonEmpty(componentOrder, "componentOrder");
 
         List<ComponentRule> resolvedComponentRules = componentRules.toDomain();
+
+        Map<String, FontRoleRule> resolvedFontRoles = fontRoles == null
+                ? Map.of()
+                : fontRoles.entrySet().stream()
+                        .collect(java.util.stream.Collectors.toUnmodifiableMap(
+                                Map.Entry::getKey,
+                                e -> e.getValue().toDomain()
+                        ));
 
         return new DocumentProfile(
                 id,
@@ -92,8 +102,23 @@ public record ProfileDefinition(
                         .map(StyleRuleDefinition::toDomain)
                         .toList(),
                 resolvedComponentRules,
-                componentOrder
+                componentOrder,
+                resolvedFontRoles
         );
+    }
+
+    public record FontRoleDefinition(
+            @JsonProperty("default") String defaultFont,
+            List<String> allowedValues,
+            List<String> styleIds
+    ) {
+        FontRoleRule toDomain() {
+            return new FontRoleRule(
+                    defaultFont,
+                    allowedValues != null ? allowedValues : List.of(),
+                    styleIds != null ? styleIds : List.of()
+            );
+        }
     }
 
     public record PageRuleDefinition(
