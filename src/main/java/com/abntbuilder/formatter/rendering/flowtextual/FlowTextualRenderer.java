@@ -96,6 +96,18 @@ public final class FlowTextualRenderer implements MetadataConsumingRenderer<Flow
                     StyleRule style = styleResolver.resolve(h.styleId());
                     blocks.add(new DocxParagraph(List.of(DocxRun.of(h.text(), style)), style));
                 }
+                case FlowItem.InlineHeadingItem ih -> {
+                    StyleRule headingStyle = styleResolver.resolve(ih.headingStyleId());
+                    StyleRule bodyStyle = styleResolver.resolve(ih.bodyStyleId());
+                    String bodyText = requireTextValue(component, ih.bodySlotName()).text();
+                    InlineFormatting headingFmt = new InlineFormatting(
+                            headingStyle.bold() ? Optional.of(true) : Optional.empty(),
+                            headingStyle.italic() ? Optional.of(true) : Optional.empty(),
+                            Optional.empty(), Optional.empty(), Optional.empty());
+                    DocxRun headingRun = new DocxRun(ih.headingText(), bodyStyle, headingFmt);
+                    DocxRun bodyRun = DocxRun.of(" " + bodyText, bodyStyle);
+                    blocks.add(new DocxParagraph(List.of(headingRun, bodyRun), bodyStyle));
+                }
                 case FlowItem.BlankLinesItem b -> {
                     StyleRule style = styleResolver.resolve(b.styleId());
                     for (int i = 0; i < b.count(); i++) {

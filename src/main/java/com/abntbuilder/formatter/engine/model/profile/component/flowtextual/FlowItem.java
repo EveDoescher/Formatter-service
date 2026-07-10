@@ -9,6 +9,7 @@ import java.util.Objects;
  */
 public sealed interface FlowItem
         permits FlowItem.HeadingItem,
+                FlowItem.InlineHeadingItem,
                 FlowItem.BlankLinesItem,
                 FlowItem.PlainTextItem,
                 FlowItem.TemplatedTextItem,
@@ -22,6 +23,26 @@ public sealed interface FlowItem
         public HeadingItem {
             requireNonBlank(styleId, "HeadingItem.styleId");
             requireNonBlank(text, "HeadingItem.text");
+        }
+    }
+
+    /**
+     * An inline heading: heading text and body text rendered in the same paragraph.
+     * The heading run uses headingStyleId (bold/italic as declared); the body run uses bodyStyleId.
+     * The paragraph's block-level properties (indent, spacing, alignment) come from bodyStyleId.
+     * Used for APA heading levels 4 and 5, where the title runs into its paragraph.
+     */
+    record InlineHeadingItem(
+            String headingStyleId,
+            String headingText,
+            String bodyStyleId,
+            String bodySlotName
+    ) implements FlowItem {
+        public InlineHeadingItem {
+            requireNonBlank(headingStyleId, "InlineHeadingItem.headingStyleId");
+            requireNonBlank(headingText, "InlineHeadingItem.headingText");
+            requireNonBlank(bodyStyleId, "InlineHeadingItem.bodyStyleId");
+            requireNonBlank(bodySlotName, "InlineHeadingItem.bodySlotName");
         }
     }
 

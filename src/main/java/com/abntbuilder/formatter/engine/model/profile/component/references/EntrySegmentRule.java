@@ -3,6 +3,7 @@ package com.abntbuilder.formatter.engine.model.profile.component.references;
 public record EntrySegmentRule(
         String source,
         boolean bold,
+        boolean italic,
         String prefix,
         String suffix,
         boolean optional

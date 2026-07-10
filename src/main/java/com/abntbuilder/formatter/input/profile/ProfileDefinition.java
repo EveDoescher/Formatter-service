@@ -639,7 +639,8 @@ public record ProfileDefinition(
             Integer blankLinesAfterSectionTitle,
             Boolean pageBreakBeforePrimarySection,
             Boolean keepWithNextOnHeadings,
-            String blankLineStyleId
+            String blankLineStyleId,
+            List<Integer> inlineHeadingLevels
     ) {
         BodyContentLayoutRule toDomain() {
             requireNonNull(
@@ -654,7 +655,8 @@ public record ProfileDefinition(
                     blankLinesAfterSectionTitle,
                     pageBreakBeforePrimarySection,
                     keepWithNextOnHeadings != null && keepWithNextOnHeadings,
-                    blankLineStyleId
+                    blankLineStyleId,
+                    inlineHeadingLevels != null ? new java.util.HashSet<>(inlineHeadingLevels) : null
             );
         }
     }
@@ -778,6 +780,7 @@ public record ProfileDefinition(
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "itemType")
     @JsonSubTypes({
             @JsonSubTypes.Type(value = FlowItemDefinition.HeadingItemDefinition.class,            name = "HEADING"),
+            @JsonSubTypes.Type(value = FlowItemDefinition.InlineHeadingItemDefinition.class,      name = "INLINE_HEADING"),
             @JsonSubTypes.Type(value = FlowItemDefinition.BlankLinesItemDefinition.class,         name = "BLANK_LINES"),
             @JsonSubTypes.Type(value = FlowItemDefinition.PlainTextItemDefinition.class,          name = "PLAIN_TEXT"),
             @JsonSubTypes.Type(value = FlowItemDefinition.TemplatedTextItemDefinition.class,      name = "TEMPLATED_TEXT"),
@@ -791,6 +794,14 @@ public record ProfileDefinition(
 
         record HeadingItemDefinition(String styleId, String text) implements FlowItemDefinition {
             public FlowItem toDomain() { return new FlowItem.HeadingItem(styleId, text); }
+        }
+
+        record InlineHeadingItemDefinition(
+                String headingStyleId, String headingText, String bodyStyleId, String bodySlotName
+        ) implements FlowItemDefinition {
+            public FlowItem toDomain() {
+                return new FlowItem.InlineHeadingItem(headingStyleId, headingText, bodyStyleId, bodySlotName);
+            }
         }
 
         record BlankLinesItemDefinition(String styleId, int count) implements FlowItemDefinition {
@@ -879,12 +890,13 @@ public record ProfileDefinition(
     public record EntrySegmentRuleDefinition(
             String source,
             boolean bold,
+            boolean italic,
             String prefix,
             String suffix,
             boolean optional
     ) {
         EntrySegmentRule toDomain() {
-            return new EntrySegmentRule(source, bold, prefix, suffix, optional);
+            return new EntrySegmentRule(source, bold, italic, prefix, suffix, optional);
         }
     }
 

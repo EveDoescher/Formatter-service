@@ -1,0 +1,1443 @@
+{
+  "fileName": "full-document-apa-complete.docx",
+  "profileId": "apa-unip-profile",
+  "options": {
+    "selectedComponents": [
+      "cover",
+      "titlePage",
+      "errata",
+      "approvalSheet",
+      "dedication",
+      "acknowledgments",
+      "epigraph",
+      "resumo",
+      "abstract",
+      "listOfFigures",
+      "listOfTables",
+      "listOfFrames",
+      "listOfCharts",
+      "listOfCodeListings",
+      "listOfAbbreviations",
+      "listOfSymbols",
+      "summary",
+      "bodyContent",
+      "references",
+      "appendix",
+      "annex",
+      "glossary"
+    ]
+  },
+  "document": {
+    "cover": {
+      "contentType": "SINGLE_PAGE",
+      "institutionalLines": [
+        "UNIVERSIDADE FICTÍCIA DE LIMEIRA",
+        "INSTITUTO DE CIÊNCIAS EXATAS E TECNOLOGIA",
+        "CURSO DE ANÁLISE E DESENVOLVIMENTO DE SISTEMAS"
+      ],
+      "authors": [
+        "PESSOA AUTORA TESTE 01"
+      ],
+      "title": "FORMATAÇÃO AUTOMÁTICA DE TRABALHOS ACADÊMICOS",
+      "subtitle": "Uma proposta orientada por perfis institucionais declarativos",
+      "city": "Limeira",
+      "year": "2026"
+    },
+    "titlePage": {
+      "contentType": "SINGLE_PAGE",
+      "authors": [
+        "Pessoa Autora Teste 01"
+      ],
+      "title": "Formatação Automática de Trabalhos Acadêmicos",
+      "subtitle": "Uma proposta orientada por perfis institucionais declarativos",
+      "nature": {
+        "workType": "Trabalho de conclusão de curso",
+        "degreeObjective": "obtenção do título de graduado",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Fictícia de Limeira"
+      },
+      "advisor": {
+        "academicTitle": "Prof. Dr.",
+        "name": "Pessoa Orientadora Teste"
+      },
+      "coadvisor": {
+        "academicTitle": "Profa. Dra.",
+        "name": "Pessoa Coorientadora Teste"
+      },
+      "city": "Limeira",
+      "year": "2026"
+    },
+    "errata": {
+      "contentType": "FLOW_TEXTUAL",
+      "rows": [
+        ["12", "3", "formatção", "formatação"],
+        ["47", "15", "renderizaçao", "renderização"],
+        ["83", "7", "documeto", "documento"]
+      ]
+    },
+    "approvalSheet": {
+      "contentType": "SINGLE_PAGE",
+      "authors": [
+        "Pessoa Autora Teste 01"
+      ],
+      "title": "Formatação Automática de Trabalhos Acadêmicos",
+      "subtitle": "Uma proposta orientada por perfis institucionais declarativos",
+      "nature": {
+        "workType": "Trabalho de conclusão de curso",
+        "degreeObjective": "obtenção do título de graduado",
+        "courseName": "Análise e Desenvolvimento de Sistemas",
+        "institutionName": "Universidade Fictícia de Limeira"
+      },
+      "approvalText": "Trabalho aprovado. Limeira, 10 de julho de 2026.",
+      "committeeHeading": "Banca examinadora:",
+      "committeeMembers": [
+        {
+          "name": "Pessoa Orientadora Teste",
+          "title": "Prof. Dr.",
+          "institutionName": "Universidade Fictícia de Limeira",
+          "role": "Orientador"
+        },
+        {
+          "name": "Banca Examinadora Teste 01",
+          "title": "Profa. Dra.",
+          "institutionName": "Universidade Fictícia de Limeira",
+          "role": "Examinadora"
+        },
+        {
+          "name": "Banca Examinadora Teste 02",
+          "title": "Prof. Me.",
+          "institutionName": "Instituto Fictício de Tecnologia",
+          "role": "Examinador"
+        }
+      ]
+    },
+    "dedication": {
+      "contentType": "SINGLE_PAGE",
+      "text": "À minha família, que sustentou cada passo desta jornada com paciência, amor e confiança inabalável. Às pessoas que acreditaram neste trabalho antes mesmo que ele tomasse forma."
+    },
+    "acknowledgments": {
+      "contentType": "FLOW_TEXTUAL",
+      "text": "Agradeço, primeiramente, ao Prof. Dr. Pessoa Orientadora Teste, cuja orientação precisa e rigorosa foi determinante para a qualidade deste trabalho. Sua capacidade de identificar o essencial em meio à complexidade tornou este percurso muito mais claro.\n\nÀ Profa. Dra. Pessoa Coorientadora Teste, pelo suporte metodológico e pelas revisões atentas que enriqueceram cada capítulo.\n\nAos colegas do grupo de estudos de Engenharia de Software da Universidade Fictícia de Limeira, pelas discussões instigantes e pelo ambiente colaborativo que alimentou as ideias aqui desenvolvidas.\n\nÀ minha família, pelo apoio incondicional durante todos os momentos deste processo — especialmente nos períodos em que a dedicação ao trabalho se fez mais intensa.\n\nPor fim, à Universidade Fictícia de Limeira, pela estrutura e pelos recursos que tornaram esta pesquisa possível."
+    },
+    "epigraph": {
+      "contentType": "SINGLE_PAGE",
+      "text": "A clareza na escrita é o reflexo da clareza no pensamento. Um sistema que precisa de explicação para ser compreendido já falhou antes de ser usado.",
+      "author": "Autor Fictício",
+      "source": "Reflexões sobre Sistemas, 2023"
+    },
+    "resumo": {
+      "contentType": "FLOW_TEXTUAL",
+      "text": "Este trabalho apresenta a concepção e implementação de um motor de formatação automática de documentos acadêmicos orientado por perfis institucionais declarativos. O problema investigado é a proliferação de lógica de formatação endurecida em código-fonte, que torna os sistemas de geração de documentos frágeis, de difícil manutenção e incapazes de suportar múltiplos perfis normativos sem alterações estruturais. A solução proposta separa de forma rigorosa as camadas de entrada, de perfil e de renderização, de modo que a adição de um novo perfil institucional não demande nenhuma alteração no motor de renderização. O trabalho descreve a arquitetura do sistema, os modelos de dados adotados, os mecanismos de layout para componentes de página única, o tratamento de blocos textuais com citações e formatação inline, e os mecanismos de indexação para listas de figuras, tabelas, quadros e gráficos. Os resultados demonstram que o motor é capaz de gerar documentos conformes com perfis distintos a partir de dados de entrada idênticos, validando a hipótese de separação entre dados, perfil e renderização.",
+      "keywordsLabel": "Palavras-chave:",
+      "keywords": [
+        "formatação automática",
+        "documentos acadêmicos",
+        "perfis institucionais",
+        "motor de renderização",
+        "APA"
+      ]
+    },
+    "abstract": {
+      "contentType": "FLOW_TEXTUAL",
+      "entries": [
+        {
+          "headingText": "Abstract",
+          "text": "This work presents the design and implementation of an automatic formatting engine for academic documents driven by declarative institutional profiles. The investigated problem is the proliferation of hard-coded formatting logic in source code, which makes document generation systems fragile, difficult to maintain, and incapable of supporting multiple normative profiles without structural changes. The proposed solution rigorously separates the input, profile, and rendering layers so that adding a new institutional profile requires no changes to the rendering engine. Results demonstrate that the engine can generate documents compliant with distinct profiles from identical input data, validating the hypothesis of separation between data, profile, and rendering.",
+          "keywords": [
+            "automatic formatting",
+            "academic documents",
+            "institutional profiles",
+            "rendering engine",
+            "APA"
+          ],
+          "keywordsLabel": "Keywords:"
+        },
+        {
+          "headingText": "Resumen",
+          "text": "Este trabajo presenta la concepción e implementación de un motor de formateo automático de documentos académicos orientado por perfiles institucionales declarativos. El problema investigado es la proliferación de lógica de formateo codificada en el código fuente, que hace que los sistemas de generación de documentos sean frágiles, de difícil mantenimiento e incapaces de soportar múltiples perfiles normativos sin cambios estructurales. Los resultados demuestran que el motor puede generar documentos conformes con perfiles distintos a partir de datos de entrada idénticos.",
+          "keywords": [
+            "formateo automático",
+            "documentos académicos",
+            "perfiles institucionales",
+            "motor de renderizado"
+          ],
+          "keywordsLabel": "Palabras clave:"
+        }
+      ]
+    },
+    "listOfFigures": {
+      "contentType": "ELEMENT_INDEX"
+    },
+    "listOfTables": {
+      "contentType": "ELEMENT_INDEX"
+    },
+    "listOfFrames": {
+      "contentType": "ELEMENT_INDEX"
+    },
+    "listOfCharts": {
+      "contentType": "ELEMENT_INDEX"
+    },
+    "listOfCodeListings": {
+      "contentType": "ELEMENT_INDEX"
+    },
+    "listOfAbbreviations": {
+      "contentType": "FLOW_TEXTUAL"
+    },
+    "listOfSymbols": {
+      "contentType": "FLOW_TEXTUAL",
+      "terms": ["α", "β", "σ", "μ", "n", "∑"],
+      "definitions": [
+        "Nível de significância estatística",
+        "Coeficiente de regressão linear",
+        "Desvio padrão da amostra",
+        "Média aritmética",
+        "Tamanho da amostra",
+        "Somatório"
+      ]
+    },
+    "summary": {
+      "contentType": "SECTION_INDEX"
+    },
+    "bodyContent": {
+      "contentType": "BODY_CONTENT",
+      "sections": [
+        {
+          "id": "s1",
+          "level": 1,
+          "title": "Introduction",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "TEXT",
+                  "text": "The production of academic works is a central activity in university education and scientific research. In the United States and in many other countries, the "
+                },
+                {
+                  "type": "ABBREVIATION",
+                  "text": "APA",
+                  "expansion": "American Psychological Association"
+                },
+                {
+                  "type": "TEXT",
+                  "text": " style regulates the structure and presentation of documents such as term papers, theses, and dissertations. However, existing formatting tools frequently embed normative rules directly in source code, resulting in coupled systems that are difficult to evolve."
+                }
+              ]
+            },
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "TEXT",
+                  "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui."
+                }
+              ]
+            },
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "TEXT",
+                  "text": "In this context, the present work proposes a formatting engine architecture driven by declarative profiles. As noted by "
+                },
+                {
+                  "type": "CITATION",
+                  "citationType": "INDIRECT",
+                  "mode": "PARENTHETICAL",
+                  "source": {
+                    "authors": [
+                      { "type": "PERSON", "surname": "Lima" }
+                    ],
+                    "year": "2021"
+                  }
+                },
+                {
+                  "type": "TEXT",
+                  "text": ", the separation between data, rules, and output is a fundamental principle of robust typographic composition systems."
+                }
+              ]
+            },
+            {
+              "type": "FIGURE",
+              "figure": {
+                "id": "fig-1",
+                "caption": "General architecture of the profile-driven formatting engine",
+                "source": "Elaborated by the author",
+                "image": {
+                  "sourceType": "DATA_URI",
+                  "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
+                  "altText": "General architecture diagram of the formatting engine"
+                }
+              }
+            },
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "CROSS_REFERENCE",
+                  "crossReference": {
+                    "targetId": "fig-1",
+                    "targetType": "FIGURE",
+                    "displayMode": "LABEL_AND_NUMBER"
+                  }
+                },
+                {
+                  "type": "TEXT",
+                  "text": " illustrates the three main layers of the engine: input, profile, and rendering. Each layer has well-defined responsibilities, as discussed in the following sections."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s2",
+          "level": 1,
+          "title": "Literature Review",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "TEXT",
+                  "text": "This section presents the main concepts underlying the proposal. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+                }
+              ]
+            }
+          ],
+          "subsections": [
+            {
+              "id": "s2-1",
+              "level": 2,
+              "title": "Academic Formatting Standards",
+              "blocks": [
+                {
+                  "type": "PARAGRAPH",
+                  "content": [
+                    {
+                      "type": "TEXT",
+                      "text": "Academic formatting standards establish visual and structural conventions for the presentation of scientific works. The "
+                    },
+                    {
+                      "type": "ABBREVIATION",
+                      "text": "APA",
+                      "expansion": "American Psychological Association"
+                    },
+                    {
+                      "type": "TEXT",
+                      "text": " publishes a set of style guidelines that regulate everything from page margins to the formatting of bibliographic references. Now in its 7th edition, the APA Publication Manual specifies pre-textual, textual, and post-textual elements for academic documents."
+                    }
+                  ]
+                },
+                {
+                  "type": "DIRECT_LONG_QUOTE",
+                  "mode": "PARENTHETICAL",
+                  "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est.",
+                  "source": {
+                    "authors": [
+                      { "type": "PERSON", "surname": "Rocha" }
+                    ],
+                    "year": "2019",
+                    "page": "45"
+                  },
+                  "markers": [
+                    { "type": "SUPPRESSION", "position": 150 }
+                  ]
+                },
+                {
+                  "type": "PARAGRAPH",
+                  "content": [
+                    {
+                      "type": "TEXT",
+                      "text": "Internationally, other normative systems are widely adopted. The Chicago style, for example, offers two systems: author-date and bibliographic notes. "
+                    },
+                    {
+                      "type": "CITATION",
+                      "citationType": "INDIRECT",
+                      "mode": "NARRATIVE",
+                      "source": {
+                        "authors": [
+                          { "type": "PERSON", "surname": "Souza" },
+                          { "type": "PERSON", "surname": "Fernandes" }
+                        ],
+                        "year": "2020"
+                      }
+                    },
+                    {
+                      "type": "TEXT",
+                      "text": " discuss how the choice of normative system affects the readability and standardization of documents produced in different fields of knowledge. Similarly, "
+                    },
+                    {
+                      "type": "CITATION",
+                      "citationType": "INDIRECT",
+                      "mode": "NARRATIVE",
+                      "source": {
+                        "authors": [
+                          { "type": "PERSON", "surname": "Barros" },
+                          { "type": "PERSON", "surname": "Mendes" },
+                          { "type": "PERSON", "surname": "Teixeira" }
+                        ],
+                        "year": "2019"
+                      }
+                    },
+                    {
+                      "type": "TEXT",
+                      "text": " argue that semantic modeling of document structure is a prerequisite for any normative-agnostic formatting engine."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "s2-2",
+              "level": 2,
+              "title": "Typographic Composition Systems",
+              "blocks": [
+                {
+                  "type": "PARAGRAPH",
+                  "content": [
+                    {
+                      "type": "TEXT",
+                      "text": "Typographic composition systems such as LaTeX, Groff, and pandoc adopt declarative approaches to document formatting. In these systems, the author specifies the semantic structure of the document and the composition engine applies visual rules without the author having to manually control each presentation detail."
+                    }
+                  ]
+                },
+                {
+                  "type": "TABLE",
+                  "table": {
+                    "id": "tab-1",
+                    "caption": "Comparison between typographic composition systems",
+                    "source": "Elaborated by the author based on Lima (2021) and Souza & Fernandes (2020)",
+                    "columns": [
+                      { "header": "System" },
+                      { "header": "Approach" },
+                      { "header": "APA style support" }
+                    ],
+                    "rows": [
+                      {
+                        "cells": [
+                          { "text": "LaTeX", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                          { "text": "Declarative / Macro", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                          { "text": "Partial (via packages)", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false }
+                        ]
+                      },
+                      {
+                        "cells": [
+                          { "text": "Microsoft Word", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                          { "text": "WYSIWYG / Imperative", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                          { "text": "Manual (via templates)", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false }
+                        ]
+                      },
+                      {
+                        "cells": [
+                          { "text": "Proposed engine", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                          { "text": "Declarative profile", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                          { "text": "Full and extensible", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "PARAGRAPH",
+                  "content": [
+                    {
+                      "type": "TEXT",
+                      "text": "As shown in "
+                    },
+                    {
+                      "type": "CROSS_REFERENCE",
+                      "crossReference": {
+                        "targetId": "tab-1",
+                        "targetType": "TABLE",
+                        "displayMode": "LABEL_AND_NUMBER"
+                      }
+                    },
+                    {
+                      "type": "TEXT",
+                      "text": ", the proposed engine differs from existing systems by offering full support for APA style in an extensible manner, without coupling between normative rules and rendering code."
+                    }
+                  ]
+                }
+              ],
+              "subsections": [
+                {
+                  "id": "s2-2-1",
+                  "level": 3,
+                  "title": "Separation of Concerns Patterns",
+                  "blocks": [
+                    {
+                      "type": "PARAGRAPH",
+                      "content": [
+                        {
+                          "type": "TEXT",
+                          "text": "The principle of separation of concerns is widely documented in the software engineering literature. In the context of formatting systems, this means that presentation rules should not reside in the same component that processes semantic content."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "PARAGRAPH",
+                      "content": [
+                        {
+                          "type": "TEXT",
+                          "text": "According to "
+                        },
+                        {
+                          "type": "CITATION",
+                          "citationType": "INDIRECT",
+                          "mode": "NARRATIVE",
+                          "source": {
+                            "authors": [
+                              { "type": "PERSON", "surname": "Alves" }
+                            ],
+                            "year": "2022"
+                          }
+                        },
+                        {
+                          "type": "TEXT",
+                          "text": ", applying this pattern in rendering engines reduces maintenance effort by up to 60% when new formatting profiles need to be introduced. This finding supports the central hypothesis of this work."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "ORDERED_LIST",
+                      "list": {
+                        "type": "ORDERED",
+                        "items": [
+                          {
+                            "content": [
+                              { "type": "TEXT", "text": "Separation between input data and profile rules" }
+                            ]
+                          },
+                          {
+                            "content": [
+                              { "type": "TEXT", "text": "Separation between profile and rendering logic" }
+                            ]
+                          },
+                          {
+                            "content": [
+                              { "type": "TEXT", "text": "Validation at each layer independently" }
+                            ]
+                          },
+                          {
+                            "content": [
+                              { "type": "TEXT", "text": "Absence of silent default values in the domain model" }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "PARAGRAPH",
+                      "content": [
+                        {
+                          "type": "TEXT",
+                          "text": "These four principles guided all architectural decisions documented in the following sections, as detailed in "
+                        },
+                        {
+                          "type": "CROSS_REFERENCE",
+                          "crossReference": {
+                            "targetId": "s3",
+                            "targetType": "SECTION",
+                            "displayMode": "LABEL_AND_NUMBER"
+                          }
+                        },
+                        {
+                          "type": "TEXT",
+                          "text": "."
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "s2-2-2",
+                  "level": 3,
+                  "title": "Data Models for Structured Documents",
+                  "blocks": [
+                    {
+                      "type": "PARAGRAPH",
+                      "content": [
+                        {
+                          "type": "TEXT",
+                          "text": "The internal representation of structured documents is a classic problem in computer science. Tree-based models — such as the "
+                        },
+                        {
+                          "type": "ABBREVIATION",
+                          "text": "DOM",
+                          "expansion": "Document Object Model"
+                        },
+                        {
+                          "type": "TEXT",
+                          "text": " and the "
+                        },
+                        {
+                          "type": "ABBREVIATION",
+                          "text": "XML",
+                          "expansion": "Extensible Markup Language"
+                        },
+                        {
+                          "type": "TEXT",
+                          "text": " data model — are widely used for their ability to represent recursive content hierarchies. The model adopted in this work extends this concept to include profile rules as metadata associated with each node of the document tree."
+                        }
+                      ]
+                    }
+                  ],
+                  "subsections": [
+                    {
+                      "id": "s2-2-2-1",
+                      "level": 4,
+                      "title": "Representation of pre-textual components.",
+                      "blocks": [
+                        {
+                          "type": "PARAGRAPH",
+                          "content": [
+                            {
+                              "type": "TEXT",
+                              "text": "Pre-textual components — such as the cover page, title page, and approval sheet — have a single-page structure with vertically positioned groups. The engine represents them as a set of content groups with space distribution rules between them."
+                            }
+                          ]
+                        },
+                        {
+                          "type": "PARAGRAPH",
+                          "content": [
+                            {
+                              "type": "TEXT",
+                              "text": "This representation allows the profile to declare spacing weights between groups without knowing the actual height of the content, which is only known during rendering. The engine distributes the remaining space proportionally to the weights declared in the profile."
+                            }
+                          ]
+                        }
+                      ],
+                      "subsections": [
+                        {
+                          "id": "s2-2-2-1-1",
+                          "level": 5,
+                          "title": "Vertical anchoring strategies.",
+                          "blocks": [
+                            {
+                              "type": "PARAGRAPH",
+                              "content": [
+                                {
+                                  "type": "TEXT",
+                                  "text": "The strategy of anchoring the last group to the end of the safe page area is used to position city and year data at the bottom of the cover and title pages, as required by academic formatting standards."
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s3",
+          "level": 1,
+          "title": "Method",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "TEXT",
+                  "text": "This work adopts an applied research approach with incremental development. The methodology combines literature review, architectural design, and empirical validation through documented test cases. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+                }
+              ]
+            },
+            {
+              "type": "UNORDERED_LIST",
+              "list": {
+                "type": "UNORDERED",
+                "items": [
+                  {
+                    "content": [
+                      { "type": "TEXT", "text": "Literature review on formatting systems and APA style" }
+                    ]
+                  },
+                  {
+                    "content": [
+                      { "type": "TEXT", "text": "Layered architecture design with strict separation of responsibilities" }
+                    ]
+                  },
+                  {
+                    "content": [
+                      { "type": "TEXT", "text": "Incremental implementation with validation through integration tests" }
+                    ]
+                  },
+                  {
+                    "content": [
+                      { "type": "TEXT", "text": "Generation of reference documents for visual validation" }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "TEXT",
+                  "text": "Validation includes the generation of complete documents with all components provided by the institutional profile, followed by visual inspection and comparison with manually formatted specimens. Additionally, automated tests verify the correctness of serialization to the "
+                },
+                {
+                  "type": "ABBREVIATION",
+                  "text": "DOCX",
+                  "expansion": "Office Open XML Document"
+                },
+                {
+                  "type": "TEXT",
+                  "text": " format."
+                }
+              ]
+            },
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "TEXT",
+                  "text": "As stated by "
+                },
+                {
+                  "type": "CITATION",
+                  "citationType": "CITATION_OF_CITATION",
+                  "mode": "PARENTHETICAL",
+                  "originalSource": {
+                    "authors": [
+                      { "type": "PERSON", "surname": "Martins" }
+                    ],
+                    "year": "2010"
+                  },
+                  "consultedSource": {
+                    "authors": [
+                      { "type": "PERSON", "surname": "Costa" }
+                    ],
+                    "year": "2018",
+                    "page": "23"
+                  }
+                },
+                {
+                  "type": "TEXT",
+                  "text": ", the validation of typographic composition engines requires comparison with reference outputs produced by specialists in the adopted normative standard."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s4",
+          "level": 1,
+          "title": "Results and Discussion",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "TEXT",
+                  "text": "The results demonstrate that the engine is capable of producing documents compliant with the "
+                },
+                {
+                  "type": "ABBREVIATION",
+                  "text": "APA",
+                  "expansion": "American Psychological Association"
+                },
+                {
+                  "type": "TEXT",
+                  "text": " profile without any conditional profile logic in the rendering code. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper."
+                }
+              ]
+            },
+            {
+              "type": "FRAME",
+              "frame": {
+                "id": "qua-1",
+                "caption": "Summary of implemented components and their rule types",
+                "source": "Elaborated by the author",
+                "columns": [
+                  { "header": "Component" },
+                  { "header": "Rule type" },
+                  { "header": "Status" }
+                ],
+                "rows": [
+                  {
+                    "cells": [
+                      { "text": "Cover", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                      { "text": "SINGLE_PAGE", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                      { "text": "Implemented", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false }
+                    ]
+                  },
+                  {
+                    "cells": [
+                      { "text": "Title page", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                      { "text": "SINGLE_PAGE", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                      { "text": "Implemented", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false }
+                    ]
+                  },
+                  {
+                    "cells": [
+                      { "text": "Approval sheet", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                      { "text": "SINGLE_PAGE", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                      { "text": "Implemented", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false }
+                    ]
+                  },
+                  {
+                    "cells": [
+                      { "text": "Abstract", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                      { "text": "FLOW_TEXTUAL", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                      { "text": "Implemented", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false }
+                    ]
+                  },
+                  {
+                    "cells": [
+                      { "text": "Body content", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                      { "text": "BODY_CONTENT", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                      { "text": "Implemented", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false }
+                    ]
+                  },
+                  {
+                    "cells": [
+                      { "text": "References", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                      { "text": "BIBLIOGRAPHY", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                      { "text": "Implemented", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false }
+                    ]
+                  },
+                  {
+                    "cells": [
+                      { "text": "Appendix / Annex", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                      { "text": "SECTIONED", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false },
+                      { "text": "Implemented", "colspan": 1, "rowspanStart": false, "rowspanContinuation": false }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "CROSS_REFERENCE",
+                  "crossReference": {
+                    "targetId": "qua-1",
+                    "targetType": "FRAME",
+                    "displayMode": "LABEL_AND_NUMBER"
+                  }
+                },
+                {
+                  "type": "TEXT",
+                  "text": " presents the summary of implemented components. All rule types provided by the profile were covered, demonstrating the completeness of the implementation relative to the defined scope."
+                }
+              ]
+            },
+            {
+              "type": "CHART",
+              "chart": {
+                "id": "gra-1",
+                "caption": "Distribution of block types used in the validation document",
+                "source": "Elaborated by the author",
+                "image": {
+                  "sourceType": "DATA_URI",
+                  "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
+                  "altText": "Block type distribution chart"
+                }
+              }
+            },
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "CROSS_REFERENCE",
+                  "crossReference": {
+                    "targetId": "gra-1",
+                    "targetType": "CHART",
+                    "displayMode": "LABEL_AND_NUMBER"
+                  }
+                },
+                {
+                  "type": "TEXT",
+                  "text": " demonstrates that paragraphs represent the largest portion of textual content, followed by tables and figures. This result is expected in academic documents formatted according to APA style."
+                }
+              ]
+            }
+          ],
+          "subsections": [
+            {
+              "id": "s4-1",
+              "level": 2,
+              "title": "Inline Formatting and Citations",
+              "blocks": [
+                {
+                  "type": "PARAGRAPH",
+                  "content": [
+                    {
+                      "type": "TEXT",
+                      "text": "The system supports inline formatting with bold, italic, underline, superscript, and subscript. For example, the chemical formula for water is H"
+                    },
+                    {
+                      "type": "TEXT",
+                      "text": "2",
+                      "formatting": { "subscript": true }
+                    },
+                    {
+                      "type": "TEXT",
+                      "text": "O, and the power of two cubed is 2"
+                    },
+                    {
+                      "type": "TEXT",
+                      "text": "3",
+                      "formatting": { "superscript": true }
+                    },
+                    {
+                      "type": "TEXT",
+                      "text": " = 8. Terms in other languages are written in "
+                    },
+                    {
+                      "type": "TEXT",
+                      "text": "italics",
+                      "formatting": { "italic": true }
+                    },
+                    {
+                      "type": "TEXT",
+                      "text": " by academic convention."
+                    }
+                  ]
+                },
+                {
+                  "type": "PARAGRAPH",
+                  "content": [
+                    {
+                      "type": "TEXT",
+                      "text": "Short direct quotations are inserted in the paragraph body within double quotation marks. As "
+                    },
+                    {
+                      "type": "CITATION",
+                      "citationType": "DIRECT_SHORT",
+                      "mode": "PARENTHETICAL",
+                      "source": {
+                        "authors": [
+                          { "type": "PERSON", "surname": "Lima" }
+                        ],
+                        "year": "2021",
+                        "page": "112"
+                      }
+                    },
+                    {
+                      "type": "QUOTE_TEXT",
+                      "quoteType": "SHORT",
+                      "text": "the separation between data and rules is the foundation of any robust composition engine"
+                    },
+                    {
+                      "type": "TEXT",
+                      "text": ". This statement guides the entire architecture proposed in this work."
+                    }
+                  ]
+                },
+                {
+                  "type": "PARAGRAPH",
+                  "content": [
+                    {
+                      "type": "TEXT",
+                      "text": "Quotations with author emphasis are properly marked. The following passage exemplifies the feature: "
+                    },
+                    {
+                      "type": "CITATION",
+                      "citationType": "DIRECT_SHORT",
+                      "mode": "PARENTHETICAL",
+                      "source": {
+                        "authors": [
+                          { "type": "PERSON", "surname": "Rocha" }
+                        ],
+                        "year": "2019",
+                        "page": "78"
+                      }
+                    },
+                    {
+                      "type": "QUOTE_TEXT",
+                      "quoteType": "SHORT",
+                      "text": "the profile must be the single point of variation in a generic formatting engine",
+                      "markers": [
+                        { "type": "EMPHASIS_AUTHOR", "position": 3, "endPosition": 8 }
+                      ]
+                    },
+                    {
+                      "type": "TEXT",
+                      "text": "."
+                    }
+                  ]
+                },
+                {
+                  "type": "PARAGRAPH",
+                  "content": [
+                    {
+                      "type": "TEXT",
+                      "text": "Verbal citations are supported. "
+                    },
+                    {
+                      "type": "CITATION",
+                      "citationType": "VERBAL",
+                      "mode": "PARENTHETICAL",
+                      "source": {
+                        "authors": [
+                          { "type": "PERSON", "surname": "Orientadora Teste" }
+                        ],
+                        "year": "2026"
+                      }
+                    },
+                    {
+                      "type": "TEXT",
+                      "text": " indicated, in an advising meeting, that the declarative approach significantly reduces the system maintenance cost."
+                    }
+                  ]
+                },
+                {
+                  "type": "PARAGRAPH",
+                  "content": [
+                    {
+                      "type": "TEXT",
+                      "text": "The system also supports footnotes."
+                    },
+                    {
+                      "type": "FOOTNOTE",
+                      "content": [
+                        {
+                          "type": "TEXT",
+                          "text": "This is an example footnote. Footnotes are used for supplementary information that does not fit in the main body of the text without disrupting reading flow."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "TEXT",
+                      "text": " The footnote content is rendered at the bottom of the page where the call appears."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "s4-2",
+              "level": 2,
+              "title": "Special Blocks",
+              "blocks": [
+                {
+                  "type": "PARAGRAPH",
+                  "content": [
+                    {
+                      "type": "TEXT",
+                      "text": "In addition to paragraphs and block quotations, the engine supports source code listings, equations, and nested lists. This section demonstrates each of these elements."
+                    }
+                  ]
+                },
+                {
+                  "type": "CODE_LISTING",
+                  "codeListing": {
+                    "id": "cod-1",
+                    "caption": "Example of profile mapping in JSON",
+                    "language": "json",
+                    "code": "{\n  \"id\": \"apa-unip-profile\",\n  \"componentRules\": {\n    \"cover\": {\n      \"ruleType\": \"SINGLE_PAGE\",\n      \"slots\": {\n        \"title\": { \"type\": \"TEXT\", \"required\": true }\n      }\n    }\n  }\n}",
+                    "source": "Elaborated by the author"
+                  }
+                },
+                {
+                  "type": "PARAGRAPH",
+                  "content": [
+                    {
+                      "type": "CROSS_REFERENCE",
+                      "crossReference": {
+                        "targetId": "cod-1",
+                        "targetType": "CODE_LISTING",
+                        "displayMode": "LABEL_AND_NUMBER"
+                      }
+                    },
+                    {
+                      "type": "TEXT",
+                      "text": " presents the minimum structure of a profile with a single single-page component. The full profile includes all components and their respective style mappings."
+                    }
+                  ]
+                },
+                {
+                  "type": "EQUATION",
+                  "equation": {
+                    "text": "σ = √(Σ(xᵢ - μ)² / n)",
+                    "label": "eq-1"
+                  }
+                },
+                {
+                  "type": "PARAGRAPH",
+                  "content": [
+                    {
+                      "type": "TEXT",
+                      "text": "The equation above represents the sample standard deviation, where σ is the standard deviation, μ is the arithmetic mean, xᵢ are the individual values, and n is the sample size."
+                    }
+                  ]
+                },
+                {
+                  "type": "ORDERED_LIST",
+                  "list": {
+                    "type": "ORDERED",
+                    "items": [
+                      {
+                        "content": [
+                          { "type": "TEXT", "text": "First ordered list item with nested subitem" }
+                        ],
+                        "subList": {
+                          "type": "UNORDERED",
+                          "items": [
+                            {
+                              "content": [
+                                { "type": "TEXT", "text": "Nested unordered subitem A" }
+                              ]
+                            },
+                            {
+                              "content": [
+                                { "type": "TEXT", "text": "Nested unordered subitem B" }
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "content": [
+                          { "type": "TEXT", "text": "Second ordered list item" }
+                        ]
+                      },
+                      {
+                        "content": [
+                          { "type": "TEXT", "text": "Third ordered list item with longer text to verify indentation behavior relative to the left margin defined by the style" }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "FIGURE",
+                  "figure": {
+                    "id": "fig-2",
+                    "caption": "Rendering engine layer diagram",
+                    "source": "Elaborated by the author",
+                    "image": {
+                      "sourceType": "DATA_URI",
+                      "dataUri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
+                      "altText": "Rendering engine layer diagram"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s5",
+          "level": 1,
+          "title": "Conclusion",
+          "blocks": [
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "TEXT",
+                  "text": "This work demonstrated that it is possible to build an academic document formatting engine completely driven by declarative profiles, without any conditional profile logic in the rendering code. The proposed architecture meets the fundamental principle established at the beginning of the research: any decision that may vary across profiles must reside in the profile, not in the code."
+                }
+              ]
+            },
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "TEXT",
+                  "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus imperdiet, nulla et dictum interdum, nisi lorem egestas odio, vitae scelerisque enim ligula venenatis dolor. Aenean nisl magna, congue ornare metus ut, semper auctor risus. Integer venenatis orci eu mi placerat, at accumsan eros imperdiet. Nullam posuere libero vitae erat ullamcorper efficitur. Curabitur aliquet quam id dui posuere blandit."
+                }
+              ]
+            },
+            {
+              "type": "PARAGRAPH",
+              "content": [
+                {
+                  "type": "TEXT",
+                  "text": "As future work, the implementation of a feeder service is proposed to provide profiles, preferences, and content from a persistent database, without any change to the rendering engine — thereby confirming the architectural independence between layers."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "references": {
+      "contentType": "BIBLIOGRAPHY",
+      "entries": [
+        {
+          "id": "ref-alves-2022",
+          "type": "JOURNAL",
+          "authors": [
+            { "surname": "Alves", "givenNames": "Beatriz Rocha" }
+          ],
+          "title": "Impact of separation of concerns in typographic composition engines",
+          "publisher": "Fictitious Brazilian Journal of Software Engineering",
+          "volume": "14",
+          "issue": "2",
+          "pages": "88–104",
+          "year": "2022",
+          "doi": "10.9999/rbesf.2022.14.2.88"
+        },
+        {
+          "id": "ref-costa-2018",
+          "type": "THESIS",
+          "authors": [
+            { "surname": "Costa", "givenNames": "Marcela Oliveira" }
+          ],
+          "title": "Validation of typographic composition engines by inspection of reference outputs",
+          "subtitle": "a case study in document generation systems",
+          "year": "2018",
+          "degree": "Master's thesis, Universidade Fictícia de Limeira",
+          "institutionName": "Universidade Fictícia de Limeira"
+        },
+        {
+          "id": "ref-lima-2021",
+          "type": "BOOK",
+          "authors": [
+            { "surname": "Lima", "givenNames": "Carlos Eduardo" }
+          ],
+          "title": "Fundamentals of Document Formatting",
+          "subtitle": "declarative systems and typographic composition",
+          "edition": "2",
+          "year": "2021",
+          "city": "Limeira",
+          "publisher": "Editora Fictícia"
+        },
+        {
+          "id": "ref-martins-2010",
+          "type": "BOOK",
+          "authors": [
+            { "surname": "Martins", "givenNames": "Pedro Augusto" }
+          ],
+          "title": "Theory of Typographic Composition",
+          "year": "2010",
+          "city": "São Paulo",
+          "publisher": "Editora Técnica Fictícia"
+        },
+        {
+          "id": "ref-rocha-2019",
+          "type": "BOOK_CHAPTER",
+          "authors": [
+            { "surname": "Rocha", "givenNames": "Ana Paula" }
+          ],
+          "title": "Declarative profiles in electronic publishing systems",
+          "bookAuthors": [
+            { "surname": "Fernandes", "givenNames": "Jorge Luís" }
+          ],
+          "bookTitle": "Advances in Digital Publishing Systems",
+          "city": "Limeira",
+          "publisher": "Editora Acadêmica Fictícia",
+          "year": "2019",
+          "pages": "33–61"
+        },
+        {
+          "id": "ref-souza-fernandes-2020",
+          "type": "CONFERENCE_PAPER",
+          "authors": [
+            { "surname": "Souza", "givenNames": "Rafael Monteiro" },
+            { "surname": "Fernandes", "givenNames": "Jorge Luís" }
+          ],
+          "title": "Comparison between normative citation systems and their impact on the readability of scientific documents",
+          "publisher": "FICTITIOUS SYMPOSIUM ON INFORMATICS",
+          "city": "Limeira",
+          "year": "2020",
+          "pages": "210–218"
+        },
+        {
+          "id": "ref-apa-2020",
+          "type": "BOOK",
+          "authors": [
+            { "surname": "American Psychological Association" }
+          ],
+          "title": "Publication manual of the American Psychological Association",
+          "edition": "7",
+          "year": "2020",
+          "city": "Washington, DC",
+          "publisher": "American Psychological Association",
+          "doi": "10.1037/0000165-000"
+        },
+        {
+          "id": "ref-website-ficticio",
+          "type": "WEBSITE",
+          "title": "Practical guide to academic formatting",
+          "year": "2025",
+          "url": "https://exemplo-ficticio.org/guia-formatacao"
+        },
+        {
+          "id": "ref-relatorio-ficticio",
+          "type": "REPORT",
+          "authors": [
+            { "surname": "Oliveira", "givenNames": "Camila Santos" },
+            { "surname": "Nascimento", "givenNames": "Diego Ferreira" }
+          ],
+          "title": "Assessment report on academic document generation tools",
+          "city": "Limeira",
+          "institutionName": "Universidade Fictícia de Limeira",
+          "year": "2023"
+        },
+        {
+          "id": "ref-book-three-authors",
+          "type": "BOOK",
+          "authors": [
+            { "surname": "Barros", "givenNames": "Fernanda Cristina" },
+            { "surname": "Mendes", "givenNames": "Ricardo Augusto" },
+            { "surname": "Teixeira", "givenNames": "Simone Lopes" }
+          ],
+          "title": "Document structure and semantic modeling",
+          "year": "2019",
+          "city": "Limeira",
+          "publisher": "Editora Fictícia"
+        },
+        {
+          "id": "ref-journal-many-authors",
+          "type": "JOURNAL",
+          "authors": [
+            { "surname": "Andrade", "givenNames": "Paulo Henrique" },
+            { "surname": "Borges", "givenNames": "Letícia Mara" },
+            { "surname": "Cardoso", "givenNames": "Bruno Filipe" },
+            { "surname": "Duarte", "givenNames": "Vanessa Ramos" },
+            { "surname": "Esteves", "givenNames": "Guilherme Nunes" },
+            { "surname": "Figueiredo", "givenNames": "Isabela Correia" },
+            { "surname": "Gomes", "givenNames": "Thiago Leal" },
+            { "surname": "Henrique", "givenNames": "Natália Sousa" },
+            { "surname": "Ivo", "givenNames": "Caio Martins" },
+            { "surname": "Jansen", "givenNames": "Laura Pereira" },
+            { "surname": "Krause", "givenNames": "Marcelo Dias" },
+            { "surname": "Lins", "givenNames": "Renata Campos" },
+            { "surname": "Miranda", "givenNames": "Eduardo Vieira" },
+            { "surname": "Neves", "givenNames": "Claudia Ribeiro" },
+            { "surname": "Oliveira", "givenNames": "Gustavo Freitas" },
+            { "surname": "Pacheco", "givenNames": "Tatiana Almeida" },
+            { "surname": "Queiroz", "givenNames": "Rodrigo Pinto" },
+            { "surname": "Rocha", "givenNames": "Mariana Costa" },
+            { "surname": "Santos", "givenNames": "Felipe Nascimento" },
+            { "surname": "Tavares", "givenNames": "Aline Moura" },
+            { "surname": "Vasconcelos", "givenNames": "Diego Cunha" }
+          ],
+          "title": "Large-scale evaluation of declarative formatting systems across normative profiles",
+          "publisher": "Fictitious International Journal of Information Systems",
+          "volume": "8",
+          "issue": "1",
+          "pages": "1–29",
+          "year": "2024",
+          "doi": "10.9999/fijis.2024.8.1.1"
+        },
+        {
+          "id": "ref-standard-ficticio",
+          "type": "STANDARD",
+          "title": "ISO 99999:2023",
+          "subtitle": "Information and documentation — declarative formatting systems — requirements",
+          "year": "2023",
+          "url": "https://iso-ficticio.org/99999"
+        },
+        {
+          "id": "ref-legislation-ficticia",
+          "type": "LEGISLATION",
+          "title": "Fictitious Act No. 12.345, of January 1, 2022",
+          "subtitle": "Provides for the standardization of academic documents in public institutions",
+          "year": "2022",
+          "url": "https://legislation-ficticio.gov.br/act-12345"
+        }
+      ]
+    },
+    "appendix": {
+      "contentType": "SECTIONED",
+      "items": [
+        {
+          "title": "Visual Validation Questionnaire",
+          "sections": [
+            {
+              "id": "apx-a-s1",
+              "level": 1,
+              "title": "Purpose of the instrument",
+              "blocks": [
+                {
+                  "type": "PARAGRAPH",
+                  "text": "This questionnaire was administered to five specialists in APA style with the objective of evaluating the visual conformity of documents generated by the proposed engine in relation to the normative standard. Evaluators received pairs of documents — one generated by the engine and one formatted manually — without identification of origin, to minimize confirmation bias."
+                }
+              ]
+            },
+            {
+              "id": "apx-a-s2",
+              "level": 1,
+              "title": "Applied questions",
+              "blocks": [
+                {
+                  "type": "PARAGRAPH",
+                  "text": "Question 1: Are the document margins in conformity with APA 7th edition (1 inch / 2.54 cm on all sides)?"
+                },
+                {
+                  "type": "PARAGRAPH",
+                  "text": "Question 2: Is the line spacing in the body text double-spaced throughout, as prescribed?"
+                },
+                {
+                  "type": "PARAGRAPH",
+                  "text": "Question 3: Are block quotations (40 words or more) indented 0.5 in. / 1.27 cm from the left margin with double spacing?"
+                },
+                {
+                  "type": "PARAGRAPH",
+                  "text": "Question 4: Are Level 1 headings centered, bold, with title case, and without section numbering?"
+                },
+                {
+                  "type": "PARAGRAPH",
+                  "text": "Question 5: Are references sorted alphabetically by first author surname, with a hanging indent of 1.27 cm and double spacing throughout?"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "annex": {
+      "contentType": "SECTIONED",
+      "items": [
+        {
+          "title": "APA 7th Edition — Summary of Required Elements",
+          "sections": [
+            {
+              "id": "anx-a-s1",
+              "level": 1,
+              "title": "Required pre-textual elements",
+              "blocks": [
+                {
+                  "type": "PARAGRAPH",
+                  "text": "The APA Publication Manual (7th ed.) establishes the following as required pre-textual elements for student papers: title page and abstract. For professional manuscripts, a running head is also required. The remaining elements — table of contents, lists of figures and tables, and lists of abbreviations — are optional and institution-specific."
+                }
+              ]
+            },
+            {
+              "id": "anx-a-s2",
+              "level": 1,
+              "title": "Textual and post-textual elements",
+              "blocks": [
+                {
+                  "type": "PARAGRAPH",
+                  "text": "The body of an APA paper is organized by headings up to five levels. The post-textual elements include, as required, the references list. Optional elements include appendices, footnotes, and tables or figures placed at the end of the manuscript."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "glossary": {
+      "contentType": "FLOW_TEXTUAL",
+      "terms": [
+        "APA",
+        "Block quotation",
+        "Component",
+        "Declarative profile",
+        "Hanging indent",
+        "Rendering"
+      ],
+      "definitions": [
+        "American Psychological Association. Organization responsible for the APA Publication Manual, the style guide widely adopted in psychology and related disciplines.",
+        "A direct quotation of 40 words or more, formatted as an indented block without quotation marks, according to APA style.",
+        "A structural element of a document with rules declared in the profile. May be a single-page component (such as the cover) or a flow-textual component (such as the abstract).",
+        "A declarative set of rules governing the formatting of a document type at a specific institution. The profile determines styles, component order, text templates, and layout behavior.",
+        "An indentation style in which the first line of a paragraph is flush with the margin and subsequent lines are indented. Required by APA style for reference list entries.",
+        "The process of transforming the content model and profile into formatted output (e.g., a DOCX file). The rendering engine contains no conditional profile logic."
+      ]
+    }
+  }
+}

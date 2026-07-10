@@ -21,46 +21,46 @@ class ReferencesEntryFormatterTest {
     );
 
     private static final List<EntrySegmentRule> BOOK_FORMAT = List.of(
-            new EntrySegmentRule("authors",   false, "",    "",    false),
-            new EntrySegmentRule("title",     true,  "",    "",    false),
-            new EntrySegmentRule("subtitle",  false, ": ",  "",    true),
-            new EntrySegmentRule("edition",   false, ". ",  ". ed.", true),
-            new EntrySegmentRule("city",      false, ". ", ": ",   true),
-            new EntrySegmentRule("publisher", false, "",    ", ",  true),
-            new EntrySegmentRule("year",      false, "",    ".",   false)
+            new EntrySegmentRule("authors",   false, false, "",    "",    false),
+            new EntrySegmentRule("title",     true,  false, "",    "",    false),
+            new EntrySegmentRule("subtitle",  false, false, ": ",  "",    true),
+            new EntrySegmentRule("edition",   false, false, ". ",  ". ed.", true),
+            new EntrySegmentRule("city",      false, false, ". ", ": ",   true),
+            new EntrySegmentRule("publisher", false, false, "",    ", ",  true),
+            new EntrySegmentRule("year",      false, false, "",    ".",   false)
     );
 
     private static final List<EntrySegmentRule> WEBSITE_FORMAT = List.of(
-            new EntrySegmentRule("authors",    false, "",    "",    true),
-            new EntrySegmentRule("title",      true,  "",    "",    false),
-            new EntrySegmentRule("subtitle",   false, ": ",  "",    true),
-            new EntrySegmentRule("url",        false, " Disponível em: ", ".", true),
-            new EntrySegmentRule("accessDate", false, " Acesso em: ",     ".", true)
+            new EntrySegmentRule("authors",    false, false, "",    "",    true),
+            new EntrySegmentRule("title",      true,  false, "",    "",    false),
+            new EntrySegmentRule("subtitle",   false, false, ": ",  "",    true),
+            new EntrySegmentRule("url",        false, false, " Disponível em: ", ".", true),
+            new EntrySegmentRule("accessDate", false, false, " Acesso em: ",     ".", true)
     );
 
     private static final List<EntrySegmentRule> JOURNAL_FORMAT = List.of(
-            new EntrySegmentRule("authors",   false, "",      "",    false),
-            new EntrySegmentRule("title",     true,  "",      "",    false),
-            new EntrySegmentRule("subtitle",  false, ": ",    "",    true),
-            new EntrySegmentRule("publisher", false, " ",     "",    true),
-            new EntrySegmentRule("volume",    false, ", v. ", "",    true),
-            new EntrySegmentRule("issue",     false, ", n. ", "",    true),
-            new EntrySegmentRule("pages",     false, ", p. ", "",    true),
-            new EntrySegmentRule("year",      false, ", ",    ".",   false),
-            new EntrySegmentRule("doi",       false, " ",     ".",   true)
+            new EntrySegmentRule("authors",   false, false, "",      "",    false),
+            new EntrySegmentRule("title",     true,  false, "",      "",    false),
+            new EntrySegmentRule("subtitle",  false, false, ": ",    "",    true),
+            new EntrySegmentRule("publisher", false, false, " ",     "",    true),
+            new EntrySegmentRule("volume",    false, false, ", v. ", "",    true),
+            new EntrySegmentRule("issue",     false, false, ", n. ", "",    true),
+            new EntrySegmentRule("pages",     false, false, ", p. ", "",    true),
+            new EntrySegmentRule("year",      false, false, ", ",    ".",   false),
+            new EntrySegmentRule("doi",       false, false, " ",     ".",   true)
     );
 
     private static final List<EntrySegmentRule> BOOK_CHAPTER_FORMAT = List.of(
-            new EntrySegmentRule("authors",         false, "",      "",    false),
-            new EntrySegmentRule("title",           true,  "",      "",    false),
-            new EntrySegmentRule("literal:In: ",    false, "",      "",    false),
-            new EntrySegmentRule("bookAuthors",     false, "",      "",    true),
-            new EntrySegmentRule("bookTitle",       true,  "",      ". ",  true),
-            new EntrySegmentRule("edition",         false, "",      ". ed. ", true),
-            new EntrySegmentRule("city",            false, "",      ": ",  true),
-            new EntrySegmentRule("publisher",       false, "",      ", ",  true),
-            new EntrySegmentRule("year",            false, "",      ".",   false),
-            new EntrySegmentRule("pages",           false, " p. ", ".",   true)
+            new EntrySegmentRule("authors",         false, false, "",      "",    false),
+            new EntrySegmentRule("title",           true,  false, "",      "",    false),
+            new EntrySegmentRule("literal:In: ",    false, false, "",      "",    false),
+            new EntrySegmentRule("bookAuthors",     false, false, "",      "",    true),
+            new EntrySegmentRule("bookTitle",       true,  false, "",      ". ",  true),
+            new EntrySegmentRule("edition",         false, false, "",      ". ed. ", true),
+            new EntrySegmentRule("city",            false, false, "",      ": ",  true),
+            new EntrySegmentRule("publisher",       false, false, "",      ", ",  true),
+            new EntrySegmentRule("year",            false, false, "",      ".",   false),
+            new EntrySegmentRule("pages",           false, false, " p. ", ".",   true)
     );
 
     private static final ReferencesFormattingRule ABNT_RULE = new ReferencesFormattingRule(
@@ -218,7 +218,7 @@ class ReferencesEntryFormatterTest {
     @Test
     void shouldThrowWhenRequiredFieldMissing() {
         List<EntrySegmentRule> strictFormat = List.of(
-                new EntrySegmentRule("publisher", false, "", "", false)
+                new EntrySegmentRule("publisher", false, false, "", "", false)
         );
         ReferencesFormattingRule strictRule = new ReferencesFormattingRule(
                 ABNT_AUTHOR, Map.of("BOOK", strictFormat)
@@ -269,11 +269,11 @@ class ReferencesEntryFormatterTest {
                 false, ", ", ".", " & ", "et al.", 1
         );
         List<EntrySegmentRule> apaBookFormat = List.of(
-                new EntrySegmentRule("authors", false, "", "",   false),
-                new EntrySegmentRule("year",    false, "(", "). ", false),
-                new EntrySegmentRule("title",   true,  "",  ".",  false),
-                new EntrySegmentRule("city",    false, " ", ":",  true),
-                new EntrySegmentRule("publisher", false, " ", ".", true)
+                new EntrySegmentRule("authors",   false, false, "",  "",    false),
+                new EntrySegmentRule("year",      false, false, "(", "). ", false),
+                new EntrySegmentRule("title",     false, true,  "",  ".",   false),
+                new EntrySegmentRule("city",      false, false, " ", ":",   true),
+                new EntrySegmentRule("publisher", false, false, " ", ".",   true)
         );
         ReferencesFormattingRule apaRule = new ReferencesFormattingRule(
                 apaLikeAuthor, Map.of("BOOK", apaBookFormat)

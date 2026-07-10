@@ -7,11 +7,12 @@ import jakarta.validation.constraints.NotNull;
 public record EntrySegmentRuleRequest(
         @NotBlank String source,
         boolean bold,
+        boolean italic,
         @NotNull String prefix,
         @NotNull String suffix,
         boolean optional
 ) {
     public EntrySegmentRule toDomain() {
-        return new EntrySegmentRule(source, bold, prefix, suffix, optional);
+        return new EntrySegmentRule(source, bold, italic, prefix, suffix, optional);
     }
 }

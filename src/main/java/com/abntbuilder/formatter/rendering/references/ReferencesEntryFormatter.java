@@ -38,7 +38,7 @@ public final class ReferencesEntryFormatter {
                 continue;
             }
             String text = segRule.prefix() + value.get() + segRule.suffix();
-            result.add(new ReferenceSegment(text, segRule.bold()));
+            result.add(new ReferenceSegment(text, segRule.bold(), segRule.italic()));
         }
         return List.copyOf(result);
     }

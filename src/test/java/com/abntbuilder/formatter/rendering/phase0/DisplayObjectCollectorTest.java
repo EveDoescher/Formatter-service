@@ -207,7 +207,7 @@ class DisplayObjectCollectorTest {
                                 "bodyContent.footnoteText"
                         ),
                         new BodyContentNumberingRule(true, ".", ""),
-                        new BodyContentLayoutRule(1, 1, false, false, "bodyContent.paragraph"),
+                        new BodyContentLayoutRule(1, 1, false, false, "bodyContent.paragraph", null),
                         figureRule(),
                         tableRule(),
                         frameRule(),

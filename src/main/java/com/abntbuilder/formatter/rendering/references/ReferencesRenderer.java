@@ -63,8 +63,11 @@ public final class ReferencesRenderer implements ComponentRenderer<ReferencesCom
             List<ReferenceSegment> segments = formatter.format(entry);
             List<DocxRun> runs = segments.stream()
                     .map(seg -> {
-                        InlineFormatting fmt = seg.bold()
-                                ? new InlineFormatting(Optional.of(true), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty())
+                        InlineFormatting fmt = (seg.bold() || seg.italic())
+                                ? new InlineFormatting(
+                                        seg.bold() ? Optional.of(true) : Optional.empty(),
+                                        seg.italic() ? Optional.of(true) : Optional.empty(),
+                                        Optional.empty(), Optional.empty(), Optional.empty())
                                 : InlineFormatting.none();
                         return new DocxRun(seg.text(), entryStyle, fmt);
                     })

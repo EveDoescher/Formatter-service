@@ -1,0 +1,2204 @@
+{
+  "id": "apa-unip-profile",
+  "displayName": "APA UNIP Profile",
+  "componentOrder": [
+    "cover",
+    "titlePage",
+    "errata",
+    "approvalSheet",
+    "dedication",
+    "acknowledgments",
+    "epigraph",
+    "resumo",
+    "abstract",
+    "listOfFigures",
+    "listOfTables",
+    "listOfFrames",
+    "listOfCharts",
+    "listOfCodeListings",
+    "listOfAbbreviations",
+    "listOfSymbols",
+    "summary",
+    "bodyContent",
+    "references",
+    "appendix",
+    "annex",
+    "glossary"
+  ],
+  "pageRule": {
+    "widthCm": 21,
+    "heightCm": 29.7,
+    "marginTopCm": 2.54,
+    "marginRightCm": 2.54,
+    "marginBottomCm": 2.54,
+    "marginLeftCm": 2.54,
+    "orientation": "PORTRAIT"
+  },
+  "pageNumbering": {
+    "enabled": true,
+    "countFromComponentId": "titlePage",
+    "visibleFromComponentId": "bodyContent",
+    "styleId": "pageNumber",
+    "placement": "HEADER_RIGHT",
+    "verticalDistanceFromPageEdgeCm": 2.54,
+    "horizontalDistanceFromPageEdgeCm": 2.54
+  },
+  "styleRules": [
+    {
+      "id": "pageNumber",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "RIGHT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "cover.top",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": true
+    },
+    {
+      "id": "cover.author",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "cover.title",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "cover.subtitle",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "cover.bottom",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "titlePage.author",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "titlePage.title",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "titlePage.subtitle",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "titlePage.nature",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "titlePage.advisor",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "titlePage.coadvisor",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "titlePage.bottom",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "approvalSheet.author",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "approvalSheet.title",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "approvalSheet.subtitle",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "approvalSheet.nature",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "approvalSheet.approval",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "approvalSheet.committee.heading",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "approvalSheet.committee",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.heading1",
+      "type": "HEADING_1",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.heading2",
+      "type": "HEADING_2",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.heading3",
+      "type": "HEADING_3",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": true,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.heading4",
+      "type": "HEADING_4",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 1.27,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.heading5",
+      "type": "HEADING_5",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 1.27,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": true,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.paragraph",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 1.27,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.longQuote",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 1.27,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.figure.caption",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.figure.source",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.table.caption",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.table.source",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.table.header",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.table.cell",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.frame.caption",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.frame.source",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.frame.header",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": true,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.frame.cell",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "bold": false,
+      "italic": false,
+      "uppercase": false
+    },
+    {
+      "id": "bodyContent.list.ordered",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 1.27,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "type": "PARAGRAPH"
+    },
+    {
+      "id": "bodyContent.list.unordered",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 1.27,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "type": "PARAGRAPH"
+    },
+    {
+      "id": "bodyContent.codeListing.code",
+      "fontFamily": "Courier New",
+      "fontSizePt": 10,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "LEFT",
+      "lineSpacing": 1.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "type": "PARAGRAPH"
+    },
+    {
+      "id": "bodyContent.footnoteCall",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 10,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "LEFT",
+      "lineSpacing": 1.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "type": "PARAGRAPH"
+    },
+    {
+      "id": "bodyContent.footnoteText",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 10,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "LEFT",
+      "lineSpacing": 1.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0,
+      "type": "PARAGRAPH"
+    },
+    {
+      "id": "errata.heading",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": true,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "errata.tableHeader",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": true,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "errata.tableCell",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "dedication.text",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "RIGHT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "epigraph.text",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": false,
+      "italic": true,
+      "uppercase": false,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "epigraph.author",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "acknowledgments.heading",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": true,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "acknowledgments.text",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 1.27,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "resumo.heading",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": true,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "resumo.text",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "resumo.keywords",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 1.27,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "references.heading",
+      "type": "HEADING_1",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": true,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "references.entry",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 1.27,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "sectioned.heading1",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": true,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "sectioned.heading2",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": true,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "appendix.heading",
+      "type": "HEADING_1",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": true,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "annex.heading",
+      "type": "HEADING_1",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": true,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "glossary.heading",
+      "type": "HEADING_1",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": true,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "glossary.entry",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 1.27,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "summary.entry.primary",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": true,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "summary.entry.secondary",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "list.heading",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": true,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "CENTER",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    },
+    {
+      "id": "list.entry",
+      "type": "PARAGRAPH",
+      "fontFamily": "Times New Roman",
+      "fontSizePt": 12,
+      "bold": false,
+      "italic": false,
+      "uppercase": false,
+      "alignment": "LEFT",
+      "lineSpacing": 2.0,
+      "firstLineIndentCm": 0,
+      "leftIndentCm": 0,
+      "rightIndentCm": 0,
+      "spacingBeforePt": 0,
+      "spacingAfterPt": 0
+    }
+  ],
+  "componentRules": {
+    "cover": {
+      "ruleType": "SINGLE_PAGE",
+      "componentId": "cover",
+      "slots": {
+        "institutionalLines": {
+          "type": "TEXT_LIST",
+          "required": true
+        },
+        "authors": {
+          "type": "TEXT_LIST",
+          "required": true
+        },
+        "title": {
+          "type": "TEXT",
+          "required": true
+        },
+        "subtitle": {
+          "type": "TEXT",
+          "required": false
+        },
+        "city": {
+          "type": "TEXT",
+          "required": true
+        },
+        "year": {
+          "type": "TEXT",
+          "required": true
+        }
+      },
+      "styleMapping": {
+        "institutionalLines": "cover.top",
+        "authors": "cover.author",
+        "title": "cover.title",
+        "subtitle": "cover.subtitle",
+        "city": "cover.bottom",
+        "year": "cover.bottom"
+      },
+      "layoutRule": {
+        "groups": [
+          {
+            "id": "cover.institution",
+            "required": true,
+            "items": [
+              {
+                "id": "institutionalLines",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              }
+            ]
+          },
+          {
+            "id": "cover.authors",
+            "required": false,
+            "items": [
+              {
+                "id": "authors",
+                "required": false,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              }
+            ]
+          },
+          {
+            "id": "cover.titleBlock",
+            "required": true,
+            "items": [
+              {
+                "id": "title",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              },
+              {
+                "id": "subtitle",
+                "required": false,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              }
+            ]
+          },
+          {
+            "id": "cover.bottom",
+            "required": true,
+            "items": [
+              {
+                "id": "city",
+                "required": true,
+                "maxVisualLinesPerValue": 1,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              },
+              {
+                "id": "year",
+                "required": true,
+                "maxVisualLinesPerValue": 1,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              }
+            ]
+          }
+        ],
+        "gapRules": [
+          {
+            "fromGroupId": "cover.institution",
+            "toGroupId": "cover.authors",
+            "weight": 30
+          },
+          {
+            "fromGroupId": "cover.authors",
+            "toGroupId": "cover.titleBlock",
+            "weight": 10
+          },
+          {
+            "fromGroupId": "cover.titleBlock",
+            "toGroupId": "cover.bottom",
+            "weight": 60
+          }
+        ],
+        "policy": {
+          "anchorStrategy": "LAST_GROUP_AT_SAFE_AREA_END",
+          "lineHeightStrategy": "MAX_EXACT_LINE_HEIGHT",
+          "spacerStylePolicy": "NEXT_GROUP_STYLE",
+          "safetyPolicy": "MARGIN_BASED"
+        }
+      }
+    },
+    "titlePage": {
+      "ruleType": "SINGLE_PAGE",
+      "componentId": "titlePage",
+      "slots": {
+        "authors": {
+          "type": "TEXT_LIST",
+          "required": true
+        },
+        "title": {
+          "type": "TEXT",
+          "required": true
+        },
+        "subtitle": {
+          "type": "TEXT",
+          "required": false
+        },
+        "nature": {
+          "type": "COMPOSED_TEXT",
+          "required": true,
+          "template": "{workType} para {degreeObjective} em {courseName} apresentado à {institutionName}.",
+          "fieldNames": [
+            "workType",
+            "degreeObjective",
+            "courseName",
+            "institutionName"
+          ]
+        },
+        "advisor": {
+          "type": "COMPOSED_TEXT",
+          "required": false,
+          "template": "Orientador(a): {academicTitle} {name}.",
+          "fieldNames": [
+            "academicTitle",
+            "name"
+          ]
+        },
+        "coadvisor": {
+          "type": "COMPOSED_TEXT",
+          "required": false,
+          "template": "Coorientador(a): {academicTitle} {name}.",
+          "fieldNames": [
+            "academicTitle",
+            "name"
+          ]
+        },
+        "city": {
+          "type": "TEXT",
+          "required": true
+        },
+        "year": {
+          "type": "TEXT",
+          "required": true
+        }
+      },
+      "styleMapping": {
+        "authors": "titlePage.author",
+        "title": "titlePage.title",
+        "subtitle": "titlePage.subtitle",
+        "nature": "titlePage.nature",
+        "advisor": "titlePage.advisor",
+        "coadvisor": "titlePage.coadvisor",
+        "city": "titlePage.bottom",
+        "year": "titlePage.bottom"
+      },
+      "layoutRule": {
+        "groups": [
+          {
+            "id": "titlePage.authors",
+            "required": true,
+            "items": [
+              {
+                "id": "authors",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              }
+            ]
+          },
+          {
+            "id": "titlePage.titleBlock",
+            "required": true,
+            "items": [
+              {
+                "id": "title",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              },
+              {
+                "id": "subtitle",
+                "required": false,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              }
+            ]
+          },
+          {
+            "id": "titlePage.natureBlock",
+            "required": true,
+            "items": [
+              {
+                "id": "nature",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FROM_PAGE_CENTER_TO_RIGHT_MARGIN"
+                },
+                "blankLinesAfter": 1
+              },
+              {
+                "id": "advisor",
+                "required": false,
+                "horizontalPlacement": {
+                  "strategy": "FROM_PAGE_CENTER_TO_RIGHT_MARGIN"
+                },
+                "blankLinesAfter": 1
+              },
+              {
+                "id": "coadvisor",
+                "required": false,
+                "horizontalPlacement": {
+                  "strategy": "FROM_PAGE_CENTER_TO_RIGHT_MARGIN"
+                }
+              }
+            ]
+          },
+          {
+            "id": "titlePage.bottom",
+            "required": true,
+            "items": [
+              {
+                "id": "city",
+                "required": true,
+                "maxVisualLinesPerValue": 1,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              },
+              {
+                "id": "year",
+                "required": true,
+                "maxVisualLinesPerValue": 1,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              }
+            ]
+          }
+        ],
+        "gapRules": [
+          {
+            "fromGroupId": "titlePage.authors",
+            "toGroupId": "titlePage.titleBlock",
+            "weight": 20
+          },
+          {
+            "fromGroupId": "titlePage.titleBlock",
+            "toGroupId": "titlePage.natureBlock",
+            "weight": 35
+          },
+          {
+            "fromGroupId": "titlePage.natureBlock",
+            "toGroupId": "titlePage.bottom",
+            "weight": 45
+          }
+        ],
+        "policy": {
+          "anchorStrategy": "LAST_GROUP_AT_SAFE_AREA_END",
+          "lineHeightStrategy": "MAX_EXACT_LINE_HEIGHT",
+          "spacerStylePolicy": "NEXT_GROUP_STYLE",
+          "safetyPolicy": "MARGIN_BASED"
+        }
+      }
+    },
+    "approvalSheet": {
+      "ruleType": "SINGLE_PAGE",
+      "componentId": "approvalSheet",
+      "slots": {
+        "authors": {
+          "type": "TEXT_LIST",
+          "required": true
+        },
+        "title": {
+          "type": "TEXT",
+          "required": true
+        },
+        "subtitle": {
+          "type": "TEXT",
+          "required": false
+        },
+        "nature": {
+          "type": "COMPOSED_TEXT",
+          "required": true,
+          "template": "{workType} para {degreeObjective} em {courseName} apresentado à {institutionName}.",
+          "fieldNames": [
+            "workType",
+            "degreeObjective",
+            "courseName",
+            "institutionName"
+          ]
+        },
+        "approvalText": {
+          "type": "TEXT",
+          "required": true
+        },
+        "committeeHeading": {
+          "type": "TEXT",
+          "required": true
+        },
+        "committeeMembers": {
+          "type": "SIGNATURE_BLOCK_LIST",
+          "required": false,
+          "signatureLineEnabled": true,
+          "signatureLineText": "________________________________________",
+          "lineTemplates": [
+            "{title} {name}",
+            "{institutionName}",
+            "{role}"
+          ],
+          "knownFieldNames": [
+            "name",
+            "title",
+            "institutionName",
+            "role"
+          ]
+        }
+      },
+      "styleMapping": {
+        "authors": "approvalSheet.author",
+        "title": "approvalSheet.title",
+        "subtitle": "approvalSheet.subtitle",
+        "nature": "approvalSheet.nature",
+        "approvalText": "approvalSheet.approval",
+        "committeeHeading": "approvalSheet.committee.heading",
+        "committeeMembers": "approvalSheet.committee"
+      },
+      "layoutRule": {
+        "groups": [
+          {
+            "id": "approvalSheet.authors",
+            "required": true,
+            "items": [
+              {
+                "id": "authors",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              }
+            ]
+          },
+          {
+            "id": "approvalSheet.titleBlock",
+            "required": true,
+            "items": [
+              {
+                "id": "title",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              },
+              {
+                "id": "subtitle",
+                "required": false,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              }
+            ]
+          },
+          {
+            "id": "approvalSheet.natureBlock",
+            "required": true,
+            "items": [
+              {
+                "id": "nature",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FROM_PAGE_CENTER_TO_RIGHT_MARGIN"
+                }
+              }
+            ]
+          },
+          {
+            "id": "approvalSheet.approvalBlock",
+            "required": true,
+            "items": [
+              {
+                "id": "approvalText",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                }
+              }
+            ]
+          },
+          {
+            "id": "approvalSheet.committeeHeading",
+            "required": true,
+            "items": [
+              {
+                "id": "committeeHeading",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                },
+                "blankLinesAfter": 1
+              }
+            ]
+          },
+          {
+            "id": "approvalSheet.committeeBlock",
+            "required": true,
+            "items": [
+              {
+                "id": "committeeMembers",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FULL_CONTENT_WIDTH"
+                },
+                "blankLinesAfter": 1
+              }
+            ]
+          }
+        ],
+        "gapRules": [
+          {
+            "fromGroupId": "approvalSheet.authors",
+            "toGroupId": "approvalSheet.titleBlock",
+            "weight": 15
+          },
+          {
+            "fromGroupId": "approvalSheet.titleBlock",
+            "toGroupId": "approvalSheet.natureBlock",
+            "weight": 20
+          },
+          {
+            "fromGroupId": "approvalSheet.natureBlock",
+            "toGroupId": "approvalSheet.approvalBlock",
+            "weight": 15
+          },
+          {
+            "fromGroupId": "approvalSheet.approvalBlock",
+            "toGroupId": "approvalSheet.committeeHeading",
+            "weight": 25
+          },
+          {
+            "fromGroupId": "approvalSheet.committeeHeading",
+            "toGroupId": "approvalSheet.committeeBlock",
+            "weight": 40
+          }
+        ],
+        "policy": {
+          "anchorStrategy": "LAST_GROUP_AT_SAFE_AREA_END",
+          "lineHeightStrategy": "MAX_EXACT_LINE_HEIGHT",
+          "spacerStylePolicy": "NEXT_GROUP_STYLE",
+          "safetyPolicy": "MARGIN_BASED"
+        }
+      }
+    },
+    "bodyContent": {
+      "ruleType": "BODY_CONTENT",
+      "componentId": "bodyContent",
+      "styleMapping": {
+        "sectionTitleStyleIdsByLevel": [
+          "bodyContent.heading1",
+          "bodyContent.heading2",
+          "bodyContent.heading3",
+          "bodyContent.heading4",
+          "bodyContent.heading5"
+        ],
+        "paragraphStyleId": "bodyContent.paragraph",
+        "directShortQuoteStyleId": "bodyContent.paragraph",
+        "directLongQuoteStyleId": "bodyContent.longQuote",
+        "indirectCitationStyleId": "bodyContent.paragraph",
+        "citationOfCitationStyleId": "bodyContent.paragraph",
+        "listOrderedStyleId": "bodyContent.list.ordered",
+        "listUnorderedStyleId": "bodyContent.list.unordered",
+        "equationStyleId": "bodyContent.paragraph",
+        "footnoteCallStyleId": "bodyContent.footnoteCall",
+        "footnoteTextStyleId": "bodyContent.footnoteText"
+      },
+      "numbering": {
+        "enabled": false,
+        "separator": ".",
+        "primarySuffix": ""
+      },
+      "layout": {
+        "blankLinesBeforeSectionTitleWhenPrecededByContent": 1,
+        "blankLinesAfterSectionTitle": 1,
+        "pageBreakBeforePrimarySection": false,
+        "keepWithNextOnHeadings": true,
+        "blankLineStyleId": "bodyContent.paragraph",
+        "inlineHeadingLevels": [4, 5]
+      },
+      "figure": {
+        "captionStyleId": "bodyContent.figure.caption",
+        "sourceStyleId": "bodyContent.figure.source",
+        "captionTemplate": "Figure {number}. {caption}",
+        "sourceTemplate": "Note. {source}",
+        "continuationLabels": {
+          "first": "continua",
+          "middle": "continuação",
+          "last": "conclusão"
+        },
+        "sourcePlacement": "LAST_PART_ONLY",
+        "imageAlignment": "CENTER",
+        "maxWidthCm": 16,
+        "maxHeightCm": 18,
+        "defaultDpi": 96,
+        "maxImageBytes": 2000000,
+        "urlFetchTimeoutSeconds": 10,
+        "fitPolicy": "SCALE_DOWN_PRESERVE_ASPECT_RATIO",
+        "numberingStrategy": "GLOBAL_SEQUENTIAL",
+        "label": "Figure"
+      },
+      "table": {
+        "captionStyleId": "bodyContent.table.caption",
+        "sourceStyleId": "bodyContent.table.source",
+        "headerStyleId": "bodyContent.table.header",
+        "cellStyleId": "bodyContent.table.cell",
+        "captionTemplate": "Table {number}. {caption}",
+        "sourceTemplate": "Note. {source}",
+        "continuationLabels": {
+          "first": "continua",
+          "middle": "continuação",
+          "last": "conclusão"
+        },
+        "sourcePlacement": "LAST_PART_ONLY",
+        "tableAlignment": "CENTER",
+        "widthPercent": 100,
+        "repeatHeaderOnPageBreak": true,
+        "numberingStrategy": "GLOBAL_SEQUENTIAL",
+        "label": "Table"
+      },
+      "frame": {
+        "captionStyleId": "bodyContent.frame.caption",
+        "sourceStyleId": "bodyContent.frame.source",
+        "headerStyleId": "bodyContent.frame.header",
+        "cellStyleId": "bodyContent.frame.cell",
+        "captionTemplate": "Figure {number}. {caption}",
+        "sourceTemplate": "Note. {source}",
+        "continuationLabels": {
+          "first": "continua",
+          "middle": "continuação",
+          "last": "conclusão"
+        },
+        "sourcePlacement": "LAST_PART_ONLY",
+        "tableAlignment": "CENTER",
+        "widthPercent": 100,
+        "repeatHeaderOnPageBreak": true,
+        "numberingStrategy": "GLOBAL_SEQUENTIAL",
+        "label": "Figure"
+      },
+      "codeListing": {
+        "captionStyleId": "bodyContent.figure.caption",
+        "sourceStyleId": "bodyContent.figure.source",
+        "codeStyleId": "bodyContent.codeListing.code",
+        "captionTemplate": "Figure {number}. {caption}",
+        "sourceTemplate": "Note. {source}",
+        "continuationLabels": {
+          "first": "continua",
+          "middle": "continuação",
+          "last": "conclusão"
+        },
+        "sourcePlacement": "LAST_PART_ONLY",
+        "numberingStrategy": "GLOBAL_SEQUENTIAL",
+        "label": "Figure"
+      },
+      "chart": {
+        "captionStyleId": "bodyContent.figure.caption",
+        "sourceStyleId": "bodyContent.figure.source",
+        "captionTemplate": "Figure {number}. {caption}",
+        "sourceTemplate": "Note. {source}",
+        "continuationLabels": {
+          "first": "continua",
+          "middle": "continuação",
+          "last": "conclusão"
+        },
+        "sourcePlacement": "LAST_PART_ONLY",
+        "imageRule": {
+          "captionStyleId": "bodyContent.figure.caption",
+          "sourceStyleId": "bodyContent.figure.source",
+          "captionTemplate": "Figure {number}. {caption}",
+          "sourceTemplate": "Note. {source}",
+          "continuationLabels": {
+            "first": "continua",
+            "middle": "continuação",
+            "last": "conclusão"
+          },
+          "sourcePlacement": "LAST_PART_ONLY",
+          "imageAlignment": "CENTER",
+          "maxWidthCm": 16,
+          "maxHeightCm": 18,
+          "defaultDpi": 96,
+          "maxImageBytes": 2000000,
+          "urlFetchTimeoutSeconds": 10,
+          "fitPolicy": "SCALE_DOWN_PRESERVE_ASPECT_RATIO",
+          "numberingStrategy": "GLOBAL_SEQUENTIAL",
+          "label": "Figure"
+        },
+        "numberingStrategy": "GLOBAL_SEQUENTIAL",
+        "label": "Figure"
+      },
+      "citationFormatting": {
+        "pagePrefix": "p.",
+        "multiAuthorJoiner": ", ",
+        "etAl": " et al.",
+        "apudConnector": " apud ",
+        "suppressionMarker": "[...]",
+        "emphasisOursLabel": "grifo nosso",
+        "emphasisAuthorLabel": "grifo do autor",
+        "verbalCitationLabel": "informação verbal",
+        "authorYearSeparator": ", ",
+        "pageReferenceSeparator": ", ",
+        "parenOpen": "(",
+        "parenClose": ")",
+        "multiSourceSeparator": "; "
+      },
+      "crossReferenceLabels": {
+        "sectionLabel": "Section",
+        "figureLabel": "Figure",
+        "tableLabel": "Table",
+        "frameLabel": "Figure",
+        "chartLabel": "Figure",
+        "codeListingLabel": "Figure",
+        "equationLabel": "Equation"
+      }
+    },
+    "errata": {
+      "ruleType": "FLOW_TEXTUAL",
+      "componentId": "errata",
+      "items": [
+        { "itemType": "HEADING", "styleId": "errata.heading", "text": "Errata" },
+        { "itemType": "BLANK_LINES", "styleId": "errata.heading", "count": 1 },
+        {
+          "itemType": "TABLE_BLOCK",
+          "headerStyleId": "errata.tableHeader",
+          "cellStyleId": "errata.tableCell",
+          "headers": ["Página", "Linha", "Onde se lê", "Leia-se"],
+          "rowsSlotName": "rows"
+        }
+      ]
+    },
+    "dedication": {
+      "ruleType": "SINGLE_PAGE",
+      "componentId": "dedication",
+      "slots": {
+        "text": {
+          "type": "TEXT",
+          "required": true
+        }
+      },
+      "styleMapping": {
+        "text": "dedication.text"
+      },
+      "layoutRule": {
+        "groups": [
+          {
+            "id": "dedication.text",
+            "required": true,
+            "items": [
+              {
+                "id": "text",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FROM_PAGE_CENTER_TO_RIGHT_MARGIN"
+                }
+              }
+            ]
+          }
+        ],
+        "gapRules": [],
+        "policy": {
+          "anchorStrategy": "LAST_GROUP_AT_SAFE_AREA_END",
+          "lineHeightStrategy": "MAX_EXACT_LINE_HEIGHT",
+          "spacerStylePolicy": "NEXT_GROUP_STYLE",
+          "safetyPolicy": "MARGIN_BASED"
+        }
+      }
+    },
+    "epigraph": {
+      "ruleType": "SINGLE_PAGE",
+      "componentId": "epigraph",
+      "slots": {
+        "text": {
+          "type": "TEXT",
+          "required": true
+        },
+        "author": {
+          "type": "TEXT",
+          "required": false
+        },
+        "source": {
+          "type": "TEXT",
+          "required": false
+        }
+      },
+      "styleMapping": {
+        "text": "epigraph.text",
+        "author": "epigraph.author",
+        "source": "epigraph.author"
+      },
+      "layoutRule": {
+        "groups": [
+          {
+            "id": "epigraph.block",
+            "required": true,
+            "items": [
+              {
+                "id": "text",
+                "required": true,
+                "horizontalPlacement": {
+                  "strategy": "FROM_PAGE_CENTER_TO_RIGHT_MARGIN"
+                }
+              },
+              {
+                "id": "author",
+                "required": false,
+                "horizontalPlacement": {
+                  "strategy": "FROM_PAGE_CENTER_TO_RIGHT_MARGIN"
+                }
+              },
+              {
+                "id": "source",
+                "required": false,
+                "horizontalPlacement": {
+                  "strategy": "FROM_PAGE_CENTER_TO_RIGHT_MARGIN"
+                }
+              }
+            ]
+          }
+        ],
+        "gapRules": [],
+        "policy": {
+          "anchorStrategy": "LAST_GROUP_AT_SAFE_AREA_END",
+          "lineHeightStrategy": "MAX_EXACT_LINE_HEIGHT",
+          "spacerStylePolicy": "NEXT_GROUP_STYLE",
+          "safetyPolicy": "MARGIN_BASED"
+        }
+      }
+    },
+    "acknowledgments": {
+      "ruleType": "FLOW_TEXTUAL",
+      "componentId": "acknowledgments",
+      "items": [
+        { "itemType": "HEADING", "styleId": "acknowledgments.heading", "text": "Agradecimentos" },
+        { "itemType": "BLANK_LINES", "styleId": "acknowledgments.heading", "count": 1 },
+        { "itemType": "PLAIN_TEXT", "styleId": "acknowledgments.text", "slotName": "text" }
+      ]
+    },
+    "resumo": {
+      "ruleType": "FLOW_TEXTUAL",
+      "componentId": "resumo",
+      "items": [
+        { "itemType": "HEADING", "styleId": "resumo.heading", "text": "Resumo" },
+        { "itemType": "BLANK_LINES", "styleId": "resumo.heading", "count": 1 },
+        { "itemType": "PLAIN_TEXT", "styleId": "resumo.text", "slotName": "text" },
+        {
+          "itemType": "BOLD_LABELED_KEYWORDS",
+          "styleId": "resumo.keywords",
+          "labelSlotName": "keywordsLabel",
+          "keywordsSlotName": "keywords",
+          "separator": ", ",
+          "terminator": "."
+        }
+      ]
+    },
+    "abstract": {
+      "ruleType": "FLOW_TEXTUAL",
+      "componentId": "abstract",
+      "items": [
+        {
+          "itemType": "REPEAT_GROUP",
+          "entriesSlotName": "entries",
+          "pageBreakBetweenEntries": true,
+          "group": [
+            { "itemType": "PLAIN_TEXT", "styleId": "resumo.heading", "slotName": "headingText" },
+            { "itemType": "BLANK_LINES", "styleId": "resumo.heading", "count": 1 },
+            { "itemType": "PLAIN_TEXT", "styleId": "resumo.text", "slotName": "text" },
+            {
+              "itemType": "BOLD_LABELED_KEYWORDS",
+              "styleId": "resumo.keywords",
+              "labelSlotName": "keywordsLabel",
+              "keywordsSlotName": "keywords",
+              "separator": ", ",
+              "terminator": "."
+            }
+          ]
+        }
+      ]
+    },
+    "references": {
+      "ruleType": "BIBLIOGRAPHY",
+      "componentId": "references",
+      "headingStyleId": "references.heading",
+      "headingText": "References",
+      "entryStyleId": "references.entry",
+      "blankLinesBetweenEntries": 0,
+      "blankLinesAfterHeading": 1,
+      "sortOrder": "ALPHABETICAL",
+      "formattingRule": {
+        "authorFormat": {
+          "surnameUppercase": false,
+          "surnameGivenSeparator": ", ",
+          "nameTerminator": ".",
+          "multiAuthorJoiner": ", ",
+          "lastAuthorJoiner": ", & ",
+          "etAlLabel": "et al.",
+          "etAlThreshold": 20,
+          "nameOrder": "SURNAME_FIRST",
+          "initialsOnly": true,
+          "initialsDotted": true,
+          "initialsSpaced": true
+        },
+        "entryFormats": {
+          "BOOK": [
+            { "source": "authors",   "bold": false, "italic": false, "prefix": "",   "suffix": "",    "optional": false },
+            { "source": "year",      "bold": false, "italic": false, "prefix": " (", "suffix": ").",  "optional": false },
+            { "source": "title",     "bold": false, "italic": true,  "prefix": " ",  "suffix": "",    "optional": false },
+            { "source": "subtitle",  "bold": false, "italic": true,  "prefix": ": ", "suffix": "",    "optional": true  },
+            { "source": "edition",   "bold": false, "italic": false, "prefix": " (", "suffix": " ed.).", "optional": true },
+            { "source": "publisher", "bold": false, "italic": false, "prefix": " ",  "suffix": ".",   "optional": true  },
+            { "source": "doi",       "bold": false, "italic": false, "prefix": " ",  "suffix": "",    "optional": true  },
+            { "source": "url",       "bold": false, "italic": false, "prefix": " ",  "suffix": "",    "optional": true  }
+          ],
+          "BOOK_CHAPTER": [
+            { "source": "authors",    "bold": false, "italic": false, "prefix": "",    "suffix": "",    "optional": false },
+            { "source": "year",       "bold": false, "italic": false, "prefix": " (", "suffix": ").",  "optional": false },
+            { "source": "title",      "bold": false, "italic": false, "prefix": " ",  "suffix": ".",   "optional": false },
+            { "source": "literal:In ", "bold": false, "italic": false, "prefix": " ", "suffix": "",    "optional": false },
+            { "source": "bookAuthors","bold": false, "italic": false, "prefix": "",   "suffix": "",    "optional": true  },
+            { "source": "bookTitle",  "bold": false, "italic": true,  "prefix": " ",  "suffix": "",    "optional": true  },
+            { "source": "pages",      "bold": false, "italic": false, "prefix": " (pp. ", "suffix": ").", "optional": true },
+            { "source": "publisher",  "bold": false, "italic": false, "prefix": " ",  "suffix": ".",   "optional": true  },
+            { "source": "doi",        "bold": false, "italic": false, "prefix": " ",  "suffix": "",    "optional": true  }
+          ],
+          "JOURNAL": [
+            { "source": "authors",   "bold": false, "italic": false, "prefix": "",   "suffix": "",    "optional": false },
+            { "source": "year",      "bold": false, "italic": false, "prefix": " (", "suffix": ").",  "optional": false },
+            { "source": "title",     "bold": false, "italic": false, "prefix": " ",  "suffix": ".",   "optional": false },
+            { "source": "publisher", "bold": false, "italic": true,  "prefix": " ",  "suffix": "",    "optional": true  },
+            { "source": "volume",    "bold": false, "italic": true,  "prefix": ", ", "suffix": "",    "optional": true  },
+            { "source": "issue",     "bold": false, "italic": false, "prefix": "(", "suffix": ")",    "optional": true  },
+            { "source": "pages",     "bold": false, "italic": false, "prefix": ", ", "suffix": ".",   "optional": true  },
+            { "source": "doi",       "bold": false, "italic": false, "prefix": " ",  "suffix": "",    "optional": true  },
+            { "source": "url",       "bold": false, "italic": false, "prefix": " ",  "suffix": "",    "optional": true  }
+          ],
+          "WEBSITE": [
+            { "source": "authors",    "bold": false, "italic": false, "prefix": "",   "suffix": "",   "optional": true  },
+            { "source": "year",       "bold": false, "italic": false, "prefix": " (", "suffix": ").", "optional": false },
+            { "source": "title",      "bold": false, "italic": true,  "prefix": " ",  "suffix": ".",  "optional": false },
+            { "source": "url",        "bold": false, "italic": false, "prefix": " ",  "suffix": "",   "optional": true  }
+          ],
+          "THESIS": [
+            { "source": "authors",         "bold": false, "italic": false, "prefix": "",    "suffix": "",    "optional": false },
+            { "source": "year",            "bold": false, "italic": false, "prefix": " (",  "suffix": ").",  "optional": false },
+            { "source": "title",           "bold": false, "italic": true,  "prefix": " ",   "suffix": "",    "optional": false },
+            { "source": "degree",          "bold": false, "italic": false, "prefix": " [",  "suffix": ",",   "optional": true  },
+            { "source": "institutionName", "bold": false, "italic": false, "prefix": " ",   "suffix": "].",  "optional": true  },
+            { "source": "url",             "bold": false, "italic": false, "prefix": " ",   "suffix": "",    "optional": true  }
+          ],
+          "CONFERENCE_PAPER": [
+            { "source": "authors",   "bold": false, "italic": false, "prefix": "",    "suffix": "",    "optional": false },
+            { "source": "year",      "bold": false, "italic": false, "prefix": " (",  "suffix": ", ",  "optional": false },
+            { "source": "publisher", "bold": false, "italic": false, "prefix": "",    "suffix": ").",  "optional": true  },
+            { "source": "title",     "bold": false, "italic": true,  "prefix": " ",   "suffix": ".",   "optional": false },
+            { "source": "url",       "bold": false, "italic": false, "prefix": " ",   "suffix": "",    "optional": true  },
+            { "source": "doi",       "bold": false, "italic": false, "prefix": " ",   "suffix": "",    "optional": true  }
+          ],
+          "REPORT": [
+            { "source": "authors",         "bold": false, "italic": false, "prefix": "",   "suffix": "",   "optional": false },
+            { "source": "year",            "bold": false, "italic": false, "prefix": " (", "suffix": ").", "optional": false },
+            { "source": "title",           "bold": false, "italic": true,  "prefix": " ",  "suffix": ".",  "optional": false },
+            { "source": "institutionName", "bold": false, "italic": false, "prefix": " ",  "suffix": ".",  "optional": true  },
+            { "source": "url",             "bold": false, "italic": false, "prefix": " ",  "suffix": "",   "optional": true  }
+          ],
+          "STANDARD": [
+            { "source": "authors",   "bold": false, "italic": false, "prefix": "",   "suffix": "",   "optional": true  },
+            { "source": "year",      "bold": false, "italic": false, "prefix": " (", "suffix": ").", "optional": false },
+            { "source": "title",     "bold": false, "italic": true,  "prefix": " ",  "suffix": ".",  "optional": false },
+            { "source": "url",       "bold": false, "italic": false, "prefix": " ",  "suffix": "",   "optional": true  }
+          ],
+          "LEGISLATION": [
+            { "source": "title",     "bold": false, "italic": false, "prefix": "",   "suffix": "",   "optional": false },
+            { "source": "year",      "bold": false, "italic": false, "prefix": " (", "suffix": ").", "optional": false },
+            { "source": "url",       "bold": false, "italic": false, "prefix": " ",  "suffix": "",   "optional": true  }
+          ]
+        }
+      }
+    },
+    "appendix": {
+      "ruleType": "SECTIONED",
+      "componentId": "appendix",
+      "headingTemplate": "Appendix {letter} — {title}",
+      "headingStyleId": "appendix.heading",
+      "paragraphStyleId": "bodyContent.paragraph",
+      "sectionTitleStyleIdsByLevel": [
+        "sectioned.heading1",
+        "sectioned.heading2"
+      ],
+      "indexingStyle": "ALPHABETIC",
+      "bodyContentComponentId": "bodyContent"
+    },
+    "annex": {
+      "ruleType": "SECTIONED",
+      "componentId": "annex",
+      "headingTemplate": "Annex {letter} — {title}",
+      "headingStyleId": "annex.heading",
+      "paragraphStyleId": "bodyContent.paragraph",
+      "sectionTitleStyleIdsByLevel": [
+        "sectioned.heading1",
+        "sectioned.heading2"
+      ],
+      "indexingStyle": "ALPHABETIC",
+      "bodyContentComponentId": "bodyContent"
+    },
+    "glossary": {
+      "ruleType": "FLOW_TEXTUAL",
+      "componentId": "glossary",
+      "items": [
+        { "itemType": "HEADING", "styleId": "glossary.heading", "text": "Glossary" },
+        { "itemType": "BLANK_LINES", "styleId": "glossary.heading", "count": 1 },
+        {
+          "itemType": "PAIR_LIST",
+          "styleId": "glossary.entry",
+          "termsSlotName": "terms",
+          "definitionsSlotName": "definitions",
+          "separator": " — "
+        }
+      ]
+    },
+    "summary": {
+      "ruleType": "SECTION_INDEX",
+      "componentId": "summary",
+      "headingStyleId": "list.heading",
+      "headingText": "Table of Contents",
+      "entryStyleIdsByLevel": [
+        "summary.entry.primary",
+        "summary.entry.secondary",
+        "summary.entry.secondary",
+        "summary.entry.secondary",
+        "summary.entry.secondary"
+      ],
+      "useTocField": true,
+      "blankLinesAfterHeading": 1
+    },
+    "listOfFigures": {
+      "ruleType": "ELEMENT_INDEX",
+      "componentId": "listOfFigures",
+      "elementType": "FIGURE",
+      "headingStyleId": "list.heading",
+      "headingText": "List of Figures",
+      "entryStyleId": "list.entry",
+      "entryTemplate": "Figure {number} – {caption}",
+      "blankLinesAfterHeading": 1,
+      "pageReferenceEnabled": true
+    },
+    "listOfTables": {
+      "ruleType": "ELEMENT_INDEX",
+      "componentId": "listOfTables",
+      "elementType": "TABLE",
+      "headingStyleId": "list.heading",
+      "headingText": "List of Tables",
+      "entryStyleId": "list.entry",
+      "entryTemplate": "Table {number} – {caption}",
+      "blankLinesAfterHeading": 1,
+      "pageReferenceEnabled": true
+    },
+    "listOfFrames": {
+      "ruleType": "ELEMENT_INDEX",
+      "componentId": "listOfFrames",
+      "elementType": "FRAME",
+      "headingStyleId": "list.heading",
+      "headingText": "List of Figures",
+      "entryStyleId": "list.entry",
+      "entryTemplate": "Figure {number} – {caption}",
+      "blankLinesAfterHeading": 1,
+      "pageReferenceEnabled": true
+    },
+    "listOfCharts": {
+      "ruleType": "ELEMENT_INDEX",
+      "componentId": "listOfCharts",
+      "elementType": "CHART",
+      "headingStyleId": "list.heading",
+      "headingText": "List of Figures",
+      "entryStyleId": "list.entry",
+      "entryTemplate": "Figure {number} – {caption}",
+      "blankLinesAfterHeading": 1,
+      "pageReferenceEnabled": true
+    },
+    "listOfCodeListings": {
+      "ruleType": "ELEMENT_INDEX",
+      "componentId": "listOfCodeListings",
+      "elementType": "CODE_LISTING",
+      "headingStyleId": "list.heading",
+      "headingText": "List of Figures",
+      "entryStyleId": "list.entry",
+      "entryTemplate": "Figure {number} – {caption}",
+      "blankLinesAfterHeading": 1,
+      "pageReferenceEnabled": true
+    },
+    "listOfAbbreviations": {
+      "ruleType": "FLOW_TEXTUAL",
+      "componentId": "listOfAbbreviations",
+      "items": [
+        { "itemType": "HEADING", "styleId": "list.heading", "text": "List of Abbreviations" },
+        { "itemType": "BLANK_LINES", "styleId": "list.heading", "count": 1 },
+        {
+          "itemType": "PAIR_LIST",
+          "styleId": "list.entry",
+          "termsSlotName": "$abbreviations",
+          "definitionsSlotName": "$sort",
+          "separator": " — "
+        }
+      ]
+    },
+    "listOfSymbols": {
+      "ruleType": "FLOW_TEXTUAL",
+      "componentId": "listOfSymbols",
+      "items": [
+        { "itemType": "HEADING", "styleId": "list.heading", "text": "List of Symbols" },
+        { "itemType": "BLANK_LINES", "styleId": "list.heading", "count": 1 },
+        {
+          "itemType": "PAIR_LIST",
+          "styleId": "list.entry",
+          "termsSlotName": "terms",
+          "definitionsSlotName": "definitions",
+          "separator": " — "
+        }
+      ]
+    }
+  },
+  "fontRoles": {
+    "baseFont": {
+      "default": "Times New Roman",
+      "allowedValues": ["Times New Roman", "Calibri", "Arial", "Georgia"],
+      "styleIds": [
+        "pageNumber",
+        "cover.top", "cover.author", "cover.title", "cover.subtitle", "cover.bottom",
+        "titlePage.author", "titlePage.title", "titlePage.subtitle", "titlePage.nature",
+        "titlePage.advisor", "titlePage.coadvisor", "titlePage.bottom",
+        "approvalSheet.author", "approvalSheet.title", "approvalSheet.subtitle",
+        "approvalSheet.nature", "approvalSheet.approval",
+        "approvalSheet.committee.heading", "approvalSheet.committee",
+        "bodyContent.heading1", "bodyContent.heading2", "bodyContent.heading3",
+        "bodyContent.heading4", "bodyContent.heading5",
+        "bodyContent.paragraph", "bodyContent.longQuote",
+        "bodyContent.figure.caption", "bodyContent.figure.source",
+        "bodyContent.table.caption", "bodyContent.table.source",
+        "bodyContent.table.header", "bodyContent.table.cell",
+        "bodyContent.frame.caption", "bodyContent.frame.source",
+        "bodyContent.frame.header", "bodyContent.frame.cell",
+        "bodyContent.list.ordered", "bodyContent.list.unordered",
+        "bodyContent.footnoteCall", "bodyContent.footnoteText",
+        "errata.heading", "errata.tableHeader", "errata.tableCell",
+        "dedication.text",
+        "epigraph.text", "epigraph.author",
+        "acknowledgments.heading", "acknowledgments.text",
+        "resumo.heading", "resumo.text", "resumo.keywords",
+        "references.heading", "references.entry",
+        "sectioned.heading1", "sectioned.heading2",
+        "appendix.heading", "annex.heading",
+        "glossary.heading", "glossary.entry",
+        "summary.entry.primary", "summary.entry.secondary",
+        "list.heading", "list.entry"
+      ]
+    }
+  },
+  "postProcessing": {
+    "orphanTitleCorrection": { "enabled": true },
+    "tableContinuationLabels": {
+      "enabled": true,
+      "continuesLabel": "continua",
+      "continuationLabel": "continuação",
+      "conclusionLabel": "conclusão",
+      "labelStyleId": "bodyContent.table.header"
+    }
+  }
+}

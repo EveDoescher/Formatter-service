@@ -385,7 +385,7 @@ class BodyContentRendererTest {
                                 "bodyContent.footnoteText"
                         ),
                         new BodyContentNumberingRule(true, ".", ""),
-                        new BodyContentLayoutRule(1, 1, false, false, "bodyContent.paragraph"),
+                        new BodyContentLayoutRule(1, 1, false, false, "bodyContent.paragraph", null),
                         figureRule(),
                         tableRule(),
                         frameRule(),
@@ -441,7 +441,7 @@ class BodyContentRendererTest {
                                 "bodyContent.footnoteText"
                         ),
                         new BodyContentNumberingRule(true, ".", ""),
-                        new BodyContentLayoutRule(1, 1, true, false, "bodyContent.paragraph"),
+                        new BodyContentLayoutRule(1, 1, true, false, "bodyContent.paragraph", null),
                         figureRule(),
                         tableRule(),
                         frameRule(),

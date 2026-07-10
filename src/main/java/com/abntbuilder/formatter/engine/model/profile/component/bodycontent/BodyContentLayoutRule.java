@@ -2,12 +2,15 @@ package com.abntbuilder.formatter.engine.model.profile.component.bodycontent;
 
 import com.abntbuilder.formatter.shared.exception.InvalidProfileStructureException;
 
+import java.util.Set;
+
 public record BodyContentLayoutRule(
         int blankLinesBeforeSectionTitleWhenPrecededByContent,
         int blankLinesAfterSectionTitle,
         boolean pageBreakBeforePrimarySection,
         boolean keepWithNextOnHeadings,
-        String blankLineStyleId
+        String blankLineStyleId,
+        Set<Integer> inlineHeadingLevels
 ) {
 
     public BodyContentLayoutRule {
@@ -17,6 +20,11 @@ public record BodyContentLayoutRule(
         );
         requireNonNegative(blankLinesAfterSectionTitle, "blankLinesAfterSectionTitle");
         requireNonBlank(blankLineStyleId, "blankLineStyleId");
+        inlineHeadingLevels = inlineHeadingLevels == null ? Set.of() : Set.copyOf(inlineHeadingLevels);
+    }
+
+    public boolean isInlineHeadingLevel(int level) {
+        return inlineHeadingLevels.contains(level);
     }
 
     private static void requireNonNegative(int value, String fieldName) {
