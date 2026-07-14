@@ -14,7 +14,7 @@ public record SectionIndexComponentRuleRequest(
         int blankLinesAfterHeading
 ) {
     public SectionIndexComponentRule toDomain(String componentId) {
-        return new SectionIndexComponentRule(componentId, headingStyleId, headingText,
+        return new SectionIndexComponentRule(componentId, true, null, headingStyleId, headingText,
                 entryStyleIdsByLevel, useTocField, blankLinesAfterHeading);
     }
 }

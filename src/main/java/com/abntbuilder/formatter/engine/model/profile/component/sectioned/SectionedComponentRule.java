@@ -8,6 +8,8 @@ import java.util.Objects;
 
 public record SectionedComponentRule(
         String componentId,
+        boolean required,
+        String description,
         String headingTemplate,
         String headingStyleId,
         String paragraphStyleId,

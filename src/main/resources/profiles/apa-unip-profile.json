@@ -1089,30 +1089,44 @@
     "cover": {
       "ruleType": "SINGLE_PAGE",
       "componentId": "cover",
+      "required": true,
+      "description": "Capa do trabalho acadêmico. Elemento pré-textual obrigatório.",
       "slots": {
         "institutionalLines": {
           "type": "TEXT_LIST",
-          "required": true
+          "required": true,
+          "description": "Linhas institucionais exibidas no topo da capa (nome da instituição, faculdade, curso).",
+          "placeholder": "Ex: Universidade Fictícia de Limeira"
         },
         "authors": {
           "type": "TEXT_LIST",
-          "required": true
+          "required": true,
+          "description": "Nome(s) do(s) autor(es) do trabalho.",
+          "placeholder": "Ex: Ana Souza"
         },
         "title": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Título principal do trabalho.",
+          "placeholder": "Ex: Análise comparativa de métodos de aprendizado de máquina"
         },
         "subtitle": {
           "type": "TEXT",
-          "required": false
+          "required": false,
+          "description": "Subtítulo do trabalho, se houver.",
+          "placeholder": "Ex: uma abordagem empírica"
         },
         "city": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Cidade de apresentação do trabalho.",
+          "placeholder": "Ex: Limeira"
         },
         "year": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Ano de entrega ou publicação do trabalho.",
+          "placeholder": "Ex: 2024"
         }
       },
       "styleMapping": {
@@ -1222,22 +1236,32 @@
     "titlePage": {
       "ruleType": "SINGLE_PAGE",
       "componentId": "titlePage",
+      "required": true,
+      "description": "Folha de rosto do trabalho acadêmico. Elemento pré-textual obrigatório.",
       "slots": {
         "authors": {
           "type": "TEXT_LIST",
-          "required": true
+          "required": true,
+          "description": "Nome(s) do(s) autor(es) do trabalho.",
+          "placeholder": "Ex: Ana Souza"
         },
         "title": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Título principal do trabalho.",
+          "placeholder": "Ex: Análise comparativa de métodos de aprendizado de máquina"
         },
         "subtitle": {
           "type": "TEXT",
-          "required": false
+          "required": false,
+          "description": "Subtítulo do trabalho, se houver.",
+          "placeholder": "Ex: uma abordagem empírica"
         },
         "nature": {
           "type": "COMPOSED_TEXT",
           "required": true,
+          "description": "Nota de natureza do trabalho (tipo, objetivo, curso e instituição).",
+          "placeholder": "Ex: Trabalho de Conclusão de Curso para Bacharelado em Ciência da Computação apresentado à Universidade Fictícia de Limeira.",
           "template": "{workType} para {degreeObjective} em {courseName} apresentado à {institutionName}.",
           "fieldNames": [
             "workType",
@@ -1249,6 +1273,8 @@
         "advisor": {
           "type": "COMPOSED_TEXT",
           "required": false,
+          "description": "Nome e título do orientador(a) do trabalho.",
+          "placeholder": "Ex: Orientador(a): Prof. Dr. Carlos Lima.",
           "template": "Orientador(a): {academicTitle} {name}.",
           "fieldNames": [
             "academicTitle",
@@ -1258,6 +1284,8 @@
         "coadvisor": {
           "type": "COMPOSED_TEXT",
           "required": false,
+          "description": "Nome e título do coorientador(a), se houver.",
+          "placeholder": "Ex: Coorientador(a): Prof. Dra. Beatriz Rocha.",
           "template": "Coorientador(a): {academicTitle} {name}.",
           "fieldNames": [
             "academicTitle",
@@ -1266,11 +1294,15 @@
         },
         "city": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Cidade de apresentação do trabalho.",
+          "placeholder": "Ex: Limeira"
         },
         "year": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Ano de entrega ou publicação do trabalho.",
+          "placeholder": "Ex: 2024"
         }
       },
       "styleMapping": {
@@ -1398,22 +1430,32 @@
     "approvalSheet": {
       "ruleType": "SINGLE_PAGE",
       "componentId": "approvalSheet",
+      "required": true,
+      "description": "Folha de aprovação do trabalho acadêmico. Elemento pré-textual obrigatório.",
       "slots": {
         "authors": {
           "type": "TEXT_LIST",
-          "required": true
+          "required": true,
+          "description": "Nome(s) do(s) autor(es) do trabalho.",
+          "placeholder": "Ex: Ana Souza"
         },
         "title": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Título principal do trabalho.",
+          "placeholder": "Ex: Análise comparativa de métodos de aprendizado de máquina"
         },
         "subtitle": {
           "type": "TEXT",
-          "required": false
+          "required": false,
+          "description": "Subtítulo do trabalho, se houver.",
+          "placeholder": "Ex: uma abordagem empírica"
         },
         "nature": {
           "type": "COMPOSED_TEXT",
           "required": true,
+          "description": "Nota de natureza do trabalho (tipo, objetivo, curso e instituição).",
+          "placeholder": "Ex: Trabalho de Conclusão de Curso para Bacharelado em Ciência da Computação apresentado à Universidade Fictícia de Limeira.",
           "template": "{workType} para {degreeObjective} em {courseName} apresentado à {institutionName}.",
           "fieldNames": [
             "workType",
@@ -1424,15 +1466,21 @@
         },
         "approvalText": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Texto de aprovação do trabalho com data e resultado.",
+          "placeholder": "Ex: Aprovado em 15 de novembro de 2024."
         },
         "committeeHeading": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Título da seção da banca examinadora.",
+          "placeholder": "Ex: Banca Examinadora:"
         },
         "committeeMembers": {
           "type": "SIGNATURE_BLOCK_LIST",
           "required": false,
+          "description": "Membros da banca examinadora com espaço para assinatura.",
+          "placeholder": "Ex: Prof. Dr. Carlos Lima — Universidade Fictícia de Limeira (Orientador)",
           "signatureLineEnabled": true,
           "signatureLineText": "________________________________________",
           "lineTemplates": [
@@ -1585,6 +1633,8 @@
     "bodyContent": {
       "ruleType": "BODY_CONTENT",
       "componentId": "bodyContent",
+      "required": true,
+      "description": "Conteúdo textual principal do trabalho acadêmico, incluindo introdução, desenvolvimento e conclusão.",
       "styleMapping": {
         "sectionTitleStyleIdsByLevel": [
           "bodyContent.heading1",
@@ -1754,6 +1804,8 @@
     "errata": {
       "ruleType": "FLOW_TEXTUAL",
       "componentId": "errata",
+      "required": false,
+      "description": "Lista de erros encontrados no texto após a impressão, com as devidas correções. Elemento opcional.",
       "items": [
         { "itemType": "HEADING", "styleId": "errata.heading", "text": "Errata" },
         { "itemType": "BLANK_LINES", "styleId": "errata.heading", "count": 1 },
@@ -1769,10 +1821,14 @@
     "dedication": {
       "ruleType": "SINGLE_PAGE",
       "componentId": "dedication",
+      "required": false,
+      "description": "Dedicatória do trabalho. Elemento pré-textual opcional, posicionado no canto inferior direito da página.",
       "slots": {
         "text": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Texto da dedicatória.",
+          "placeholder": "Ex: Dedico este trabalho à minha família, pelo apoio incondicional."
         }
       },
       "styleMapping": {
@@ -1806,18 +1862,26 @@
     "epigraph": {
       "ruleType": "SINGLE_PAGE",
       "componentId": "epigraph",
+      "required": false,
+      "description": "Epígrafe do trabalho. Elemento pré-textual opcional com citação de autoria relacionada ao tema.",
       "slots": {
         "text": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Texto da citação ou pensamento escolhido para a epígrafe.",
+          "placeholder": "Ex: A imaginação é mais importante que o conhecimento."
         },
         "author": {
           "type": "TEXT",
-          "required": false
+          "required": false,
+          "description": "Nome do autor da citação.",
+          "placeholder": "Ex: Albert Einstein"
         },
         "source": {
           "type": "TEXT",
-          "required": false
+          "required": false,
+          "description": "Obra ou fonte da citação.",
+          "placeholder": "Ex: On Science, Necessity and the Love of God, 1952"
         }
       },
       "styleMapping": {
@@ -1867,6 +1931,8 @@
     "acknowledgments": {
       "ruleType": "FLOW_TEXTUAL",
       "componentId": "acknowledgments",
+      "required": false,
+      "description": "Agradecimentos do autor. Elemento pré-textual opcional.",
       "items": [
         { "itemType": "HEADING", "styleId": "acknowledgments.heading", "text": "Agradecimentos" },
         { "itemType": "BLANK_LINES", "styleId": "acknowledgments.heading", "count": 1 },
@@ -1876,6 +1942,8 @@
     "resumo": {
       "ruleType": "FLOW_TEXTUAL",
       "componentId": "resumo",
+      "required": true,
+      "description": "Resumo em língua vernácula. Elemento pré-textual obrigatório.",
       "items": [
         { "itemType": "HEADING", "styleId": "resumo.heading", "text": "Resumo" },
         { "itemType": "BLANK_LINES", "styleId": "resumo.heading", "count": 1 },
@@ -1893,6 +1961,8 @@
     "abstract": {
       "ruleType": "FLOW_TEXTUAL",
       "componentId": "abstract",
+      "required": true,
+      "description": "Resumo em língua estrangeira (geralmente inglês). Elemento pré-textual obrigatório.",
       "items": [
         {
           "itemType": "REPEAT_GROUP",
@@ -1917,6 +1987,8 @@
     "references": {
       "ruleType": "BIBLIOGRAPHY",
       "componentId": "references",
+      "required": true,
+      "description": "Lista de referências bibliográficas citadas no trabalho. Elemento pós-textual obrigatório.",
       "headingStyleId": "references.heading",
       "headingText": "References",
       "entryStyleId": "references.entry",
@@ -2016,6 +2088,8 @@
     "appendix": {
       "ruleType": "SECTIONED",
       "componentId": "appendix",
+      "required": false,
+      "description": "Appendices of the paper, authored by the writer. Optional post-textual element.",
       "headingTemplate": "Appendix {letter} — {title}",
       "headingStyleId": "appendix.heading",
       "paragraphStyleId": "bodyContent.paragraph",
@@ -2029,6 +2103,8 @@
     "annex": {
       "ruleType": "SECTIONED",
       "componentId": "annex",
+      "required": false,
+      "description": "Annexes of the paper, authored by third parties. Optional post-textual element.",
       "headingTemplate": "Annex {letter} — {title}",
       "headingStyleId": "annex.heading",
       "paragraphStyleId": "bodyContent.paragraph",
@@ -2042,6 +2118,8 @@
     "glossary": {
       "ruleType": "FLOW_TEXTUAL",
       "componentId": "glossary",
+      "required": false,
+      "description": "Glossary of technical terms and definitions used in the paper. Optional post-textual element.",
       "items": [
         { "itemType": "HEADING", "styleId": "glossary.heading", "text": "Glossary" },
         { "itemType": "BLANK_LINES", "styleId": "glossary.heading", "count": 1 },
@@ -2057,6 +2135,8 @@
     "summary": {
       "ruleType": "SECTION_INDEX",
       "componentId": "summary",
+      "required": true,
+      "description": "Table of contents listing all sections of the paper with their page numbers. Required pre-textual element.",
       "headingStyleId": "list.heading",
       "headingText": "Table of Contents",
       "entryStyleIdsByLevel": [
@@ -2072,6 +2152,8 @@
     "listOfFigures": {
       "ruleType": "ELEMENT_INDEX",
       "componentId": "listOfFigures",
+      "required": false,
+      "description": "List of figures with identification and page number. Required when the paper contains figures.",
       "elementType": "FIGURE",
       "headingStyleId": "list.heading",
       "headingText": "List of Figures",
@@ -2083,6 +2165,8 @@
     "listOfTables": {
       "ruleType": "ELEMENT_INDEX",
       "componentId": "listOfTables",
+      "required": false,
+      "description": "List of tables with identification and page number. Required when the paper contains tables.",
       "elementType": "TABLE",
       "headingStyleId": "list.heading",
       "headingText": "List of Tables",
@@ -2094,6 +2178,8 @@
     "listOfFrames": {
       "ruleType": "ELEMENT_INDEX",
       "componentId": "listOfFrames",
+      "required": false,
+      "description": "List of frames with identification and page number. Required when the paper contains frames.",
       "elementType": "FRAME",
       "headingStyleId": "list.heading",
       "headingText": "List of Figures",
@@ -2105,6 +2191,8 @@
     "listOfCharts": {
       "ruleType": "ELEMENT_INDEX",
       "componentId": "listOfCharts",
+      "required": false,
+      "description": "List of charts with identification and page number. Required when the paper contains charts.",
       "elementType": "CHART",
       "headingStyleId": "list.heading",
       "headingText": "List of Figures",
@@ -2116,6 +2204,8 @@
     "listOfCodeListings": {
       "ruleType": "ELEMENT_INDEX",
       "componentId": "listOfCodeListings",
+      "required": false,
+      "description": "List of code listings with identification and page number. Required when the paper contains code listings.",
       "elementType": "CODE_LISTING",
       "headingStyleId": "list.heading",
       "headingText": "List of Figures",
@@ -2127,6 +2217,8 @@
     "listOfAbbreviations": {
       "ruleType": "FLOW_TEXTUAL",
       "componentId": "listOfAbbreviations",
+      "required": false,
+      "description": "List of abbreviations and acronyms used in the paper. Optional pre-textual element.",
       "items": [
         { "itemType": "HEADING", "styleId": "list.heading", "text": "List of Abbreviations" },
         { "itemType": "BLANK_LINES", "styleId": "list.heading", "count": 1 },
@@ -2142,6 +2234,8 @@
     "listOfSymbols": {
       "ruleType": "FLOW_TEXTUAL",
       "componentId": "listOfSymbols",
+      "required": false,
+      "description": "List of symbols used in the paper with their respective meanings. Optional pre-textual element.",
       "items": [
         { "itemType": "HEADING", "styleId": "list.heading", "text": "List of Symbols" },
         { "itemType": "BLANK_LINES", "styleId": "list.heading", "count": 1 },

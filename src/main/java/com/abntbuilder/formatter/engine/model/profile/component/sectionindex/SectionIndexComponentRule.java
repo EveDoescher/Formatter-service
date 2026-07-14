@@ -7,6 +7,8 @@ import java.util.Map;
 
 public record SectionIndexComponentRule(
         String componentId,
+        boolean required,
+        String description,
         String headingStyleId,
         String headingText,
         List<String> entryStyleIdsByLevel,

@@ -40,6 +40,8 @@ public record BodyContentComponentRuleRequest(
         }
         return new BodyContentComponentRule(
                 componentId,
+                true,
+                null,
                 styleMapping.toDomain(),
                 numbering.toDomain(),
                 layout.toDomain(),

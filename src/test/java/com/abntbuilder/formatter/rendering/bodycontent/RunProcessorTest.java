@@ -201,6 +201,8 @@ class RunProcessorTest {
                 ),
                 List.of(new BodyContentComponentRule(
                         "bodyContent",
+                        true,
+                        null,
                         new BodyContentStyleMapping(
                                 List.of("base"),
                                 "base",

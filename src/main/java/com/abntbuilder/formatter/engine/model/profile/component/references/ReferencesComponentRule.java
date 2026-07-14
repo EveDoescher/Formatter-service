@@ -7,6 +7,8 @@ import java.util.Objects;
 
 public record ReferencesComponentRule(
         String componentId,
+        boolean required,
+        String description,
         String headingStyleId,
         String headingText,
         String entryStyleId,
@@ -31,14 +33,6 @@ public record ReferencesComponentRule(
         Objects.requireNonNull(formattingRule, "formattingRule must not be null");
         if (blankLinesAfterHeading < 0) throw new IllegalArgumentException("blankLinesAfterHeading must be >= 0.");
         if (sortOrder == null) sortOrder = ReferenceSortOrder.AS_GIVEN;
-    }
-
-    public ReferencesComponentRule(
-            String componentId, String headingStyleId, String headingText, String entryStyleId,
-            int blankLinesBetweenEntries, ReferencesFormattingRule formattingRule, int blankLinesAfterHeading
-    ) {
-        this(componentId, headingStyleId, headingText, entryStyleId, blankLinesBetweenEntries,
-                formattingRule, blankLinesAfterHeading, ReferenceSortOrder.AS_GIVEN);
     }
 
     public Map<String, String> contentBindings() { return Map.of(); }

@@ -75,11 +75,11 @@ public final class FlowTextualRenderer implements MetadataConsumingRenderer<Flow
                     Map<String, ContentValue> merged = new HashMap<>(component.slots());
                     merged.putAll(entrySlots);
                     FlowTextualContent entryComponent = new FlowTextualContent(componentId, merged);
-                    FlowTextualComponentRule groupRule = new FlowTextualComponentRule(componentId, r.group());
+                    FlowTextualComponentRule groupRule = new FlowTextualComponentRule(componentId, rule.required(), rule.description(), r.group());
                     blocks.addAll(renderItems(groupRule, entryComponent, styleResolver, phase0Index));
                 }
             } else {
-                FlowTextualComponentRule singleItemRule = new FlowTextualComponentRule(componentId, List.of(item));
+                FlowTextualComponentRule singleItemRule = new FlowTextualComponentRule(componentId, rule.required(), rule.description(), List.of(item));
                 blocks.addAll(renderItems(singleItemRule, component, styleResolver, phase0Index));
             }
         }

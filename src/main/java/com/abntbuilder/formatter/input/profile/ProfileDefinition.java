@@ -239,11 +239,14 @@ public record ProfileDefinition(
 
     public record SinglePageComponentRuleDefinition(
             String componentId,
+            Boolean required,
+            String description,
             Map<String, SlotRuleDefinition> slots,
             Map<String, String> styleMapping,
             SinglePageLayoutRuleDefinition layoutRule
     ) implements ComponentRuleDefinition {
         public SinglePageComponentRule toDomain() {
+            requireNonNull(required, componentId + ".required");
             requireNonNull(slots, componentId + ".slots");
             requireNonNull(styleMapping, componentId + ".styleMapping");
             requireNonNull(layoutRule, componentId + ".layoutRule");
@@ -254,13 +257,15 @@ public record ProfileDefinition(
                             e -> e.getValue().toDomain()
                     ));
 
-            return new SinglePageComponentRule(componentId, domainSlots, styleMapping, layoutRule.toDomain());
+            return new SinglePageComponentRule(componentId, required, description, domainSlots, styleMapping, layoutRule.toDomain());
         }
     }
 
     public record SlotRuleDefinition(
             String type,
             Boolean required,
+            String description,
+            String placeholder,
             String template,
             List<String> fieldNames,
             Boolean signatureLineEnabled,
@@ -273,17 +278,19 @@ public record ProfileDefinition(
             requireNonNull(required, "slot.required");
 
             return switch (type) {
-                case "TEXT" -> new TextSlotRule(required);
-                case "TEXT_LIST" -> new TextListSlotRule(required);
+                case "TEXT" -> new TextSlotRule(required, description, placeholder);
+                case "TEXT_LIST" -> new TextListSlotRule(required, description, placeholder);
                 case "COMPOSED_TEXT" -> {
                     requireNonNull(template, "slot.template");
                     requireNonEmpty(fieldNames, "slot.fieldNames");
-                    yield new ComposedTextSlotRule(required, template, fieldNames);
+                    yield new ComposedTextSlotRule(required, description, placeholder, template, fieldNames);
                 }
                 case "SIGNATURE_BLOCK_LIST" -> {
                     requireNonEmpty(lineTemplates, "slot.lineTemplates");
                     yield new SignatureBlockListSlotRule(
                             required,
+                            description,
+                            placeholder,
                             signatureLineEnabled != null && signatureLineEnabled,
                             signatureLineText,
                             lineTemplates,
@@ -297,6 +304,8 @@ public record ProfileDefinition(
 
     public record BodyContentComponentRuleDefinition(
             String componentId,
+            Boolean required,
+            String description,
             BodyContentStyleMappingDefinition styleMapping,
             BodyContentNumberingRuleDefinition numbering,
             BodyContentLayoutRuleDefinition layout,
@@ -309,6 +318,7 @@ public record ProfileDefinition(
             CrossReferenceLabelsRuleDefinition crossReferenceLabels
     ) implements ComponentRuleDefinition {
         public BodyContentComponentRule toDomain() {
+            requireNonNull(required, componentId + ".required");
             requireNonNull(styleMapping, "bodyContent.styleMapping");
             requireNonNull(numbering, "bodyContent.numbering");
             requireNonNull(layout, "bodyContent.layout");
@@ -322,6 +332,8 @@ public record ProfileDefinition(
 
             return new BodyContentComponentRule(
                     componentId,
+                    required,
+                    description,
                     styleMapping.toDomain(),
                     numbering.toDomain(),
                     layout.toDomain(),
@@ -764,14 +776,19 @@ public record ProfileDefinition(
 
     public record FlowTextualComponentRuleDefinition(
             String componentId,
+            Boolean required,
+            String description,
             List<FlowItemDefinition> items
     ) implements ComponentRuleDefinition {
         public FlowTextualComponentRule toDomain() {
+            requireNonNull(required, componentId + ".required");
             requireNonNull(items, componentId + ".items");
             if (items.isEmpty())
                 throw new InvalidProfileStructureException(componentId + ".items must not be empty.");
             return new FlowTextualComponentRule(
                     componentId,
+                    required,
+                    description,
                     items.stream().map(FlowItemDefinition::toDomain).toList()
             );
         }
@@ -932,6 +949,8 @@ public record ProfileDefinition(
 
     public record ReferencesComponentRuleDefinition(
             String componentId,
+            Boolean required,
+            String description,
             String headingStyleId,
             String headingText,
             String entryStyleId,
@@ -941,9 +960,10 @@ public record ProfileDefinition(
             ReferencesComponentRule.ReferenceSortOrder sortOrder
     ) implements ComponentRuleDefinition {
         public ReferencesComponentRule toDomain() {
+            requireNonNull(required, componentId + ".required");
             requireNonNull(blankLinesBetweenEntries, "bibliography.blankLinesBetweenEntries");
             requireNonNull(formattingRule, "bibliography.formattingRule");
-            return new ReferencesComponentRule(componentId, headingStyleId, headingText,
+            return new ReferencesComponentRule(componentId, required, description, headingStyleId, headingText,
                     entryStyleId, blankLinesBetweenEntries, formattingRule.toDomain(),
                     blankLinesAfterHeading != null ? blankLinesAfterHeading : 0,
                     sortOrder != null ? sortOrder : ReferencesComponentRule.ReferenceSortOrder.AS_GIVEN);
@@ -952,6 +972,8 @@ public record ProfileDefinition(
 
     public record SectionedComponentRuleDefinition(
             String componentId,
+            Boolean required,
+            String description,
             String headingTemplate,
             String headingStyleId,
             String paragraphStyleId,
@@ -960,9 +982,10 @@ public record ProfileDefinition(
             String bodyContentComponentId
     ) implements ComponentRuleDefinition {
         public SectionedComponentRule toDomain() {
+            requireNonNull(required, componentId + ".required");
             requireNonNull(sectionTitleStyleIdsByLevel, componentId + ".sectionTitleStyleIdsByLevel");
             requireNonNull(bodyContentComponentId, componentId + ".bodyContentComponentId");
-            return new SectionedComponentRule(componentId, headingTemplate, headingStyleId,
+            return new SectionedComponentRule(componentId, required, description, headingTemplate, headingStyleId,
                     paragraphStyleId, sectionTitleStyleIdsByLevel,
                     indexingStyle != null ? indexingStyle : SectionedComponentRule.IndexingStyle.ALPHABETIC,
                     bodyContentComponentId);
@@ -1051,6 +1074,8 @@ public record ProfileDefinition(
 
     public record SectionIndexComponentRuleDefinition(
             String componentId,
+            Boolean required,
+            String description,
             String headingStyleId,
             String headingText,
             List<String> entryStyleIdsByLevel,
@@ -1058,8 +1083,11 @@ public record ProfileDefinition(
             Integer blankLinesAfterHeading
     ) implements ComponentRuleDefinition {
         public SectionIndexComponentRule toDomain() {
+            requireNonNull(required, componentId + ".required");
             return new SectionIndexComponentRule(
                     componentId,
+                    required,
+                    description,
                     headingStyleId,
                     headingText,
                     entryStyleIdsByLevel,
@@ -1071,6 +1099,8 @@ public record ProfileDefinition(
 
     public record ElementIndexComponentRuleDefinition(
             String componentId,
+            Boolean required,
+            String description,
             ElementType elementType,
             String headingStyleId,
             String headingText,
@@ -1080,9 +1110,12 @@ public record ProfileDefinition(
             Boolean pageReferenceEnabled
     ) implements ComponentRuleDefinition {
         public ElementIndexComponentRule toDomain() {
+            requireNonNull(required, componentId + ".required");
             requireNonNull(elementType, componentId + ".elementType");
             return new ElementIndexComponentRule(
                     componentId,
+                    required,
+                    description,
                     elementType,
                     headingStyleId,
                     headingText,

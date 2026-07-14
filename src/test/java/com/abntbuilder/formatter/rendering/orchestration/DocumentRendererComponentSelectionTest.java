@@ -395,5 +395,7 @@ class DocumentRendererComponentSelectionTest {
     }
 
     private record FakeComponentRule(String componentId) implements ComponentRule {
+        public boolean required() { return true; }
+        public String description() { return null; }
     }
 }

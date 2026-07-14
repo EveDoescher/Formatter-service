@@ -8,6 +8,8 @@ import java.util.Objects;
 
 public record SinglePageComponentRule(
         String componentId,
+        boolean required,
+        String description,
         Map<String, SlotRule> slots,
         Map<String, String> styleMapping,
         SinglePageLayoutRule layoutRule

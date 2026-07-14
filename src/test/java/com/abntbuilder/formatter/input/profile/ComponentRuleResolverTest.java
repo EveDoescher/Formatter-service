@@ -157,12 +157,16 @@ class ComponentRuleResolverTest {
         );
         return new SinglePageComponentRule(
                 "cover",
-                java.util.Map.of("title", new TextSlotRule(true), "city", new TextSlotRule(true)),
+                true,
+                null,
+                java.util.Map.of("title", new TextSlotRule(true, null, null), "city", new TextSlotRule(true, null, null)),
                 java.util.Map.of("title", "cover.title", "city", "cover.top"),
                 layout
         );
     }
 
     private record FakeComponentRule(String componentId) implements ComponentRule {
+        public boolean required() { return true; }
+        public String description() { return null; }
     }
 }

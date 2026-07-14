@@ -8,6 +8,8 @@ import java.util.Objects;
 
 public record FlowTextualComponentRule(
         String componentId,
+        boolean required,
+        String description,
         List<FlowItem> items
 ) implements ComponentRule {
 

@@ -5,6 +5,8 @@ import java.util.Objects;
 
 public record SignatureBlockListSlotRule(
         boolean required,
+        String description,
+        String placeholder,
         boolean signatureLineEnabled,
         String signatureLineText,
         List<String> lineTemplates,

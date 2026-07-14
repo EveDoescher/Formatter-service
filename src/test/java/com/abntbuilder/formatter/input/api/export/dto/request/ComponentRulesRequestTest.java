@@ -63,9 +63,11 @@ class ComponentRulesRequestTest {
     private static ProfileDefinition.SinglePageComponentRuleDefinition titlePageRuleDefinition() {
         return new ProfileDefinition.SinglePageComponentRuleDefinition(
                 "titlePage",
+                true,
+                null,
                 Map.of(
                         "nature", new ProfileDefinition.SlotRuleDefinition(
-                                "COMPOSED_TEXT", true,
+                                "COMPOSED_TEXT", true, null, null,
                                 "{workType} para {degreeObjective}.",
                                 List.of("workType", "degreeObjective"),
                                 null, null, null, null)
@@ -97,6 +99,8 @@ class ComponentRulesRequestTest {
     private static ProfileDefinition.BodyContentComponentRuleDefinition bodyContentRuleDefinition() {
         return new ProfileDefinition.BodyContentComponentRuleDefinition(
                 "bodyContent",
+                true,
+                null,
                 new ProfileDefinition.BodyContentStyleMappingDefinition(
                         List.of("bodyContent.heading1", "bodyContent.heading2", "bodyContent.heading3"),
                         "bodyContent.paragraph",

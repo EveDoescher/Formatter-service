@@ -8,6 +8,8 @@ import java.util.Objects;
 
 public record BodyContentComponentRule(
         String componentId,
+        boolean required,
+        String description,
         BodyContentStyleMapping styleMapping,
         BodyContentNumberingRule numbering,
         BodyContentLayoutRule layout,
@@ -37,6 +39,8 @@ public record BodyContentComponentRule(
     public BodyContentComponentRule withSectionTitleStyleIds(List<String> overrideStyleIds) {
         return new BodyContentComponentRule(
                 componentId,
+                required,
+                description,
                 styleMapping.withSectionTitleStyleIds(overrideStyleIds),
                 numbering, layout, figure, table, frame, codeListing, chart,
                 citationFormatting, crossReferenceLabels

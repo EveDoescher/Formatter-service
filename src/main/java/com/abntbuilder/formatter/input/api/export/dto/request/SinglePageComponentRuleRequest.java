@@ -25,6 +25,8 @@ public record SinglePageComponentRuleRequest(
 
         return new SinglePageComponentRule(
                 componentId,
+                true,
+                null,
                 domainSlots,
                 styleMapping,
                 layoutRule.toDomain()

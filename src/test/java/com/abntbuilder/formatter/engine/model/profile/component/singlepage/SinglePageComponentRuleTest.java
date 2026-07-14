@@ -24,34 +24,34 @@ class SinglePageComponentRuleTest {
     @Test
     void shouldRejectBlankComponentId() {
         assertThrows(IllegalArgumentException.class,
-                () -> new SinglePageComponentRule("", Map.of(), Map.of(), minimalLayoutRule()));
+                () -> new SinglePageComponentRule("", true, null, Map.of(), Map.of(), minimalLayoutRule()));
         assertThrows(IllegalArgumentException.class,
-                () -> new SinglePageComponentRule(null, Map.of(), Map.of(), minimalLayoutRule()));
+                () -> new SinglePageComponentRule(null, true, null, Map.of(), Map.of(), minimalLayoutRule()));
     }
 
     @Test
     void shouldRejectNullSlots() {
         assertThrows(NullPointerException.class,
-                () -> new SinglePageComponentRule("cover", null, Map.of(), minimalLayoutRule()));
+                () -> new SinglePageComponentRule("cover", true, null, null, Map.of(), minimalLayoutRule()));
     }
 
     @Test
     void shouldRejectNullStyleMapping() {
         assertThrows(NullPointerException.class,
-                () -> new SinglePageComponentRule("cover", Map.of(), null, minimalLayoutRule()));
+                () -> new SinglePageComponentRule("cover", true, null, Map.of(), null, minimalLayoutRule()));
     }
 
     @Test
     void shouldRejectNullLayoutRule() {
         assertThrows(NullPointerException.class,
-                () -> new SinglePageComponentRule("cover", Map.of(), Map.of(), null));
+                () -> new SinglePageComponentRule("cover", true, null, Map.of(), Map.of(), null));
     }
 
     @Test
     void slotsShouldBeImmutable() {
         SinglePageComponentRule rule = validRule();
         assertThrows(UnsupportedOperationException.class,
-                () -> rule.slots().put("city", new TextSlotRule(true)));
+                () -> rule.slots().put("city", new TextSlotRule(true, null, null)));
     }
 
     @Test
@@ -64,33 +64,35 @@ class SinglePageComponentRuleTest {
     @Test
     void composedTextSlotRuleRejectsBlankTemplate() {
         assertThrows(IllegalArgumentException.class,
-                () -> new ComposedTextSlotRule(true, "", List.of("workType")));
+                () -> new ComposedTextSlotRule(true, null, null, "", List.of("workType")));
     }
 
     @Test
     void composedTextSlotRuleRejectsEmptyFieldNames() {
         assertThrows(IllegalArgumentException.class,
-                () -> new ComposedTextSlotRule(true, "{workType}", List.of()));
+                () -> new ComposedTextSlotRule(true, null, null, "{workType}", List.of()));
     }
 
     @Test
     void signatureBlockListSlotRuleRequiresSignatureTextWhenEnabled() {
         assertThrows(IllegalArgumentException.class,
-                () -> new SignatureBlockListSlotRule(true, true, "", List.of("{name}"), List.of("name")));
+                () -> new SignatureBlockListSlotRule(true, null, null, true, "", List.of("{name}"), List.of("name")));
     }
 
     @Test
     void signatureBlockListSlotRuleAllowsNullSignatureTextWhenDisabled() {
         assertDoesNotThrow(
-                () -> new SignatureBlockListSlotRule(false, false, null, List.of("{name}"), List.of("name")));
+                () -> new SignatureBlockListSlotRule(false, null, null, false, null, List.of("{name}"), List.of("name")));
     }
 
     private static SinglePageComponentRule validRule() {
         return new SinglePageComponentRule(
                 "cover",
+                true,
+                null,
                 Map.of(
-                        "title", new TextSlotRule(true),
-                        "authors", new TextListSlotRule(true)
+                        "title", new TextSlotRule(true, null, null),
+                        "authors", new TextListSlotRule(true, null, null)
                 ),
                 Map.of(
                         "title", "cover.title",

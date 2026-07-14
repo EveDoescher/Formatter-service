@@ -420,6 +420,7 @@ class DocxExportControllerIntegrationTest {
                       "cover": {
                         "ruleType": "SINGLE_PAGE",
                         "componentId": "cover",
+                        "required": true,
                         "slots": {
                           "institutionalLines": { "type": "TEXT_LIST", "required": true },
                           "authors": { "type": "TEXT_LIST", "required": true },

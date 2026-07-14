@@ -193,6 +193,8 @@ class DisplayObjectCollectorTest {
                 ),
                 List.of(new BodyContentComponentRule(
                         "bodyContent",
+                        true,
+                        null,
                         new BodyContentStyleMapping(
                                 List.of("bodyContent.heading1"),
                                 "bodyContent.paragraph",

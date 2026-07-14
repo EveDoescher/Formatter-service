@@ -5,6 +5,8 @@ import java.util.Objects;
 
 public record ComposedTextSlotRule(
         boolean required,
+        String description,
+        String placeholder,
         String template,
         List<String> fieldNames
 ) implements SlotRule {

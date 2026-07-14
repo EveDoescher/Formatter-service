@@ -32,7 +32,7 @@ class FlowTextualRendererTest {
     @Test
     void shouldRenderHeadingAndPlainText() {
         FlowTextualRenderer renderer = new FlowTextualRenderer("dedication");
-        FlowTextualComponentRule rule = new FlowTextualComponentRule("dedication", List.of(
+        FlowTextualComponentRule rule = new FlowTextualComponentRule("dedication", true, null, List.of(
                 new FlowItem.HeadingItem("s", "DEDICATÓRIA"),
                 new FlowItem.PlainTextItem("s", "text")
         ));
@@ -52,7 +52,7 @@ class FlowTextualRendererTest {
     @Test
     void shouldRenderBlankLines() {
         FlowTextualRenderer renderer = new FlowTextualRenderer("dedication");
-        FlowTextualComponentRule rule = new FlowTextualComponentRule("dedication", List.of(
+        FlowTextualComponentRule rule = new FlowTextualComponentRule("dedication", true, null, List.of(
                 new FlowItem.BlankLinesItem("s", 3),
                 new FlowItem.PlainTextItem("s", "text")
         ));
@@ -72,7 +72,7 @@ class FlowTextualRendererTest {
     @Test
     void shouldRenderTemplatedText() {
         FlowTextualRenderer renderer = new FlowTextualRenderer("epigraph");
-        FlowTextualComponentRule rule = new FlowTextualComponentRule("epigraph", List.of(
+        FlowTextualComponentRule rule = new FlowTextualComponentRule("epigraph", true, null, List.of(
                 new FlowItem.PlainTextItem("s", "text"),
                 new FlowItem.TemplatedTextItem("s", "— {author}, {source}", List.of("author", "source"))
         ));
@@ -93,7 +93,7 @@ class FlowTextualRendererTest {
     @Test
     void shouldRenderBoldLabeledKeywords() {
         FlowTextualRenderer renderer = new FlowTextualRenderer("resumo");
-        FlowTextualComponentRule rule = new FlowTextualComponentRule("resumo", List.of(
+        FlowTextualComponentRule rule = new FlowTextualComponentRule("resumo", true, null, List.of(
                 new FlowItem.HeadingItem("s", "RESUMO"),
                 new FlowItem.PlainTextItem("s", "text"),
                 new FlowItem.BoldLabeledKeywordsItem("s", "keywordsLabel", "keywords", "; ", ".")
@@ -117,7 +117,7 @@ class FlowTextualRendererTest {
     @Test
     void shouldRenderPairList() {
         FlowTextualRenderer renderer = new FlowTextualRenderer("glossary");
-        FlowTextualComponentRule rule = new FlowTextualComponentRule("glossary", List.of(
+        FlowTextualComponentRule rule = new FlowTextualComponentRule("glossary", true, null, List.of(
                 new FlowItem.HeadingItem("s", "GLOSSÁRIO"),
                 new FlowItem.PairListItem("s", "terms", "definitions", " — ")
         ));
@@ -137,7 +137,7 @@ class FlowTextualRendererTest {
     @Test
     void shouldRejectMismatchedPairListSizes() {
         FlowTextualRenderer renderer = new FlowTextualRenderer("glossary");
-        FlowTextualComponentRule rule = new FlowTextualComponentRule("glossary", List.of(
+        FlowTextualComponentRule rule = new FlowTextualComponentRule("glossary", true, null, List.of(
                 new FlowItem.PairListItem("s", "terms", "definitions", " — ")
         ));
         DocumentProfile profile = profileWith("glossary", rule);
@@ -153,7 +153,7 @@ class FlowTextualRendererTest {
     @Test
     void shouldRenderTableBlock() {
         FlowTextualRenderer renderer = new FlowTextualRenderer("errata");
-        FlowTextualComponentRule rule = new FlowTextualComponentRule("errata", List.of(
+        FlowTextualComponentRule rule = new FlowTextualComponentRule("errata", true, null, List.of(
                 new FlowItem.HeadingItem("s", "ERRATA"),
                 new FlowItem.TableBlockItem("s", "s",
                         List.of("Folha", "Linha", "Onde se lê", "Leia-se"), "rows")
@@ -175,7 +175,7 @@ class FlowTextualRendererTest {
     @Test
     void shouldRejectMissingTextSlot() {
         FlowTextualRenderer renderer = new FlowTextualRenderer("dedication");
-        FlowTextualComponentRule rule = new FlowTextualComponentRule("dedication", List.of(
+        FlowTextualComponentRule rule = new FlowTextualComponentRule("dedication", true, null, List.of(
                 new FlowItem.PlainTextItem("s", "text")
         ));
         DocumentProfile profile = profileWith("dedication", rule);
@@ -195,7 +195,7 @@ class FlowTextualRendererTest {
     @Test
     void shouldRenderRepeatGroupItemWithPageBreakBetweenEntries() {
         FlowTextualRenderer renderer = new FlowTextualRenderer("abstract");
-        FlowTextualComponentRule rule = new FlowTextualComponentRule("abstract", List.of(
+        FlowTextualComponentRule rule = new FlowTextualComponentRule("abstract", true, null, List.of(
                 new FlowItem.RepeatGroupItem("entries", true, List.of(
                         new FlowItem.PlainTextItem("s", "headingText"),
                         new FlowItem.PlainTextItem("s", "text")
@@ -224,7 +224,7 @@ class FlowTextualRendererTest {
     @Test
     void shouldRenderRepeatGroupItemWithoutPageBreakWhenDisabled() {
         FlowTextualRenderer renderer = new FlowTextualRenderer("abstract");
-        FlowTextualComponentRule rule = new FlowTextualComponentRule("abstract", List.of(
+        FlowTextualComponentRule rule = new FlowTextualComponentRule("abstract", true, null, List.of(
                 new FlowItem.RepeatGroupItem("entries", false, List.of(
                         new FlowItem.PlainTextItem("s", "text")
                 ))
@@ -246,7 +246,7 @@ class FlowTextualRendererTest {
     @Test
     void shouldRejectRepeatGroupItemWithMissingEntriesSlot() {
         FlowTextualRenderer renderer = new FlowTextualRenderer("abstract");
-        FlowTextualComponentRule rule = new FlowTextualComponentRule("abstract", List.of(
+        FlowTextualComponentRule rule = new FlowTextualComponentRule("abstract", true, null, List.of(
                 new FlowItem.RepeatGroupItem("entries", true, List.of(
                         new FlowItem.PlainTextItem("s", "text")
                 ))

@@ -12,6 +12,8 @@ class FlowTextualComponentRuleTest {
     void shouldCreateWithValidData() {
         FlowTextualComponentRule rule = new FlowTextualComponentRule(
                 "dedication",
+                true,
+                null,
                 List.of(new FlowItem.PlainTextItem("dedication.text", "text"))
         );
 
@@ -22,19 +24,21 @@ class FlowTextualComponentRuleTest {
     @Test
     void shouldRejectBlankComponentId() {
         assertThrows(IllegalArgumentException.class, () ->
-                new FlowTextualComponentRule("", List.of(new FlowItem.HeadingItem("s", "t"))));
+                new FlowTextualComponentRule("", true, null, List.of(new FlowItem.HeadingItem("s", "t"))));
     }
 
     @Test
     void shouldRejectEmptyItems() {
         assertThrows(IllegalArgumentException.class, () ->
-                new FlowTextualComponentRule("dedication", List.of()));
+                new FlowTextualComponentRule("dedication", true, null, List.of()));
     }
 
     @Test
     void shouldReturnImmutableItems() {
         FlowTextualComponentRule rule = new FlowTextualComponentRule(
                 "dedication",
+                true,
+                null,
                 List.of(new FlowItem.PlainTextItem("s", "text"))
         );
 
@@ -46,6 +50,8 @@ class FlowTextualComponentRuleTest {
     void shouldReturnEmptyContentBindings() {
         FlowTextualComponentRule rule = new FlowTextualComponentRule(
                 "dedication",
+                true,
+                null,
                 List.of(new FlowItem.PlainTextItem("s", "text"))
         );
 

@@ -17,8 +17,9 @@ public record ReferencesComponentRuleRequest(
 ) {
     public ReferencesComponentRule toDomain() {
         return new ReferencesComponentRule(
-                componentId, headingStyleId, headingText, entryStyleId,
-                blankLinesBetweenEntries, formattingRule.toDomain(), blankLinesAfterHeading
+                componentId, true, null, headingStyleId, headingText, entryStyleId,
+                blankLinesBetweenEntries, formattingRule.toDomain(), blankLinesAfterHeading,
+                ReferencesComponentRule.ReferenceSortOrder.AS_GIVEN
         );
     }
 }

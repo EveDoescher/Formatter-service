@@ -141,11 +141,13 @@ class SinglePageRendererTest {
     private static SinglePageComponentRule coverRule() {
         return new SinglePageComponentRule(
                 "cover",
+                true,
+                null,
                 Map.of(
-                        "title", new TextSlotRule(true),
-                        "authors", new TextListSlotRule(false),
-                        "city", new TextSlotRule(true),
-                        "year", new TextSlotRule(true)
+                        "title", new TextSlotRule(true, null, null),
+                        "authors", new TextListSlotRule(false, null, null),
+                        "city", new TextSlotRule(true, null, null),
+                        "year", new TextSlotRule(true, null, null)
                 ),
                 Map.of(
                         "title", "sp.title",
@@ -173,10 +175,12 @@ class SinglePageRendererTest {
     private static SinglePageComponentRule ruleWithNature() {
         return new SinglePageComponentRule(
                 "cover",
+                true,
+                null,
                 Map.of(
-                        "nature", new ComposedTextSlotRule(true, "{workType} em {courseName}.", List.of("workType", "courseName")),
-                        "city", new TextSlotRule(true),
-                        "year", new TextSlotRule(true)
+                        "nature", new ComposedTextSlotRule(true, null, null, "{workType} em {courseName}.", List.of("workType", "courseName")),
+                        "city", new TextSlotRule(true, null, null),
+                        "year", new TextSlotRule(true, null, null)
                 ),
                 Map.of(
                         "nature", "sp.title",

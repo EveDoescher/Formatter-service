@@ -354,7 +354,9 @@ class DocumentProfileTest {
                         List.of(group), List.of(), SinglePageLayoutPolicy.defaultSinglePagePolicy());
         return new SinglePageComponentRule(
                 componentId,
-                java.util.Map.of("title", new TextSlotRule(true)),
+                true,
+                null,
+                java.util.Map.of("title", new TextSlotRule(true, null, null)),
                 java.util.Map.of("title", "cover.top"),
                 layoutRule
         );

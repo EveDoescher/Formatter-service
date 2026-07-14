@@ -17,7 +17,7 @@ public record SectionedComponentRuleRequest(
         @NotBlank String bodyContentComponentId
 ) {
     public SectionedComponentRule toDomain() {
-        return new SectionedComponentRule(componentId, headingTemplate, headingStyleId,
+        return new SectionedComponentRule(componentId, true, null, headingTemplate, headingStyleId,
                 paragraphStyleId, sectionTitleStyleIdsByLevel,
                 indexingStyle != null ? indexingStyle : IndexingStyle.ALPHABETIC,
                 bodyContentComponentId);

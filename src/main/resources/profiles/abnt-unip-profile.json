@@ -1105,30 +1105,44 @@
     "cover": {
       "ruleType": "SINGLE_PAGE",
       "componentId": "cover",
+      "required": true,
+      "description": "Capa do trabalho acadêmico. Elemento pré-textual obrigatório pela ABNT NBR 14724.",
       "slots": {
         "institutionalLines": {
           "type": "TEXT_LIST",
-          "required": true
+          "required": true,
+          "description": "Linhas institucionais exibidas no topo da capa (nome da instituição, faculdade, curso).",
+          "placeholder": "Ex: Universidade Fictícia de Limeira"
         },
         "authors": {
           "type": "TEXT_LIST",
-          "required": true
+          "required": true,
+          "description": "Nome(s) do(s) autor(es) do trabalho.",
+          "placeholder": "Ex: Ana Souza"
         },
         "title": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Título principal do trabalho.",
+          "placeholder": "Ex: Análise comparativa de métodos de aprendizado de máquina"
         },
         "subtitle": {
           "type": "TEXT",
-          "required": false
+          "required": false,
+          "description": "Subtítulo do trabalho, se houver.",
+          "placeholder": "Ex: uma abordagem empírica"
         },
         "city": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Cidade de apresentação do trabalho.",
+          "placeholder": "Ex: Limeira"
         },
         "year": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Ano de entrega ou publicação do trabalho.",
+          "placeholder": "Ex: 2024"
         }
       },
       "styleMapping": {
@@ -1238,22 +1252,32 @@
     "titlePage": {
       "ruleType": "SINGLE_PAGE",
       "componentId": "titlePage",
+      "required": true,
+      "description": "Folha de rosto do trabalho acadêmico. Elemento pré-textual obrigatório pela ABNT NBR 14724.",
       "slots": {
         "authors": {
           "type": "TEXT_LIST",
-          "required": true
+          "required": true,
+          "description": "Nome(s) do(s) autor(es) do trabalho.",
+          "placeholder": "Ex: Ana Souza"
         },
         "title": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Título principal do trabalho.",
+          "placeholder": "Ex: Análise comparativa de métodos de aprendizado de máquina"
         },
         "subtitle": {
           "type": "TEXT",
-          "required": false
+          "required": false,
+          "description": "Subtítulo do trabalho, se houver.",
+          "placeholder": "Ex: uma abordagem empírica"
         },
         "nature": {
           "type": "COMPOSED_TEXT",
           "required": true,
+          "description": "Nota de natureza do trabalho (tipo, objetivo, curso e instituição).",
+          "placeholder": "Ex: Trabalho de Conclusão de Curso para Bacharelado em Ciência da Computação apresentado à Universidade Fictícia de Limeira.",
           "template": "{workType} para {degreeObjective} em {courseName} apresentado à {institutionName}.",
           "fieldNames": [
             "workType",
@@ -1265,6 +1289,8 @@
         "advisor": {
           "type": "COMPOSED_TEXT",
           "required": false,
+          "description": "Nome e título do orientador(a) do trabalho.",
+          "placeholder": "Ex: Orientador(a): Prof. Dr. Carlos Lima.",
           "template": "Orientador(a): {academicTitle} {name}.",
           "fieldNames": [
             "academicTitle",
@@ -1274,6 +1300,8 @@
         "coadvisor": {
           "type": "COMPOSED_TEXT",
           "required": false,
+          "description": "Nome e título do coorientador(a), se houver.",
+          "placeholder": "Ex: Coorientador(a): Prof. Dra. Beatriz Rocha.",
           "template": "Coorientador(a): {academicTitle} {name}.",
           "fieldNames": [
             "academicTitle",
@@ -1282,11 +1310,15 @@
         },
         "city": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Cidade de apresentação do trabalho.",
+          "placeholder": "Ex: Limeira"
         },
         "year": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Ano de entrega ou publicação do trabalho.",
+          "placeholder": "Ex: 2024"
         }
       },
       "styleMapping": {
@@ -1414,22 +1446,32 @@
     "approvalSheet": {
       "ruleType": "SINGLE_PAGE",
       "componentId": "approvalSheet",
+      "required": true,
+      "description": "Folha de aprovação do trabalho acadêmico. Elemento pré-textual obrigatório pela ABNT NBR 14724.",
       "slots": {
         "authors": {
           "type": "TEXT_LIST",
-          "required": true
+          "required": true,
+          "description": "Nome(s) do(s) autor(es) do trabalho.",
+          "placeholder": "Ex: Ana Souza"
         },
         "title": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Título principal do trabalho.",
+          "placeholder": "Ex: Análise comparativa de métodos de aprendizado de máquina"
         },
         "subtitle": {
           "type": "TEXT",
-          "required": false
+          "required": false,
+          "description": "Subtítulo do trabalho, se houver.",
+          "placeholder": "Ex: uma abordagem empírica"
         },
         "nature": {
           "type": "COMPOSED_TEXT",
           "required": true,
+          "description": "Nota de natureza do trabalho (tipo, objetivo, curso e instituição).",
+          "placeholder": "Ex: Trabalho de Conclusão de Curso para Bacharelado em Ciência da Computação apresentado à Universidade Fictícia de Limeira.",
           "template": "{workType} para {degreeObjective} em {courseName} apresentado à {institutionName}.",
           "fieldNames": [
             "workType",
@@ -1440,15 +1482,21 @@
         },
         "approvalText": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Texto de aprovação do trabalho com data e resultado.",
+          "placeholder": "Ex: Aprovado em 15 de novembro de 2024."
         },
         "committeeHeading": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Título da seção da banca examinadora.",
+          "placeholder": "Ex: Banca Examinadora:"
         },
         "committeeMembers": {
           "type": "SIGNATURE_BLOCK_LIST",
           "required": false,
+          "description": "Membros da banca examinadora com espaço para assinatura.",
+          "placeholder": "Ex: Prof. Dr. Carlos Lima — Universidade Fictícia de Limeira (Orientador)",
           "signatureLineEnabled": true,
           "signatureLineText": "________________________________________",
           "lineTemplates": [
@@ -1601,6 +1649,8 @@
     "bodyContent": {
       "ruleType": "BODY_CONTENT",
       "componentId": "bodyContent",
+      "required": true,
+      "description": "Conteúdo textual principal do trabalho acadêmico, incluindo introdução, desenvolvimento e conclusão.",
       "styleMapping": {
         "sectionTitleStyleIdsByLevel": [
           "bodyContent.heading1",
@@ -1631,7 +1681,8 @@
         "blankLinesAfterSectionTitle": 1,
         "pageBreakBeforePrimarySection": false,
         "keepWithNextOnHeadings": true,
-        "blankLineStyleId": "bodyContent.paragraph"
+        "blankLineStyleId": "bodyContent.paragraph",
+        "inlineHeadingLevels": []
       },
       "figure": {
         "captionStyleId": "bodyContent.figure.caption",
@@ -1770,14 +1821,29 @@
     "errata": {
       "ruleType": "FLOW_TEXTUAL",
       "componentId": "errata",
+      "required": false,
+      "description": "Lista de erros encontrados no texto após a impressão, com as devidas correções. Elemento opcional.",
       "items": [
-        { "itemType": "HEADING", "styleId": "errata.heading", "text": "ERRATA" },
-        { "itemType": "BLANK_LINES", "styleId": "errata.heading", "count": 1 },
+        {
+          "itemType": "HEADING",
+          "styleId": "errata.heading",
+          "text": "ERRATA"
+        },
+        {
+          "itemType": "BLANK_LINES",
+          "styleId": "errata.heading",
+          "count": 1
+        },
         {
           "itemType": "TABLE_BLOCK",
           "headerStyleId": "errata.tableHeader",
           "cellStyleId": "errata.tableCell",
-          "headers": ["Folha", "Linha", "Onde se lê", "Leia-se"],
+          "headers": [
+            "Folha",
+            "Linha",
+            "Onde se lê",
+            "Leia-se"
+          ],
           "rowsSlotName": "rows"
         }
       ]
@@ -1785,10 +1851,14 @@
     "dedication": {
       "ruleType": "SINGLE_PAGE",
       "componentId": "dedication",
+      "required": false,
+      "description": "Dedicatória do trabalho. Elemento pré-textual opcional, posicionado no canto inferior direito da página.",
       "slots": {
         "text": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Texto da dedicatória.",
+          "placeholder": "Ex: Dedico este trabalho à minha família, pelo apoio incondicional."
         }
       },
       "styleMapping": {
@@ -1822,18 +1892,26 @@
     "epigraph": {
       "ruleType": "SINGLE_PAGE",
       "componentId": "epigraph",
+      "required": false,
+      "description": "Epígrafe do trabalho. Elemento pré-textual opcional com citação de autoria relacionada ao tema.",
       "slots": {
         "text": {
           "type": "TEXT",
-          "required": true
+          "required": true,
+          "description": "Texto da citação ou pensamento escolhido para a epígrafe.",
+          "placeholder": "Ex: A imaginação é mais importante que o conhecimento."
         },
         "author": {
           "type": "TEXT",
-          "required": false
+          "required": false,
+          "description": "Nome do autor da citação.",
+          "placeholder": "Ex: Albert Einstein"
         },
         "source": {
           "type": "TEXT",
-          "required": false
+          "required": false,
+          "description": "Obra ou fonte da citação.",
+          "placeholder": "Ex: On Science, Necessity and the Love of God, 1952"
         }
       },
       "styleMapping": {
@@ -1883,19 +1961,47 @@
     "acknowledgments": {
       "ruleType": "FLOW_TEXTUAL",
       "componentId": "acknowledgments",
+      "required": false,
+      "description": "Agradecimentos do autor. Elemento pré-textual opcional.",
       "items": [
-        { "itemType": "HEADING", "styleId": "acknowledgments.heading", "text": "AGRADECIMENTOS" },
-        { "itemType": "BLANK_LINES", "styleId": "acknowledgments.heading", "count": 1 },
-        { "itemType": "PLAIN_TEXT", "styleId": "acknowledgments.text", "slotName": "text" }
+        {
+          "itemType": "HEADING",
+          "styleId": "acknowledgments.heading",
+          "text": "AGRADECIMENTOS"
+        },
+        {
+          "itemType": "BLANK_LINES",
+          "styleId": "acknowledgments.heading",
+          "count": 1
+        },
+        {
+          "itemType": "PLAIN_TEXT",
+          "styleId": "acknowledgments.text",
+          "slotName": "text"
+        }
       ]
     },
     "resumo": {
       "ruleType": "FLOW_TEXTUAL",
       "componentId": "resumo",
+      "required": true,
+      "description": "Resumo em língua vernácula. Elemento pré-textual obrigatório pela ABNT NBR 6028.",
       "items": [
-        { "itemType": "HEADING", "styleId": "resumo.heading", "text": "RESUMO" },
-        { "itemType": "BLANK_LINES", "styleId": "resumo.heading", "count": 1 },
-        { "itemType": "PLAIN_TEXT", "styleId": "resumo.text", "slotName": "text" },
+        {
+          "itemType": "HEADING",
+          "styleId": "resumo.heading",
+          "text": "RESUMO"
+        },
+        {
+          "itemType": "BLANK_LINES",
+          "styleId": "resumo.heading",
+          "count": 1
+        },
+        {
+          "itemType": "PLAIN_TEXT",
+          "styleId": "resumo.text",
+          "slotName": "text"
+        },
         {
           "itemType": "BOLD_LABELED_KEYWORDS",
           "styleId": "resumo.keywords",
@@ -1909,15 +2015,29 @@
     "abstract": {
       "ruleType": "FLOW_TEXTUAL",
       "componentId": "abstract",
+      "required": true,
+      "description": "Resumo em língua estrangeira (geralmente inglês). Elemento pré-textual obrigatório pela ABNT NBR 6028.",
       "items": [
         {
           "itemType": "REPEAT_GROUP",
           "entriesSlotName": "entries",
           "pageBreakBetweenEntries": true,
           "group": [
-            { "itemType": "PLAIN_TEXT", "styleId": "resumo.heading", "slotName": "headingText" },
-            { "itemType": "BLANK_LINES", "styleId": "resumo.heading", "count": 1 },
-            { "itemType": "PLAIN_TEXT", "styleId": "resumo.text", "slotName": "text" },
+            {
+              "itemType": "PLAIN_TEXT",
+              "styleId": "resumo.heading",
+              "slotName": "headingText"
+            },
+            {
+              "itemType": "BLANK_LINES",
+              "styleId": "resumo.heading",
+              "count": 1
+            },
+            {
+              "itemType": "PLAIN_TEXT",
+              "styleId": "resumo.text",
+              "slotName": "text"
+            },
             {
               "itemType": "BOLD_LABELED_KEYWORDS",
               "styleId": "resumo.keywords",
@@ -1933,6 +2053,8 @@
     "references": {
       "ruleType": "BIBLIOGRAPHY",
       "componentId": "references",
+      "required": true,
+      "description": "Lista de referências bibliográficas citadas no trabalho. Elemento pós-textual obrigatório pela ABNT NBR 6023.",
       "headingStyleId": "references.heading",
       "headingText": "REFERÊNCIAS",
       "entryStyleId": "references.entry",
@@ -1945,14 +2067,20 @@
           "surnameGivenSeparator": ", ",
           "nameTerminator": ".",
           "multiAuthorJoiner": "; ",
+          "lastAuthorJoiner": null,
           "etAlLabel": "et al.",
-          "etAlThreshold": 3
+          "etAlThreshold": 3,
+          "nameOrder": "SURNAME_FIRST",
+          "initialsOnly": false,
+          "initialsDotted": false,
+          "initialsSpaced": false
         },
         "entryFormats": {
           "BOOK": [
             {
               "source": "authors",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -1960,6 +2088,7 @@
             {
               "source": "title",
               "bold": true,
+              "italic": false,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -1967,6 +2096,7 @@
             {
               "source": "subtitle",
               "bold": false,
+              "italic": false,
               "prefix": ": ",
               "suffix": "",
               "optional": true
@@ -1974,6 +2104,7 @@
             {
               "source": "edition",
               "bold": false,
+              "italic": false,
               "prefix": ". ",
               "suffix": ". ed.",
               "optional": true
@@ -1981,6 +2112,7 @@
             {
               "source": "city",
               "bold": false,
+              "italic": false,
               "prefix": ". ",
               "suffix": ": ",
               "optional": true
@@ -1988,6 +2120,7 @@
             {
               "source": "publisher",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": ", ",
               "optional": true
@@ -1995,6 +2128,7 @@
             {
               "source": "year",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": ".",
               "optional": false
@@ -2004,6 +2138,7 @@
             {
               "source": "authors",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -2011,6 +2146,7 @@
             {
               "source": "title",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -2018,6 +2154,7 @@
             {
               "source": "literal:In: ",
               "bold": false,
+              "italic": false,
               "prefix": ". ",
               "suffix": "",
               "optional": false
@@ -2025,6 +2162,7 @@
             {
               "source": "bookAuthors",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": "",
               "optional": true
@@ -2032,6 +2170,7 @@
             {
               "source": "bookTitle",
               "bold": true,
+              "italic": false,
               "prefix": "",
               "suffix": ". ",
               "optional": true
@@ -2039,6 +2178,7 @@
             {
               "source": "edition",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": ". ed. ",
               "optional": true
@@ -2046,6 +2186,7 @@
             {
               "source": "city",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": ": ",
               "optional": true
@@ -2053,6 +2194,7 @@
             {
               "source": "publisher",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": ", ",
               "optional": true
@@ -2060,6 +2202,7 @@
             {
               "source": "year",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": ".",
               "optional": false
@@ -2067,6 +2210,7 @@
             {
               "source": "pages",
               "bold": false,
+              "italic": false,
               "prefix": " p. ",
               "suffix": ".",
               "optional": true
@@ -2076,6 +2220,7 @@
             {
               "source": "authors",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -2083,6 +2228,7 @@
             {
               "source": "title",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -2090,6 +2236,7 @@
             {
               "source": "subtitle",
               "bold": false,
+              "italic": false,
               "prefix": ": ",
               "suffix": "",
               "optional": true
@@ -2097,6 +2244,7 @@
             {
               "source": "publisher",
               "bold": true,
+              "italic": false,
               "prefix": ". ",
               "suffix": "",
               "optional": true
@@ -2104,6 +2252,7 @@
             {
               "source": "volume",
               "bold": false,
+              "italic": false,
               "prefix": ", v. ",
               "suffix": "",
               "optional": true
@@ -2111,6 +2260,7 @@
             {
               "source": "issue",
               "bold": false,
+              "italic": false,
               "prefix": ", n. ",
               "suffix": "",
               "optional": true
@@ -2118,6 +2268,7 @@
             {
               "source": "pages",
               "bold": false,
+              "italic": false,
               "prefix": ", p. ",
               "suffix": "",
               "optional": true
@@ -2125,6 +2276,7 @@
             {
               "source": "year",
               "bold": false,
+              "italic": false,
               "prefix": ", ",
               "suffix": ".",
               "optional": false
@@ -2132,6 +2284,7 @@
             {
               "source": "doi",
               "bold": false,
+              "italic": false,
               "prefix": " ",
               "suffix": ".",
               "optional": true
@@ -2141,6 +2294,7 @@
             {
               "source": "authors",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": "",
               "optional": true
@@ -2148,6 +2302,7 @@
             {
               "source": "title",
               "bold": true,
+              "italic": false,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -2155,6 +2310,7 @@
             {
               "source": "subtitle",
               "bold": false,
+              "italic": false,
               "prefix": ": ",
               "suffix": "",
               "optional": true
@@ -2162,6 +2318,7 @@
             {
               "source": "url",
               "bold": false,
+              "italic": false,
               "prefix": " Disponível em: ",
               "suffix": ".",
               "optional": true
@@ -2169,6 +2326,7 @@
             {
               "source": "accessDate",
               "bold": false,
+              "italic": false,
               "prefix": " Acesso em: ",
               "suffix": ".",
               "optional": true
@@ -2178,6 +2336,7 @@
             {
               "source": "title",
               "bold": true,
+              "italic": false,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -2185,6 +2344,7 @@
             {
               "source": "subtitle",
               "bold": false,
+              "italic": false,
               "prefix": ". ",
               "suffix": "",
               "optional": true
@@ -2192,6 +2352,7 @@
             {
               "source": "year",
               "bold": false,
+              "italic": false,
               "prefix": ". ",
               "suffix": ".",
               "optional": false
@@ -2199,6 +2360,7 @@
             {
               "source": "url",
               "bold": false,
+              "italic": false,
               "prefix": " Disponível em: ",
               "suffix": ".",
               "optional": true
@@ -2208,6 +2370,7 @@
             {
               "source": "authors",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -2215,6 +2378,7 @@
             {
               "source": "title",
               "bold": true,
+              "italic": false,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -2222,6 +2386,7 @@
             {
               "source": "subtitle",
               "bold": false,
+              "italic": false,
               "prefix": ": ",
               "suffix": "",
               "optional": true
@@ -2229,6 +2394,7 @@
             {
               "source": "year",
               "bold": false,
+              "italic": false,
               "prefix": ". ",
               "suffix": ".",
               "optional": false
@@ -2236,6 +2402,7 @@
             {
               "source": "degree",
               "bold": false,
+              "italic": false,
               "prefix": " ",
               "suffix": ".",
               "optional": true
@@ -2243,6 +2410,7 @@
             {
               "source": "institutionName",
               "bold": false,
+              "italic": false,
               "prefix": " ",
               "suffix": ".",
               "optional": true
@@ -2252,6 +2420,7 @@
             {
               "source": "authors",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -2259,6 +2428,7 @@
             {
               "source": "title",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -2266,6 +2436,7 @@
             {
               "source": "literal:In: ",
               "bold": false,
+              "italic": false,
               "prefix": ". ",
               "suffix": "",
               "optional": false
@@ -2273,6 +2444,7 @@
             {
               "source": "publisher",
               "bold": true,
+              "italic": false,
               "prefix": "",
               "suffix": ". ",
               "optional": true
@@ -2280,6 +2452,7 @@
             {
               "source": "city",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": ": ",
               "optional": true
@@ -2287,6 +2460,7 @@
             {
               "source": "year",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": ".",
               "optional": false
@@ -2294,6 +2468,7 @@
             {
               "source": "pages",
               "bold": false,
+              "italic": false,
               "prefix": " p. ",
               "suffix": ".",
               "optional": true
@@ -2303,6 +2478,7 @@
             {
               "source": "authors",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -2310,6 +2486,7 @@
             {
               "source": "title",
               "bold": true,
+              "italic": false,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -2317,6 +2494,7 @@
             {
               "source": "subtitle",
               "bold": false,
+              "italic": false,
               "prefix": ": ",
               "suffix": "",
               "optional": true
@@ -2324,6 +2502,7 @@
             {
               "source": "city",
               "bold": false,
+              "italic": false,
               "prefix": ". ",
               "suffix": ": ",
               "optional": true
@@ -2331,6 +2510,7 @@
             {
               "source": "institutionName",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": ", ",
               "optional": true
@@ -2338,6 +2518,7 @@
             {
               "source": "year",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": ".",
               "optional": false
@@ -2345,6 +2526,7 @@
             {
               "source": "issue",
               "bold": false,
+              "italic": false,
               "prefix": " (Relatório técnico, n. ",
               "suffix": ")",
               "optional": true
@@ -2354,6 +2536,7 @@
             {
               "source": "authors",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": "",
               "optional": true
@@ -2361,6 +2544,7 @@
             {
               "source": "title",
               "bold": true,
+              "italic": false,
               "prefix": "",
               "suffix": "",
               "optional": false
@@ -2368,6 +2552,7 @@
             {
               "source": "subtitle",
               "bold": false,
+              "italic": false,
               "prefix": ": ",
               "suffix": "",
               "optional": true
@@ -2375,6 +2560,7 @@
             {
               "source": "city",
               "bold": false,
+              "italic": false,
               "prefix": ". ",
               "suffix": ", ",
               "optional": true
@@ -2382,6 +2568,7 @@
             {
               "source": "year",
               "bold": false,
+              "italic": false,
               "prefix": "",
               "suffix": ".",
               "optional": false
@@ -2393,6 +2580,8 @@
     "appendix": {
       "ruleType": "SECTIONED",
       "componentId": "appendix",
+      "required": false,
+      "description": "Apêndices do trabalho, elaborados pelo próprio autor. Elemento pós-textual opcional.",
       "headingTemplate": "APÊNDICE {letter} – {title}",
       "headingStyleId": "appendix.heading",
       "paragraphStyleId": "bodyContent.paragraph",
@@ -2406,6 +2595,8 @@
     "annex": {
       "ruleType": "SECTIONED",
       "componentId": "annex",
+      "required": false,
+      "description": "Anexos do trabalho, elaborados por terceiros. Elemento pós-textual opcional.",
       "headingTemplate": "ANEXO {letter} – {title}",
       "headingStyleId": "annex.heading",
       "paragraphStyleId": "bodyContent.paragraph",
@@ -2419,9 +2610,19 @@
     "glossary": {
       "ruleType": "FLOW_TEXTUAL",
       "componentId": "glossary",
+      "required": false,
+      "description": "Glossário com termos técnicos e definições utilizados no trabalho. Elemento pós-textual opcional.",
       "items": [
-        { "itemType": "HEADING", "styleId": "glossary.heading", "text": "GLOSSÁRIO" },
-        { "itemType": "BLANK_LINES", "styleId": "glossary.heading", "count": 1 },
+        {
+          "itemType": "HEADING",
+          "styleId": "glossary.heading",
+          "text": "GLOSSÁRIO"
+        },
+        {
+          "itemType": "BLANK_LINES",
+          "styleId": "glossary.heading",
+          "count": 1
+        },
         {
           "itemType": "PAIR_LIST",
           "styleId": "glossary.entry",
@@ -2434,6 +2635,8 @@
     "summary": {
       "ruleType": "SECTION_INDEX",
       "componentId": "summary",
+      "required": true,
+      "description": "Sumário com a listagem das seções do trabalho e suas respectivas páginas. Elemento pré-textual obrigatório.",
       "headingStyleId": "list.heading",
       "headingText": "SUMÁRIO",
       "entryStyleIdsByLevel": [
@@ -2450,6 +2653,8 @@
     "listOfFigures": {
       "ruleType": "ELEMENT_INDEX",
       "componentId": "listOfFigures",
+      "required": false,
+      "description": "Lista de ilustrações com identificação e página. Obrigatória quando o trabalho contém figuras.",
       "elementType": "FIGURE",
       "headingStyleId": "list.heading",
       "headingText": "LISTA DE ILUSTRAÇÕES",
@@ -2461,6 +2666,8 @@
     "listOfTables": {
       "ruleType": "ELEMENT_INDEX",
       "componentId": "listOfTables",
+      "required": false,
+      "description": "Lista de tabelas com identificação e página. Obrigatória quando o trabalho contém tabelas.",
       "elementType": "TABLE",
       "headingStyleId": "list.heading",
       "headingText": "LISTA DE TABELAS",
@@ -2472,6 +2679,8 @@
     "listOfFrames": {
       "ruleType": "ELEMENT_INDEX",
       "componentId": "listOfFrames",
+      "required": false,
+      "description": "Lista de quadros com identificação e página. Obrigatória quando o trabalho contém quadros.",
       "elementType": "FRAME",
       "headingStyleId": "list.heading",
       "headingText": "LISTA DE QUADROS",
@@ -2483,6 +2692,8 @@
     "listOfCharts": {
       "ruleType": "ELEMENT_INDEX",
       "componentId": "listOfCharts",
+      "required": false,
+      "description": "Lista de gráficos com identificação e página. Obrigatória quando o trabalho contém gráficos.",
       "elementType": "CHART",
       "headingStyleId": "list.heading",
       "headingText": "LISTA DE GRÁFICOS",
@@ -2494,6 +2705,8 @@
     "listOfCodeListings": {
       "ruleType": "ELEMENT_INDEX",
       "componentId": "listOfCodeListings",
+      "required": false,
+      "description": "Lista de listagens de código-fonte com identificação e página. Obrigatória quando o trabalho contém listagens.",
       "elementType": "CODE_LISTING",
       "headingStyleId": "list.heading",
       "headingText": "LISTA DE LISTAGENS",
@@ -2505,9 +2718,19 @@
     "listOfAbbreviations": {
       "ruleType": "FLOW_TEXTUAL",
       "componentId": "listOfAbbreviations",
+      "required": false,
+      "description": "Lista de abreviaturas e siglas utilizadas no trabalho. Elemento pré-textual opcional.",
       "items": [
-        { "itemType": "HEADING", "styleId": "list.heading", "text": "LISTA DE ABREVIATURAS E SIGLAS" },
-        { "itemType": "BLANK_LINES", "styleId": "list.heading", "count": 1 },
+        {
+          "itemType": "HEADING",
+          "styleId": "list.heading",
+          "text": "LISTA DE ABREVIATURAS E SIGLAS"
+        },
+        {
+          "itemType": "BLANK_LINES",
+          "styleId": "list.heading",
+          "count": 1
+        },
         {
           "itemType": "PAIR_LIST",
           "styleId": "list.entry",
@@ -2520,9 +2743,19 @@
     "listOfSymbols": {
       "ruleType": "FLOW_TEXTUAL",
       "componentId": "listOfSymbols",
+      "required": false,
+      "description": "Lista de símbolos utilizados no trabalho com seus respectivos significados. Elemento pré-textual opcional.",
       "items": [
-        { "itemType": "HEADING", "styleId": "list.heading", "text": "LISTA DE SÍMBOLOS" },
-        { "itemType": "BLANK_LINES", "styleId": "list.heading", "count": 1 },
+        {
+          "itemType": "HEADING",
+          "styleId": "list.heading",
+          "text": "LISTA DE SÍMBOLOS"
+        },
+        {
+          "itemType": "BLANK_LINES",
+          "styleId": "list.heading",
+          "count": 1
+        },
         {
           "itemType": "PAIR_LIST",
           "styleId": "list.entry",
@@ -2536,41 +2769,83 @@
   "fontRoles": {
     "baseFont": {
       "default": "Times New Roman",
-      "allowedValues": ["Times New Roman", "Arial"],
+      "allowedValues": [
+        "Times New Roman",
+        "Arial"
+      ],
       "styleIds": [
         "pageNumber",
-        "cover.top", "cover.author", "cover.title", "cover.subtitle", "cover.bottom",
-        "titlePage.author", "titlePage.title", "titlePage.subtitle", "titlePage.nature",
-        "titlePage.advisor", "titlePage.coadvisor", "titlePage.bottom",
-        "approvalSheet.author", "approvalSheet.title", "approvalSheet.subtitle",
-        "approvalSheet.nature", "approvalSheet.approval",
-        "approvalSheet.committee.heading", "approvalSheet.committee",
-        "bodyContent.heading1", "bodyContent.heading2", "bodyContent.heading3",
-        "bodyContent.heading4", "bodyContent.heading5", "bodyContent.heading6",
-        "bodyContent.paragraph", "bodyContent.longQuote",
-        "bodyContent.figure.caption", "bodyContent.figure.source",
-        "bodyContent.table.caption", "bodyContent.table.source",
-        "bodyContent.table.header", "bodyContent.table.cell",
-        "bodyContent.frame.caption", "bodyContent.frame.source",
-        "bodyContent.frame.header", "bodyContent.frame.cell",
-        "bodyContent.list.ordered", "bodyContent.list.unordered",
-        "bodyContent.footnoteCall", "bodyContent.footnoteText",
-        "errata.heading", "errata.tableHeader", "errata.tableCell",
+        "cover.top",
+        "cover.author",
+        "cover.title",
+        "cover.subtitle",
+        "cover.bottom",
+        "titlePage.author",
+        "titlePage.title",
+        "titlePage.subtitle",
+        "titlePage.nature",
+        "titlePage.advisor",
+        "titlePage.coadvisor",
+        "titlePage.bottom",
+        "approvalSheet.author",
+        "approvalSheet.title",
+        "approvalSheet.subtitle",
+        "approvalSheet.nature",
+        "approvalSheet.approval",
+        "approvalSheet.committee.heading",
+        "approvalSheet.committee",
+        "bodyContent.heading1",
+        "bodyContent.heading2",
+        "bodyContent.heading3",
+        "bodyContent.heading4",
+        "bodyContent.heading5",
+        "bodyContent.heading6",
+        "bodyContent.paragraph",
+        "bodyContent.longQuote",
+        "bodyContent.figure.caption",
+        "bodyContent.figure.source",
+        "bodyContent.table.caption",
+        "bodyContent.table.source",
+        "bodyContent.table.header",
+        "bodyContent.table.cell",
+        "bodyContent.frame.caption",
+        "bodyContent.frame.source",
+        "bodyContent.frame.header",
+        "bodyContent.frame.cell",
+        "bodyContent.list.ordered",
+        "bodyContent.list.unordered",
+        "bodyContent.footnoteCall",
+        "bodyContent.footnoteText",
+        "errata.heading",
+        "errata.tableHeader",
+        "errata.tableCell",
         "dedication.text",
-        "epigraph.text", "epigraph.author",
-        "acknowledgments.heading", "acknowledgments.text",
-        "resumo.heading", "resumo.text", "resumo.keywords",
-        "references.heading", "references.entry",
-        "sectioned.heading1", "sectioned.heading2",
-        "appendix.heading", "annex.heading",
-        "glossary.heading", "glossary.entry",
-        "summary.entry.primary", "summary.entry.secondary",
-        "list.heading", "list.entry"
+        "epigraph.text",
+        "epigraph.author",
+        "acknowledgments.heading",
+        "acknowledgments.text",
+        "resumo.heading",
+        "resumo.text",
+        "resumo.keywords",
+        "references.heading",
+        "references.entry",
+        "sectioned.heading1",
+        "sectioned.heading2",
+        "appendix.heading",
+        "annex.heading",
+        "glossary.heading",
+        "glossary.entry",
+        "summary.entry.primary",
+        "summary.entry.secondary",
+        "list.heading",
+        "list.entry"
       ]
     }
   },
   "postProcessing": {
-    "orphanTitleCorrection": { "enabled": true },
+    "orphanTitleCorrection": {
+      "enabled": true
+    },
     "tableContinuationLabels": {
       "enabled": true,
       "continuesLabel": "continua",

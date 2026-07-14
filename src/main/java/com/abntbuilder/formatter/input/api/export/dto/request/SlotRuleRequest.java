@@ -25,11 +25,13 @@ public record SlotRuleRequest(
 
     public SlotRule toDomain() {
         return switch (type) {
-            case "TEXT" -> new TextSlotRule(required);
-            case "TEXT_LIST" -> new TextListSlotRule(required);
-            case "COMPOSED_TEXT" -> new ComposedTextSlotRule(required, template, fieldNames);
+            case "TEXT" -> new TextSlotRule(required, null, null);
+            case "TEXT_LIST" -> new TextListSlotRule(required, null, null);
+            case "COMPOSED_TEXT" -> new ComposedTextSlotRule(required, null, null, template, fieldNames);
             case "SIGNATURE_BLOCK_LIST" -> new SignatureBlockListSlotRule(
                     required,
+                    null,
+                    null,
                     signatureLineEnabled != null && signatureLineEnabled,
                     signatureLineText,
                     lineTemplates,

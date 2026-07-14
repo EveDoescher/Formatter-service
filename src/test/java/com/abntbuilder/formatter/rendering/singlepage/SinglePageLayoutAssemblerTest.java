@@ -49,7 +49,7 @@ class SinglePageLayoutAssemblerTest {
     void shouldAssembleTextSlot() {
         SinglePageContent content = contentWith(Map.of("title", new TextValue("Título do Trabalho")));
         SinglePageComponentRule rule = ruleWith(
-                Map.of("title", new TextSlotRule(true)),
+                Map.of("title", new TextSlotRule(true, null, null)),
                 Map.of("title", "sp.title"),
                 singleItemLayout("title")
         );
@@ -70,7 +70,7 @@ class SinglePageLayoutAssemblerTest {
         SinglePageContent content = contentWith(Map.of(
                 "authors", new TextListValue(List.of("Ana Souza", "Carlos Lima"))));
         SinglePageComponentRule rule = ruleWith(
-                Map.of("authors", new TextListSlotRule(true)),
+                Map.of("authors", new TextListSlotRule(true, null, null)),
                 Map.of("authors", "sp.authors"),
                 singleItemLayout("authors")
         );
@@ -96,7 +96,7 @@ class SinglePageLayoutAssemblerTest {
                         "courseName", "ADS"
                 ))));
         SinglePageComponentRule rule = ruleWith(
-                Map.of("nature", new ComposedTextSlotRule(true, "{workType} em {courseName}.", List.of("workType", "courseName"))),
+                Map.of("nature", new ComposedTextSlotRule(true, null, null, "{workType} em {courseName}.", List.of("workType", "courseName"))),
                 Map.of("nature", "sp.nature"),
                 singleItemLayout("nature")
         );
@@ -114,7 +114,7 @@ class SinglePageLayoutAssemblerTest {
         SinglePageContent content = contentWith(Map.of(
                 "nature", new ComposedTextValue(Map.of("workType", "TCC"))));
         SinglePageComponentRule rule = ruleWith(
-                Map.of("nature", new ComposedTextSlotRule(true, "{workType} em {courseName}.", List.of("workType", "courseName"))),
+                Map.of("nature", new ComposedTextSlotRule(true, null, null, "{workType} em {courseName}.", List.of("workType", "courseName"))),
                 Map.of("nature", "sp.nature"),
                 singleItemLayout("nature")
         );
@@ -134,7 +134,7 @@ class SinglePageLayoutAssemblerTest {
                 ))));
         SinglePageComponentRule rule = ruleWith(
                 Map.of("committee", new SignatureBlockListSlotRule(
-                        false, true, "________",
+                        false, null, null, true, "________",
                         List.of("{name}", "{role}"), List.of("name", "role"))),
                 Map.of("committee", "sp.committee"),
                 singleItemLayout("committee")
@@ -158,8 +158,8 @@ class SinglePageLayoutAssemblerTest {
         SinglePageContent content = contentWith(Map.of("title", new TextValue("Título")));
         SinglePageComponentRule rule = ruleWith(
                 Map.of(
-                        "title", new TextSlotRule(true),
-                        "subtitle", new TextSlotRule(false)
+                        "title", new TextSlotRule(true, null, null),
+                        "subtitle", new TextSlotRule(false, null, null)
                 ),
                 Map.of("title", "sp.title", "subtitle", "sp.subtitle"),
                 twoItemLayout("title", "subtitle")
@@ -179,7 +179,7 @@ class SinglePageLayoutAssemblerTest {
     void shouldThrowWhenRequiredSlotAbsent() {
         SinglePageContent content = contentWith(Map.of());
         SinglePageComponentRule rule = ruleWith(
-                Map.of("title", new TextSlotRule(true)),
+                Map.of("title", new TextSlotRule(true, null, null)),
                 Map.of("title", "sp.title"),
                 singleItemLayout("title")
         );
@@ -200,7 +200,7 @@ class SinglePageLayoutAssemblerTest {
             Map<String, String> styleMapping,
             SinglePageLayoutRule layoutRule
     ) {
-        return new SinglePageComponentRule("testComponent", slots, styleMapping, layoutRule);
+        return new SinglePageComponentRule("testComponent", true, null, slots, styleMapping, layoutRule);
     }
 
     private static DocumentProfile profileWith(SinglePageComponentRule rule, StyleRule... styles) {

@@ -15,7 +15,7 @@ public record FlowTextualComponentRuleRequest(
         List<FlowItem> domainItems = items.stream()
                 .map(FlowItemRequest::toDomain)
                 .toList();
-        return new FlowTextualComponentRule(componentId, domainItems);
+        return new FlowTextualComponentRule(componentId, true, null, domainItems);
     }
 
     public sealed interface FlowItemRequest

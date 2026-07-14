@@ -224,6 +224,8 @@ class FlowLayoutEngineTest {
                 ),
                 List.of(new BodyContentComponentRule(
                         "bodyContent",
+                        true,
+                        null,
                         new BodyContentStyleMapping(
                                 List.of("bodyContent.heading1", "bodyContent.heading2", "bodyContent.heading3"),
                                 "bodyContent.paragraph",

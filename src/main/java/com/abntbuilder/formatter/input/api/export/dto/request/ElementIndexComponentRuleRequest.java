@@ -15,7 +15,7 @@ public record ElementIndexComponentRuleRequest(
         boolean pageReferenceEnabled
 ) {
     public ElementIndexComponentRule toDomain(String componentId) {
-        return new ElementIndexComponentRule(componentId, elementType, headingStyleId,
+        return new ElementIndexComponentRule(componentId, true, null, elementType, headingStyleId,
                 headingText, entryStyleId, entryTemplate, blankLinesAfterHeading, pageReferenceEnabled);
     }
 }

@@ -41,7 +41,7 @@ class SinglePageContentValidatorTest {
     @Test
     void shouldPassWhenAllRequiredSlotsPresent() {
         SinglePageContent content = content(Map.of("title", new TextValue("Título")));
-        SinglePageComponentRule rule = rule(Map.of("title", new TextSlotRule(true)), Map.of("title", "sp.title"));
+        SinglePageComponentRule rule = rule(Map.of("title", new TextSlotRule(true, null, null)), Map.of("title", "sp.title"));
         DocumentProfile profile = profile(rule, style("sp.title"));
 
         assertDoesNotThrow(() -> validator.validate(content, rule, profile));
@@ -51,7 +51,7 @@ class SinglePageContentValidatorTest {
     void shouldPassWhenOptionalSlotAbsent() {
         SinglePageContent content = content(Map.of("title", new TextValue("Título")));
         SinglePageComponentRule rule = rule(
-                Map.of("title", new TextSlotRule(true), "subtitle", new TextSlotRule(false)),
+                Map.of("title", new TextSlotRule(true, null, null), "subtitle", new TextSlotRule(false, null, null)),
                 Map.of("title", "sp.title", "subtitle", "sp.subtitle")
         );
         DocumentProfile profile = profile(rule, style("sp.title"), style("sp.subtitle"));
@@ -62,7 +62,7 @@ class SinglePageContentValidatorTest {
     @Test
     void shouldThrowWhenRequiredSlotMissing() {
         SinglePageContent content = content(Map.of());
-        SinglePageComponentRule rule = rule(Map.of("title", new TextSlotRule(true)), Map.of("title", "sp.title"));
+        SinglePageComponentRule rule = rule(Map.of("title", new TextSlotRule(true, null, null)), Map.of("title", "sp.title"));
         DocumentProfile profile = profile(rule, style("sp.title"));
 
         assertThrows(InvalidSinglePageContentException.class,
@@ -73,7 +73,7 @@ class SinglePageContentValidatorTest {
     void shouldThrowOnTextValueInTextListSlot() {
         SinglePageContent content = content(Map.of("authors", new TextValue("Ana Souza")));
         SinglePageComponentRule rule = rule(
-                Map.of("authors", new TextListSlotRule(true)),
+                Map.of("authors", new TextListSlotRule(true, null, null)),
                 Map.of("authors", "sp.authors")
         );
         DocumentProfile profile = profile(rule, style("sp.authors"));
@@ -86,7 +86,7 @@ class SinglePageContentValidatorTest {
     void shouldThrowOnTextValueInComposedTextSlot() {
         SinglePageContent content = content(Map.of("nature", new TextValue("TCC")));
         SinglePageComponentRule rule = rule(
-                Map.of("nature", new ComposedTextSlotRule(true, "{workType}", List.of("workType"))),
+                Map.of("nature", new ComposedTextSlotRule(true, null, null, "{workType}", List.of("workType"))),
                 Map.of("nature", "sp.nature")
         );
         DocumentProfile profile = profile(rule, style("sp.nature"));
@@ -99,7 +99,7 @@ class SinglePageContentValidatorTest {
     void shouldThrowOnTextValueInSignatureBlockListSlot() {
         SinglePageContent content = content(Map.of("committee", new TextValue("alguém")));
         SinglePageComponentRule rule = rule(
-                Map.of("committee", new SignatureBlockListSlotRule(false, false, null, List.of("{name}"), List.of("name"))),
+                Map.of("committee", new SignatureBlockListSlotRule(false, null, null, false, null, List.of("{name}"), List.of("name"))),
                 Map.of("committee", "sp.committee")
         );
         DocumentProfile profile = profile(rule, style("sp.committee"));
@@ -118,10 +118,10 @@ class SinglePageContentValidatorTest {
         ));
         SinglePageComponentRule rule = rule(
                 Map.of(
-                        "title", new TextSlotRule(true),
-                        "authors", new TextListSlotRule(true),
-                        "nature", new ComposedTextSlotRule(true, "{workType}", List.of("workType")),
-                        "committee", new SignatureBlockListSlotRule(false, false, null, List.of("{name}"), List.of("name"))
+                        "title", new TextSlotRule(true, null, null),
+                        "authors", new TextListSlotRule(true, null, null),
+                        "nature", new ComposedTextSlotRule(true, null, null, "{workType}", List.of("workType")),
+                        "committee", new SignatureBlockListSlotRule(false, null, null, false, null, List.of("{name}"), List.of("name"))
                 ),
                 Map.of(
                         "title", "sp.title",
@@ -139,7 +139,7 @@ class SinglePageContentValidatorTest {
     @Test
     void shouldThrowOnDocumentProfileConstructionWhenStyleMappingReferencesUnknownStyle() {
         SinglePageComponentRule rule = rule(
-                Map.of("title", new TextSlotRule(true)),
+                Map.of("title", new TextSlotRule(true, null, null)),
                 Map.of("title", "nonexistent.style")
         );
 
@@ -155,7 +155,7 @@ class SinglePageContentValidatorTest {
                 "extra", new TextValue("dado extra")
         ));
         SinglePageComponentRule rule = rule(
-                Map.of("title", new TextSlotRule(true)),
+                Map.of("title", new TextSlotRule(true, null, null)),
                 Map.of("title", "sp.title")
         );
         DocumentProfile profile = profile(rule, style("sp.title"));
@@ -178,7 +178,7 @@ class SinglePageContentValidatorTest {
         SinglePageGroupRule group = new SinglePageGroupRule("main", true, List.of(item));
         SinglePageLayoutRule layout = new SinglePageLayoutRule(
                 List.of(group), List.of(), SinglePageLayoutPolicy.defaultSinglePagePolicy());
-        return new SinglePageComponentRule("testComponent", slots, styleMapping, layout);
+        return new SinglePageComponentRule("testComponent", true, null, slots, styleMapping, layout);
     }
 
     private static DocumentProfile profile(SinglePageComponentRule rule, StyleRule... styles) {

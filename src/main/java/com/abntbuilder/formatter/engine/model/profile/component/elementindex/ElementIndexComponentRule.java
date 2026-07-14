@@ -8,6 +8,8 @@ import java.util.Objects;
 
 public record ElementIndexComponentRule(
         String componentId,
+        boolean required,
+        String description,
         ElementType elementType,
         String headingStyleId,
         String headingText,
