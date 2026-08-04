@@ -1,25 +1,44 @@
 package com.abntbuilder.formatter.rendering.orchestration;
 
 import com.abntbuilder.formatter.application.export.ExportDocxCommand;
-import com.abntbuilder.formatter.engine.model.content.DocumentComponent;
-import com.abntbuilder.formatter.engine.model.output.DocxBlock;
-import com.abntbuilder.formatter.engine.model.output.DocxDocument;
-import com.abntbuilder.formatter.engine.model.output.DocxPageNumbering;
-import com.abntbuilder.formatter.engine.model.output.DocxPageBreak;
-import com.abntbuilder.formatter.engine.model.output.DocxParagraph;
-import com.abntbuilder.formatter.engine.model.output.DocxRun;
-import com.abntbuilder.formatter.engine.model.output.DocxSectionBreak;
-import com.abntbuilder.formatter.engine.model.profile.PageNumberingRule;
-import com.abntbuilder.formatter.input.profile.StyleResolver;
-import com.abntbuilder.formatter.engine.contract.ComponentRenderResult;
+import com.abntbuilder.formatter.engine.contract.ComponentRenderer;
 import com.abntbuilder.formatter.engine.contract.ComponentRendererRegistry;
+import com.abntbuilder.formatter.engine.contract.ComponentRenderResult;
 import com.abntbuilder.formatter.engine.contract.MetadataConsumingRenderer;
 import com.abntbuilder.formatter.engine.contract.MetadataEmittingRenderer;
 import com.abntbuilder.formatter.engine.contract.Phase0ConsumingRenderer;
+import com.abntbuilder.formatter.engine.model.content.DocumentComponent;
+import com.abntbuilder.formatter.engine.model.output.DocxBlock;
+import com.abntbuilder.formatter.engine.model.output.DocxDocument;
+import com.abntbuilder.formatter.engine.model.output.DocxPageBreak;
+import com.abntbuilder.formatter.engine.model.output.DocxPageNumbering;
+import com.abntbuilder.formatter.engine.model.output.DocxParagraph;
+import com.abntbuilder.formatter.engine.model.output.DocxRun;
+import com.abntbuilder.formatter.engine.model.output.DocxSectionBreak;
+import com.abntbuilder.formatter.engine.model.profile.DocumentProfile;
+import com.abntbuilder.formatter.engine.model.profile.PageNumberingRule;
+import com.abntbuilder.formatter.engine.model.profile.component.ComponentRule;
+import com.abntbuilder.formatter.engine.model.profile.component.bodycontent.BodyContentComponentRule;
+import com.abntbuilder.formatter.engine.model.profile.component.elementindex.ElementIndexComponentRule;
+import com.abntbuilder.formatter.engine.model.profile.component.flowtextual.FlowTextualComponentRule;
+import com.abntbuilder.formatter.engine.model.profile.component.references.ReferencesComponentRule;
+import com.abntbuilder.formatter.engine.model.profile.component.sectionindex.SectionIndexComponentRule;
+import com.abntbuilder.formatter.engine.model.profile.component.sectioned.SectionedComponentRule;
+import com.abntbuilder.formatter.engine.model.profile.component.singlepage.SinglePageComponentRule;
+import com.abntbuilder.formatter.input.profile.StyleResolver;
 import com.abntbuilder.formatter.rendering.bodycontent.BodyContentMetadata;
 import com.abntbuilder.formatter.rendering.bodycontent.BodyContentRenderResult;
+import com.abntbuilder.formatter.rendering.bodycontent.BodyContentRenderer;
+import com.abntbuilder.formatter.rendering.elementindex.ElementIndexRenderer;
+import com.abntbuilder.formatter.rendering.flowtextual.FlowTextualRenderer;
 import com.abntbuilder.formatter.rendering.phase0.DisplayObjectCollector;
 import com.abntbuilder.formatter.rendering.phase0.Phase0Index;
+import com.abntbuilder.formatter.rendering.references.ReferencesRenderer;
+import com.abntbuilder.formatter.rendering.sectionindex.SectionIndexRenderer;
+import com.abntbuilder.formatter.rendering.sectioned.SectionedRenderer;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageLayoutCalculator;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageLayoutRenderer;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageRenderer;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -33,16 +52,19 @@ public final class DocumentRenderer {
 
     public static final String PARAGRAPHS_COMPONENT_ID = "paragraphs";
 
-    private final ComponentRendererRegistry rendererRegistry;
     private final ComponentSelectionResolver selectionResolver;
+    private final SinglePageLayoutCalculator singlePageLayoutCalculator;
+    private final SinglePageLayoutRenderer singlePageLayoutRenderer;
     private final DisplayObjectCollector displayObjectCollector;
 
     public DocumentRenderer(
-            ComponentRendererRegistry rendererRegistry,
-            ComponentSelectionResolver selectionResolver
+            ComponentSelectionResolver selectionResolver,
+            SinglePageLayoutCalculator singlePageLayoutCalculator,
+            SinglePageLayoutRenderer singlePageLayoutRenderer
     ) {
-        this.rendererRegistry = Objects.requireNonNull(rendererRegistry, "rendererRegistry must not be null");
         this.selectionResolver = Objects.requireNonNull(selectionResolver, "selectionResolver must not be null");
+        this.singlePageLayoutCalculator = Objects.requireNonNull(singlePageLayoutCalculator, "singlePageLayoutCalculator must not be null");
+        this.singlePageLayoutRenderer = Objects.requireNonNull(singlePageLayoutRenderer, "singlePageLayoutRenderer must not be null");
         this.displayObjectCollector = new DisplayObjectCollector();
     }
 
@@ -55,9 +77,10 @@ public final class DocumentRenderer {
                 new LinkedHashSet<>(componentOrder)
         );
 
+        ComponentRendererRegistry rendererRegistry = buildRegistry(command.profile());
         StyleResolver styleResolver = new StyleResolver(command.profile(), command.fontPreferences());
         List<DocxBlock> blocks = new ArrayList<>();
-        Map<String, DocumentComponent> documentComponentsById = documentComponentsById(command);
+        Map<String, DocumentComponent> documentComponentsById = documentComponentsById(command, rendererRegistry);
         Optional<PageNumberingRule> pageNumberingRule = command.profile().pageNumberingRule()
                 .filter(PageNumberingRule::enabled);
         PageNumberingState pageNumberingState = new PageNumberingState(pageNumberingRule, styleResolver);
@@ -145,6 +168,50 @@ public final class DocumentRenderer {
         );
     }
 
+    private ComponentRendererRegistry buildRegistry(DocumentProfile profile) {
+        List<ComponentRenderer<?>> renderers = new ArrayList<>();
+        LinkedHashSet<String> registered = new LinkedHashSet<>();
+
+        for (ComponentRule rule : profile.componentRules()) {
+            String id = rule.componentId();
+            if (!registered.add(id)) continue;
+
+            ComponentRenderer<?> renderer = switch (rule) {
+                case SinglePageComponentRule ignored ->
+                        new SinglePageRenderer(id, singlePageLayoutCalculator, singlePageLayoutRenderer);
+                case FlowTextualComponentRule ignored -> new FlowTextualRenderer(id);
+                case BodyContentComponentRule ignored -> new BodyContentRenderer(id);
+                case ReferencesComponentRule ignored -> new ReferencesRenderer(id);
+                case SectionedComponentRule ignored -> new SectionedRenderer(id);
+                case SectionIndexComponentRule ignored -> new SectionIndexRenderer(id);
+                case ElementIndexComponentRule ignored -> new ElementIndexRenderer(id);
+                default -> throw new IllegalStateException(
+                        "No renderer factory for ComponentRule type: " + rule.getClass().getSimpleName()
+                );
+            };
+            renderers.add(renderer);
+        }
+
+        return new ComponentRendererRegistry(renderers);
+    }
+
+    private static Map<String, DocumentComponent> documentComponentsById(
+            ExportDocxCommand command,
+            ComponentRendererRegistry rendererRegistry
+    ) {
+        Map<String, DocumentComponent> componentsById = new LinkedHashMap<>();
+
+        for (DocumentComponent component : command.documentComponents()) {
+            String componentId = rendererRegistry.componentIdFor(component);
+
+            if (componentsById.put(componentId, component) != null) {
+                throw new IllegalArgumentException("Duplicate document component content for id: " + componentId);
+            }
+        }
+
+        return Map.copyOf(componentsById);
+    }
+
     private static void addBlocks(
             List<DocxBlock> blocks,
             Optional<DocxPageNumbering> pageNumbering,
@@ -161,20 +228,6 @@ public final class DocumentRenderer {
         }
 
         blocks.addAll(newBlocks);
-    }
-
-    private Map<String, DocumentComponent> documentComponentsById(ExportDocxCommand command) {
-        Map<String, DocumentComponent> componentsById = new LinkedHashMap<>();
-
-        for (DocumentComponent component : command.documentComponents()) {
-            String componentId = rendererRegistry.componentIdFor(component);
-
-            if (componentsById.put(componentId, component) != null) {
-                throw new IllegalArgumentException("Duplicate document component content for id: " + componentId);
-            }
-        }
-
-        return Map.copyOf(componentsById);
     }
 
     private static void validateSelectedContent(
