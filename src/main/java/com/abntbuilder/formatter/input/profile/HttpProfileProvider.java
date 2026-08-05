@@ -39,7 +39,7 @@ public class HttpProfileProvider implements ProfileProvider {
 
     @Override
     public DocumentProfile findById(String profileId) {
-        String url = profileServiceUrl + "/profiles/" + profileId;
+        String url = profileServiceUrl + "/api/v1/profiles/" + profileId;
         String json;
         try {
             json = restTemplate.getForObject(url, String.class);
