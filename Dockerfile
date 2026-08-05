@@ -7,7 +7,9 @@ RUN mvn package -DskipTests -q
 
 FROM eclipse-temurin:21-jre-jammy
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libreoffice \
+    && echo "ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true" | debconf-set-selections \
+    && apt-get install -y --no-install-recommends libreoffice ttf-mscorefonts-installer fontconfig \
+    && fc-cache -fv \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar

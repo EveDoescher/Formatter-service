@@ -2,11 +2,11 @@ package com.abntbuilder.formatter.rendering.orchestration;
 
 import com.abntbuilder.formatter.application.export.ExportDocxCommand;
 import com.abntbuilder.formatter.engine.model.content.singlepage.SinglePageContent;
+import com.abntbuilder.formatter.engine.model.content.singlepage.TextValue;
 import com.abntbuilder.formatter.engine.model.output.DocxBlock;
 import com.abntbuilder.formatter.engine.model.output.DocxDocument;
 import com.abntbuilder.formatter.engine.model.output.DocxPageBreak;
 import com.abntbuilder.formatter.engine.model.output.DocxParagraph;
-import com.abntbuilder.formatter.engine.model.output.DocxRun;
 import com.abntbuilder.formatter.engine.model.output.DocxSectionBreak;
 import com.abntbuilder.formatter.engine.model.profile.DocumentProfile;
 import com.abntbuilder.formatter.engine.model.profile.PageNumberingPlacement;
@@ -16,13 +16,27 @@ import com.abntbuilder.formatter.engine.model.profile.PageRule;
 import com.abntbuilder.formatter.engine.model.profile.StyleRule;
 import com.abntbuilder.formatter.engine.model.profile.StyleType;
 import com.abntbuilder.formatter.engine.model.profile.TextAlignment;
-import com.abntbuilder.formatter.engine.model.profile.component.ComponentRule;
-import com.abntbuilder.formatter.engine.contract.ComponentRenderer;
-import com.abntbuilder.formatter.engine.contract.ComponentRendererRegistry;
+import com.abntbuilder.formatter.engine.model.profile.component.singlepage.SinglePageComponentRule;
+import com.abntbuilder.formatter.engine.model.profile.component.singlepage.TextSlotRule;
+import com.abntbuilder.formatter.engine.model.profile.layout.singlepage.SinglePageGroupRule;
+import com.abntbuilder.formatter.engine.model.profile.layout.singlepage.SinglePageItemRule;
+import com.abntbuilder.formatter.engine.model.profile.layout.singlepage.SinglePageLayoutPolicy;
+import com.abntbuilder.formatter.engine.model.profile.layout.singlepage.SinglePageLayoutRule;
+import com.abntbuilder.formatter.rendering.singlepage.MarginBasedSinglePageSafetyPolicy;
+import com.abntbuilder.formatter.rendering.singlepage.OrderedLayoutGapResolver;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageContentValidator;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageGapDistributor;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageLayoutAssembler;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageLayoutCalculator;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageLayoutEngine;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageLayoutLineMetrics;
+import com.abntbuilder.formatter.rendering.singlepage.SinglePageLayoutRenderer;
+import com.abntbuilder.formatter.rendering.text.FontMetricsTextMeasurer;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,21 +47,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class DocumentRendererComponentSelectionTest {
 
     private final DocumentRenderer renderer = new DocumentRenderer(
-            new ComponentRendererRegistry(List.of(
-                    new FakeCoverRenderer(),
-                    new FakeTitlePageRenderer(),
-                    new FakeApprovalSheetRenderer()
-            )),
-            new ComponentSelectionResolver()
+            new ComponentSelectionResolver(),
+            singlePageLayoutCalculator(),
+            new SinglePageLayoutRenderer()
     );
 
     @Test
     void shouldRenderAllPresentContentWhenSelectionIsAbsent() {
         DocxDocument document = renderer.render(command(List.of()));
 
-        assertEquals(5, document.blocks().size());
         assertEquals(List.of("COVER", "TITLE_PAGE", "Paragraph"), paragraphTexts(document));
-        assertEquals(2, document.blocks().stream().filter(DocxPageBreak.class::isInstance).count());
+        assertEquals(2, document.blocks().stream()
+                .filter(b -> b instanceof DocxPageBreak || b instanceof DocxSectionBreak)
+                .count());
     }
 
     @Test
@@ -62,27 +74,21 @@ class DocumentRendererComponentSelectionTest {
     void shouldRenderOnlySelectedCover() {
         DocxDocument document = renderer.render(command(List.of("cover")));
 
-        List<String> paragraphTexts = paragraphTexts(document);
-
-        assertEquals(List.of("COVER"), paragraphTexts);
+        assertEquals(List.of("COVER"), paragraphTexts(document));
     }
 
     @Test
     void shouldRenderOnlySelectedParagraphs() {
         DocxDocument document = renderer.render(command(List.of("paragraphs")));
 
-        List<String> paragraphTexts = paragraphTexts(document);
-
-        assertEquals(List.of("Paragraph"), paragraphTexts);
+        assertEquals(List.of("Paragraph"), paragraphTexts(document));
     }
 
     @Test
     void shouldRenderOnlySelectedTitlePage() {
         DocxDocument document = renderer.render(command(List.of("titlePage")));
 
-        List<String> paragraphTexts = paragraphTexts(document);
-
-        assertEquals(List.of("TITLE_PAGE"), paragraphTexts);
+        assertEquals(List.of("TITLE_PAGE"), paragraphTexts(document));
     }
 
     @Test
@@ -207,6 +213,52 @@ class DocumentRendererComponentSelectionTest {
         assertEquals("selected component has no content: titlePage", exception.getMessage());
     }
 
+    // --- Fixtures ---
+
+    private static SinglePageLayoutCalculator singlePageLayoutCalculator() {
+        return new SinglePageLayoutCalculator(
+                new SinglePageContentValidator(),
+                new SinglePageLayoutAssembler(
+                        new FontMetricsTextMeasurer(),
+                        new OrderedLayoutGapResolver()
+                ),
+                new SinglePageLayoutEngine(
+                        new SinglePageLayoutLineMetrics(),
+                        new MarginBasedSinglePageSafetyPolicy(),
+                        new SinglePageGapDistributor()
+                )
+        );
+    }
+
+    private static SinglePageComponentRule componentRule(String componentId) {
+        return new SinglePageComponentRule(
+                componentId,
+                true,
+                null,
+                Map.of("label", new TextSlotRule(true, null, null)),
+                Map.of("label", "sp.body"),
+                new SinglePageLayoutRule(
+                        List.of(new SinglePageGroupRule("top", true, List.of(
+                                new SinglePageItemRule("label", true, Optional.empty())
+                        ))),
+                        List.of(),
+                        SinglePageLayoutPolicy.defaultSinglePagePolicy()
+                )
+        );
+    }
+
+    private static SinglePageContent cover() {
+        return new SinglePageContent("cover", Map.of("label", new TextValue("COVER")));
+    }
+
+    private static SinglePageContent titlePage() {
+        return new SinglePageContent("titlePage", Map.of("label", new TextValue("TITLE_PAGE")));
+    }
+
+    private static SinglePageContent approvalSheet() {
+        return new SinglePageContent("approvalSheet", Map.of("label", new TextValue("APPROVAL_SHEET")));
+    }
+
     private static List<String> paragraphTexts(DocxDocument document) {
         return document.blocks()
                 .stream()
@@ -226,25 +278,13 @@ class DocumentRendererComponentSelectionTest {
         );
     }
 
-    private static SinglePageContent cover() {
-        return new SinglePageContent("cover", java.util.Map.of());
-    }
-
-    private static SinglePageContent titlePage() {
-        return new SinglePageContent("titlePage", java.util.Map.of());
-    }
-
-    private static SinglePageContent approvalSheet() {
-        return new SinglePageContent("approvalSheet", java.util.Map.of());
-    }
-
     private static DocumentProfile profile() {
         return new DocumentProfile(
                 "test-profile",
                 "Test Profile",
                 pageRule(),
-                List.of(style("body")),
-                List.of(new FakeComponentRule("cover"), new FakeComponentRule("titlePage"), new FakeComponentRule("approvalSheet")),
+                List.of(style("sp.body"), style("body")),
+                List.of(componentRule("cover"), componentRule("titlePage"), componentRule("approvalSheet")),
                 List.of("cover", "titlePage", "approvalSheet", "paragraphs")
         );
     }
@@ -263,8 +303,8 @@ class DocumentRendererComponentSelectionTest {
                         BigDecimal.valueOf(2),
                         BigDecimal.valueOf(2)
                 )),
-                List.of(style("body")),
-                List.of(new FakeComponentRule("cover"), new FakeComponentRule("titlePage"), new FakeComponentRule("approvalSheet")),
+                List.of(style("sp.body"), style("body")),
+                List.of(componentRule("cover"), componentRule("titlePage"), componentRule("approvalSheet")),
                 List.of("cover", "titlePage", "approvalSheet", "paragraphs")
         );
     }
@@ -283,8 +323,8 @@ class DocumentRendererComponentSelectionTest {
                         BigDecimal.valueOf(2),
                         BigDecimal.valueOf(2)
                 )),
-                List.of(style("body")),
-                List.of(new FakeComponentRule("cover"), new FakeComponentRule("titlePage"), new FakeComponentRule("approvalSheet")),
+                List.of(style("sp.body"), style("body")),
+                List.of(componentRule("cover"), componentRule("titlePage"), componentRule("approvalSheet")),
                 List.of("cover", "titlePage", "approvalSheet", "paragraphs")
         );
     }
@@ -303,8 +343,8 @@ class DocumentRendererComponentSelectionTest {
                         BigDecimal.valueOf(2),
                         BigDecimal.valueOf(2)
                 )),
-                List.of(style("body")),
-                List.of(new FakeComponentRule("cover"), new FakeComponentRule("titlePage"), new FakeComponentRule("approvalSheet")),
+                List.of(style("sp.body"), style("body")),
+                List.of(componentRule("cover"), componentRule("titlePage"), componentRule("approvalSheet")),
                 List.of("cover", "titlePage", "approvalSheet", "paragraphs")
         );
     }
@@ -338,64 +378,5 @@ class DocumentRendererComponentSelectionTest {
                 false,
                 false
         );
-    }
-
-    private static final class FakeCoverRenderer implements ComponentRenderer<SinglePageContent> {
-
-        @Override
-        public String componentId() {
-            return "cover";
-        }
-
-        @Override
-        public Class<SinglePageContent> componentType() {
-            return SinglePageContent.class;
-        }
-
-        @Override
-        public List<DocxBlock> render(SinglePageContent component, DocumentProfile profile) {
-            StyleRule s = style("body"); return List.of(new DocxParagraph(List.of(DocxRun.of("COVER", s)), s));
-        }
-    }
-
-    private static final class FakeTitlePageRenderer implements ComponentRenderer<SinglePageContent> {
-
-        @Override
-        public String componentId() {
-            return "titlePage";
-        }
-
-        @Override
-        public Class<SinglePageContent> componentType() {
-            return SinglePageContent.class;
-        }
-
-        @Override
-        public List<DocxBlock> render(SinglePageContent component, DocumentProfile profile) {
-            StyleRule s = style("body"); return List.of(new DocxParagraph(List.of(DocxRun.of("TITLE_PAGE", s)), s));
-        }
-    }
-
-    private static final class FakeApprovalSheetRenderer implements ComponentRenderer<SinglePageContent> {
-
-        @Override
-        public String componentId() {
-            return "approvalSheet";
-        }
-
-        @Override
-        public Class<SinglePageContent> componentType() {
-            return SinglePageContent.class;
-        }
-
-        @Override
-        public List<DocxBlock> render(SinglePageContent component, DocumentProfile profile) {
-            StyleRule s = style("body"); return List.of(new DocxParagraph(List.of(DocxRun.of("APPROVAL_SHEET", s)), s));
-        }
-    }
-
-    private record FakeComponentRule(String componentId) implements ComponentRule {
-        public boolean required() { return true; }
-        public String description() { return null; }
     }
 }
