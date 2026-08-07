@@ -70,7 +70,7 @@ public final class SectionedRenderer
         return () -> List.copyOf(blocks);
     }
 
-    private static String resolveMarker(IndexingStyle style, int index) {
+    static String resolveMarker(IndexingStyle style, int index) {
         return switch (style) {
             case ALPHABETIC       -> String.valueOf((char) ('A' + index));
             case ALPHABETIC_LOWER -> String.valueOf((char) ('a' + index));

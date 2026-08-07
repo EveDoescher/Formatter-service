@@ -1,0 +1,12 @@
+{
+  "id": "element-profile",
+  "displayName": "Element profile",
+  "pageRule": { "widthCm": 21, "heightCm": 29.7, "marginTopCm": 3, "marginRightCm": 2, "marginBottomCm": 2, "marginLeftCm": 3, "orientation": "PORTRAIT" },
+  "styleRules": [
+    { "id": "style.1", "type": "HEADING_1", "fontFamily": "Arial", "fontSizePt": 16, "alignment": "LEFT", "lineSpacing": 1, "firstLineIndentCm": 0, "leftIndentCm": 0, "rightIndentCm": 0, "spacingBeforePt": 12, "spacingAfterPt": 6, "bold": true, "italic": false, "uppercase": false },
+    { "id": "style.2", "type": "PARAGRAPH", "fontFamily": "Arial", "fontSizePt": 12, "alignment": "LEFT", "lineSpacing": 1, "firstLineIndentCm": 0, "leftIndentCm": 0, "rightIndentCm": 0, "spacingBeforePt": 0, "spacingAfterPt": 0, "bold": false, "italic": false, "uppercase": false }
+  ],
+  "componentRules": { "figures": { "ruleType": "ELEMENT_INDEX", "componentId": "figures", "required": false, "description": "Figure index", "elementType": "FIGURE", "headingStyleId": "style.1", "headingText": "Figures", "entryStyleId": "style.2", "entryTemplate": "{number} - {caption}", "blankLinesAfterHeading": 1, "pageReferenceEnabled": true } },
+  "componentOrder": ["figures"],
+  "fontRoles": { "document": { "default": "Arial", "allowedValues": ["Arial", "Times New Roman"], "styleIds": ["style.1", "style.2"] } }
+}

@@ -1,0 +1,14 @@
+{
+  "id": "profile",
+  "displayName": "Test profile",
+  "pageRule": { "widthCm": 21, "heightCm": 29.7, "marginTopCm": 3, "marginRightCm": 2, "marginBottomCm": 2, "marginLeftCm": 3, "orientation": "PORTRAIT" },
+  "pageNumbering": { "enabled": true, "countFromComponentId": "index", "visibleFromComponentId": "index", "styleId": "style.1", "placement": "FOOTER_RIGHT", "verticalDistanceFromPageEdgeCm": 1, "horizontalDistanceFromPageEdgeCm": 1 },
+  "postProcessing": { "tableContinuationLabels": { "enabled": true, "continuesLabel": "continues", "continuationLabel": "continuation", "conclusionLabel": "conclusion", "labelStyleId": "style.2" } },
+  "styleRules": [
+    { "id": "style.1", "type": "HEADING_1", "fontFamily": "Arial", "fontSizePt": 16, "alignment": "LEFT", "lineSpacing": 1, "firstLineIndentCm": 0, "leftIndentCm": 0, "rightIndentCm": 0, "spacingBeforePt": 12, "spacingAfterPt": 6, "bold": true, "italic": false, "uppercase": false },
+    { "id": "style.2", "type": "PARAGRAPH", "fontFamily": "Courier New", "fontSizePt": 10, "alignment": "LEFT", "lineSpacing": 1, "firstLineIndentCm": 0, "leftIndentCm": 0, "rightIndentCm": 0, "spacingBeforePt": 0, "spacingAfterPt": 0, "bold": false, "italic": false, "uppercase": false }
+  ],
+  "componentRules": { "index": { "ruleType": "SECTION_INDEX", "componentId": "index", "required": false, "description": "Index", "headingStyleId": "style.1", "headingText": "Contents", "entryStyleIdsByLevel": ["style.1"], "useTocField": true, "blankLinesAfterHeading": 1 } },
+  "componentOrder": ["index"],
+  "fontRoles": { "document": { "default": "Arial", "allowedValues": ["Arial", "Times New Roman"], "styleIds": ["style.1"] } }
+}

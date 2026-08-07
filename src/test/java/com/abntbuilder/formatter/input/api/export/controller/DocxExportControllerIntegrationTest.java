@@ -248,7 +248,7 @@ class DocxExportControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(invalidJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Invalid request body."));
+                .andExpect(jsonPath("$.message").value("Corpo da requisição inválido."));
     }
 
     private static String validRequestJson() {
